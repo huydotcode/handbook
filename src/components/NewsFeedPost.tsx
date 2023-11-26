@@ -7,12 +7,14 @@ import CreatePost from './post/CreatePost';
 import Post from './post/Post';
 import SkeletonPost from './post/SkeletonPost';
 import Button from './ui/Button';
+import toast from 'react-hot-toast';
 
 interface Props {
     userId?: string;
+    username?: string;
 }
 
-const NewsFeedPost: React.FC<Props> = ({ userId }) => {
+const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const { data: session } = useSession();
     const [posts, setPosts] = useState<Post[]>([]);
     const [page, setPage] = useState<number>(1);
@@ -23,20 +25,21 @@ const NewsFeedPost: React.FC<Props> = ({ userId }) => {
         setLoading(true);
 
         try {
-            const res = await fetch(
-                `/api/posts/news-feed/query?userId=${
-                    userId || ''
-                }&page=${page}&pageSize=${pageSize}`
-            );
+            const path = `/api/posts/news-feed/query?userId=${
+                userId || ''
+            }&username=${username || ''}&page=${page}&pageSize=${pageSize}`;
+
+            const res = await fetch(path);
             const data = await res.json();
 
             setPosts((prev) => [...prev, ...data]);
         } catch (error: any) {
-            throw new Error(error);
+            console.log('Error', error);
+            toast.error('Đã có lỗi xảy ra!');
         } finally {
             setLoading(false);
         }
-    }, [page, pageSize, userId]);
+    }, [page, pageSize, userId, username]);
 
     useEffect(() => {
         fetchPosts();

@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 export const GET = async (req: Request) => {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
+    const username = searchParams.get('username');
     const page = searchParams.get('page') || 1;
     const pageSize = searchParams.get('pageSize') || 5;
 
@@ -14,7 +15,7 @@ export const GET = async (req: Request) => {
 
     if (userId) {
         let user = await User.findOne({
-            $or: [{ username: userId }, { _id: userId }],
+            $or: [{ _id: userId }, { userName: username }],
         });
 
         query = user ? { creator: user._id } : {};

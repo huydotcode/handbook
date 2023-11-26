@@ -5,6 +5,7 @@ import {
     fetchSomeFriendUser,
     fetchUserData,
 } from '@/lib/actions/user.action';
+import mongoose from 'mongoose';
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -26,6 +27,14 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
     const { user, profile } = await fetchProfileByUserId(params.userId);
     // const friends = (await fetchSomeFriendUser(params.userId)) as Friend[];
     const friends = [] as Friend[];
+
+    const props = mongoose.isValidObjectId(params.userId)
+        ? {
+              userId: params.userId,
+          }
+        : { username: params.userId };
+
+    console.log(props);
 
     if (!user || !profile) notFound();
 
@@ -75,7 +84,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                         />
 
                         <div className="w-[60%] md:w-full">
-                            <NewsFeedPost userId={params.userId} />
+                            <NewsFeedPost {...props} />
                         </div>
                     </main>
                 </div>

@@ -124,51 +124,7 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
                     />
                 )}
 
-                {/* <EditBio /> */}
-
                 {editBioComponent()}
-
-                {/* {showChangeBio && (
-                    <TextareaAutosize
-                        className="w-full p-2 resize-none bg-light-100 focus:border-none focus:outline-none rounded-xl"
-                        spellCheck={false}
-                        placeholder="Nhập tiểu sử"
-                        value={valueBioInput}
-                        onChange={(e) => setValueBioInput(e.target.value)}
-                    />
-                )}
-
-                {showChangeBio && (
-                    <Button
-                        className="w-full mt-2"
-                        variant={'event'}
-                        size={'small'}
-                        onClick={changeBio}
-                        disabled={isChanging}
-                    >
-                        {isChanging ? 'Đang thay đổi...' : 'Thay đổi'}
-                    </Button>
-                )}
-
-                {bio.length > 0 ? (
-                    <Button
-                        className="w-full mt-2"
-                        variant={'event'}
-                        size={'small'}
-                        onClick={() => setShowChangeBio((prev) => !prev)}
-                    >
-                        {showChangeBio ? 'Tắt chỉnh sửa' : 'Sửa tiểu sử'}
-                    </Button>
-                ) : (
-                    <Button
-                        className="w-full mt-2"
-                        variant={'event'}
-                        size={'small'}
-                        onClick={() => setShowChangeBio((prev) => !prev)}
-                    >
-                        {showChangeBio ? 'Tắt chỉnh sửa' : 'Thêm tiểu sử'}
-                    </Button>
-                )} */}
             </section>
 
             <section className="relative my-3 py-2 px-4 bg-white rounded-xl shadow-md dark:bg-dark-200">
