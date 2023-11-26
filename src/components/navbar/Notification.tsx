@@ -1,5 +1,5 @@
 'use client';
-import { useNotifications } from '@/hooks';
+// import { useNotifications } from '@/hooks';
 import { Badge, MenuItem } from '@mui/material';
 import { MdNotifications, MdNotificationsActive } from 'react-icons/md';
 import Button from '../ui/Button';
