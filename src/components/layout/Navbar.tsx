@@ -1,17 +1,12 @@
 'use client';
 import Link from 'next/link';
 
-import { useSession } from 'next-auth/react';
 import { BsFacebook } from 'react-icons/bs';
-import BackButton from '../navbar/BackButton';
 import NavUser from '../navbar/NavUser';
-import Notification from '../navbar/Notification';
 import Searchbar from '../navbar/Searchbar';
 import DarkmodeButton from '../ui/DarkmodeButton';
 
 const Navbar = () => {
-    const { data: session } = useSession();
-
     return (
         <nav className="fixed w-screen h-14 top-0 left-0 right-0 shadow-md z-50 dark:shadow-none md:px-2">
             <div className="relative flex items-center justify-between h-full w-full px-5 md:px-1">

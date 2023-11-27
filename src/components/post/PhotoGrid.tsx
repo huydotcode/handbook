@@ -30,6 +30,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                         className=" object-cover"
                                         src={images[1].url || ''}
                                         alt=""
+                                        quality={100}
                                         fill
                                     />
                                 </div>

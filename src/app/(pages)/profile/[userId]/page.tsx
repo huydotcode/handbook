@@ -34,8 +34,6 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
           }
         : { username: params.userId };
 
-    console.log(props);
-
     if (!user || !profile) notFound();
 
     return (

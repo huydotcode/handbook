@@ -2,7 +2,6 @@ import Comment from '@/models/Comment';
 import Post from '@/models/Post';
 import User from '@/models/User';
 import connectToDB from '@/services/mongoose';
-import mongoose from 'mongoose';
 
 export const GET = async (req: Request) => {
     const { searchParams } = new URL(req.url);
@@ -11,11 +10,11 @@ export const GET = async (req: Request) => {
     const page = searchParams.get('page') || 1;
     const pageSize = searchParams.get('pageSize') || 5;
 
-    let query = {};
+    let query = {} as any;
 
-    if (userId) {
+    if (userId || username) {
         let user = await User.findOne({
-            $or: [{ _id: userId }, { userName: username }],
+            $or: [{ _id: userId }, { username }],
         });
 
         query = user ? { creator: user._id } : {};
