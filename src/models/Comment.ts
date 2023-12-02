@@ -11,6 +11,7 @@ interface IComment {
     replies: Types.Array<Types.ObjectId>;
     reactions: Types.Array<{ userId: Types.ObjectId; reactionType: string }>;
     postId: Types.ObjectId;
+    delete: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -53,6 +54,10 @@ export const CommentSchema = new Schema<IComment>({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         required: true,
+    },
+    delete: {
+        type: Boolean,
+        default: false,
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },

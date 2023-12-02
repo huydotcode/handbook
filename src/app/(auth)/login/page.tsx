@@ -67,43 +67,47 @@ const Page: FC = () => {
                     </h2>
 
                     <div className="flex flex-col w-full">
-                        <div className="flex flex-col space-y-1">
-                            <label htmlFor="username" className="">
-                                Tên đăng nhập
-                            </label>
-                            <input
-                                className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="text"
-                                id="username"
-                                placeholder="Tên đăng nhập"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+                        <form action={loginWithCrenditals}>
+                            <div className="flex flex-col space-y-1">
+                                <label htmlFor="username" className="">
+                                    Tên đăng nhập
+                                </label>
+                                <input
+                                    className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="text"
+                                    id="username"
+                                    placeholder="Tên đăng nhập"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-col space-y-1">
-                            <label htmlFor="password" className="mt-2 ">
-                                Mật khẩu
-                            </label>
-                            <input
-                                className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="password"
-                                id="password"
-                                placeholder="Nhập mật khẩu"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-col space-y-1">
+                                <label htmlFor="password" className="mt-2 ">
+                                    Mật khẩu
+                                </label>
+                                <input
+                                    className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="password"
+                                    id="password"
+                                    placeholder="Nhập mật khẩu"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                />
+                            </div>
 
-                        <Button
-                            className="mt-6"
-                            variant={'event'}
-                            size={'default'}
-                            disabled={isLoading}
-                            onClick={loginWithCrenditals}
-                        >
-                            <h5 className="text-lg">Đăng nhập</h5>
-                        </Button>
+                            <Button
+                                className="mt-6 w-full"
+                                variant={'event'}
+                                size={'default'}
+                                disabled={isLoading}
+                                // onClick={loginWithCrenditals}
+                            >
+                                <h5 className="text-lg">Đăng nhập</h5>
+                            </Button>
+                        </form>
 
                         <div className="flex justify-center items-center mt-4">
                             <h5>Bạn chưa có tài khoản?</h5>

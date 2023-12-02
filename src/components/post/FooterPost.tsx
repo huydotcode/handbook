@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
@@ -10,9 +10,12 @@ import ReactionPost from './ReactionPost';
 import usePostContext from '@/hooks/usePostContext';
 import { useSession } from 'next-auth/react';
 import Button from '../ui/Button';
+import { fetchCommentPostId } from '@/lib/actions/post.action';
+import { usePathname } from 'next/navigation';
 
 const FooterPost = () => {
     const { data: session } = useSession();
+    const path = usePathname();
     const { comments, setComments, post, countComments, sendComment } =
         usePostContext();
 
@@ -21,15 +24,24 @@ const FooterPost = () => {
     const [page, setPage] = useState<number>(1);
     const pageSize = 5;
 
+    const commentsToRender = useMemo(() => {
+        return comments.filter(
+            (cmt) => cmt.delete == false && cmt.parentCommentId == null
+        );
+    }, [comments]);
+
     useEffect(() => {
         (async () => {
-            const res = await fetch(
-                `/api/posts/${post._id}/comments/q/query?page=${page}&pageSize=${pageSize}`
-            );
-            const data = (await res.json()) as Comment[];
-            setComments((prev) => [...prev, ...data]);
+            const comments = await fetchCommentPostId({
+                page: page,
+                pageSize: pageSize,
+                path: path,
+                postId: post._id,
+            });
+
+            setComments((prev) => [...prev, ...comments]);
         })();
-    }, [page, pageSize, post._id, setComments]);
+    }, [page, pageSize, post._id, setComments, path]);
 
     const handleSendComment = async () => {
         if (isSending) return;
@@ -90,11 +102,9 @@ const FooterPost = () => {
 
                     <>
                         <div className="mt-3">
-                            {comments
-                                .filter((cmt) => !cmt.parentCommentId)
-                                .map((cmt) => {
-                                    return <Comment data={cmt} key={cmt._id} />;
-                                })}
+                            {commentsToRender.map((cmt) => (
+                                <Comment data={cmt} key={cmt._id} />
+                            ))}
                         </div>
 
                         {countComments > comments.length && (

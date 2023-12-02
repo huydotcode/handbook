@@ -7,10 +7,11 @@ export const PostContext = React.createContext<IPostContext | null>(null);
 
 interface Props {
     post: Post;
+    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
     children: React.ReactNode;
 }
 
-function PostProvider({ post, children }: Props) {
+function PostProvider({ post, setPosts, children }: Props) {
     const { data: session } = useSession();
     const [comments, setComments] = useState<Comment[]>([]);
     const [countComments, setCountComments] = useState<number>(
@@ -88,6 +89,7 @@ function PostProvider({ post, children }: Props) {
         sendComment,
         deleteComment,
         setIsDelete,
+        setPosts,
     };
 
     return (

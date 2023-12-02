@@ -103,6 +103,10 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             await connectToDB();
 
+            if (!token.email) {
+                return token;
+            }
+
             const userExists = await User.findOne({ email: token.email });
 
             if (!userExists) {

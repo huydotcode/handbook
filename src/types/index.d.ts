@@ -48,40 +48,40 @@ interface Params {
     };
 }
 
-const sendComment = async ({
-    valueInput,
-    replyTo = null,
-    setIsSending,
-    setValueInput,
-}: {
-    valueInput: string;
-    replyTo: string | null;
-    setIsSending: any;
-    setValueInput: any;
-}) => {
-    try {
-        if (valueInput.replaceAll('<p><br></p>', '').trim().length === 0) {
-            toast.error('Vui lòng nhập trước khi gửi!');
-            return;
-        }
+// const sendComment = async ({
+//     valueInput,
+//     replyTo = null,
+//     setIsSending,
+//     setValueInput,
+// }: {
+//     valueInput: string;
+//     replyTo: string | null;
+//     setIsSending: any;
+//     setValueInput: any;
+// }) => {
+//     try {
+//         if (valueInput.replaceAll('<p><br></p>', '').trim().length === 0) {
+//             toast.error('Vui lòng nhập trước khi gửi!');
+//             return;
+//         }
 
-        await fetch(`/api/posts/${post._id}/comments/new`, {
-            method: 'POST',
-            body: JSON.stringify({
-                content: valueInput.replace(/\n/g, '<br/>'),
-                userId: session?.user.id,
-                replyTo: replyTo,
-            }),
-        });
+//         await fetch(`/api/posts/${post._id}/comments/new`, {
+//             method: 'POST',
+//             body: JSON.stringify({
+//                 content: valueInput.replace(/\n/g, '<br/>'),
+//                 userId: session?.user.id,
+//                 replyTo: replyTo,
+//             }),
+//         });
 
-        setCountComments((prev) => prev + 1);
-    } catch (error: any) {
-        toast.error(error);
-    } finally {
-        setIsSending(false);
-        setValueInput('');
-    }
-};
+//         setCountComments((prev) => prev + 1);
+//     } catch (error: any) {
+//         toast.error(error);
+//     } finally {
+//         setIsSending(false);
+//         setValueInput('');
+//     }
+// };
 
 interface IPostContext {
     user: User;
@@ -98,4 +98,5 @@ interface IPostContext {
     }) => Promise<any>;
     deleteComment: (commentId: string) => void;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
 }

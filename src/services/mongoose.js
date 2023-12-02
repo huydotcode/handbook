@@ -20,7 +20,7 @@ const connectToDB = async () => {
 
         isConnected = true; // Set the connection status to true
     } catch (error) {
-        console.log(error);
+        console.log('Error: ', error);
     }
 };
 

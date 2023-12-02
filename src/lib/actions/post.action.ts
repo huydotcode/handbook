@@ -1,64 +1,104 @@
+'use server';
 import Comment from '@/models/Comment';
 import Post from '@/models/Post';
+import User from '@/models/User';
 import connectToDB from '@/services/mongoose';
-import logger from '@/utils/logger';
+import { revalidatePath } from 'next/cache';
 
-const url = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+export const fetchNewFeedPost = async ({
+    page = 1,
+    pageSize = 5,
+    pathname = '',
+    userId = '',
+    username = '',
+}: {
+    userId: string | undefined;
+    username: string | undefined;
+    page: number;
+    pageSize: number;
+    pathname: string;
+}) => {
+    let query = {} as any;
 
-export const fetchAllPostsId = async () => {
-    logger('Fetch all posts');
+    if (userId || username) {
+        let user = await User.findOne({
+            $or: [{ _id: userId }, { username }],
+        });
+
+        query = user ? { creator: user._id } : {};
+    }
 
     try {
         await connectToDB();
-        const posts = await Post.find({}).sort({ createdAt: -1 });
-        const allPostsId = posts.flatMap((post) => post._id.toString());
+        const posts = await Post.find(query)
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ createdAt: -1 });
 
-        if (allPostsId) {
-            return allPostsId;
+        for (const post of posts) {
+            post.commentCount = await Comment.countDocuments({
+                postId: post._id,
+            });
         }
+
+        await User.populate(posts, { path: 'creator', select: 'name image' });
+
+        if (pathname !== '') {
+            revalidatePath(pathname);
+        }
+
+        return JSON.parse(JSON.stringify(posts));
     } catch (error: any) {
         throw new Error(error);
     }
 };
 
-export const fetchAllPostIdByUser = async (id: string) => {
+export const fetchCommentPostId = async ({
+    page,
+    pageSize,
+    path,
+    postId,
+}: {
+    postId: string;
+    page: number;
+    pageSize: number;
+    path: string;
+}) => {
     try {
-        await connectToDB();
-        const posts = await Post.find({
-            'creator.id': id,
-        }).sort({
-            createdAt: -1,
-        });
-        const allPostsId = posts.flatMap((post) => post._id);
-        return allPostsId;
-    } catch (error: any) {
-        throw new Error(error.message);
-    }
-};
-
-export const fetchPost = async (postId: string) => {
-    try {
-        await connectToDB();
-        const post = await Post.findById(postId)
-            .populate('creator', 'name image')
-            .populate('loves', 'name image')
-            .exec();
-
-        return JSON.parse(JSON.stringify(post));
-    } catch (error: any) {
-        console.log(error);
-    }
-};
-
-export const fetchCommentPost = async (postId: string) => {
-    try {
-        await connectToDB();
-        const comments = await Comment.find({ postId: postId }).sort({
-            createdAt: -1,
-        });
+        const comments = await Comment.find({
+            postId: postId,
+            parentCommentId: null,
+        })
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
         console.log(error);
+        throw new Error(error);
+    } finally {
+        if (!!path) {
+            revalidatePath(path);
+        }
+    }
+};
+
+export const deletePost = async ({
+    postId,
+    path,
+}: {
+    postId: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+        await Post.findByIdAndDelete(postId);
+        await Comment.deleteMany({ postId: postId });
+
+        revalidatePath(path);
+    } catch (error: any) {
+        console.log('Error: ', error);
+        throw new Error(error);
     }
 };

@@ -44,7 +44,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                     }),
                 });
             } catch (error) {
-                console.log('Error', error);
+                console.log('Error: ', error);
             }
         },
         onError: () => {

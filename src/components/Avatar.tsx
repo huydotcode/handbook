@@ -36,6 +36,7 @@ const Avatar: React.FC<Props> = ({
                 width={width}
                 height={height}
                 fill={fill}
+                priority={true}
             />
         </Link>
     );

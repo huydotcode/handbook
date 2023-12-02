@@ -1,25 +1,26 @@
 'use client';
-import React, { useState } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 
+import usePostContext from '@/hooks/usePostContext';
+import { deletePost } from '@/lib/actions/post.action';
 import { Fade, Modal } from '@mui/material';
-import { useSession } from 'next-auth/react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { MdMoreVert } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
-import Popover, { usePopover } from '../ui/Popover';
 import Button from '../ui/Button';
+import Popover, { usePopover } from '../ui/Popover';
 
 interface Props {
     post: Post;
     setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ActionPost: React.FC<Props> = ({ post, setIsDelete }) => {
-    const { data: session } = useSession();
-    const [showModal, setShowModal] = useState<boolean>(false);
+const ActionPost: React.FC<Props> = ({ post }) => {
+    const path = usePathname();
 
-    const pathname = usePathname();
-    const router = useRouter();
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const { setPosts } = usePostContext();
+    const [isSubmitting, setIsSubmitting] = useState<boolean>();
 
     const {
         anchorEl,
@@ -28,33 +29,24 @@ const ActionPost: React.FC<Props> = ({ post, setIsDelete }) => {
         open,
     } = usePopover();
 
-    const handleDeletePost = async () => {
-        if (setIsDelete) setIsDelete(true);
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
 
+    const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
         try {
-            if (post.images.length > 0) {
-                await fetch('/api/images', {
-                    method: 'DELETE',
-                    body: JSON.stringify({ images: post.images }),
-                });
-            }
-
-            await fetch(`/api/posts/${post._id}`, {
-                method: 'DELETE',
+            await deletePost({
+                postId: post._id,
+                path: path,
             });
+            setPosts((prev) => prev.filter((item) => item._id != post._id));
         } catch (error: any) {
             throw new Error(error);
         } finally {
-            handleCloseDropdown();
-
-            if (pathname === `/post/${post._id}`) {
-                router.push('/');
-            }
+            handleCloseModal();
         }
     };
-
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
 
     return (
         <>
@@ -99,18 +91,21 @@ const ActionPost: React.FC<Props> = ({ post, setIsDelete }) => {
                         </div>
 
                         <div className="flex justify-end mt-4">
-                            <Button
-                                variant={'warning'}
-                                size={'medium'}
-                                className="mr-2 w-[30%]"
-                                onClick={handleDeletePost}
-                            >
-                                Có
-                            </Button>
+                            <form onSubmit={handleDeletePost}>
+                                <Button
+                                    variant={'warning'}
+                                    size={'medium'}
+                                    className="mr-2 min-w-[80px]"
+                                    disabled={isSubmitting}
+                                >
+                                    Có
+                                </Button>
+                            </form>
                             <Button
                                 className="w-[30%]"
                                 variant={'secondary'}
                                 size={'medium'}
+                                disabled={isSubmitting}
                                 onClick={() => {
                                     setShowModal(false);
                                     handleCloseDropdown();

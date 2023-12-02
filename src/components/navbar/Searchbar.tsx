@@ -1,6 +1,8 @@
 'use client';
 import useDebounce from '@/hooks/useDebounce';
+import { fetchUsers } from '@/lib/actions/user.action';
 import { Fade, Modal } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CgSearchLoading } from 'react-icons/cg';
 import { GoSearch } from 'react-icons/go';
@@ -9,13 +11,15 @@ import UserItem from '../search/UserItem';
 import Button from '../ui/Button';
 
 const Searchbar = () => {
+    const { data: session } = useSession();
     const [showModal, setShowModal] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const debounceValue = useDebounce(searchValue, 300);
     const inputRef = useRef() as React.RefObject<HTMLInputElement>;
-
+    const [page, setPage] = useState<number>(1);
+    const [pageSize, setPagesize] = useState<number>(5);
     const handleClose = useCallback(() => {
         setSearchResult([]);
         setSearchValue('');
@@ -31,10 +35,17 @@ const Searchbar = () => {
         const fetchSearchData = async (value: string) => {
             setIsSearching(true);
 
+            if (!session?.user.id) return;
+
             try {
-                const response = await fetch(`/api/search/top/${value}`);
-                const data = await response.json();
-                setSearchResult(data);
+                const { users, isNext } = await fetchUsers({
+                    userId: session?.user.id,
+                    pageNumber: page,
+                    pageSize: pageSize,
+                    searchString: value,
+                    sortBy: 'desc',
+                });
+                setSearchResult(users);
             } catch (error: any) {
                 throw new Error(error);
             } finally {
@@ -45,7 +56,7 @@ const Searchbar = () => {
         if (debounceValue.trim().length > 0) {
             fetchSearchData(debounceValue);
         }
-    }, [debounceValue]);
+    }, [debounceValue, page, pageSize, session?.user.id]);
 
     return (
         <>

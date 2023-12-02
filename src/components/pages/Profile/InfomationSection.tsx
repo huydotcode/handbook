@@ -7,9 +7,10 @@ import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import Button from '@/components/ui/Button';
+import { changeBioAction } from '@/lib/actions/profile.action';
 import { TextareaAutosize } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { notFound } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 interface Friend {
     id: string;
@@ -22,42 +23,44 @@ interface Props {
     profile: IProfile;
 }
 
+type FormValue = {
+    bio: string;
+};
+
 const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
+    const bio = profile.bio;
+    const path = usePathname();
     const { data: session } = useSession();
-    const [bio, setBio] = useState<string>(profile.bio);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<FormValue>();
+
     const [showChangeBio, setShowChangeBio] = useState<boolean>(false);
-    const [valueBioInput, setValueBioInput] = useState<string>('');
-    const [isChanging, setIsChanging] = useState<boolean>(false);
+
     const canEdit = useMemo(() => {
         return session?.user.id == profile.userId;
     }, [session?.user.id, profile.userId]);
 
-    const changeBio = async () => {
-        if (valueBioInput.trim().length === 0) {
-            setShowChangeBio(false);
-            setValueBioInput('');
+    const changeBio: SubmitHandler<FieldValues> = async (data) => {
+        const newBio = data.bio;
+
+        if (!session?.user.id) {
+            toast.error('Vui lòng đăng nhập!');
             return;
         }
 
-        setIsChanging(true);
-
         try {
-            const response = await fetch(`/api/profile/${profile.userId}`, {
-                method: 'PATCH',
-                body: JSON.stringify({
-                    newBio: valueBioInput,
-                }),
+            await changeBioAction({
+                newBio: newBio,
+                path: path,
+                userId: session.user.id,
             });
-
-            if (response.ok) {
-                setBio(valueBioInput);
-            }
         } catch (error) {
-            toast.error('Có lỗi đã xảy ra!');
+            toast.error('Đã có lỗi xảy ra! Vui lòng thử lại sau');
         } finally {
-            setIsChanging(false);
             setShowChangeBio(false);
-            setValueBioInput('');
         }
     };
 
@@ -66,27 +69,37 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
 
         return (
             <>
-                {showChangeBio && (
-                    <TextareaAutosize
-                        className="w-full p-2 resize-none bg-light-100 dark:bg-[rgba(255,255,255,.1)] focus:border-none focus:outline-none rounded-xl"
-                        spellCheck={false}
-                        placeholder="Nhập tiểu sử"
-                        value={valueBioInput}
-                        onChange={(e) => setValueBioInput(e.target.value)}
-                    />
-                )}
+                <form onSubmit={handleSubmit(changeBio)}>
+                    {showChangeBio && (
+                        <TextareaAutosize
+                            className="w-full mt-2 p-2 resize-none bg-light-100 dark:bg-[rgba(255,255,255,.1)] focus:border-none focus:outline-none rounded-xl"
+                            spellCheck={false}
+                            placeholder="Nhập tiểu sử"
+                            {...register('bio', {
+                                maxLength: 300,
+                            })}
+                        />
+                    )}
 
-                {showChangeBio && (
-                    <Button
-                        className="w-full mt-2"
-                        variant={'event'}
-                        size={'small'}
-                        onClick={changeBio}
-                        disabled={isChanging}
-                    >
-                        {isChanging ? 'Đang thay đổi...' : 'Thay đổi'}
-                    </Button>
-                )}
+                    {errors.bio && (
+                        <p className="text-xs text-red-500">
+                            Tiểu sử tối đa 300 kí tự
+                        </p>
+                    )}
+
+                    {showChangeBio && (
+                        <Button
+                            className={`w-full mt-2 ${
+                                !isSubmitting && 'bg-primary'
+                            }`}
+                            variant={'event'}
+                            size={'small'}
+                            type="submit"
+                        >
+                            {isSubmitting ? 'Đang thay đổi...' : 'Thay đổi'}
+                        </Button>
+                    )}
+                </form>
 
                 {bio.length > 0 ? (
                     <Button

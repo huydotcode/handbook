@@ -21,6 +21,7 @@ interface Comment {
     createdAt: Date;
     updatedAt: Date;
     show?: boolean;
+    delete: boolean;
 }
 
 interface CloudinaryImage {

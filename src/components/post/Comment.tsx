@@ -1,18 +1,14 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { Session } from 'next-auth';
 import { FC, useMemo, useState } from 'react';
 import { FaReply } from 'react-icons/fa';
 
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import usePostContext from '@/hooks/usePostContext';
+import { useSession } from 'next-auth/react';
 import Avatar from '../Avatar';
 import Button from '../ui/Button';
 import InputComment from './InputComment';
 import ReplyComments from './ReplyComments';
-import usePostContext from '@/hooks/usePostContext';
-import { useSession } from 'next-auth/react';
 
 interface Props {
     data: Comment;
@@ -20,11 +16,9 @@ interface Props {
 
 const Comment: FC<Props> = ({ data: cmt }) => {
     const { data: session } = useSession();
-    const router = useRouter();
     const { sendComment, deleteComment } = usePostContext();
 
     const [isSending, setIsSending] = useState<boolean>(false);
-    const { setComments, setCountComments } = usePostContext();
 
     // Người gửi
     const isSender = useMemo(() => {
@@ -51,11 +45,15 @@ const Comment: FC<Props> = ({ data: cmt }) => {
         <>
             <div className="mb-4">
                 <div className="flex justify-between">
-                    <Avatar
-                        userUrl={cmt.userInfo.id}
-                        imgSrc={cmt.userInfo.image}
-                        alt={cmt.userInfo.name}
-                    />
+                    {cmt.delete ? (
+                        <Avatar imgSrc="/assets/img/user-profile.jpg" />
+                    ) : (
+                        <Avatar
+                            userUrl={cmt.userInfo.id}
+                            imgSrc={cmt.userInfo.image}
+                            alt={cmt.userInfo.name}
+                        />
+                    )}
 
                     <div className="flex flex-col flex-1 max-w-[calc(100%-32px)] ml-2">
                         {/* Content */}
@@ -63,43 +61,47 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                             <div
                                 className="bg-light-100 w-fit px-4 py-1 text-sm rounded-md break-all dark:bg-dark-500 dark:text-primary"
                                 dangerouslySetInnerHTML={{
-                                    __html: cmt.content,
+                                    __html: cmt.delete
+                                        ? "<h5 style='color:gray'>Bình luận đã bị xóa</h5>"
+                                        : cmt.content,
                                 }}
                             ></div>
                         </div>
 
-                        <div className="mt-2 flex items-center h-4">
-                            {/* Trả lời */}
-                            <Button
-                                className="mr-2"
-                                variant={'text'}
-                                size={'tiny'}
-                                onClick={() =>
-                                    setShowInputReply((prev) => !prev)
-                                }
-                            >
-                                Trả lời
-                            </Button>
-
-                            {/* Xóa bình luận */}
-                            {isSender && (
+                        {!cmt.delete && (
+                            <div className="mt-2 flex items-center h-4">
+                                {/* Trả lời */}
                                 <Button
                                     className="mr-2"
                                     variant={'text'}
                                     size={'tiny'}
-                                    onClick={() => {
-                                        deleteComment(cmt._id);
-                                    }}
+                                    onClick={() =>
+                                        setShowInputReply((prev) => !prev)
+                                    }
                                 >
-                                    Xóa bình luận
+                                    Trả lời
                                 </Button>
-                            )}
 
-                            <TimeAgoConverted
-                                className={'text-[10px]'}
-                                time={cmt.createdAt}
-                            />
-                        </div>
+                                {/* Xóa bình luận */}
+                                {isSender && (
+                                    <Button
+                                        className="mr-2"
+                                        variant={'text'}
+                                        size={'tiny'}
+                                        onClick={() => {
+                                            deleteComment(cmt._id);
+                                        }}
+                                    >
+                                        Xóa bình luận
+                                    </Button>
+                                )}
+
+                                <TimeAgoConverted
+                                    className={'text-[10px]'}
+                                    time={cmt.createdAt}
+                                />
+                            </div>
+                        )}
 
                         {/* <Input Comment Reply /> */}
                         {session?.user && showInputReply && (

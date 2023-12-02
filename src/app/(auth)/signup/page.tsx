@@ -70,78 +70,90 @@ const Page: FC = () => {
                     </h2>
 
                     <div className="flex flex-col w-full">
-                        <div className="flex flex-col">
-                            <label htmlFor="username">Email của bạn</label>
-                            <input
-                                className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="text"
-                                id="email"
-                                placeholder="Email của bạn"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+                        <form action={signUp}>
+                            <div className="flex flex-col">
+                                <label htmlFor="username">Email của bạn</label>
+                                <input
+                                    className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="text"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Email của bạn"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-col">
-                            <label htmlFor="username">Tên đăng nhập</label>
-                            <input
-                                className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="text"
-                                id="username"
-                                placeholder="Tên đăng nhập của bạn"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="username">Tên đăng nhập</label>
+                                <input
+                                    className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    placeholder="Tên đăng nhập của bạn"
+                                    value={username}
+                                    onChange={(e) =>
+                                        setUsername(e.target.value)
+                                    }
+                                />
+                            </div>
 
-                        <div className="flex flex-col mt-2">
-                            <label htmlFor="name">Họ và tên của bạn</label>
-                            <input
-                                className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="text"
-                                id="name"
-                                placeholder="Họ và tên của bạn"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-col mt-2">
+                                <label htmlFor="name">Họ và tên của bạn</label>
+                                <input
+                                    className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="text"
+                                    id="name"
+                                    name="fullname"
+                                    placeholder="Họ và tên của bạn"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-col mt-2">
-                            <label htmlFor="password" className=" mt-2">
-                                Mật khẩu
-                            </label>
-                            <input
-                                className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="password"
-                                id="password"
-                                placeholder="Nhập mật khẩu"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-col mt-2">
+                                <label htmlFor="password" className=" mt-2">
+                                    Mật khẩu
+                                </label>
+                                <input
+                                    className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Nhập mật khẩu"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                />
+                            </div>
 
-                        <div className="flex flex-col mt-2">
-                            <label htmlFor="repassword" className=" mt-2">
-                                Nhập lại mật khẩu
-                            </label>
-                            <input
-                                className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                type="password"
-                                id="repassword"
-                                placeholder="Nhập lại mật khẩu"
-                                value={repassword}
-                                onChange={(e) => setRepassword(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-col mt-2">
+                                <label htmlFor="repassword" className=" mt-2">
+                                    Nhập lại mật khẩu
+                                </label>
+                                <input
+                                    className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                    type="password"
+                                    id="repassword"
+                                    name="repassword"
+                                    placeholder="Nhập lại mật khẩu"
+                                    value={repassword}
+                                    onChange={(e) =>
+                                        setRepassword(e.target.value)
+                                    }
+                                />
+                            </div>
 
-                        <Button
-                            className="mt-6"
-                            variant={'event'}
-                            disabled={isLoading}
-                            onClick={signUp}
-                        >
-                            <h5 className="text-lg">Đăng ký</h5>
-                        </Button>
+                            <Button
+                                className="mt-6"
+                                variant={'event'}
+                                disabled={isLoading}
+                            >
+                                <h5 className="text-lg">Đăng ký</h5>
+                            </Button>
+                        </form>
 
                         <div className="flex justify-center items-center mt-4">
                             <h5>Bạn đã có tài khoản?</h5>

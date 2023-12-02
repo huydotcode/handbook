@@ -1,10 +1,6 @@
 import { NewsFeedPost } from '@/components';
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
-import {
-    fetchProfileByUserId,
-    fetchSomeFriendUser,
-    fetchUserData,
-} from '@/lib/actions/user.action';
+import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import mongoose from 'mongoose';
 
 import Image from 'next/image';

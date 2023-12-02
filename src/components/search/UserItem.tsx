@@ -7,13 +7,13 @@ interface Props {
     data: {
         id: string;
         name: string;
-        avatar: string;
+        image: string;
     };
     handleHideModal: () => void;
 }
 
 const UserItem: FC<Props> = ({ data, handleHideModal }) => {
-    const { avatar, id, name } = data;
+    const { image, id, name } = data;
 
     // const addFriend = async (id: string) => {
     //   try {
@@ -57,7 +57,7 @@ const UserItem: FC<Props> = ({ data, handleHideModal }) => {
             >
                 <Image
                     className="object-cover rounded-full overflow-hidden"
-                    src={avatar || ''}
+                    src={image || ''}
                     alt={name || ''}
                     width={32}
                     height={32}
