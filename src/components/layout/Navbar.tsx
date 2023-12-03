@@ -12,8 +12,6 @@ const Navbar = () => {
             <div className="relative flex items-center justify-between h-full w-full px-5 md:px-1">
                 {/* Left */}
                 <div className="flex items-center min-w-min">
-                    {/* <BackButton /> */}
-
                     <Link className="flex items-center" href={'/'}>
                         <BsFacebook className="text-4xl text-blue-500" />
                     </Link>

@@ -1,12 +1,12 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { FC, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { useSession } from 'next-auth/react';
-import ModalCreatePost from './ModalCreatePost';
+import { createPost } from '@/lib/actions/post.action';
+import { ModalCreatePost } from '..';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
@@ -24,8 +24,6 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const router = useRouter();
-
     const [photos, setPhotos] = useState<any[]>([]);
     const { control, register, handleSubmit, formState, reset } =
         useForm<IFormData>({
@@ -35,6 +33,7 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
         });
 
     const onSubmit: SubmitHandler<IFormData> = async (data) => {
+        if (formState.isSubmitting) return;
         const { content, option } = data;
 
         setShow(false);
@@ -48,12 +47,6 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
                 });
                 imagesUpload = await data.json();
             }
-            const form = {
-                content: content,
-                option: option,
-                images: imagesUpload,
-                userId: session?.user.id,
-            };
 
             reset({
                 content: '',
@@ -61,18 +54,17 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
             setPhotos([]);
 
-            const response = await fetch(`/api/posts/new`, {
-                method: 'POST',
-                body: JSON.stringify(form),
+            const newPost = await createPost({
+                content: content,
+                option: option,
+                images: imagesUpload,
             });
 
-            const { post } = await response.json();
-
-            setPosts((prev) => [post, ...prev]);
+            if (newPost) {
+                setPosts((prev) => [newPost, ...prev]);
+            }
         } catch (error: any) {
             throw new Error(error.message);
-        } finally {
-            router.refresh();
         }
     };
     const submit = handleSubmit(onSubmit);

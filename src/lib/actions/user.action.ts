@@ -55,7 +55,7 @@ export async function fetchUsers({
     sortBy?: SortOrder;
 }) {
     try {
-        connectToDB();
+        await connectToDB();
 
         // Calculate the number of users to skip based on the page number and page size.
         const skipAmount = (pageNumber - 1) * pageSize;

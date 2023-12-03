@@ -38,7 +38,6 @@ const ActionPost: React.FC<Props> = ({ post }) => {
         try {
             await deletePost({
                 postId: post._id,
-                path: path,
             });
             setPosts((prev) => prev.filter((item) => item._id != post._id));
         } catch (error: any) {

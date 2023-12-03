@@ -3,12 +3,45 @@ import Comment from '@/models/Comment';
 import Post from '@/models/Post';
 import User from '@/models/User';
 import connectToDB from '@/services/mongoose';
-import { revalidatePath } from 'next/cache';
+import { Session } from 'next-auth';
+import { getAuthSession } from '../auth';
+
+export const createPost = async ({
+    content,
+    images,
+    option,
+}: {
+    content: string;
+    images: any[];
+    option: string;
+}) => {
+    const session = (await getAuthSession()) as Session;
+    if (!session) return;
+
+    try {
+        await connectToDB();
+
+        const user = await User.findById(session.user.id).populate(
+            'name image'
+        );
+
+        const newPost = await new Post({
+            option: option,
+            content: content,
+            images: images,
+            creator: user,
+        });
+
+        await newPost.save();
+        return JSON.parse(JSON.stringify(newPost));
+    } catch (error) {
+        throw new Error(`Error: ${error}`);
+    }
+};
 
 export const fetchNewFeedPost = async ({
     page = 1,
     pageSize = 5,
-    pathname = '',
     userId = '',
     username = '',
 }: {
@@ -16,7 +49,6 @@ export const fetchNewFeedPost = async ({
     username: string | undefined;
     page: number;
     pageSize: number;
-    pathname: string;
 }) => {
     let query = {} as any;
 
@@ -43,10 +75,6 @@ export const fetchNewFeedPost = async ({
 
         await User.populate(posts, { path: 'creator', select: 'name image' });
 
-        if (pathname !== '') {
-            revalidatePath(pathname);
-        }
-
         return JSON.parse(JSON.stringify(posts));
     } catch (error: any) {
         throw new Error(error);
@@ -56,47 +84,78 @@ export const fetchNewFeedPost = async ({
 export const fetchCommentPostId = async ({
     page,
     pageSize,
-    path,
     postId,
 }: {
     postId: string;
     page: number;
     pageSize: number;
-    path: string;
 }) => {
     try {
+        await connectToDB();
         const comments = await Comment.find({
             postId: postId,
             parentCommentId: null,
         })
-            .skip((+page - 1) * +pageSize)
-            .limit(+pageSize)
+            .limit(+page * +pageSize)
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
         console.log(error);
         throw new Error(error);
-    } finally {
-        if (!!path) {
-            revalidatePath(path);
-        }
     }
 };
 
-export const deletePost = async ({
+export const sendComment = async ({
+    content,
+    replyTo,
+    userId,
     postId,
-    path,
 }: {
+    userId: string;
+    content: string;
+    replyTo: string | null;
     postId: string;
-    path: string;
 }) => {
+    try {
+        await connectToDB();
+
+        const user = (await User.findById(userId)) as User;
+        if (!user) {
+            return new Response(`User not found`, { status: 500 });
+        }
+
+        const comment = {
+            content: content,
+            userInfo: {
+                id: user.id,
+                image: user.image,
+                name: user.name,
+            },
+
+            parentCommentId: replyTo || null,
+            postId: postId,
+            delete: false,
+        };
+        const newComment = new Comment(comment);
+        if (replyTo) {
+            const parentComment = await Comment.findById(replyTo);
+            parentComment.replies.push(newComment._id);
+            await parentComment.save();
+        }
+        await newComment.save();
+
+        return JSON.parse(JSON.stringify(newComment));
+    } catch (error) {
+        throw new Error(`Error with send comment: ${error}`);
+    }
+};
+
+export const deletePost = async ({ postId }: { postId: string }) => {
     try {
         await connectToDB();
         await Post.findByIdAndDelete(postId);
         await Comment.deleteMany({ postId: postId });
-
-        revalidatePath(path);
     } catch (error: any) {
         console.log('Error: ', error);
         throw new Error(error);

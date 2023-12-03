@@ -14,17 +14,30 @@ export const POST = async (req: Request, res: Response) => {
     try {
         await connectToDB();
 
-        const userExists = await User.findOne({ email: email });
+        const userExists = await User.findOne({
+            $or: [{ email: email }, { username: username }],
+        });
 
+        // Kiểm tra email hoặc tên đăng nhập đã tồn tại chưa!
         if (userExists) {
             return new Response(
                 JSON.stringify({
-                    msg: 'Email đã tồn tại',
+                    msg: 'Email hoặc tên đăng nhập đã tồn tại! Vui lòng thử lại',
+                    success: false,
                 })
             );
         }
 
-        // hash password
+        // Kiểm tra mật khẩu nhập lại có khớp không!
+        if (password !== repassword) {
+            return new Response(
+                JSON.stringify({
+                    msg: 'Mật khẩu không khớp',
+                    success: false,
+                })
+            );
+        }
+
         const salt = await bcrypt.genSalt(saltRounds);
         const hashPassword = await bcrypt.hash(password, salt);
 
@@ -47,12 +60,15 @@ export const POST = async (req: Request, res: Response) => {
         await newProfile.save();
         await newUser.save();
 
-        return new Response(JSON.stringify({ msg: 'Đăng ký thành công' }), {
-            status: 200,
-        });
+        return new Response(
+            JSON.stringify({ msg: 'Đăng ký thành công', success: true }),
+            {
+                status: 200,
+            }
+        );
     } catch (error) {
         return new Response(
-            JSON.stringify({ msg: 'Đăng ký thất bại', error }),
+            JSON.stringify({ msg: 'Đăng ký thất bại', success: false, error }),
             {
                 status: 500,
             }

@@ -1,11 +1,9 @@
 'use client';
 import { Button } from '@/components';
 import { signIn, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FC, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'next/navigation';
 
 const Page: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);

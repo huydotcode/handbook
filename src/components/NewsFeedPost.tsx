@@ -1,7 +1,6 @@
 'use client';
 import { fetchNewFeedPost } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoReloadOutline } from 'react-icons/io5';
@@ -22,7 +21,6 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const [page, setPage] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
     const pageSize = 3;
-    const path = usePathname();
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
@@ -31,7 +29,6 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
             const posts = await fetchNewFeedPost({
                 page: page,
                 pageSize: pageSize,
-                pathname: path,
                 userId: userId,
                 username: username,
             });
@@ -43,7 +40,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
         } finally {
             setLoading(false);
         }
-    }, [page, pageSize, userId, username, path]);
+    }, [page, pageSize, userId, username]);
 
     useEffect(() => {
         fetchPosts();

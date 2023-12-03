@@ -4,18 +4,27 @@ import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+
+type FormData = {
+    email: string;
+    username: string;
+    name: string;
+    password: string;
+    repassword: string;
+};
 
 const Page: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
     const { data: session } = useSession();
 
-    const [email, setEmail] = useState<string>('');
-    const [username, setUsername] = useState<string>('');
-    const [name, setName] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [repassword, setRepassword] = useState<string>('');
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<FormData>();
 
     useEffect(() => {
         if (session) {
@@ -24,6 +33,8 @@ const Page: FC = () => {
     }, [session, router]);
 
     const loginWithGoogle = async () => {
+        if (isSubmitting) return;
+
         try {
             setIsLoading(true);
             await signIn('google');
@@ -34,31 +45,39 @@ const Page: FC = () => {
         }
     };
 
-    const signUp = async () => {
-        const form = {
-            email,
-            name,
-            username,
-            password,
-            repassword,
-        };
+    const signUp: SubmitHandler<FormData> = async (data) => {
+        if (isSubmitting) return;
 
-        fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(form),
-        })
-            .then(async (res) => {
-                return res.json();
-            })
-            .then((data) => {
-                toast.success('Đăng ký thành công');
-            })
-            .catch((err) => {
-                toast.error('Đăng ký thất bại');
+        if (data.password !== data.repassword) {
+            toast.error('Mật khẩu không khớp', {
+                id: 'password-not-match',
             });
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+            if (result.success) {
+                toast.success('Đăng ký thành công', {
+                    id: 'signup-success',
+                });
+                router.push('/login');
+            } else {
+                toast.error(result.msg, {
+                    id: 'signup-fail',
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -70,18 +89,27 @@ const Page: FC = () => {
                     </h2>
 
                     <div className="flex flex-col w-full">
-                        <form action={signUp}>
+                        <form onSubmit={handleSubmit(signUp)}>
                             <div className="flex flex-col">
                                 <label htmlFor="username">Email của bạn</label>
                                 <input
                                     className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="text"
                                     id="email"
-                                    name="email"
                                     placeholder="Email của bạn"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    {...register('email', {
+                                        required: true,
+                                        pattern: {
+                                            value: /\S+@\S+\.\S+/,
+                                            message: 'Email không hợp lệ',
+                                        },
+                                    })}
                                 />
+                                {errors.email && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                        {errors.email.message}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex flex-col">
@@ -90,13 +118,26 @@ const Page: FC = () => {
                                     className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="text"
                                     id="username"
-                                    name="username"
                                     placeholder="Tên đăng nhập của bạn"
-                                    value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
+                                    {...register('username', {
+                                        required: true,
+                                        minLength: {
+                                            value: 3,
+                                            message:
+                                                'Tên đăng nhập phải có ít nhất 3 kí tự',
+                                        },
+                                        maxLength: {
+                                            value: 20,
+                                            message:
+                                                'Tên đăng nhập không được quá 20 kí tự',
+                                        },
+                                    })}
                                 />
+                                {errors.username && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                        {errors.username.message}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex flex-col mt-2">
@@ -105,11 +146,26 @@ const Page: FC = () => {
                                     className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="text"
                                     id="name"
-                                    name="fullname"
                                     placeholder="Họ và tên của bạn"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    {...register('name', {
+                                        required: true,
+                                        minLength: {
+                                            value: 3,
+                                            message:
+                                                'Họ và tên phải có ít nhất 3 kí tự',
+                                        },
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                'Họ và tên không được quá 50 kí tự',
+                                        },
+                                    })}
                                 />
+                                {errors.name && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                        {errors.name.message}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex flex-col mt-2">
@@ -120,13 +176,26 @@ const Page: FC = () => {
                                     className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="password"
                                     id="password"
-                                    name="password"
                                     placeholder="Nhập mật khẩu"
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    {...register('password', {
+                                        required: true,
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                'Mật khẩu phải có ít nhất 6 kí tự',
+                                        },
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                'Mật khẩu không được quá 50 kí tự',
+                                        },
+                                    })}
                                 />
+                                {errors.password && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                        {errors.password.message}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex flex-col mt-2">
@@ -137,21 +206,39 @@ const Page: FC = () => {
                                     className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="password"
                                     id="repassword"
-                                    name="repassword"
                                     placeholder="Nhập lại mật khẩu"
-                                    value={repassword}
-                                    onChange={(e) =>
-                                        setRepassword(e.target.value)
-                                    }
+                                    {...register('repassword', {
+                                        required: true,
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                'Mật khẩu phải có ít nhất 6 kí tự',
+                                        },
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                'Mật khẩu không được quá 50 kí tự',
+                                        },
+                                    })}
                                 />
+                                {errors.repassword && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                        {errors.repassword.message}
+                                    </span>
+                                )}
                             </div>
 
                             <Button
-                                className="mt-6"
+                                className="mt-6 w-full bg-primary"
                                 variant={'event'}
                                 disabled={isLoading}
+                                type="submit"
                             >
-                                <h5 className="text-lg">Đăng ký</h5>
+                                <h5 className="text-lg">
+                                    {isSubmitting
+                                        ? 'Đang đăng ký...'
+                                        : 'Đăng ký'}
+                                </h5>
                             </Button>
                         </form>
 

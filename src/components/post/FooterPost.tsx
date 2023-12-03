@@ -4,23 +4,32 @@ import { useEffect, useMemo, useState } from 'react';
 import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
 import Comment from './Comment';
-import InputComment from './InputComment';
 import ReactionPost from './ReactionPost';
 
 import usePostContext from '@/hooks/usePostContext';
+import { fetchCommentPostId, sendComment } from '@/lib/actions/post.action';
+import { TextareaAutosize } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { BsFillSendFill } from 'react-icons/bs';
 import Button from '../ui/Button';
-import { fetchCommentPostId } from '@/lib/actions/post.action';
-import { usePathname } from 'next/navigation';
+
+type FormData = {
+    text: string;
+};
 
 const FooterPost = () => {
     const { data: session } = useSession();
-    const path = usePathname();
-    const { comments, setComments, post, countComments, sendComment } =
-        usePostContext();
+    const { comments, setComments, post, countComments } = usePostContext();
 
-    const [valueInput, setValueInput] = useState<string>('');
-    const [isSending, setIsSending] = useState<boolean>(false);
+    const {
+        handleSubmit,
+        register,
+        reset,
+        formState: { isSubmitting },
+    } = useForm<FormData>();
+
     const [page, setPage] = useState<number>(1);
     const pageSize = 5;
 
@@ -30,33 +39,38 @@ const FooterPost = () => {
         );
     }, [comments]);
 
+    const onSubmitComment: SubmitHandler<FormData> = async (data) => {
+        if (!session?.user.id || isSubmitting) return;
+
+        try {
+            const newComment = await sendComment({
+                content: data.text,
+                replyTo: null,
+                postId: post._id,
+                userId: session.user.id,
+            });
+
+            if (newComment) {
+                setComments((prev) => [newComment, ...prev]);
+            }
+        } catch (error: any) {
+            throw new Error(error);
+        } finally {
+            reset();
+        }
+    };
+
     useEffect(() => {
         (async () => {
             const comments = await fetchCommentPostId({
                 page: page,
                 pageSize: pageSize,
-                path: path,
                 postId: post._id,
             });
 
-            setComments((prev) => [...prev, ...comments]);
+            setComments(comments);
         })();
-    }, [page, pageSize, post._id, setComments, path]);
-
-    const handleSendComment = async () => {
-        if (isSending) return;
-
-        const createdComment = await sendComment({
-            valueInput,
-            replyTo: null,
-            setIsSending,
-            setValueInput,
-        });
-
-        if (createdComment) {
-            setComments((prev) => [createdComment, ...prev]);
-        }
-    };
+    }, [page, pageSize, post._id, setComments]);
 
     return (
         <>
@@ -73,12 +87,38 @@ const FooterPost = () => {
                         <Avatar session={session} />
 
                         <div className="flex-1 ml-2">
-                            <InputComment
+                            {/* <InputComment
                                 isSending={isSending}
                                 valueInput={valueInput}
                                 sendComment={handleSendComment}
                                 setValueInput={setValueInput}
-                            />
+                            /> */}
+                            <form
+                                className="flex"
+                                onSubmit={handleSubmit(onSubmitComment)}
+                            >
+                                <TextareaAutosize
+                                    className="h-10 bg-secondary flex-1 p-2 rounded-l-xl cursor-text text-sm text-start pt-[9px] overflow-y-scroll w-[calc(100%-40px)] resize-none outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
+                                    placeholder="Viết bình luận..."
+                                    spellCheck={false}
+                                    {...register('text', {
+                                        required: true,
+                                    })}
+                                ></TextareaAutosize>
+
+                                <Button
+                                    className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                    variant={'custom'}
+                                    size={'none'}
+                                    type="submit"
+                                >
+                                    {isSubmitting ? (
+                                        <AiOutlineLoading className="animate-spin" />
+                                    ) : (
+                                        <BsFillSendFill />
+                                    )}
+                                </Button>
+                            </form>
                         </div>
                     </div>
                 ) : (
