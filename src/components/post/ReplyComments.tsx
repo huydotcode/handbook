@@ -2,6 +2,7 @@
 import usePostContext from '@/hooks/usePostContext';
 import { FC, useEffect, useMemo } from 'react';
 import Comment from './Comment';
+import { fetchReplyComments } from '@/lib/actions/post.action';
 
 interface CommentPostProps {
     commentParent: Comment;
@@ -16,13 +17,15 @@ const ReplyComments: FC<CommentPostProps> = ({ commentParent }) => {
     );
 
     useEffect(() => {
-        fetch(
-            `/api/posts/${commentParent.postId}/comments/${commentParent._id}/reply`
-        )
-            .then((res) => res.json())
-            .then((data: Comment[]) =>
-                setComments((prev: Comment[]) => [...prev, ...data])
-            );
+        async () => {
+            const replyComments = await fetchReplyComments({
+                commentId: commentParent._id,
+            });
+
+            if (replyComments) {
+                setComments((prev) => [...prev, ...replyComments]);
+            }
+        };
     }, [commentParent._id, commentParent.postId, setComments]);
 
     return (

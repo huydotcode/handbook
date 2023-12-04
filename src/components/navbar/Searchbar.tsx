@@ -128,7 +128,7 @@ const Searchbar = () => {
                             debounceValue.trim().length > 0 && (
                                 <>
                                     <div className="mt-4 w-full overflow-scroll dark:no-scrollbar">
-                                        {searchResult.map((user: any) => {
+                                        {searchResult.map((user: User) => {
                                             return (
                                                 <UserItem
                                                     key={user.id}

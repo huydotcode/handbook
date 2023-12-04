@@ -9,6 +9,7 @@ import CreatePost from './post/CreatePost';
 import Post from './post/Post';
 import SkeletonPost from './post/SkeletonPost';
 import Button from './ui/Button';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     userId?: string;
@@ -20,6 +21,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [page, setPage] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
     const pageSize = 3;
 
     const fetchPosts = useCallback(async () => {
@@ -36,7 +38,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
             setPosts((prev) => [...prev, ...posts]);
         } catch (error: any) {
             console.error('Error', error);
-            toast.error('Đã có lỗi xảy ra!');
+            toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);
         }
@@ -77,7 +79,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                     className="ml-2 hover:animate-spin"
                     variant={'text'}
                     size={'medium'}
-                    href="/"
+                    onClick={() => router.refresh()}
                 >
                     <IoReloadOutline />
                 </Button>
@@ -92,7 +94,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
             <InfinityScrollComponent
                 dataLength={posts.length}
                 hasMore={posts.length / pageSize === page}
-                className="min-h-[150vh] no-scrollbar"
+                className="min-h-[100vh] no-scrollbar"
                 loader={<SkeletonPost />}
                 next={() => setPage((prev) => prev + 1)}
                 scrollThreshold={0}

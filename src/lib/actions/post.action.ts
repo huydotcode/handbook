@@ -53,9 +53,13 @@ export const fetchNewFeedPost = async ({
     let query = {} as any;
 
     if (userId || username) {
-        let user = await User.findOne({
-            $or: [{ _id: userId }, { username }],
-        });
+        let user;
+
+        if (userId) {
+            user = await User.findOne({ _id: userId });
+        } else if (username) {
+            user = await User.findOne({ username });
+        }
 
         query = user ? { creator: user._id } : {};
     }
@@ -106,6 +110,26 @@ export const fetchCommentPostId = async ({
     }
 };
 
+// Fetch reply comments
+export const fetchReplyComments = async ({
+    commentId,
+}: {
+    commentId: string;
+}) => {
+    if (!commentId) return;
+
+    try {
+        await connectToDB();
+        const comments = await Comment.find({ parentCommentId: commentId });
+
+        if (comments.length === 0) return JSON.parse(JSON.stringify([]));
+
+        return JSON.parse(JSON.stringify(comments));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const sendComment = async ({
     content,
     replyTo,
@@ -148,6 +172,39 @@ export const sendComment = async ({
         return JSON.parse(JSON.stringify(newComment));
     } catch (error) {
         throw new Error(`Error with send comment: ${error}`);
+    }
+};
+
+export const sendReaction = async ({
+    userId,
+    postId,
+}: {
+    userId: string;
+    postId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const post = await Post.findById(postId);
+
+        if (!post || !userId) {
+            throw new Error(`Post or user not found`);
+        }
+
+        // Check if user already reacted
+        const isUserReacted = post.loves.some((item: any) =>
+            item.equals(userId)
+        );
+
+        if (isUserReacted) {
+            post.loves = post.loves.filter((item: any) => !item.equals(userId));
+        } else {
+            post.loves.push(userId);
+        }
+
+        await post.save();
+    } catch (error) {
+        throw new Error(`Error with send reactions: ${error}`);
     }
 };
 

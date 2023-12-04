@@ -4,55 +4,18 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 interface Props {
-    data: {
-        id: string;
-        name: string;
-        image: string;
-    };
+    data: User;
     handleHideModal: () => void;
 }
 
 const UserItem: FC<Props> = ({ data, handleHideModal }) => {
-    const { image, id, name } = data;
-
-    // const addFriend = async (id: string) => {
-    //   try {
-    //     const response = await fetch(
-    //       `/api/users/${session?.user.id}/friends/add/${user?._id}`,
-    //       {
-    //         method: "POST",
-    //         body: JSON.stringify({
-    //           type: "friend",
-    //           receive: id,
-    //           send: user?._id,
-    //           message: "đã gửi cho bạn lời mời kết bạn",
-    //         }),
-    //       }
-    //     );
-    //     if (response.ok) {
-    //     }
-    //   } catch (error: any) {
-    //     throw new Error(error.message);
-    //   }
-    // };
-
-    // useEffect(() => {
-    //   if (
-    //     user?.friends.includes(session?.user.id) ||
-    //     user?.following.includes(session?.user.id) ||
-    //     userId === session?.user.id
-    //   ) {
-    //     setIsConnect(true);
-    //   } else {
-    //     setIsConnect(false);
-    //   }
-    // }, [user, userId, session?.user.id]);
+    const { image, _id, name } = data;
 
     return (
         <>
             <Link
                 className="relative flex items-center h-[50px] px-4 rounded-xl shadow-md mb-2 dark:bg-dark-100 dark:hover:bg-dark-200"
-                href={`/profile/${id}`}
+                href={`/profile/${_id}`}
                 onClick={handleHideModal}
             >
                 <Image
@@ -65,8 +28,7 @@ const UserItem: FC<Props> = ({ data, handleHideModal }) => {
 
                 <Link
                     className="text-base text-dark-100 hover:underline ml-2 dark:text-primary"
-                    href={`/profile/${id}`}
-                    onClick={handleHideModal}
+                    href={`/profile/${_id}`}
                 >
                     {name}
                 </Link>

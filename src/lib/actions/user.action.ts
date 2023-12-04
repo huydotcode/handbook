@@ -36,8 +36,8 @@ export const fetchProfileByUserId = async (userId: string) => {
         if (!user) throw new Error('User not found');
 
         return { user, profile };
-    } catch (error: any) {
-        throw new Error(error.message);
+    } catch (error) {
+        console.log("Error fetching user's profile:", error);
     }
 };
 

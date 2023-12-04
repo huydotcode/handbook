@@ -1,4 +1,5 @@
 'use client';
+import { sendReaction } from '@/lib/actions/post.action';
 import { useMutation } from '@tanstack/react-query';
 import { Session } from 'next-auth';
 import React from 'react';
@@ -36,15 +37,13 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                     });
                 }
 
-                await fetch(`/api/posts/${post._id}/reaction`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        userId: session?.user.id,
-                        undo: !!isReacted,
-                    }),
+                await sendReaction({
+                    postId: post._id,
+                    userId: session?.user.id,
                 });
-            } catch (error) {
+            } catch (error: any) {
                 console.log('Error: ', error);
+                throw new Error(error);
             }
         },
         onError: () => {

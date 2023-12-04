@@ -20,8 +20,10 @@ interface Friend {
 }
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
-    const { user, profile } = await fetchProfileByUserId(params.userId);
-    // const friends = (await fetchSomeFriendUser(params.userId)) as Friend[];
+    const { user, profile } = (await fetchProfileByUserId(params.userId)) as {
+        user: User;
+        profile: IProfile;
+    };
     const friends = [] as Friend[];
 
     const props = mongoose.isValidObjectId(params.userId)

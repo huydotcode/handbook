@@ -92,17 +92,17 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                                 <Button
                                     variant={'warning'}
                                     size={'medium'}
-                                    className="mr-2 min-w-[80px]"
+                                    className="mr-2 min-w-[80px] text-white"
                                     disabled={isSubmitting}
+                                    type="submit"
                                 >
-                                    Có
+                                    {isSubmitting ? 'Đang xóa...' : 'Xóa'}
                                 </Button>
                             </form>
                             <Button
-                                className="w-[30%]"
+                                className="w-[30%] text-white"
                                 variant={'secondary'}
                                 size={'medium'}
-                                disabled={isSubmitting}
                                 onClick={() => {
                                     setShowModal(false);
                                     handleCloseDropdown();
