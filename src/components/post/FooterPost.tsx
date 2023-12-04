@@ -1,5 +1,11 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import {
+    KeyboardEventHandler,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
@@ -21,7 +27,8 @@ type FormData = {
 
 const FooterPost = () => {
     const { data: session } = useSession();
-    const { comments, setComments, post, countComments } = usePostContext();
+    const { comments, setComments, post, countComments, setCountComments } =
+        usePostContext();
 
     const {
         handleSubmit,
@@ -33,7 +40,9 @@ const FooterPost = () => {
     const [page, setPage] = useState<number>(1);
     const pageSize = 5;
 
-    const commentsToRender = useMemo(() => {
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const commentsParent = useMemo(() => {
         return comments.filter(
             (cmt) => cmt.delete == false && cmt.parentCommentId == null
         );
@@ -52,6 +61,7 @@ const FooterPost = () => {
 
             if (newComment) {
                 setComments((prev) => [newComment, ...prev]);
+                setCountComments((prev) => prev + 1);
             }
         } catch (error: any) {
             throw new Error(error);
@@ -72,6 +82,16 @@ const FooterPost = () => {
         })();
     }, [page, pageSize, post._id, setComments]);
 
+    // Khi nhấn enter => Submit form
+    const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            formRef.current?.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true })
+            );
+        }
+    };
+
     return (
         <>
             <div className="mt-2">
@@ -79,7 +99,7 @@ const FooterPost = () => {
                     <ReactionPost session={session} post={post} />
 
                     <FaRegComment className="ml-2 text-2xl" />
-                    <span className="ml-1 text-md">{comments.length}</span>
+                    <span className="ml-1 text-md">{countComments}</span>
                 </div>
 
                 {session?.user ? (
@@ -87,20 +107,16 @@ const FooterPost = () => {
                         <Avatar session={session} />
 
                         <div className="flex-1 ml-2">
-                            {/* <InputComment
-                                isSending={isSending}
-                                valueInput={valueInput}
-                                sendComment={handleSendComment}
-                                setValueInput={setValueInput}
-                            /> */}
                             <form
                                 className="flex"
                                 onSubmit={handleSubmit(onSubmitComment)}
+                                ref={formRef}
                             >
                                 <TextareaAutosize
                                     className="h-10 bg-secondary flex-1 p-2 rounded-l-xl cursor-text text-sm text-start pt-[9px] overflow-y-scroll w-[calc(100%-40px)] resize-none outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
                                     placeholder="Viết bình luận..."
                                     spellCheck={false}
+                                    onKeyDown={handleKeyDown}
                                     {...register('text', {
                                         required: true,
                                     })}
@@ -142,7 +158,7 @@ const FooterPost = () => {
 
                     <>
                         <div className="mt-3">
-                            {commentsToRender.map((cmt) => (
+                            {commentsParent.map((cmt) => (
                                 <Comment data={cmt} key={cmt._id} />
                             ))}
                         </div>

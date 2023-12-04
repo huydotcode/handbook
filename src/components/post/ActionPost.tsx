@@ -16,8 +16,6 @@ interface Props {
 }
 
 const ActionPost: React.FC<Props> = ({ post }) => {
-    const path = usePathname();
-
     const [showModal, setShowModal] = useState<boolean>(false);
     const { setPosts } = usePostContext();
     const [isSubmitting, setIsSubmitting] = useState<boolean>();

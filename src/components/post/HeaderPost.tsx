@@ -9,7 +9,7 @@ import { useSession } from 'next-auth/react';
 
 const HeaderPost = () => {
     const { data: session } = useSession();
-    const { post, user, setIsDelete } = usePostContext();
+    const { post, user } = usePostContext();
 
     return (
         <div className="flex items-center justify-between">
@@ -38,7 +38,7 @@ const HeaderPost = () => {
             </div>
 
             {session?.user && session.user.id === user._id && (
-                <ActionPost post={post} setIsDelete={setIsDelete} />
+                <ActionPost post={post} />
             )}
         </div>
     );
