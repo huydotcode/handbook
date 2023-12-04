@@ -16,7 +16,6 @@ interface Props {
 
 const Comment: FC<Props> = ({ data: cmt }) => {
     const { data: session } = useSession();
-    const { sendComment, deleteComment } = usePostContext();
 
     const [isSending, setIsSending] = useState<boolean>(false);
 
@@ -30,12 +29,12 @@ const Comment: FC<Props> = ({ data: cmt }) => {
     const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
 
     const handleSendCommentReply = async () => {
-        await sendComment({
-            valueInput,
-            replyTo: cmt._id,
-            setIsSending,
-            setValueInput,
-        });
+        // await sendComment({
+        //     valueInput,
+        //     replyTo: cmt._id,
+        //     setIsSending,
+        //     setValueInput,
+        // });
 
         setShowInputReply(false);
         setShowReplyComments(true);
@@ -89,7 +88,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         variant={'text'}
                                         size={'tiny'}
                                         onClick={() => {
-                                            deleteComment(cmt._id);
+                                            // deleteComment(cmt._id);
                                         }}
                                     >
                                         Xóa bình luận
