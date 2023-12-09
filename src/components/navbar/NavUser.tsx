@@ -1,10 +1,15 @@
-import { useSession } from 'next-auth/react';
 import { Tooltip } from '@mui/material';
-import { TbLogin } from 'react-icons/tb';
+import { useSession } from 'next-auth/react';
 import Button from '../ui/Button';
 import UserActionDropdown from './UserActionDropdown';
 const NavUser = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
+
+    if (status == 'loading') {
+        return (
+            <div className="w-10 h-10 rounded-full bg-light-500 animate-skeleton dark:bg-dark-500"></div>
+        );
+    }
 
     return (
         <>
@@ -14,12 +19,13 @@ const NavUser = () => {
                 <>
                     <Tooltip title="Đăng nhập">
                         <Button
+                            className="bg-primary rounded-xl text-white"
                             variant={'custom'}
-                            size={'large'}
+                            size={'small'}
                             href="/login"
                             style={{ marginRight: 4 }}
                         >
-                            <TbLogin />
+                            Đăng nhập
                         </Button>
                     </Tooltip>
                 </>
