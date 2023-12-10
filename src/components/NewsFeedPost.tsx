@@ -89,6 +89,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     return (
         <>
             {renderCreatePost()}
+            {renderLoadingSkeletons()}
             {renderEmptyMessage()}
 
             <InfinityScrollComponent
@@ -104,8 +105,6 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                     <Post key={post?._id} data={post} setPosts={setPosts} />
                 ))}
             </InfinityScrollComponent>
-
-            {renderLoadingSkeletons()}
         </>
     );
 };
