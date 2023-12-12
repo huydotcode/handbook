@@ -15,13 +15,13 @@ interface Comment {
         name: string;
         image: string;
     };
-    parentCommentId: string;
+    parent_id: string;
     replies: string[];
     reactions: ReactionType[];
     createdAt: Date;
     updatedAt: Date;
     show?: boolean;
-    delete: boolean;
+    isDeleted: boolean;
 }
 
 interface CloudinaryImage {

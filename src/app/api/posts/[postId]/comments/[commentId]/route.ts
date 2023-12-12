@@ -27,7 +27,7 @@ export const DELETE = async (req: Request, { params }: Params) => {
         const comment = await Comment.findOneAndUpdate(
             { _id: commentId },
             {
-                delete: true,
+                isDeleted: true,
             }
         );
         comment.save();

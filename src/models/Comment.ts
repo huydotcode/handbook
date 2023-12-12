@@ -7,11 +7,11 @@ interface IComment {
         image: string;
         name: string;
     };
-    parentCommentId: Types.ObjectId;
+    parent_id: Types.ObjectId;
     replies: Types.Array<Types.ObjectId>;
     reactions: Types.Array<{ userId: Types.ObjectId; reactionType: string }>;
     postId: Types.ObjectId;
-    delete: boolean;
+    isDeleted: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,7 +26,7 @@ export const CommentSchema = new Schema<IComment>({
         image: String,
         name: String,
     },
-    parentCommentId: {
+    parent_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
         default: null,
@@ -55,9 +55,9 @@ export const CommentSchema = new Schema<IComment>({
         ref: 'Post',
         required: true,
     },
-    delete: {
+    isDeleted: {
         type: Boolean,
-        default: false,
+        required: true,
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },

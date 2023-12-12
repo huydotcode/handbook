@@ -24,10 +24,9 @@ export const POST = async (req: Request, { params }: Params) => {
                 image: user.image,
                 name: user.name,
             },
-
-            parentCommentId: replyTo || null,
+            parent_id: replyTo || null,
             postId: postId,
-            delete: false,
+            isDeleted: false,
         };
         const newComment = new Comment(comment);
         if (replyTo) {

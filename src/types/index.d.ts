@@ -54,6 +54,7 @@ interface IPostContext {
     comments: Comment[];
     setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
     countComments: number;
-    setCountComments: React.Dispatch<React.SetStateAction<number>>;
     setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    countAllParentComments: number;
+    setCountAllParentComments: React.Dispatch<React.SetStateAction<number>>;
 }

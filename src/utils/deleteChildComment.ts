@@ -3,7 +3,7 @@ import Comment from '@/models/Comment';
 
 export default async function deleteChildComments(commentId: string) {
     // Tìm và lấy tất cả các comment con của comment hiện tại
-    const childComments = await Comment.find({ parentCommentId: commentId });
+    const childComments = await Comment.find({ parent_id: commentId });
 
     // Lặp qua từng comment con và xóa nó cùng với các comment con của nó (nếu có)
     if (childComments.length === 0) return;

@@ -11,7 +11,7 @@ export const GET = async (req: Request, { params }: Params) => {
     try {
         const comments = await Comment.find({
             postId: params.postId,
-            parentCommentId: null,
+            parent_id: null,
         })
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)

@@ -85,6 +85,20 @@ export const fetchNewFeedPost = async ({
     }
 };
 
+export const getCountCommentsParent = async ({
+    postId,
+}: {
+    postId: string;
+}) => {
+    await connectToDB();
+    const count = await Comment.find({
+        postId: postId,
+        parent_id: null,
+    }).countDocuments();
+
+    return count;
+};
+
 export const fetchCommentPostId = async ({
     page,
     pageSize,
@@ -98,10 +112,10 @@ export const fetchCommentPostId = async ({
         await connectToDB();
         const comments = await Comment.find({
             postId: postId,
-            parentCommentId: null,
+            parent_id: null,
         })
             .limit(+page * +pageSize)
-            .sort({ createdAt: -1 });
+            .sort({ replies: -1, isDeleted: 1, createdAt: -1 });
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
@@ -110,21 +124,52 @@ export const fetchCommentPostId = async ({
     }
 };
 
-// Fetch reply comments
 export const fetchReplyComments = async ({
     commentId,
+    commentsHasShow,
+    page,
 }: {
     commentId: string;
+    commentsHasShow: Comment[];
+    page: number;
+}) => {
+    const pageSize = 5;
+
+    if (!commentId) return;
+
+    try {
+        await connectToDB();
+        const comments = await Comment.find({
+            parent_id: commentId,
+            _id: { $nin: commentsHasShow },
+        })
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ replies: -1, isDeleted: 1, createdAt: -1 });
+
+        return JSON.parse(JSON.stringify(comments));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const fetchReplyCommentsCount = async ({
+    commentId,
+    commentsHasShow,
+}: {
+    commentId: string;
+    commentsHasShow: Comment[];
 }) => {
     if (!commentId) return;
 
     try {
         await connectToDB();
-        const comments = await Comment.find({ parentCommentId: commentId });
+        const count = await Comment.find({
+            parent_id: commentId,
+            _id: { $nin: commentsHasShow },
+        }).countDocuments();
 
-        if (comments.length === 0) return JSON.parse(JSON.stringify([]));
-
-        return JSON.parse(JSON.stringify(comments));
+        return count;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -156,10 +201,9 @@ export const sendComment = async ({
                 image: user.image,
                 name: user.name,
             },
-
-            parentCommentId: replyTo || null,
+            parent_id: replyTo || null,
             postId: postId,
-            delete: false,
+            isDeleted: false,
         };
         const newComment = new Comment(comment);
         if (replyTo) {
@@ -172,6 +216,30 @@ export const sendComment = async ({
         return JSON.parse(JSON.stringify(newComment));
     } catch (error) {
         throw new Error(`Error with send comment: ${error}`);
+    }
+};
+
+export const deleteComment = async ({ commentId }: { commentId: string }) => {
+    if (!commentId) return;
+
+    try {
+        await connectToDB();
+
+        // If comment has replies set isDeleted = true else if comment has not replies delete comment
+        const cmt = await Comment.findById(commentId);
+
+        if (!cmt) {
+            throw new Error(`Comment not found`);
+        }
+
+        if (cmt.replies.length > 0) {
+            cmt.isDeleted = true;
+            await cmt.save();
+        } else {
+            await Comment.findByIdAndDelete(commentId);
+        }
+    } catch (error) {
+        throw new Error(`Error with delete comment: ${error}`);
     }
 };
 

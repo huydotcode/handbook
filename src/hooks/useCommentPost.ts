@@ -57,7 +57,7 @@ export default function useCommentPost(props: Props) {
         try {
             setComments((prev) => {
                 const newComments = prev?.filter((cmt) => {
-                    return cmt._id !== id || cmt.parentCommentId !== id;
+                    return cmt._id !== id || cmt.parent_id !== id;
                 });
 
                 return newComments;

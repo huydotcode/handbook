@@ -1,11 +1,5 @@
 'use client';
-import {
-    KeyboardEventHandler,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
@@ -14,12 +8,13 @@ import ReactionPost from './ReactionPost';
 
 import usePostContext from '@/hooks/usePostContext';
 import { fetchCommentPostId, sendComment } from '@/lib/actions/post.action';
-import { TextareaAutosize } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { BsFillSendFill } from 'react-icons/bs';
+import { InputComment } from '.';
 import Button from '../ui/Button';
+import CommentSection from './CommentSection';
 
 type FormData = {
     text: string;
@@ -27,26 +22,16 @@ type FormData = {
 
 const FooterPost = () => {
     const { data: session } = useSession();
-    const { comments, setComments, post, countComments, setCountComments } =
+    const { setComments, post, countComments, setCountAllParentComments } =
         usePostContext();
 
     const {
         handleSubmit,
         register,
-        reset,
         formState: { isSubmitting },
     } = useForm<FormData>();
 
-    const [page, setPage] = useState<number>(1);
-    const pageSize = 5;
-
     const formRef = useRef<HTMLFormElement>(null);
-
-    const commentsParent = useMemo(() => {
-        return comments.filter(
-            (cmt) => cmt.delete == false && cmt.parentCommentId == null
-        );
-    }, [comments]);
 
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
@@ -61,36 +46,16 @@ const FooterPost = () => {
 
             if (newComment) {
                 setComments((prev) => [newComment, ...prev]);
-                setCountComments((prev) => prev + 1);
+                setCountAllParentComments((prev) => prev + 1);
             }
         } catch (error: any) {
             throw new Error(error);
         } finally {
-            reset();
+            formRef.current?.reset();
         }
     };
 
-    useEffect(() => {
-        (async () => {
-            const comments = await fetchCommentPostId({
-                page: page,
-                pageSize: pageSize,
-                postId: post._id,
-            });
-
-            setComments(comments);
-        })();
-    }, [page, pageSize, post._id, setComments]);
-
-    // Khi nhấn enter => Submit form
-    const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            formRef.current?.dispatchEvent(
-                new Event('submit', { cancelable: true, bubbles: true })
-            );
-        }
-    };
+    const submitSendComment = handleSubmit(onSubmitComment);
 
     return (
         <>
@@ -102,78 +67,53 @@ const FooterPost = () => {
                     <span className="ml-1 text-md">{countComments}</span>
                 </div>
 
-                {session?.user ? (
-                    <div className="flex items-center mt-2 mb-2">
-                        <Avatar session={session} />
+                {/* Input comment */}
+                <>
+                    {session?.user ? (
+                        <div className="flex items-center mt-2 mb-2">
+                            <Avatar session={session} />
 
-                        <div className="flex-1 ml-2">
-                            <form
-                                className="flex"
-                                onSubmit={handleSubmit(onSubmitComment)}
-                                ref={formRef}
-                            >
-                                <TextareaAutosize
-                                    className="h-10 bg-secondary flex-1 p-2 rounded-l-xl cursor-text text-sm text-start pt-[9px] overflow-y-scroll w-[calc(100%-40px)] resize-none outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
-                                    placeholder="Viết bình luận..."
-                                    spellCheck={false}
-                                    onKeyDown={handleKeyDown}
-                                    {...register('text', {
-                                        required: true,
-                                    })}
-                                ></TextareaAutosize>
-
-                                <Button
-                                    className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
-                                    variant={'custom'}
-                                    size={'none'}
-                                    type="submit"
+                            <div className="flex-1 ml-2">
+                                <form
+                                    className="flex w-full"
+                                    onSubmit={submitSendComment}
+                                    ref={formRef}
                                 >
-                                    {isSubmitting ? (
-                                        <AiOutlineLoading className="animate-spin" />
-                                    ) : (
-                                        <BsFillSendFill />
-                                    )}
-                                </Button>
-                            </form>
+                                    <InputComment
+                                        register={register}
+                                        placeholder="Viết bình luận..."
+                                        formRef={formRef}
+                                    />
+
+                                    <Button
+                                        className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                        variant={'custom'}
+                                        size={'none'}
+                                        type="submit"
+                                    >
+                                        {isSubmitting ? (
+                                            <AiOutlineLoading className="animate-spin" />
+                                        ) : (
+                                            <BsFillSendFill />
+                                        )}
+                                    </Button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <Button
-                        className="justify-start my-2 text-sm text-secondary"
-                        variant={'text'}
-                        size={'tiny'}
-                        href="/login"
-                    >
-                        Bạn cần đăng nhập để viết bình luận
-                    </Button>
-                )}
+                    ) : (
+                        <Button
+                            className="justify-start my-2 text-sm text-secondary"
+                            variant={'text'}
+                            size={'tiny'}
+                            href="/login"
+                        >
+                            Bạn cần đăng nhập để viết bình luận
+                        </Button>
+                    )}
+                </>
 
                 {/* Comments */}
-                <div>
-                    {countComments === 0 && (
-                        <div className="text-center text-xs text-secondary">
-                            Không có bình luận nào
-                        </div>
-                    )}
-
-                    <>
-                        <div className="mt-3">
-                            {commentsParent.map((cmt) => (
-                                <Comment data={cmt} key={cmt._id} />
-                            ))}
-                        </div>
-
-                        {countComments > comments.length && (
-                            <Button
-                                variant={'text'}
-                                size={'tiny'}
-                                onClick={() => setPage((prev) => prev + 1)}
-                            >
-                                Xem thêm bình luận
-                            </Button>
-                        )}
-                    </>
-                </div>
+                <CommentSection />
             </div>
         </>
     );

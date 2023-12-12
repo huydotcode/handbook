@@ -1,7 +1,6 @@
 'use client';
-import { useSession } from 'next-auth/react';
-import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import { getCountCommentsParent } from '@/lib/actions/post.action';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export const PostContext = React.createContext<IPostContext | null>(null);
 
@@ -13,10 +12,28 @@ interface Props {
 
 function PostProvider({ post, setPosts, children }: Props) {
     const [comments, setComments] = useState<Comment[]>([]);
-    const [countComments, setCountComments] = useState<number>(
-        post.commentCount
-    );
-    const user = post.creator as User;
+
+    const [countAllParentComments, setCountAllParentComments] =
+        useState<number>(
+            comments.filter(
+                (cmt) =>
+                    cmt.parent_id === null &&
+                    (!cmt.isDeleted || cmt.replies.length > 0)
+            ).length
+        );
+
+    const countComments = comments.length;
+
+    const user = useMemo(() => {
+        return post.creator;
+    }, [post.creator]) as User;
+
+    useEffect(() => {
+        (async () => {
+            const count = await getCountCommentsParent({ postId: post._id });
+            setCountAllParentComments(count);
+        })();
+    }, [post._id]);
 
     const values = {
         post,
@@ -24,8 +41,9 @@ function PostProvider({ post, setPosts, children }: Props) {
         comments,
         setComments,
         countComments,
-        setCountComments,
         setPosts,
+        countAllParentComments,
+        setCountAllParentComments,
     };
 
     return (

@@ -11,3 +11,4 @@ export { default as SkeletonPost } from './SkeletonPost';
 export { default as PostContent } from './PostContent';
 export { default as FooterPost } from './FooterPost';
 export { default as HeaderPost } from './HeaderPost';
+export { default as CommentSection } from './CommentSection';

@@ -10,7 +10,7 @@ export const GET = async (req: Request, { params }: Params) => {
 
     try {
         await connectToDB();
-        const comments = await Comment.find({ parentCommentId: commentId });
+        const comments = await Comment.find({ parent_id: commentId });
 
         return new Response(JSON.stringify(comments), { status: 200 });
     } catch (error: any) {

@@ -1,50 +1,76 @@
 'use client';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { FaReply } from 'react-icons/fa';
 
-import usePostContext from '@/hooks/usePostContext';
+import { deleteComment, sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { BsFillSendFill } from 'react-icons/bs';
+import { InputComment } from '.';
 import Avatar from '../Avatar';
 import Button from '../ui/Button';
-import InputComment from './InputComment';
 import ReplyComments from './ReplyComments';
 
 interface Props {
     data: Comment;
 }
 
+interface IFormData {
+    text: string;
+}
+
 const Comment: FC<Props> = ({ data: cmt }) => {
     const { data: session } = useSession();
+    const { register, handleSubmit, formState, reset } = useForm<IFormData>();
 
-    const [isSending, setIsSending] = useState<boolean>(false);
+    const formRef = useRef<HTMLFormElement>(null);
 
-    // Người gửi
     const isSender = useMemo(() => {
         return session?.user && session.user.id === cmt.userInfo.id;
     }, [session, cmt.userInfo.id]);
 
-    const [valueInput, setValueInput] = useState<string>('');
     const [showInputReply, setShowInputReply] = useState<boolean>(false);
     const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
 
-    const handleSendCommentReply = async () => {
-        // await sendComment({
-        //     valueInput,
-        //     replyTo: cmt._id,
-        //     setIsSending,
-        //     setValueInput,
-        // });
+    const [ownerComment, setOwnerComment] = useState<Comment[]>([]);
+    const [isDeleted, setIsDeleted] = useState<boolean>(false);
+
+    const onSubmitComment: SubmitHandler<IFormData> = async (formData) => {
+        const content = formData.text;
+        if (
+            !session?.user.id ||
+            formState.isSubmitting ||
+            content.trim().length === 0 ||
+            !showInputReply
+        )
+            return;
+
+        const newCmt = await sendComment({
+            content: content,
+            postId: cmt.postId,
+            replyTo: cmt._id,
+            userId: session?.user.id,
+        });
+
+        if (newCmt) {
+            setOwnerComment((prev) => [newCmt, ...prev]);
+        }
 
         setShowInputReply(false);
-        setShowReplyComments(true);
+        reset();
     };
+
+    const commentIsDeleted = useMemo(() => {
+        return cmt.isDeleted || isDeleted;
+    }, [cmt.isDeleted, isDeleted]);
 
     return (
         <>
             <div className="mb-4">
                 <div className="flex justify-between">
-                    {cmt.delete ? (
+                    {commentIsDeleted ? (
                         <Avatar imgSrc="/assets/img/user-profile.jpg" />
                     ) : (
                         <Avatar
@@ -60,14 +86,14 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                             <div
                                 className="bg-light-100 w-fit px-4 py-1 text-sm rounded-md break-all dark:bg-dark-500 dark:text-primary"
                                 dangerouslySetInnerHTML={{
-                                    __html: cmt.delete
+                                    __html: commentIsDeleted
                                         ? "<h5 style='color:gray'>Bình luận đã bị xóa</h5>"
                                         : cmt.content,
                                 }}
                             ></div>
                         </div>
 
-                        {!cmt.delete && (
+                        {!commentIsDeleted && (
                             <div className="mt-2 flex items-center h-4">
                                 {/* Trả lời */}
                                 <Button
@@ -89,6 +115,10 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         size={'tiny'}
                                         onClick={() => {
                                             // deleteComment(cmt._id);
+                                            deleteComment({
+                                                commentId: cmt._id,
+                                            });
+                                            setIsDeleted(true);
                                         }}
                                     >
                                         Xóa bình luận
@@ -108,23 +138,50 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                 <Avatar session={session} />
 
                                 <div className="ml-2 w-full flex flex-col">
-                                    <InputComment
-                                        isSending={isSending}
-                                        sendComment={handleSendCommentReply}
-                                        setValueInput={setValueInput}
-                                        valueInput={valueInput}
-                                        autoFocus
-                                    />
+                                    <form
+                                        ref={formRef}
+                                        className="flex w-full"
+                                        onSubmit={handleSubmit(onSubmitComment)}
+                                    >
+                                        <InputComment
+                                            formRef={formRef}
+                                            register={register}
+                                            placeholder="Viết bình luận..."
+                                        />
+
+                                        <Button
+                                            className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                            variant={'custom'}
+                                            size={'none'}
+                                            type="submit"
+                                        >
+                                            {formState.isSubmitting ? (
+                                                <AiOutlineLoading className="animate-spin" />
+                                            ) : (
+                                                <BsFillSendFill />
+                                            )}
+                                        </Button>
+                                    </form>
 
                                     <Button
                                         className="w-8 rounded-t-md"
                                         variant={'custom'}
                                         size={'small'}
-                                        onClick={() => setShowInputReply(false)}
+                                        onClick={() => {
+                                            setShowInputReply(false);
+                                        }}
                                     >
                                         Hủy
                                     </Button>
                                 </div>
+                            </div>
+                        )}
+
+                        {ownerComment.length > 0 && (
+                            <div className="border-l-2 pl-2 py-1 mt-2 rounded-xl ">
+                                {ownerComment.map((cmt) => {
+                                    return <Comment key={cmt._id} data={cmt} />;
+                                })}
                             </div>
                         )}
 
@@ -149,7 +206,10 @@ const Comment: FC<Props> = ({ data: cmt }) => {
 
                         {/* Reply comments */}
                         {showReplyComments && (
-                            <ReplyComments commentParent={cmt} />
+                            <ReplyComments
+                                commentParent={cmt}
+                                commentsHasShow={ownerComment}
+                            />
                         )}
                     </div>
                 </div>
