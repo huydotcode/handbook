@@ -10,19 +10,19 @@ interface Props {
     children: React.ReactNode;
 }
 
+interface ICommentState {
+    comments: Comment[];
+    countAllComments: number;
+    countAllParentComments: number;
+}
+
 function PostProvider({ post, setPosts, children }: Props) {
-    const [comments, setComments] = useState<Comment[]>([]);
-
-    const [countAllParentComments, setCountAllParentComments] =
-        useState<number>(
-            comments.filter(
-                (cmt) =>
-                    cmt.parent_id === null &&
-                    (!cmt.isDeleted || cmt.replies.length > 0)
-            ).length
-        );
-
-    const countComments = comments.length;
+    // setState for comments
+    const [commentState, setCommentState] = useState<ICommentState>({
+        comments: [],
+        countAllComments: post.commentCount,
+        countAllParentComments: post.commentCount,
+    });
 
     const user = useMemo(() => {
         return post.creator;
@@ -31,19 +31,19 @@ function PostProvider({ post, setPosts, children }: Props) {
     useEffect(() => {
         (async () => {
             const count = await getCountCommentsParent({ postId: post._id });
-            setCountAllParentComments(count);
+            setCommentState((prev) => ({
+                ...prev,
+                countAllParentComments: count,
+            }));
         })();
     }, [post._id]);
 
     const values = {
         post,
         user,
-        comments,
-        setComments,
-        countComments,
+        commentState,
+        setCommentState,
         setPosts,
-        countAllParentComments,
-        setCountAllParentComments,
     };
 
     return (

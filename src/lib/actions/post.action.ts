@@ -155,10 +155,8 @@ export const fetchReplyComments = async ({
 
 export const fetchReplyCommentsCount = async ({
     commentId,
-    commentsHasShow,
 }: {
     commentId: string;
-    commentsHasShow: Comment[];
 }) => {
     if (!commentId) return;
 
@@ -166,7 +164,6 @@ export const fetchReplyCommentsCount = async ({
         await connectToDB();
         const count = await Comment.find({
             parent_id: commentId,
-            _id: { $nin: commentsHasShow },
         }).countDocuments();
 
         return count;
@@ -230,6 +227,16 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
 
         if (!cmt) {
             throw new Error(`Comment not found`);
+        }
+
+        if (cmt.parent_id) {
+            const parentComment = await Comment.findById(cmt.parent_id);
+
+            parentComment.replies = parentComment.replies.filter(
+                (item: any) => !item.equals(commentId)
+            );
+
+            await parentComment.save();
         }
 
         if (cmt.replies.length > 0) {

@@ -1,17 +1,20 @@
 'use client';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState } from 'react';
 import { FaReply } from 'react-icons/fa';
 
+import usePostContext from '@/hooks/usePostContext';
 import { deleteComment, sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { BsFillSendFill } from 'react-icons/bs';
 import { InputComment } from '.';
 import Avatar from '../Avatar';
 import Button from '../ui/Button';
 import ReplyComments from './ReplyComments';
+import { set } from 'mongoose';
 
 interface Props {
     data: Comment;
@@ -21,29 +24,47 @@ interface IFormData {
     text: string;
 }
 
+interface IReplyCommentState {
+    data: Comment[];
+    countReply: number;
+    showInputReply: boolean;
+    showReplyComments: boolean;
+}
+
 const Comment: FC<Props> = ({ data: cmt }) => {
     const { data: session } = useSession();
     const { register, handleSubmit, formState, reset } = useForm<IFormData>();
-
     const formRef = useRef<HTMLFormElement>(null);
 
     const isSender = useMemo(() => {
         return session?.user && session.user.id === cmt.userInfo.id;
     }, [session, cmt.userInfo.id]);
 
-    const [showInputReply, setShowInputReply] = useState<boolean>(false);
-    const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
-
-    const [ownerComment, setOwnerComment] = useState<Comment[]>([]);
     const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
-    const onSubmitComment: SubmitHandler<IFormData> = async (formData) => {
+    const commentIsDeleted = useMemo(() => {
+        return cmt.isDeleted || isDeleted;
+    }, [cmt.isDeleted, isDeleted]);
+
+    const { setCommentState } = usePostContext();
+
+    const [replyCommentState, setReplyCommentState] =
+        useState<IReplyCommentState>({
+            data: [],
+            countReply: cmt.replies.length,
+            showInputReply: false,
+            showReplyComments: false,
+        });
+
+    const handleSendCommentReply: SubmitHandler<IFormData> = async (
+        formData
+    ) => {
         const content = formData.text;
         if (
             !session?.user.id ||
             formState.isSubmitting ||
             content.trim().length === 0 ||
-            !showInputReply
+            !replyCommentState.showInputReply
         )
             return;
 
@@ -55,16 +76,34 @@ const Comment: FC<Props> = ({ data: cmt }) => {
         });
 
         if (newCmt) {
-            setOwnerComment((prev) => [newCmt, ...prev]);
+            setReplyCommentState((prev) => ({
+                ...prev,
+                data: [newCmt, ...prev.data],
+                countReply: prev.countReply + 1,
+            }));
+            setCommentState((prev) => ({
+                ...prev,
+                countAllComments: prev.countAllComments + 1,
+            }));
         }
 
-        setShowInputReply(false);
+        setReplyCommentState((prev) => ({
+            ...prev,
+            showInputReply: false,
+        }));
         reset();
     };
 
-    const commentIsDeleted = useMemo(() => {
-        return cmt.isDeleted || isDeleted;
-    }, [cmt.isDeleted, isDeleted]);
+    const handleDeleteComment = async () => {
+        try {
+            await deleteComment({
+                commentId: cmt._id,
+            });
+        } catch (error: any) {
+            toast.error('Đã có lỗi khi xóa bình luận');
+        }
+        setIsDeleted(true);
+    };
 
     return (
         <>
@@ -101,7 +140,11 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                     variant={'text'}
                                     size={'tiny'}
                                     onClick={() =>
-                                        setShowInputReply((prev) => !prev)
+                                        setReplyCommentState((prev) => ({
+                                            ...prev,
+                                            showInputReply:
+                                                !prev.showInputReply,
+                                        }))
                                     }
                                 >
                                     Trả lời
@@ -113,13 +156,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         className="mr-2"
                                         variant={'text'}
                                         size={'tiny'}
-                                        onClick={() => {
-                                            // deleteComment(cmt._id);
-                                            deleteComment({
-                                                commentId: cmt._id,
-                                            });
-                                            setIsDeleted(true);
-                                        }}
+                                        onClick={handleDeleteComment}
                                     >
                                         Xóa bình luận
                                     </Button>
@@ -133,7 +170,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         )}
 
                         {/* <Input Comment Reply /> */}
-                        {session?.user && showInputReply && (
+                        {session?.user && replyCommentState.showInputReply && (
                             <div className="relative flex mt-2">
                                 <Avatar session={session} />
 
@@ -141,7 +178,9 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                     <form
                                         ref={formRef}
                                         className="flex w-full"
-                                        onSubmit={handleSubmit(onSubmitComment)}
+                                        onSubmit={handleSubmit(
+                                            handleSendCommentReply
+                                        )}
                                     >
                                         <InputComment
                                             formRef={formRef}
@@ -168,7 +207,11 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         variant={'custom'}
                                         size={'small'}
                                         onClick={() => {
-                                            setShowInputReply(false);
+                                            setReplyCommentState((prev) => ({
+                                                ...prev,
+                                                showInputReply:
+                                                    !prev.showInputReply,
+                                            }));
                                         }}
                                     >
                                         Hủy
@@ -177,38 +220,44 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                             </div>
                         )}
 
-                        {ownerComment.length > 0 && (
+                        {replyCommentState.data.length > 0 && (
                             <div className="border-l-2 pl-2 py-1 mt-2 rounded-xl ">
-                                {ownerComment.map((cmt) => {
+                                {replyCommentState.data.map((cmt) => {
                                     return <Comment key={cmt._id} data={cmt} />;
                                 })}
                             </div>
                         )}
 
                         {/* Button show reply */}
-                        {!showReplyComments && cmt.replies.length > 0 && (
-                            <Button
-                                className="justify-start mt-2 ml-2 "
-                                variant={'text'}
-                                size={'tiny'}
-                                onClick={() =>
-                                    setShowReplyComments((prev) => !prev)
-                                }
-                            >
-                                <FaReply className="rotate-180" />{' '}
-                                <span className="ml-2">
-                                    {showReplyComments
-                                        ? 'Ẩn các phản hồi'
-                                        : 'Xem tất cả phản hồi'}
-                                </span>
-                            </Button>
-                        )}
+                        {!replyCommentState.showReplyComments &&
+                            cmt.replies.length > 0 && (
+                                <Button
+                                    className="justify-start mt-2 ml-2 "
+                                    variant={'text'}
+                                    size={'tiny'}
+                                    onClick={() =>
+                                        setReplyCommentState((prev) => ({
+                                            ...prev,
+                                            showReplyComments:
+                                                !prev.showReplyComments,
+                                        }))
+                                    }
+                                >
+                                    <FaReply className="rotate-180" />{' '}
+                                    <span className="ml-2">
+                                        {replyCommentState.showReplyComments
+                                            ? 'Ẩn các phản hồi'
+                                            : 'Xem tất cả phản hồi'}
+                                    </span>
+                                </Button>
+                            )}
 
                         {/* Reply comments */}
-                        {showReplyComments && (
+                        {replyCommentState.showReplyComments && (
                             <ReplyComments
                                 commentParent={cmt}
-                                commentsHasShow={ownerComment}
+                                state={replyCommentState}
+                                setState={setReplyCommentState}
                             />
                         )}
                     </div>

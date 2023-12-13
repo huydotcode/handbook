@@ -9,16 +9,27 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { Button } from '..';
 import Comment from './Comment';
 
+interface IReplyCommentState {
+    data: Comment[];
+    countReply: number;
+    showInputReply: boolean;
+    showReplyComments: boolean;
+}
+
 interface CommentPostProps {
     commentParent: Comment;
-    commentsHasShow: Comment[];
+    state: IReplyCommentState;
+    setState: React.Dispatch<React.SetStateAction<IReplyCommentState>>;
 }
 
 const ReplyComments: FC<CommentPostProps> = ({
     commentParent,
-    commentsHasShow,
+    state: replyState,
+    setState: setReplyState,
 }) => {
-    const { comments, setComments } = usePostContext();
+    const {
+        commentState: { comments },
+    } = usePostContext();
     const commentsReply = useMemo(
         () => comments.filter((cmt) => cmt.parent_id === commentParent._id),
         [comments, commentParent._id]
@@ -32,28 +43,30 @@ const ReplyComments: FC<CommentPostProps> = ({
         (async () => {
             const replyComments = await fetchReplyComments({
                 commentId: commentParent._id,
-                commentsHasShow: commentsHasShow,
+                commentsHasShow: replyState.data,
                 page: page,
             });
 
-            if (replyComments) {
-                setComments((prev) => [...prev, ...replyComments]);
+            if (replyComments.length > 0) {
+                setReplyState((prev) => ({
+                    ...prev,
+                    data: [...prev.data, ...replyComments],
+                }));
             }
         })();
-    }, [commentParent._id, commentsHasShow, page, setComments]);
+    }, [commentParent._id, replyState.data, page, setReplyState]);
 
     useEffect(() => {
         (async () => {
             const count = await fetchReplyCommentsCount({
                 commentId: commentParent._id,
-                commentsHasShow: commentsHasShow,
             });
 
             if (count) {
                 setCountAllReplyComments(count);
             }
         })();
-    }, [commentParent._id, commentsHasShow]);
+    }, [commentParent._id]);
 
     return (
         <>
@@ -65,14 +78,14 @@ const ReplyComments: FC<CommentPostProps> = ({
                 </div>
             )}
 
-            {countAllReplyComments > commentsReply.length && (
+            {countAllReplyComments > replyState.data.length && (
                 <Button
                     variant={'text'}
                     size={'tiny'}
                     onClick={() => setPage((prev) => prev + 1)}
                 >
-                    Xem thêm {countAllReplyComments - commentsReply.length} phản
-                    hồi
+                    Xem thêm {countAllReplyComments - replyState.data.length}{' '}
+                    phản hồi
                 </Button>
             )}
         </>

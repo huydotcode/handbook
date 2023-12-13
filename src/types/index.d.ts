@@ -48,13 +48,16 @@ interface Params {
     };
 }
 
-interface IPostContext {
-    user: User;
-    post: Post;
+interface ICommentState {
     comments: Comment[];
-    setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
-    countComments: number;
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    countAllComments: number;
     countAllParentComments: number;
-    setCountAllParentComments: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface IPostContext {
+    post: Post;
+    user: User;
+    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    commentState: ICommentState;
+    setCommentState: React.Dispatch<React.SetStateAction<ICommentState>>;
 }

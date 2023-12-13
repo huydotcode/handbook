@@ -1,13 +1,12 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
-import Comment from './Comment';
 import ReactionPost from './ReactionPost';
 
 import usePostContext from '@/hooks/usePostContext';
-import { fetchCommentPostId, sendComment } from '@/lib/actions/post.action';
+import { sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
@@ -22,17 +21,13 @@ type FormData = {
 
 const FooterPost = () => {
     const { data: session } = useSession();
-    const { setComments, post, countComments, setCountAllParentComments } =
-        usePostContext();
-
+    const { post, commentState, setCommentState } = usePostContext();
     const {
         handleSubmit,
         register,
         formState: { isSubmitting },
     } = useForm<FormData>();
-
     const formRef = useRef<HTMLFormElement>(null);
-
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
 
@@ -45,8 +40,12 @@ const FooterPost = () => {
             });
 
             if (newComment) {
-                setComments((prev) => [newComment, ...prev]);
-                setCountAllParentComments((prev) => prev + 1);
+                setCommentState((prev) => ({
+                    ...prev,
+                    comments: [newComment, ...prev.comments],
+                    countAllComments: prev.countAllComments + 1,
+                    countAllParentComments: prev.countAllParentComments + 1,
+                }));
             }
         } catch (error: any) {
             throw new Error(error);
@@ -64,7 +63,9 @@ const FooterPost = () => {
                     <ReactionPost session={session} post={post} />
 
                     <FaRegComment className="ml-2 text-2xl" />
-                    <span className="ml-1 text-md">{countComments}</span>
+                    <span className="ml-1 text-md">
+                        {commentState.countAllComments}
+                    </span>
                 </div>
 
                 {/* Input comment */}
@@ -102,7 +103,7 @@ const FooterPost = () => {
                         </div>
                     ) : (
                         <Button
-                            className="justify-start my-2 text-sm text-secondary"
+                            className="justify-start my-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             variant={'text'}
                             size={'tiny'}
                             href="/login"

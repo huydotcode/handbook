@@ -1,5 +1,5 @@
 import usePostContext from '@/hooks/usePostContext';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Comment from './Comment';
 import { Button } from '..';
 import { fetchCommentPostId } from '@/lib/actions/post.action';
@@ -11,26 +11,24 @@ const CommentSection: React.FC<Props> = ({}) => {
     const pageSize = 5;
 
     const {
-        comments,
-        setComments,
+        commentState: { comments, countAllComments, countAllParentComments },
+        setCommentState,
         post,
-        countComments,
-        countAllParentComments,
     } = usePostContext();
 
-    const isCommentsEmpty = React.useMemo(() => {
-        return countComments === 0;
-    }, [countComments]);
+    const isCommentsEmpty = useMemo(() => {
+        return countAllComments === 0;
+    }, [countAllComments]);
 
-    const commentsParent = React.useMemo(() => {
+    const commentsParent = useMemo(() => {
         return comments.filter((cmt) => cmt.parent_id == null);
     }, [comments]);
 
-    const isHasLoadMore = React.useMemo(() => {
+    const isHasLoadMore = useMemo(() => {
         return countAllParentComments > commentsParent.length;
     }, [countAllParentComments, commentsParent.length]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         (async () => {
             const comments = (await fetchCommentPostId({
                 page: page,
@@ -38,13 +36,17 @@ const CommentSection: React.FC<Props> = ({}) => {
                 postId: post._id,
             })) as Comment[];
 
-            setComments(
-                comments.filter(
-                    (cmt) => !cmt.isDeleted || cmt.replies.length > 0
-                )
-            );
+            setCommentState((prev) => ({
+                ...prev,
+                comments: [
+                    ...prev.comments,
+                    ...comments.filter(
+                        (cmt) => !cmt.isDeleted || cmt.replies.length > 0
+                    ),
+                ],
+            }));
         })();
-    }, [page, pageSize, post._id, setComments]);
+    }, [page, pageSize, post._id, setCommentState]);
 
     return (
         <>

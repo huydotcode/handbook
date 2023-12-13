@@ -24,6 +24,15 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const router = useRouter();
     const pageSize = 3;
 
+    const [firstRender, setFirstRender] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (firstRender) {
+            setFirstRender(false);
+            return;
+        }
+    }, [firstRender]);
+
     const fetchPosts = useCallback(async () => {
         setLoading(true);
 
@@ -89,8 +98,10 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     return (
         <>
             {renderCreatePost()}
-            {renderLoadingSkeletons()}
+
             {renderEmptyMessage()}
+
+            {firstRender && renderLoadingSkeletons()}
 
             <InfinityScrollComponent
                 dataLength={posts.length}
@@ -105,6 +116,8 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                     <Post key={post?._id} data={post} setPosts={setPosts} />
                 ))}
             </InfinityScrollComponent>
+
+            {renderLoadingSkeletons()}
         </>
     );
 };
