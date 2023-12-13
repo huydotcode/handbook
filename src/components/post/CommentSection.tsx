@@ -56,7 +56,7 @@ const CommentSection: React.FC<Props> = ({}) => {
                 </div>
             )}
 
-            <div className="mt-3">
+            <div className="mt-3 grid gap-2">
                 {commentsParent.map((cmt) => (
                     <Comment data={cmt} key={cmt._id} />
                 ))}

@@ -1,6 +1,6 @@
 'use client';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { FC, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { FaReply } from 'react-icons/fa';
 
 import usePostContext from '@/hooks/usePostContext';
@@ -56,6 +56,12 @@ const Comment: FC<Props> = ({ data: cmt }) => {
             showReplyComments: false,
         });
 
+    const ownComment = useMemo(() => {
+        return replyCommentState.data.filter(
+            (cmt) => cmt.userInfo.id === session?.user.id
+        );
+    }, [replyCommentState.data, session?.user.id]);
+
     const handleSendCommentReply: SubmitHandler<IFormData> = async (
         formData
     ) => {
@@ -107,7 +113,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
 
     return (
         <>
-            <div className="mb-4">
+            <div className="">
                 <div className="flex justify-between">
                     {commentIsDeleted ? (
                         <Avatar imgSrc="/assets/img/user-profile.jpg" />
@@ -220,9 +226,9 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                             </div>
                         )}
 
-                        {replyCommentState.data.length > 0 && (
-                            <div className="border-l-2 pl-2 py-1 mt-2 rounded-xl ">
-                                {replyCommentState.data.map((cmt) => {
+                        {ownComment.length > 0 && (
+                            <div className="grid gap-2 border-l-2 pl-4 py-1 mt-2 rounded-bl-xl ">
+                                {ownComment.map((cmt) => {
                                     return <Comment key={cmt._id} data={cmt} />;
                                 })}
                             </div>

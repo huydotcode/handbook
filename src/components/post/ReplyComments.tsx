@@ -8,6 +8,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Button } from '..';
 import Comment from './Comment';
+import { useSession } from 'next-auth/react';
 
 interface IReplyCommentState {
     data: Comment[];
@@ -27,24 +28,38 @@ const ReplyComments: FC<CommentPostProps> = ({
     state: replyState,
     setState: setReplyState,
 }) => {
+    const { data: session } = useSession();
     const {
         commentState: { comments },
     } = usePostContext();
-    const commentsReply = useMemo(
-        () => comments.filter((cmt) => cmt.parent_id === commentParent._id),
-        [comments, commentParent._id]
-    );
+
     const [countAllReplyComments, setCountAllReplyComments] =
         useState<number>(0);
 
     const [page, setPage] = useState<number>(1);
+    // const [pageSize, setPageSize] = useState<number>(5);
+    const pageSize = 5;
+
+    // comment from different user
+    const commentsReply = useMemo(() => {
+        return replyState.data.filter(
+            (cmt) => cmt.userInfo.id !== session?.user.id
+        );
+    }, [replyState.data, session?.user.id]);
+
+    // own comment
+    const ownComment = useMemo(() => {
+        return replyState.data.filter(
+            (cmt) => cmt.userInfo.id === session?.user.id
+        );
+    }, [replyState.data, session?.user.id]);
 
     useEffect(() => {
         (async () => {
             const replyComments = await fetchReplyComments({
                 commentId: commentParent._id,
                 commentsHasShow: replyState.data,
-                page: page,
+                // page: page,
             });
 
             if (replyComments.length > 0) {
@@ -54,7 +69,7 @@ const ReplyComments: FC<CommentPostProps> = ({
                 }));
             }
         })();
-    }, [commentParent._id, replyState.data, page, setReplyState]);
+    }, [commentParent._id, replyState.data, setReplyState]);
 
     useEffect(() => {
         (async () => {
@@ -71,20 +86,26 @@ const ReplyComments: FC<CommentPostProps> = ({
     return (
         <>
             {commentsReply.length > 0 && (
-                <div className="border-l-2 pl-2 py-1 mt-2 rounded-xl ">
-                    {commentsReply.map((cmt) => {
+                <div className="grid gap-2 border-l-2 pt-1 mt-2 rounded-bl-xl pl-4">
+                    {commentsReply.slice(0, page * pageSize).map((cmt) => {
                         return <Comment key={cmt._id} data={cmt} />;
                     })}
                 </div>
             )}
 
-            {countAllReplyComments > replyState.data.length && (
+            {countAllReplyComments >
+                commentsReply.slice(0, page * pageSize).length +
+                    ownComment.length && (
                 <Button
+                    className="ml-6 w-fit"
                     variant={'text'}
                     size={'tiny'}
                     onClick={() => setPage((prev) => prev + 1)}
                 >
-                    Xem thêm {countAllReplyComments - replyState.data.length}{' '}
+                    Xem thêm{' '}
+                    {countAllReplyComments -
+                        commentsReply.slice(0, page * pageSize).length +
+                        ownComment.length}{' '}
                     phản hồi
                 </Button>
             )}

@@ -127,13 +127,13 @@ export const fetchCommentPostId = async ({
 export const fetchReplyComments = async ({
     commentId,
     commentsHasShow,
-    page,
-}: {
+}: // page,
+{
     commentId: string;
     commentsHasShow: Comment[];
-    page: number;
+    // page: number;
 }) => {
-    const pageSize = 5;
+    // const pageSize = 5;
 
     if (!commentId) return;
 
@@ -142,10 +142,9 @@ export const fetchReplyComments = async ({
         const comments = await Comment.find({
             parent_id: commentId,
             _id: { $nin: commentsHasShow },
-        })
-            .skip((+page - 1) * +pageSize)
-            .limit(+pageSize)
-            .sort({ replies: -1, isDeleted: 1, createdAt: -1 });
+        }).sort({ replies: -1, isDeleted: 1, createdAt: -1 });
+        // .skip((+page - 1) * +pageSize)
+        // .limit(+pageSize)
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {

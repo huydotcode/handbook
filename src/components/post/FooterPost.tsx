@@ -20,6 +20,7 @@ type FormData = {
 };
 
 const FooterPost = () => {
+    //! Hook
     const { data: session } = useSession();
     const { post, commentState, setCommentState } = usePostContext();
     const {
@@ -28,6 +29,8 @@ const FooterPost = () => {
         formState: { isSubmitting },
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
+
+    //! Function
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
 
@@ -54,8 +57,6 @@ const FooterPost = () => {
         }
     };
 
-    const submitSendComment = handleSubmit(onSubmitComment);
-
     return (
         <>
             <div className="mt-2">
@@ -77,7 +78,7 @@ const FooterPost = () => {
                             <div className="flex-1 ml-2">
                                 <form
                                     className="flex w-full"
-                                    onSubmit={submitSendComment}
+                                    onSubmit={handleSubmit(onSubmitComment)}
                                     ref={formRef}
                                 >
                                     <InputComment

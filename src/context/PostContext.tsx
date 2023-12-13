@@ -6,8 +6,8 @@ export const PostContext = React.createContext<IPostContext | null>(null);
 
 interface Props {
     post: Post;
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
     children: React.ReactNode;
+    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 
 interface ICommentState {
@@ -21,13 +21,15 @@ function PostProvider({ post, setPosts, children }: Props) {
     const [commentState, setCommentState] = useState<ICommentState>({
         comments: [],
         countAllComments: post.commentCount,
-        countAllParentComments: post.commentCount,
+        countAllParentComments: 0,
     });
 
+    // get user
     const user = useMemo(() => {
         return post.creator;
     }, [post.creator]) as User;
 
+    // get count comments parent
     useEffect(() => {
         (async () => {
             const count = await getCountCommentsParent({ postId: post._id });
