@@ -57,7 +57,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
             <SlideShow
                 show={showSlide}
                 setShow={setShowSlide}
-                images={images}
+                images={images.map((image: any) => image.url)}
             />
         </>
     );

@@ -3,14 +3,18 @@ import { sanitize } from 'isomorphic-dompurify';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import Button from '@/components/ui/Button';
-import { changeBioAction } from '@/lib/actions/profile.action';
+import {
+    changeBioAction,
+    getProfilePicturesAction,
+} from '@/lib/actions/profile.action';
 import { TextareaAutosize } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { SlideShow } from '@/components/ui';
 
 interface Friend {
     id: string;
@@ -36,6 +40,12 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<FormValue>();
+
+    const [showSlide, setShowSlide] = useState<boolean>(false);
+    const [indexPicture, setIndexPicture] = useState<number>(0);
+
+    //! PICTURE
+    const [pictures, setPictures] = useState<string[]>([]);
 
     const [showChangeBio, setShowChangeBio] = useState<boolean>(false);
 
@@ -124,6 +134,16 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
         );
     };
 
+    useEffect(() => {
+        (async () => {
+            const pictures = await getProfilePicturesAction({
+                userId: profile.userId,
+            });
+
+            setPictures(pictures);
+        })();
+    }, [profile.userId]);
+
     return (
         <div className="w-[36%] md:w-full md:grid grid-flow-row grid-cols-1">
             <section className="relative my-3 py-2 px-4 bg-white rounded-xl shadow-md dark:bg-dark-200">
@@ -143,8 +163,32 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
             <section className="relative my-3 py-2 px-4 bg-white rounded-xl shadow-md dark:bg-dark-200">
                 <h5 className="text-xl font-bold">Ảnh</h5>
                 <div>
-                    <div className="grid grid-cols-5 gap-2 mt-2"></div>
-                    {friends.length === 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                        {pictures
+                            .slice(0, 5)
+                            .map((picture: string, index: number) => {
+                                return (
+                                    <div
+                                        className="relative w-full min-h-[200px] rounded-md shadow-md hover:cursor-pointer"
+                                        key={picture}
+                                        onClick={() => {
+                                            setShowSlide(true);
+                                            setIndexPicture(index);
+                                        }}
+                                    >
+                                        <Image
+                                            key={picture}
+                                            className="rounded-md"
+                                            src={picture}
+                                            alt={picture}
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 768px"
+                                        />
+                                    </div>
+                                );
+                            })}
+                    </div>
+                    {pictures.length === 0 && (
                         <p className="text-sm text-secondary">
                             Không có ảnh nào
                         </p>
@@ -186,6 +230,13 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
                     )}
                 </div>
             </section>
+
+            <SlideShow
+                images={pictures}
+                show={showSlide}
+                setShow={setShowSlide}
+                startIndex={indexPicture}
+            />
         </div>
     );
 };

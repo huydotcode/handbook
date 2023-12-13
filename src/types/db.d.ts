@@ -44,6 +44,7 @@ interface CloudinaryImage {
     secure_url: string;
     folder: string;
     api_key: string;
+    user_id: string;
 }
 
 interface IProfile {

@@ -74,6 +74,10 @@ const ModalCreatePost: React.FC<Props> = ({
         }
     };
 
+    const handleRemoveImage = (index: number) => {
+        setPhotos((prev) => prev.filter((_, i) => i !== index));
+    };
+
     return (
         <>
             <Modal
@@ -176,33 +180,27 @@ const ModalCreatePost: React.FC<Props> = ({
                                             (img: string, index: number) => {
                                                 return (
                                                     <div
-                                                        className="relative px-1 max-w-[50%] overflow-hidden"
+                                                        className="relative px-1 w-[50%] overflow-hidden"
                                                         key={index}
                                                     >
                                                         <span
                                                             className="absolute top-2 left-2 flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)] z-10"
-                                                            onClick={() => {
-                                                                setPhotos(
-                                                                    (prev) =>
-                                                                        prev.filter(
-                                                                            (
-                                                                                _,
-                                                                                i
-                                                                            ) =>
-                                                                                i !==
-                                                                                index
-                                                                        )
-                                                                );
-                                                            }}
+                                                            onClick={() =>
+                                                                handleRemoveImage(
+                                                                    index
+                                                                )
+                                                            }
                                                         >
                                                             <CgClose className="w-5 h-5" />
                                                         </span>
-                                                        <div className="relative w-full h-full object-cover">
+                                                        <div className="relative w-full min-h-[500px] object-cover">
                                                             <Image
-                                                                className="mt-2 align-middle w-full"
+                                                                className="mt-2 align-middle "
                                                                 quality={100}
                                                                 src={img || ''}
                                                                 alt=""
+                                                                fill
+                                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                             />
                                                         </div>
                                                     </div>

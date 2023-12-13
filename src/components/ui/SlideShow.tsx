@@ -13,9 +13,10 @@ interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
     images: any[];
+    startIndex?: number;
 }
 
-const SlideShow: React.FC<Props> = ({ show, setShow, images }) => {
+const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
     if (!show) return <></>;
 
     return (
@@ -32,6 +33,8 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images }) => {
                     </Button>
 
                     <Swiper
+                        zoom={true}
+                        initialSlide={startIndex || 0}
                         pagination={true}
                         cssMode={true}
                         navigation={true}
@@ -47,7 +50,7 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images }) => {
                                         <div
                                             className="w-full h-full bg-contain bg-center bg-no-repeat"
                                             style={{
-                                                backgroundImage: `url(${image.url})`,
+                                                backgroundImage: `url(${image})`,
                                             }}
                                         ></div>
                                     </SwiperSlide>

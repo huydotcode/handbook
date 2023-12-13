@@ -1,3 +1,4 @@
+import { getAuthSession } from '@/lib/auth';
 import Image from '@/models/Image';
 import logger from '@/utils/logger';
 import { v2 as cloudinary } from 'cloudinary';
@@ -12,6 +13,7 @@ cloudinary.config({
 
 export async function POST(request: Request) {
     logger('API: UPLOAD IMAGES');
+    const session = await getAuthSession();
     const images = await request.json();
 
     const imagesUrl: any[] = [];
@@ -33,7 +35,10 @@ export async function POST(request: Request) {
             };
             const result = await cloudinary.uploader.upload(img, options);
 
-            const image = await new Image(result);
+            const image = await new Image({
+                ...result,
+                user_id: session?.user.id,
+            });
             await image.save();
 
             imagesUrl.push(result);

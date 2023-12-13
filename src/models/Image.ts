@@ -20,6 +20,7 @@ export const ImageSchema = new Schema({
     secure_url: String,
     folder: String,
     api_key: String,
+    user_id: String,
 });
 
 const Image = models.Image || model('Image', ImageSchema);
