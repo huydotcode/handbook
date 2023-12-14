@@ -27,6 +27,7 @@ const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {
             className="h-10 bg-secondary flex-1 p-2 rounded-l-xl cursor-text text-sm text-start pt-[9px] overflow-y-scroll w-[calc(100%-40px)] resize-none outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
             placeholder={placeholder || 'Viết bình luận...'}
             spellCheck={false}
+            autoComplete="off"
             onKeyPress={handleKeyPress}
             {...register('text', {
                 required: true,

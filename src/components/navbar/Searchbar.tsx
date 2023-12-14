@@ -85,7 +85,7 @@ const Searchbar = () => {
                     className="lg:hidden min-w-[170px] h-10 px-2 text-xs bg-transparent"
                 >
                     <div className="h-full flex items-center bg-secondary text-secondary dark:bg-dark-100  dark:placeholder:text-dark-100">
-                        Tìm kiếm trên Facebook
+                        Tìm kiếm trên Handbook
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@ const Searchbar = () => {
                                 name="q"
                                 className="w-full h-10 px-2 text-base bg-transparent dark:placeholder:text-dark-200"
                                 dir="ltr"
-                                placeholder="Tìm kiếm trên Facebook"
+                                placeholder="Tìm kiếm trên Handbook"
                                 autoComplete="off"
                                 spellCheck="false"
                             />

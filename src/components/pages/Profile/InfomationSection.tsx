@@ -84,6 +84,7 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
                         <TextareaAutosize
                             className="w-full mt-2 p-2 resize-none bg-light-100 dark:bg-[rgba(255,255,255,.1)] focus:border-none focus:outline-none rounded-xl"
                             spellCheck={false}
+                            autoComplete="off"
                             placeholder="Nhập tiểu sử"
                             {...register('bio', {
                                 maxLength: 300,

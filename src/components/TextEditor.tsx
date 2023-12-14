@@ -50,6 +50,7 @@ const TextEditor: React.FC<Props> = React.forwardRef(function TextEditor(
         <>
             <div className={className} onClick={handleFocus}>
                 <TextAreaAutosize
+                    autoComplete="off"
                     ref={editorRef}
                     value={value}
                     onChange={handleChange}
