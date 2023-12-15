@@ -2,7 +2,7 @@ import Comment from '@/models/Comment';
 import Post from '@/models/Post';
 import logger from '@/utils/logger';
 
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request, { params }: IParams) {
     logger('API - GET: Get post data');
     const { postId } = params;
 
@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: Params) {
     }
 }
 
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(request: Request, { params }: IParams) {
     logger('API - DELETE: Delete post');
     const { postId } = params;
 

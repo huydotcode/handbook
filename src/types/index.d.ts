@@ -39,7 +39,7 @@ interface User {
     updatedAt: Date;
 }
 
-interface Params {
+interface IParams {
     params: {
         postId?: string;
         userId?: string;

@@ -1,7 +1,7 @@
 import Comment from '@/models/Comment';
 import connectToDB from '@/services/mongoose';
 
-export const GET = async (req: Request, { params }: Params) => {
+export const GET = async (req: Request, { params }: IParams) => {
     const { commentId, postId } = params;
 
     if (!commentId)

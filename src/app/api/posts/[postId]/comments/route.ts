@@ -2,7 +2,7 @@ import Comment from '@/models/Comment';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request, { params }: IParams) {
     logger('API - GET Comments');
     const { postId } = params;
 

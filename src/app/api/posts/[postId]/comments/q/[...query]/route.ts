@@ -1,7 +1,7 @@
 import Comment from '@/models/Comment';
 import logger from '@/utils/logger';
 
-export const GET = async (req: Request, { params }: Params) => {
+export const GET = async (req: Request, { params }: IParams) => {
     logger('API - GET Comments');
     const url = new URL(req.url);
 

@@ -2,7 +2,7 @@ import Comment from '@/models/Comment';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 
-export const GET = async (req: Request, { params }: Params) => {
+export const GET = async (req: Request, { params }: IParams) => {
     const { commentId } = params;
     try {
         await connectToDB();
@@ -14,7 +14,7 @@ export const GET = async (req: Request, { params }: Params) => {
     }
 };
 
-export const DELETE = async (req: Request, { params }: Params) => {
+export const DELETE = async (req: Request, { params }: IParams) => {
     const { postId, commentId } = params;
     logger('API - DELETE: Delete comment post');
 

@@ -3,7 +3,7 @@ import User from '@/models/User';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 
-export const POST = async (req: Request, { params }: Params) => {
+export const POST = async (req: Request, { params }: IParams) => {
     logger('API - POST: Send comment to post');
     const request = await req.json();
     const { postId } = params;

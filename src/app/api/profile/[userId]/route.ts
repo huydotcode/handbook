@@ -1,7 +1,7 @@
 import Profile from '@/models/Profile';
 import logger from '@/utils/logger';
 
-export const GET = async (request: Request, { params }: Params) => {
+export const GET = async (request: Request, { params }: IParams) => {
     logger('API - GET: Get Profile');
     const { userId } = params;
 
@@ -20,7 +20,7 @@ export const GET = async (request: Request, { params }: Params) => {
     }
 };
 
-export const PATCH = async (req: Request, { params }: Params) => {
+export const PATCH = async (req: Request, { params }: IParams) => {
     const request = await req.json();
     const { userId } = params;
 
