@@ -18,7 +18,7 @@ interface Props {
 
 const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const { data: session } = useSession();
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [posts, setPosts] = useState<IPost[]>([]);
     const [page, setPage] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
