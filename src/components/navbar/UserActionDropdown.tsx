@@ -11,19 +11,12 @@ import { useSession } from 'next-auth/react';
 import Popover, { usePopover } from '../ui/Popover';
 import Button from '../ui/Button';
 
-interface User {
-    id: string;
-    name: string;
-    image: string;
-    email: string;
-}
-
 const UserActionDropdown = () => {
     const { data: session } = useSession();
     const [history, setHistory] = useState([{ data: userActions as any }]);
     const currentHistory = history[history.length - 1] as any;
 
-    const user = session?.user as User;
+    const user = session?.user as ISessionUser;
     const { open, anchorEl, handleClose, handleShow } = usePopover();
 
     return (

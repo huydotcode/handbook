@@ -21,7 +21,7 @@ interface Friend {
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
     const { user, profile } = (await fetchProfileByUserId(params.userId)) as {
-        user: User;
+        user: IUser;
         profile: IProfile;
     };
     const friends = [] as Friend[];

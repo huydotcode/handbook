@@ -30,7 +30,7 @@ export const fetchProfileByUserId = async (userId: string) => {
         if (!user && mongoose.isValidObjectId(userId)) {
             user = (await User.findOne({
                 _id: userId,
-            })) as User;
+            })) as IUser;
         }
 
         if (!user) throw new Error('User not found');

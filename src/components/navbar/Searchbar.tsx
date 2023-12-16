@@ -128,10 +128,10 @@ const Searchbar = () => {
                             debounceValue.trim().length > 0 && (
                                 <>
                                     <div className="mt-4 w-full overflow-scroll dark:no-scrollbar">
-                                        {searchResult.map((user: User) => {
+                                        {searchResult.map((user: IUser) => {
                                             return (
                                                 <UserItem
-                                                    key={user.id}
+                                                    key={user._id}
                                                     data={user}
                                                     handleHideModal={() => {
                                                         handleClose();

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 interface Props {
-    data: User;
+    data: IUser;
     handleHideModal: () => void;
 }
 

@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 interface Props {
     session: Session | null;
-    post: Post;
+    post: IPost;
 }
 
 const ReactionPost: React.FC<Props> = ({ session, post }) => {

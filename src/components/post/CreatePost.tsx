@@ -9,7 +9,7 @@ import { createPost } from '@/lib/actions/post.action';
 import { ModalCreatePost } from '..';
 
 interface Props {
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
 interface IFormData {

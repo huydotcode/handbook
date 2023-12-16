@@ -11,7 +11,7 @@ import Button from '../ui/Button';
 import Popover, { usePopover } from '../ui/Popover';
 
 interface Props {
-    post: Post;
+    post: IPost;
     setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

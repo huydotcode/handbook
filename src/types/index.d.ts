@@ -1,4 +1,4 @@
-interface Post {
+interface IPost {
     _id: string;
     option: string;
     content: string;
@@ -15,13 +15,14 @@ interface Post {
     commentCount: number;
 }
 
-interface ReactionType {
-    reactionType: string;
-    userId: string;
-    _id?: string;
+interface ISessionUser {
+    id: string;
+    name: string;
+    image: string;
+    email: string;
 }
 
-interface User {
+interface IUser {
     _id: string;
     email: string;
     name: string;
@@ -55,9 +56,9 @@ interface ICommentState {
 }
 
 interface IPostContext {
-    post: Post;
-    user: User;
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    post: IPost;
+    user: IUser;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
     commentState: ICommentState;
     setCommentState: React.Dispatch<React.SetStateAction<ICommentState>>;
 }

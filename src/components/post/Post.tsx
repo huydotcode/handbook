@@ -6,8 +6,8 @@ import PostContent from './PostContent';
 import React from 'react';
 
 interface Props {
-    data: Post;
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    data: IPost;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
 const Post: React.FC<Props> = ({ data: post, setPosts }) => {

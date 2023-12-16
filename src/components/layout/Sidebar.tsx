@@ -4,16 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import NavigationPages from '../navbar/NavigationPages';
 
-interface User {
-    id: string;
-    name: string;
-    image: string;
-    email: string;
-}
-
 const Sidebar = () => {
     const { data: session } = useSession();
-    const user = session?.user as User;
+    const user = session?.user as ISessionUser;
 
     return (
         <div className="mt-4 mr-4 rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">

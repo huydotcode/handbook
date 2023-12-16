@@ -5,9 +5,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 export const PostContext = React.createContext<IPostContext | null>(null);
 
 interface Props {
-    post: Post;
+    post: IPost;
     children: React.ReactNode;
-    setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
 interface ICommentState {
@@ -27,7 +27,7 @@ function PostProvider({ post, setPosts, children }: Props) {
     // get user
     const user = useMemo(() => {
         return post.creator;
-    }, [post.creator]) as User;
+    }, [post.creator]) as IUser;
 
     // get count comments parent
     useEffect(() => {
