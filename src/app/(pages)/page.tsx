@@ -1,5 +1,6 @@
 import { NewsFeedPost } from '@/components';
 import { Sidebar } from '@/components/layout';
+import { NavigationPages } from '@/components/navbar';
 
 export default async function Home() {
     return (
@@ -9,6 +10,10 @@ export default async function Home() {
             </aside>
 
             <div className="min-w-[600px] max-w-[50vw] mx-auto sm:w-screen sm:m-0 sm:max-w-none sm:min-w-0 md:min-w-[500px] lg:min-w-[600px]">
+                <div className="hidden sm:block ">
+                    <NavigationPages className="flex" />
+                </div>
+
                 <NewsFeedPost />
             </div>
 

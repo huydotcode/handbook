@@ -45,7 +45,7 @@ const Sidebar: React.FC<Props> = () => {
     if (!session) return null;
 
     return (
-        <div className=" sm:hidden flex flex-col border-r dark:border-r-gray-600">
+        <div className="flex flex-col border-r dark:border-r-gray-600">
             {friends.map((user: IFriend) => {
                 const isOnline = friendsOnline.find(
                     (f) => f.userId === user._id

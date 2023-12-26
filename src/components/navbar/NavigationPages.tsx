@@ -3,13 +3,18 @@ import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 import { HiHome } from 'react-icons/hi';
 
-const NavigationPages = ({}) => {
+interface Props {
+    className?: string;
+}
+
+const NavigationPages: React.FC<Props> = ({ className }) => {
     const path = usePathname();
 
     return (
-        <ul>
+        <ul className={className || ''}>
             {navLink.map((link, index) => {
                 const isActived = link.path === path;
                 const Icon = () => {
