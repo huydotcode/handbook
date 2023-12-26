@@ -12,6 +12,7 @@ interface Props {
     height?: number;
     fill?: boolean;
     alt?: string;
+    href?: string;
 }
 
 const Avatar: React.FC<Props> = ({
@@ -23,11 +24,18 @@ const Avatar: React.FC<Props> = ({
     width = 32,
     height = 32,
     fill = false,
+    href,
 }) => {
+    const isUser = session?.user.id || userUrl;
+
     return (
         <Link
             className={className}
-            href={`/profile/${session?.user.id || userUrl}`}
+            href={
+                (isUser && `/profile/${session?.user.id || userUrl}`) ||
+                (href && href) ||
+                ''
+            }
         >
             <Image
                 className="rounded-full"

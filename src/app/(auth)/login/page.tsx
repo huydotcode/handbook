@@ -13,7 +13,7 @@ const Page: FC = () => {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const error = searchParams.get('error') || '';
+    const error = searchParams?.get('error') || '';
 
     useEffect(() => {
         if (session) {

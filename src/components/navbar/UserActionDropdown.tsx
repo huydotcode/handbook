@@ -7,9 +7,10 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 
 import { MenuItem, Tooltip } from '@mui/material';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Popover, { usePopover } from '../ui/Popover';
 import Button from '../ui/Button';
+import { useSocket } from '@/context/SocketContext';
 
 const UserActionDropdown = () => {
     const { data: session } = useSession();
@@ -18,6 +19,14 @@ const UserActionDropdown = () => {
 
     const user = session?.user as ISessionUser;
     const { open, anchorEl, handleClose, handleShow } = usePopover();
+    const { socket } = useSocket();
+
+    const handleLogout = () => {
+        signOut();
+        if (socket) {
+            socket.disconnect();
+        }
+    };
 
     return (
         <>
@@ -127,6 +136,14 @@ const UserActionDropdown = () => {
                                 </MenuItem>
                             );
                         })}
+
+                        <Button
+                            variant={'event'}
+                            size={'medium'}
+                            onClick={handleLogout}
+                        >
+                            Đăng xuất 2
+                        </Button>
                     </ul>
                 </div>
             </Popover>

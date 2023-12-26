@@ -19,7 +19,7 @@ interface Props {
 
 export default function RootLayout(props: Props) {
     return (
-        <html lang="en">
+        <html lang="en" translate="no">
             <head>
                 <link
                     rel="icon"

@@ -1,5 +1,7 @@
-import { NewsFeedPost } from '@/components';
+import { Button, NewsFeedPost } from '@/components';
+import Action from '@/components/pages/Profile/Action';
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
+import { addFriend } from '@/lib/actions/profile.action';
 import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import mongoose from 'mongoose';
 
@@ -70,6 +72,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                                     <br />
                                 </div>
                             </div>
+                            <Action userId={user._id} />
                         </div>
                     </header>
 

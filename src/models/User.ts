@@ -13,6 +13,7 @@ interface IUser {
     family_name?: string;
     locale?: string;
     dateOfBirth?: Date;
+    isOnline: boolean;
     friends?: Types.Array<Types.ObjectId>;
     followers?: Types.Array<Types.ObjectId>;
     following?: Types.Array<Types.ObjectId>;
@@ -48,6 +49,10 @@ const UserSchema = new Schema<IUser>(
         image: {
             type: String,
             required: true,
+        },
+        isOnline: {
+            type: Boolean,
+            default: false,
         },
         password: String,
         given_name: String,

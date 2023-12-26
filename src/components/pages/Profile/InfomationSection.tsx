@@ -61,6 +61,11 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
             return;
         }
 
+        if (!path) {
+            toast.error('Đã có lỗi xảy ra! Vui lòng thử lại sau');
+            return;
+        }
+
         try {
             await changeBioAction({
                 newBio: newBio,

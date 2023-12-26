@@ -6,7 +6,6 @@ import bcrypt from 'bcrypt';
 const saltRounds = 10;
 
 export const POST = async (req: Request, res: Response) => {
-    console.log('API - POST: SIGN UP');
     const request = await req.json();
 
     const { email, name, password, repassword, username } = request;

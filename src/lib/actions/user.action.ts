@@ -57,18 +57,12 @@ export async function fetchUsers({
     try {
         await connectToDB();
 
-        // Calculate the number of users to skip based on the page number and page size.
         const skipAmount = (pageNumber - 1) * pageSize;
-
-        // Create a case-insensitive regular expression for the provided search string.
         const regex = new RegExp(searchString, 'i');
-
-        // Create an initial query object to filter users.
         const query: FilterQuery<typeof User> = {
-            id: { $ne: userId }, // Exclude the current user from the results.
+            id: { $ne: userId },
         };
 
-        // If the search string is not empty, add the $or operator to match either username or name fields.
         if (searchString.trim() !== '') {
             query.$or = [
                 { username: { $regex: regex } },
@@ -76,7 +70,6 @@ export async function fetchUsers({
             ];
         }
 
-        // Define the sort options for the fetched users based on createdAt field and provided sort order.
         const sortOptions = { createdAt: sortBy };
 
         const usersQuery = User.find(query)
@@ -84,12 +77,10 @@ export async function fetchUsers({
             .skip(skipAmount)
             .limit(pageSize);
 
-        // Count the total number of users that match the search criteria (without pagination).
         const totalUsersCount = await User.countDocuments(query);
 
         const users = await usersQuery;
 
-        // Check if there are more users beyond the current page.
         const isNext = totalUsersCount > skipAmount + users.length;
 
         return { users: JSON.parse(JSON.stringify(users)), isNext };
@@ -98,3 +89,18 @@ export async function fetchUsers({
         throw error;
     }
 }
+
+export const fetchFriends = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+        const user = await User.findById(userId).exec();
+
+        const friends = await User.find({
+            _id: { $in: user?.friends },
+        }).select('_id name image username');
+
+        return JSON.parse(JSON.stringify(friends)) || [];
+    } catch (error: any) {
+        console.log(error);
+    }
+};

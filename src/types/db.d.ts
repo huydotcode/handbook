@@ -55,3 +55,13 @@ interface IProfile {
     createdAt: Date;
     updatedAt: Date;
 }
+
+interface IMessage {
+    _id: string;
+    userId: string;
+    roomId: string;
+    text: string;
+    isRead: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}

@@ -27,15 +27,16 @@ interface IUser {
     email: string;
     name: string;
     image: string;
+    username: string;
     password?: string;
     given_name: string;
     family_name: string;
     locale: string;
-    friends: any[];
-    followers: any[];
-    following: any[];
-    notifications: any[];
-    request: any[];
+    friends?: any[];
+    followers?: any[];
+    following?: any[];
+    notifications?: any[];
+    request?: any[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -61,4 +62,23 @@ interface IPostContext {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
     commentState: ICommentState;
     setCommentState: React.Dispatch<React.SetStateAction<ICommentState>>;
+}
+
+interface IFriend {
+    _id: string;
+    name: string;
+    image: string;
+}
+
+interface IRoomChat {
+    id: string;
+    name: string;
+    image: string;
+    members: any[];
+    messages: IMessage[];
+}
+
+interface ILastMessage {
+    roomId: string;
+    data: IMessage;
 }

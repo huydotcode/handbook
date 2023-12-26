@@ -1,8 +1,10 @@
 'use server';
 import Image from '@/models/Image';
 import Profile from '@/models/Profile';
+import User from '@/models/User';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
+import { getAuthSession } from '../auth';
 
 export const changeBioAction = async ({
     newBio,
@@ -36,6 +38,25 @@ export const getProfilePicturesAction = async ({
         const imagesUrls = images.map((img) => img.url);
 
         return JSON.parse(JSON.stringify(imagesUrls));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const addFriend = async ({ userId }: { userId: string }) => {
+    try {
+        const session = await getAuthSession();
+        await connectToDB();
+
+        const user = await User.findById(session?.user?.id);
+
+        if (!user) {
+            throw new Error('Không tìm thấy người dùng');
+        }
+
+        user.friends?.push(userId);
+
+        user.save();
     } catch (error: any) {
         throw new Error(error);
     }

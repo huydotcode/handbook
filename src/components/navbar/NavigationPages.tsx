@@ -12,7 +12,9 @@ const NavigationPages = ({}) => {
         <ul>
             {navLink.map((link, index) => {
                 const isActived = link.path === path;
-
+                const Icon = () => {
+                    return link.icon;
+                };
                 return (
                     <li
                         key={index}
@@ -24,7 +26,7 @@ const NavigationPages = ({}) => {
                             className="flex items-center w-full h-full md:justify-center"
                             href={link.path || '/'}
                         >
-                            <HiHome className="w-8 h-8 dark:text-primary" />
+                            <Icon />
                             <span className="ml-2 md:hidden dark:text-primary">
                                 {link.name}
                             </span>

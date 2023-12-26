@@ -10,6 +10,7 @@ import Post from './post/Post';
 import SkeletonPost from './post/SkeletonPost';
 import Button from './ui/Button';
 import { useRouter } from 'next/navigation';
+import { useSocket } from '@/context/SocketContext';
 
 interface Props {
     userId?: string;
@@ -23,6 +24,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
     const pageSize = 3;
+    const { socket, isConnected } = useSocket();
 
     const [firstRender, setFirstRender] = useState<boolean>(true);
 
