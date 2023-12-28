@@ -40,6 +40,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             userId: session?.user?.id,
         });
 
+        console.log('SERVER API', process.env.SERVER_API);
+
         console.log('Connecting socket');
 
         const socketIO = ClientIO(

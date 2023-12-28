@@ -24,7 +24,7 @@ const NavigationPages: React.FC<Props> = ({ className }) => {
                     <li
                         key={index}
                         className={cn(
-                            'flex items-center w-full cursor-pointer rounded-xl p-2 my-1 hover:bg-light-100 dark:hover:bg-dark-500'
+                            'flex items-center w-full cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500'
                         )}
                     >
                         <Link

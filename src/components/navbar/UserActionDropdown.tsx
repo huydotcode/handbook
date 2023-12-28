@@ -1,5 +1,5 @@
 'use client';
-import { userActions } from '@/constants/actions';
+// import { userActions } from '@/constants/actions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SetStateAction, useState } from 'react';
@@ -11,10 +11,11 @@ import { signOut, useSession } from 'next-auth/react';
 import Popover, { usePopover } from '../ui/Popover';
 import Button from '../ui/Button';
 import { useSocket } from '@/context/SocketContext';
+import { BiLogOut } from 'react-icons/bi';
 
 const UserActionDropdown = () => {
     const { data: session } = useSession();
-    const [history, setHistory] = useState([{ data: userActions as any }]);
+    const [history, setHistory] = useState([{ data: [] as any }]);
     const currentHistory = history[history.length - 1] as any;
 
     const user = session?.user as ISessionUser;
@@ -138,11 +139,13 @@ const UserActionDropdown = () => {
                         })}
 
                         <Button
+                            className="w-[50%] lg:w-full "
                             variant={'event'}
                             size={'medium'}
                             onClick={handleLogout}
                         >
-                            Đăng xuất 2
+                            <BiLogOut className="text-xl mr-2" />
+                            Đăng xuất
                         </Button>
                     </ul>
                 </div>
