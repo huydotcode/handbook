@@ -45,7 +45,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('Connecting socket');
 
         const socketIO = ClientIO(
-            process.env.SERVER_API || 'http://localhost:5000',
+            'https://handbook-server.onrender.com' || 'http://localhost:5000',
             {
                 withCredentials: true,
                 extraHeaders: {
