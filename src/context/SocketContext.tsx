@@ -40,8 +40,18 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             userId: session?.user?.id,
         });
 
-        await fetch('/api/socket');
-        const socketIO = ClientIO();
+        console.log('Connecting socket');
+
+        const socketIO = ClientIO(
+            process.env.SERVER_API || 'http://localhost:5000',
+            {
+                withCredentials: true,
+                extraHeaders: {
+                    'my-custom-header': 'abcd',
+                },
+            }
+        );
+
         setSocket((prev) => {
             const newSocket = socketIO as any;
             return newSocket;
@@ -55,6 +65,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         };
 
         socketIO.on('connect', () => {
+            console.log('Socket connected');
             setIsConnected(true);
         });
 
