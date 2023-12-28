@@ -88,7 +88,7 @@ const ChatBox: React.FC<Props> = ({}) => {
         );
 
     return (
-        <div className="flex-1 flex flex-col bg-white overflow-hidden dark:bg-dark-200">
+        <div className="relative flex-1 flex flex-col bg-white dark:bg-dark-200 ">
             {/* Header */}
             <div className="flex items-center justify-between p-4 h-16">
                 <div className="flex items-center">
@@ -107,8 +107,8 @@ const ChatBox: React.FC<Props> = ({}) => {
             </div>
 
             {/* Body */}
-            <div className="flex-1 w-full h-[calc(100%-56px-64px)] p-2 border-y dark:border-y-gray-600">
-                <div className="flex flex-col h-full overflow-y-auto">
+            <div className="w-full h-[calc(100%-56px-64px)] p-2 border-y dark:border-y-gray-600 over">
+                <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden p-2">
                     {messagesInRoom.map((msg) => (
                         <Message key={msg._id} data={msg} />
                     ))}
@@ -119,14 +119,14 @@ const ChatBox: React.FC<Props> = ({}) => {
 
             {/* Footer */}
             <form
-                className="h-16 w-full flex items-center justify-between "
+                className="absolute bottom-0 left-0 right-0 flex items-center justify-center p-2"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
                 <input
                     {...register('text')}
                     type="text"
-                    className="flex-1 outline-none border-2 border-gray-300 rounded-full py-2 px-4"
+                    className="w-[80%] outline-none border-2 shadow-xl border-gray-300 rounded-full py-2 px-4 max-w-[600px]"
                     placeholder="Nhập tin nhắn..."
                     spellCheck={false}
                     autoComplete="off"
