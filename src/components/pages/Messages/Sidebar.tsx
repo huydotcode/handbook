@@ -51,13 +51,26 @@ const Sidebar: React.FC<Props> = () => {
         setShowSidebar((prev) => !prev);
     };
 
+    useEffect(() => {
+        // check if window width is less than 768px than setShowSidebar fasle
+        // use resize
+
+        window.onresize = () => {
+            if (window.innerWidth < 768) {
+                setShowSidebar(false);
+            } else {
+                setShowSidebar(true);
+            }
+        };
+    }, []);
+
     if (!session) return null;
 
     return (
         <>
             <Button
                 className={cn(
-                    'hidden sm:block absolute top-8 left-1 text-3xl w-12 h-12 z-10 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
+                    'hidden md:block absolute top-8 left-1 text-3xl w-12 h-12 z-10 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
                     {
                         '-left-4 opacity-40': !isHover,
                         '-left-1': isHover,

@@ -88,7 +88,7 @@ const ChatBox: React.FC<Props> = ({}) => {
         );
 
     return (
-        <div className="relative flex-1 flex flex-col bg-white dark:bg-dark-200 ">
+        <div className="relative flex-1 bg-white dark:bg-dark-200 ">
             {/* Header */}
             <div className="flex items-center justify-between p-4 h-16">
                 <div className="flex items-center">
@@ -119,7 +119,7 @@ const ChatBox: React.FC<Props> = ({}) => {
 
             {/* Footer */}
             <form
-                className="absolute bottom-0 left-0 right-0 flex items-center justify-center p-2"
+                className="fixed bottom-0 right-0 w-full flex items-center justify-end p-2"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
