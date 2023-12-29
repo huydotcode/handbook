@@ -6,12 +6,13 @@ import { useSocket } from '@/context/SocketContext';
 import { sendMessage } from '@/lib/actions/message.action';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
 import { cn } from '@/lib/utils';
+import { IoIosArrowDown, IoIosClose } from 'react-icons/io';
 
 interface Props {
     isPopup?: boolean;
@@ -33,6 +34,8 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
     const { handleSubmit, register, reset } = useForm<IFormData>();
+
+    const [scrollDown, setScrollDown] = useState<boolean>(false);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -92,6 +95,17 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
 
         socket.emit('read-message', { roomId: currentRoom.id });
     }, [socket, currentRoom.id]);
+
+    useEffect(() => {
+        if (scrollDown && bottomRef.current) {
+            bottomRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+            });
+
+            setScrollDown(false);
+        }
+    }, [scrollDown]);
 
     if (!currentRoom || !currentRoom.id) return <></>;
 
@@ -190,6 +204,17 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                     </Button>
                 </div>
             </form>
+
+            {!isPopup && (
+                <Button
+                    className="absolute bottom-[60px] right-4 z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300"
+                    onClick={() => {
+                        setScrollDown(true);
+                    }}
+                >
+                    <IoIosArrowDown />
+                </Button>
+            )}
         </div>
     );
 };

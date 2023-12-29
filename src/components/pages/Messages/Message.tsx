@@ -9,6 +9,7 @@ import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import React, { FormEventHandler, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { MdDelete } from 'react-icons/md';
 
 interface Props {
     data: IMessage;
@@ -108,7 +109,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                     {showMenu && isOwnMsg && (
                         <form
                             className={
-                                'absolute flex items-center bottom-0 h-full right-[120%]'
+                                'absolute flex items-center bottom-0 h-full right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
                             }
                             onSubmit={handleDeleteMsg}
                         >
@@ -117,7 +118,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                                 size={'small'}
                                 type="submit"
                             >
-                                Xóa
+                                <MdDelete />
                             </Button>
                         </form>
                     )}

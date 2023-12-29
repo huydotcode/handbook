@@ -20,13 +20,9 @@ const UserActionDropdown = () => {
 
     const user = session?.user as ISessionUser;
     const { open, anchorEl, handleClose, handleShow } = usePopover();
-    const { socket } = useSocket();
 
     const handleLogout = () => {
         signOut();
-        if (socket) {
-            socket.disconnect();
-        }
     };
 
     return (
