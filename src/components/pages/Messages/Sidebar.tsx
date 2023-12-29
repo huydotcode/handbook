@@ -45,6 +45,8 @@ const Sidebar: React.FC<Props> = () => {
             members: [session.user.id, friend._id],
             messages: [],
         });
+
+        setShowSidebar(false);
     };
 
     const handleToggleSidebar = () => {
@@ -70,7 +72,7 @@ const Sidebar: React.FC<Props> = () => {
         <>
             <Button
                 className={cn(
-                    'hidden md:block absolute top-8 left-1 text-3xl w-12 h-12 z-20 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
+                    'hidden md:block absolute top-16 left-1 text-3xl w-12 h-12 z-20 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
                     {
                         '-left-4 opacity-40': !isHover,
                         '-left-1': isHover,
@@ -86,7 +88,7 @@ const Sidebar: React.FC<Props> = () => {
 
             <div
                 className={cn(
-                    'fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500',
+                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500',
                     {
                         'w-0 overflow-hidden border-none': !showSidebar,
                         'w-[40%] min-w-[200px]': showSidebar,
