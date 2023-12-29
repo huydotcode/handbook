@@ -55,16 +55,19 @@ const Sidebar: React.FC<Props> = () => {
         setShowSidebar((prev) => !prev);
     };
 
-    useEffect(() => {
-        // check if window width is less than 768px than setShowSidebar fasle
-        // use resize
+    const handleResize = () => {
+        if (window.innerWidth < 768) {
+            setShowSidebar(false);
+        } else {
+            setShowSidebar(true);
+        }
+    };
 
-        window.onresize = () => {
-            if (window.innerWidth < 768) {
-                setShowSidebar(false);
-            } else {
-                setShowSidebar(true);
-            }
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
