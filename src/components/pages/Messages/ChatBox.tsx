@@ -119,7 +119,7 @@ const ChatBox: React.FC<Props> = ({}) => {
 
             {/* Footer */}
             <form
-                className="fixed bottom-0 right-0 w-full flex items-center justify-end p-2"
+                className="fixed bottom-0 right-0 w-full flex items-center justify-end p-2 z-50"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >

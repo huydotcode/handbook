@@ -88,7 +88,7 @@ const Sidebar: React.FC<Props> = () => {
                 className={cn(
                     'fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500',
                     {
-                        'w-0 overflow-hidden': !showSidebar,
+                        'w-0 overflow-hidden border-none': !showSidebar,
                         'w-[40%] min-w-[200px]': showSidebar,
                     }
                 )}
