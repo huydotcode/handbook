@@ -46,7 +46,9 @@ const Sidebar: React.FC<Props> = () => {
             messages: [],
         });
 
-        setShowSidebar(false);
+        if (window.innerWidth < 768) {
+            setShowSidebar(false);
+        }
     };
 
     const handleToggleSidebar = () => {
