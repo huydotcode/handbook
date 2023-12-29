@@ -82,3 +82,8 @@ interface ILastMessage {
     roomId: string;
     data: IMessage;
 }
+
+interface ILoading {
+    friends: boolean;
+    messages: boolean;
+}

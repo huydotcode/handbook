@@ -80,12 +80,7 @@ const ChatBox: React.FC<Props> = ({}) => {
         socket.emit('read-message', { roomId: currentRoom.id });
     }, [socket, currentRoom.id]);
 
-    if (!currentRoom || !currentRoom.id)
-        return (
-            <div className="flex flex-1 items-center justify-center">
-                Chưa có cuộc trò chuyện nào
-            </div>
-        );
+    if (!currentRoom || !currentRoom.id) return <></>;
 
     return (
         <div className="relative flex-1 bg-white dark:bg-dark-200 ">

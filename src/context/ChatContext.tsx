@@ -29,6 +29,7 @@ interface IChatContext {
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
     lastMessages: ILastMessage[];
     setLastMessages: React.Dispatch<React.SetStateAction<ILastMessage[]>>;
+    loading: ILoading;
 }
 
 interface ISocketUser {
@@ -55,10 +56,15 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
     const [roomsHaveGetMessages, setRoomsHaveGetMessages] = useState<string[]>(
         []
     );
+    const [loading, setLoading] = useState<ILoading>({
+        friends: false,
+        messages: false,
+    });
     const [lastMessages, setLastMessages] = useState<ILastMessage[]>([]);
 
     const handleGetFriends = useCallback(async () => {
         if (!session) return;
+        setLoading((prev) => ({ ...prev, friends: true }));
         const data =
             (await fetchFriends({
                 userId: session.user.id,
@@ -220,6 +226,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         setMessages,
         lastMessages,
         setLastMessages,
+        loading,
     };
     return (
         <ChatContext.Provider value={values}>{children}</ChatContext.Provider>

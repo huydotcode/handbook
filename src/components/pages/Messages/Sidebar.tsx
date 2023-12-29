@@ -20,6 +20,7 @@ const Sidebar: React.FC<Props> = () => {
         setCurrentRoom,
         friendsOnline,
         lastMessages,
+        loading,
     } = useChat();
     const { socket } = useSocket();
     const [showSidebar, setShowSidebar] = useState(true);
@@ -97,6 +98,7 @@ const Sidebar: React.FC<Props> = () => {
                     {
                         'w-0  border-none': !showSidebar,
                         'w-[40%]': showSidebar,
+                        'h-[calc(100vh-56px)]': !!!currentRoom.id,
                     }
                 )}
             >
@@ -151,7 +153,7 @@ const Sidebar: React.FC<Props> = () => {
                     );
                 })}
 
-                {friends.length === 0 && (
+                {!loading.friends && friends.length === 0 && (
                     <div className="flex items-center justify-center h-full">
                         <p className="text-gray-500 max-w-[200px]">
                             Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt đầu
