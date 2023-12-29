@@ -88,10 +88,10 @@ const Sidebar: React.FC<Props> = () => {
 
             <div
                 className={cn(
-                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500',
+                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500 overflow-hidden',
                     {
-                        'w-0 overflow-hidden border-none': !showSidebar,
-                        'w-[40%] min-w-[200px]': showSidebar,
+                        'w-0  border-none': !showSidebar,
+                        'w-[40%]': showSidebar,
                     }
                 )}
             >
@@ -122,7 +122,7 @@ const Sidebar: React.FC<Props> = () => {
 
                             <div className="flex flex-1 flex-col">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-bold text-sm ml-2">
+                                    <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
                                         {user.name}
                                     </h3>
                                     <span className="text-xs ml-2 text-gray-500">
