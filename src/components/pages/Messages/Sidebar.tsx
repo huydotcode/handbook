@@ -94,7 +94,7 @@ const Sidebar: React.FC<Props> = () => {
 
             <div
                 className={cn(
-                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] h-[calc(100vh-56px-54px)] bg-white dark:bg-dark-200 transition-all duration-500 overflow-hidden',
+                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] min-h-[calc(100vh-56px-54px)] bg-white dark:bg-dark-200 transition-all duration-500 overflow-x-hidden',
                     {
                         'w-0  border-none': !showSidebar,
                         'w-[40%]': showSidebar,
@@ -102,6 +102,10 @@ const Sidebar: React.FC<Props> = () => {
                     }
                 )}
             >
+                <span className="p-2 text-xl font-bold border-b text-center">
+                    Bạn bè
+                </span>
+
                 {friends.map((user: IFriend) => {
                     const isOnline = friendsOnline.find(
                         (f) => f.userId === user._id
@@ -118,38 +122,40 @@ const Sidebar: React.FC<Props> = () => {
                     );
 
                     return (
-                        <div
-                            className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer ${
-                                isSelect && 'bg-gray-200 dark:bg-gray-800'
-                            }`}
-                            key={user._id}
-                            onClick={() => handleJoinRoom(user)}
-                        >
-                            <Avatar imgSrc={user.image} />
+                        <>
+                            <div
+                                className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer ${
+                                    isSelect && 'bg-gray-200 dark:bg-gray-800'
+                                }`}
+                                key={user._id}
+                                onClick={() => handleJoinRoom(user)}
+                            >
+                                <Avatar imgSrc={user.image} />
 
-                            <div className="flex flex-1 flex-col">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
-                                        {user.name}
-                                    </h3>
-                                    <span className="text-xs ml-2 text-gray-500">
-                                        <FaCircle
-                                            className={`${
-                                                isOnline
-                                                    ? 'text-blue-600'
-                                                    : 'text-gray-500'
-                                            }`}
-                                        />
-                                    </span>
+                                <div className="flex flex-1 flex-col">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
+                                            {user.name}
+                                        </h3>
+                                        <span className="text-xs ml-2 text-gray-500">
+                                            <FaCircle
+                                                className={`${
+                                                    isOnline
+                                                        ? 'text-blue-600'
+                                                        : 'text-gray-500'
+                                                }`}
+                                            />
+                                        </span>
+                                    </div>
+                                    {lastMsg && (
+                                        <p className="text-xs text-gray-500 ml-2">
+                                            {lastMsg.data.text ||
+                                                'Chưa có tin nhắn'}
+                                        </p>
+                                    )}
                                 </div>
-                                {lastMsg && (
-                                    <p className="text-xs text-gray-500 ml-2">
-                                        {lastMsg.data.text ||
-                                            'Chưa có tin nhắn'}
-                                    </p>
-                                )}
                             </div>
-                        </div>
+                        </>
                     );
                 })}
 
