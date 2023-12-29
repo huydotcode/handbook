@@ -70,7 +70,7 @@ const Sidebar: React.FC<Props> = () => {
         <>
             <Button
                 className={cn(
-                    'hidden md:block absolute top-8 left-1 text-3xl w-12 h-12 z-10 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
+                    'hidden md:block absolute top-8 left-1 text-3xl w-12 h-12 z-20 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
                     {
                         '-left-4 opacity-40': !isHover,
                         '-left-1': isHover,
@@ -84,69 +84,75 @@ const Sidebar: React.FC<Props> = () => {
                 {showSidebar ? <IoIosArrowBack /> : <IoIosArrowForward />}
             </Button>
 
-            {showSidebar && (
-                <div className="flex flex-col border-r dark:border-r-gray-600">
-                    {friends.map((user: IFriend) => {
-                        const isOnline = friendsOnline.find(
-                            (f) => f.userId === user._id
-                        );
+            <div
+                className={cn(
+                    'fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 h-[calc(100vh-56px-57px)] bg-white dark:bg-dark-200 transition-all duration-500',
+                    {
+                        'w-0 overflow-hidden': !showSidebar,
+                        'w-[40%] min-w-[200px]': showSidebar,
+                    }
+                )}
+            >
+                {friends.map((user: IFriend) => {
+                    const isOnline = friendsOnline.find(
+                        (f) => f.userId === user._id
+                    );
 
-                        const isSelect =
-                            currentRoom.id ==
-                            [session.user.id, user._id].sort().join('');
+                    const isSelect =
+                        currentRoom.id ==
+                        [session.user.id, user._id].sort().join('');
 
-                        const lastMsg = lastMessages.find(
-                            (msg) =>
-                                msg.roomId ===
-                                generateRoomId(session.user.id, user._id)
-                        );
+                    const lastMsg = lastMessages.find(
+                        (msg) =>
+                            msg.roomId ===
+                            generateRoomId(session.user.id, user._id)
+                    );
 
-                        return (
-                            <div
-                                className={`min-w-[300px] flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer ${
-                                    isSelect && 'bg-gray-200 dark:bg-gray-800'
-                                }`}
-                                key={user._id}
-                                onClick={() => handleJoinRoom(user)}
-                            >
-                                <Avatar imgSrc={user.image} />
+                    return (
+                        <div
+                            className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer ${
+                                isSelect && 'bg-gray-200 dark:bg-gray-800'
+                            }`}
+                            key={user._id}
+                            onClick={() => handleJoinRoom(user)}
+                        >
+                            <Avatar imgSrc={user.image} />
 
-                                <div className="flex flex-1 flex-col">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-bold text-sm ml-2">
-                                            {user.name}
-                                        </h3>
-                                        <span className="text-xs ml-2 text-gray-500">
-                                            <FaCircle
-                                                className={`${
-                                                    isOnline
-                                                        ? 'text-blue-600'
-                                                        : 'text-gray-500'
-                                                }`}
-                                            />
-                                        </span>
-                                    </div>
-                                    {lastMsg && (
-                                        <p className="text-xs text-gray-500 ml-2">
-                                            {lastMsg.data.text ||
-                                                'Chưa có tin nhắn'}
-                                        </p>
-                                    )}
+                            <div className="flex flex-1 flex-col">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-bold text-sm ml-2">
+                                        {user.name}
+                                    </h3>
+                                    <span className="text-xs ml-2 text-gray-500">
+                                        <FaCircle
+                                            className={`${
+                                                isOnline
+                                                    ? 'text-blue-600'
+                                                    : 'text-gray-500'
+                                            }`}
+                                        />
+                                    </span>
                                 </div>
+                                {lastMsg && (
+                                    <p className="text-xs text-gray-500 ml-2">
+                                        {lastMsg.data.text ||
+                                            'Chưa có tin nhắn'}
+                                    </p>
+                                )}
                             </div>
-                        );
-                    })}
-
-                    {friends.length === 0 && (
-                        <div className="flex items-center justify-center h-full">
-                            <p className="text-gray-500 max-w-[200px]">
-                                Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt
-                                đầu trò chuyện
-                            </p>
                         </div>
-                    )}
-                </div>
-            )}
+                    );
+                })}
+
+                {friends.length === 0 && (
+                    <div className="flex items-center justify-center h-full">
+                        <p className="text-gray-500 max-w-[200px]">
+                            Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt đầu
+                            trò chuyện
+                        </p>
+                    </div>
+                )}
+            </div>
         </>
     );
 };
