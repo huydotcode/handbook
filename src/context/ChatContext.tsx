@@ -1,27 +1,22 @@
 'use client';
+import { fetchMessagesByRoomId } from '@/lib/actions/message.action';
 import { fetchFriends } from '@/lib/actions/user.action';
 import { useSession } from 'next-auth/react';
 import React, {
-    use,
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { useSocket } from './SocketContext';
-import {
-    fetchLastMessage,
-    fetchMessagesByRoomId,
-} from '@/lib/actions/message.action';
-import generateRoomId from '@/utils/generateRoomId';
-import { set } from 'mongoose';
 
 interface Props {
     children: React.ReactNode;
 }
 
 interface IChatContext {
-    friends: any[];
+    friends: IFriend[];
     friendsOnline: any[];
     currentRoom: IRoomChat;
     setCurrentRoom: React.Dispatch<React.SetStateAction<IRoomChat>>;
@@ -29,6 +24,7 @@ interface IChatContext {
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
     lastMessages: ILastMessage[];
     setLastMessages: React.Dispatch<React.SetStateAction<ILastMessage[]>>;
+    messagesInRoom: IMessage[];
     loading: ILoading;
 }
 
@@ -61,6 +57,10 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         messages: false,
     });
     const [lastMessages, setLastMessages] = useState<ILastMessage[]>([]);
+
+    const messagesInRoom = useMemo(() => {
+        return messages.filter((msg) => msg.roomId === currentRoom.id);
+    }, [messages, currentRoom.id]);
 
     const handleGetFriends = useCallback(async () => {
         if (!session) return;
@@ -125,7 +125,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
 
             switch (action) {
                 case 'RECEIVE_MESSAGE':
-                    socket.on('receive-message', (data) => {
+                    socket.on('receive-message', (data: any) => {
                         setMessages((prev) => [...prev, data]);
                     });
                     break;
@@ -138,7 +138,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                     break;
                 case 'GET_LAST_MESSAGES':
                     socket.on('get-last-messages', ({ roomId, data }) => {
-                        console.log('GET LAST MESSAGE', data);
                         setLastMessages((prev) => {
                             const index = prev.findIndex(
                                 (msg) => msg.roomId === roomId
@@ -154,19 +153,12 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                                     data: data,
                                 });
                             }
-                            console.log('PREV', prev);
                             return prev;
                         });
                     });
                     break;
                 case 'READ_MESSAGE':
                     socket.on('read-message', ({ roomId, userId }) => {
-                        console.log(
-                            'READ MESSAGE FROM',
-                            userId,
-                            'IN ROOM',
-                            roomId
-                        );
                         setMessages((prev) =>
                             prev.map((msg) => {
                                 if (
@@ -225,6 +217,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         messages,
         setMessages,
         lastMessages,
+        messagesInRoom,
         setLastMessages,
         loading,
     };

@@ -1,6 +1,6 @@
 'use client';
 import { fetchFriends } from '@/lib/actions/user.action';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import {
     createContext,
     useCallback,
@@ -8,6 +8,7 @@ import {
     useEffect,
     useState,
 } from 'react';
+import toast from 'react-hot-toast';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
 
@@ -29,20 +30,15 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const { data: session } = useSession();
     const [isConnected, setIsConnected] = useState<boolean>(false);
-    const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
     const socketInitializer = useCallback(async () => {
-        if (!session || isConnected || isInitialized || socket?.connected)
+        if (!session || isConnected || socket) {
             return;
-        setIsInitialized(true);
+        }
 
         const friends = await fetchFriends({
             userId: session?.user?.id,
         });
-
-        console.log('SERVER API', process.env.SERVER_API);
-
-        console.log('Connecting socket');
 
         const socketIO = ClientIO(
             process.env.SERVER_API || 'https://handbook-server.onrender.com',
@@ -72,14 +68,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         socketIO.on('disconnect', () => {
+            console.log('Socket disconnected');
             setIsConnected(false);
         });
-    }, [session, isConnected, isInitialized, socket?.connected]);
+
+        socketIO.on('connect_error', (err) => {
+            toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
+            setIsConnected(false);
+        });
+    }, [session, isConnected, socket]);
 
     useEffect(() => {
-        if (socket?.connected) return;
+        if (socket && socket.connected) return;
         socketInitializer();
-    }, [socketInitializer, socket?.connected]);
+    }, [socketInitializer, socket, session]);
 
     return (
         <SocketContext.Provider value={{ socket, isConnected }}>

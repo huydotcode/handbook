@@ -3,6 +3,7 @@ import Avatar from '@/components/Avatar';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { deleteMessage } from '@/lib/actions/message.action';
+import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
@@ -15,10 +16,22 @@ interface Props {
 
 const Message: React.FC<Props> = ({ data: msg }) => {
     const { data: session } = useSession();
-    const { currentRoom, messages, setMessages } = useChat();
+    const { currentRoom, messages, setMessages, messagesInRoom } = useChat();
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+
+    const topAndBottomMsgIsSameUser =
+        messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId ===
+            msg.userId &&
+        messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId === msg.userId;
+
+    const bottomMsgIsSameUser = useMemo(() => {
+        return (
+            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId ===
+            msg.userId
+        );
+    }, [messagesInRoom, msg]);
 
     const isLastMessage = useMemo(() => {
         return messages[messages.length - 1]._id === msg._id;
@@ -67,9 +80,11 @@ const Message: React.FC<Props> = ({ data: msg }) => {
     return (
         <div
             key={msg._id}
-            className={`relative flex items-center justify-${
-                isOwnMsg ? 'end' : 'start'
-            } mb-2 w-full `}
+            className={cn('relative flex items-center mb-2 w-full', {
+                'justify-end': isOwnMsg,
+                'justify-start': !isOwnMsg,
+                'mb-[1px]': topAndBottomMsgIsSameUser || bottomMsgIsSameUser,
+            })}
             onMouseEnter={handleShowMenu}
             onMouseLeave={handleHideMenu}
         >
@@ -79,14 +94,22 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                 } w-full`}
             >
                 <div
-                    className={`relative flex items-center ${
-                        isOwnMsg ? 'items-end bg-blue-500' : 'bg-dark-500'
-                    } text-white px-4 py-2 rounded-xl max-w-[40%]`}
+                    className={cn(
+                        `relative flex items-center  text-white px-4 py-2 w-fit max-w-[70%]`,
+                        {
+                            'items-end bg-blue-500 rounded-l-xl rounded-r-sm':
+                                isOwnMsg,
+                            'bg-light-100 text-black rounded-l-sm rounded-r-xl dark:bg-dark-500 dark:text-white':
+                                !isOwnMsg,
+                        }
+                    )}
                     onClick={handleToggleShowTime}
                 >
                     {showMenu && isOwnMsg && (
                         <form
-                            className={'absolute right-[120%]'}
+                            className={
+                                'absolute flex items-center bottom-0 h-full right-[120%]'
+                            }
                             onSubmit={handleDeleteMsg}
                         >
                             <Button
@@ -99,7 +122,13 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                         </form>
                     )}
 
-                    <p className="text-xs">{msg.text}</p>
+                    <p
+                        className={cn('text-xs', {
+                            'text-justify': msg.text.length > 100,
+                        })}
+                    >
+                        {msg.text}
+                    </p>
                 </div>
 
                 {showTime && (
@@ -117,7 +146,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                     isLastMessage &&
                     session?.user.id === msg.userId && (
                         <Avatar
-                            className={'w-6 h-6 ml-2 mt-2'}
+                            className={'w-4 h-4 ml-2 mt-2'}
                             imgSrc={currentRoom.image || ''}
                         />
                     )}

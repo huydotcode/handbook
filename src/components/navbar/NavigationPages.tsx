@@ -1,10 +1,9 @@
 'use client';
+import Link from 'next/link';
+import React from 'react';
+import { usePathname } from 'next/navigation';
 import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React from 'react';
-import { HiHome } from 'react-icons/hi';
 
 interface Props {
     className?: string;
@@ -32,7 +31,7 @@ const NavigationPages: React.FC<Props> = ({ className }) => {
                             href={link.path || '/'}
                         >
                             <Icon />
-                            <span className="ml-2 md:hidden dark:text-primary">
+                            <span className="ml-2 text-sm lg:hidden dark:text-primary">
                                 {link.name}
                             </span>
                         </Link>

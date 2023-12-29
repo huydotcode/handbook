@@ -2,8 +2,15 @@
 import { Button } from '@/components';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEventHandler, useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+
+interface IFormData {
+    email: string;
+    password: string;
+}
 
 const Page: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -11,8 +18,12 @@ const Page: FC = () => {
     const router = useRouter();
     const { data: session } = useSession();
 
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const {
+        handleSubmit,
+        register,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<IFormData>();
     const error = searchParams?.get('error') || '';
 
     useEffect(() => {
@@ -38,7 +49,9 @@ const Page: FC = () => {
         }
     };
 
-    const loginWithCrenditals = async () => {
+    const loginWithCrenditals: SubmitHandler<IFormData> = async (formData) => {
+        const { email, password } = formData;
+
         try {
             const res = await signIn('credentials', {
                 email,
@@ -46,13 +59,20 @@ const Page: FC = () => {
                 redirect: false,
             });
 
+            if (res?.ok) {
+                toast.success('Đăng nhập thành công', {
+                    id: 'success-login',
+                });
+                router.push('/');
+            }
+
             if (res?.error) {
                 toast.error(res.error);
-            } else {
-                toast.success('Đăng nhập thành công');
             }
         } catch (error: any) {
-            toast.error(error);
+            toast.error('Đã có lỗi xảy ra khi đăng nhập', {
+                id: 'error-login',
+            });
         }
     };
 
@@ -65,19 +85,25 @@ const Page: FC = () => {
                     </h2>
 
                     <div className="flex flex-col w-full">
-                        <form action={loginWithCrenditals}>
+                        <form onSubmit={handleSubmit(loginWithCrenditals)}>
                             <div className="flex flex-col space-y-1">
                                 <label htmlFor="username" className="">
-                                    Tên đăng nhập
+                                    Email
                                 </label>
                                 <input
                                     className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                     type="text"
                                     id="username"
-                                    placeholder="Tên đăng nhập"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Nhập email của bạn"
+                                    {...register('email', {
+                                        required: 'Hãy nhập email',
+                                    })}
                                 />
+                                {errors.email && (
+                                    <p className="text-orange-500">
+                                        {errors.email.message}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="flex flex-col space-y-1">
@@ -89,21 +115,29 @@ const Page: FC = () => {
                                     type="password"
                                     id="password"
                                     placeholder="Nhập mật khẩu"
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    {...register('password', {
+                                        required: 'Hãy nhập mật khẩu',
+                                    })}
                                 />
+                                {errors.password && (
+                                    <p className="text-orange-500">
+                                        {errors.password.message}
+                                    </p>
+                                )}
                             </div>
 
                             <Button
                                 className="mt-6 w-full"
+                                type="submit"
                                 variant={'event'}
                                 size={'default'}
-                                disabled={isLoading}
-                                // onClick={loginWithCrenditals}
+                                disabled={isSubmitting || isLoading}
                             >
-                                <h5 className="text-lg">Đăng nhập</h5>
+                                {isSubmitting || isLoading ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin" />
+                                ) : (
+                                    <h5 className="text-lg">Đăng nhập</h5>
+                                )}
                             </Button>
                         </form>
 

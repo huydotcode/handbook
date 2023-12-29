@@ -9,24 +9,30 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { IoSend } from 'react-icons/io5';
+import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
+import { cn } from '@/lib/utils';
 
-interface Props {}
+interface Props {
+    isPopup?: boolean;
+    className?: string;
+}
 
 interface IFormData {
     text: string;
 }
 
-const ChatBox: React.FC<Props> = ({}) => {
-    const { currentRoom, messages, friendsOnline } = useChat();
+const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
+    const {
+        currentRoom,
+        messages,
+        friendsOnline,
+        setCurrentRoom,
+        messagesInRoom,
+    } = useChat();
     const { data: session } = useSession();
     const { socket } = useSocket();
     const { handleSubmit, register, reset } = useForm<IFormData>();
-
-    const messagesInRoom = useMemo(() => {
-        return messages.filter((msg) => msg.roomId === currentRoom.id);
-    }, [messages, currentRoom.id]);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -40,7 +46,15 @@ const ChatBox: React.FC<Props> = ({}) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
 
     const onSubmit = async (data: IFormData) => {
-        if (!session || !socket) return;
+        if (!session) {
+            toast.error('Vui lòng đăng nhập để gửi tin nhắn');
+            return;
+        }
+
+        if (!socket) {
+            toast.error('Không thể gửi tin nhắn! Vui lòng thử lại sau');
+            return;
+        }
 
         const { text } = data;
 
@@ -65,31 +79,47 @@ const ChatBox: React.FC<Props> = ({}) => {
     };
 
     useEffect(() => {
-        if (messages.length) {
+        if (messages.length && bottomRef.current && currentRoom.id) {
             bottomRef.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'end',
             });
         }
-    }, [messages.length]);
+    }, [messages.length, bottomRef, currentRoom.id]);
 
     useEffect(() => {
         if (!socket || !currentRoom.id) return;
 
-        console.log('EMIT READ MESSAGE');
         socket.emit('read-message', { roomId: currentRoom.id });
     }, [socket, currentRoom.id]);
 
     if (!currentRoom || !currentRoom.id) return <></>;
 
     return (
-        <div className="relative flex-1 bg-white dark:bg-dark-200 ">
+        <div
+            className={cn(
+                `relative flex-1 bg-white dark:bg-dark-200 ${className}`,
+                {
+                    'w-full h-full': !isPopup,
+                    'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50':
+                        isPopup,
+                }
+            )}
+        >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 h-16">
+            <div
+                className={cn('flex items-center justify-between p-4 h-16', {
+                    'border-b-2 dark:border-gray-700': !isPopup,
+                })}
+            >
                 <div className="flex items-center">
                     <Avatar imgSrc={currentRoom.image} />
                     <div className="flex flex-col">
-                        <h3 className="font-bold text-lg ml-2">
+                        <h3
+                            className={cn('font-bold text-md ml-2', {
+                                'text-sm': isPopup,
+                            })}
+                        >
                             {currentRoom.name}
                         </h3>
                         <span className="text-xs ml-2 text-gray-500">
@@ -98,11 +128,29 @@ const ChatBox: React.FC<Props> = ({}) => {
                                 : 'Không hoạt động'}
                         </span>
                     </div>
+
+                    {isPopup && (
+                        <Button
+                            className="absolute top-2 right-2"
+                            onClick={() => {
+                                setCurrentRoom({} as IRoomChat);
+                            }}
+                        >
+                            <IoClose />
+                        </Button>
+                    )}
                 </div>
             </div>
 
             {/* Body */}
-            <div className="w-full h-[calc(100%-56px-64px)] p-2 border-y dark:border-y-gray-600 over">
+            <div
+                className={cn(
+                    'absolute bottom-[52px] w-full h-[calc(100%-56px-64px)] dark:border-y-gray-600 over',
+                    {
+                        'overflow-y-hidden': isPopup,
+                    }
+                )}
+            >
                 <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden p-2">
                     {messagesInRoom.map((msg) => (
                         <Message key={msg._id} data={msg} />
@@ -114,22 +162,33 @@ const ChatBox: React.FC<Props> = ({}) => {
 
             {/* Footer */}
             <form
-                className="fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200"
+                className={cn(
+                    'fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t',
+                    {
+                        'h-12 absolute w-auto': isPopup,
+                    }
+                )}
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
-                <input
-                    {...register('text')}
-                    type="text"
-                    className="w-[80%] outline-none border-2 shadow-xl border-gray-300 rounded-full py-2 px-4 max-w-[600px]"
-                    placeholder="Nhập tin nhắn..."
-                    spellCheck={false}
-                    autoComplete="off"
-                />
+                <div className="relative flex items-center w-[80%] max-w-[600px] border shadow-xl rounded-full py-2 px-4 dark:bg-dark-500 dark:text-white">
+                    <input
+                        {...register('text')}
+                        type="text"
+                        className="flex-1 outline-none text-sm bg-transparent mr-16"
+                        placeholder="Nhập tin nhắn..."
+                        spellCheck={false}
+                        autoComplete="off"
+                    />
 
-                <Button type="submit">
-                    <IoSend />
-                </Button>
+                    <Button
+                        className="absolute right-0 rounded-r-full w-16 border-l h-full text-base hover:bg-light-100 dark:hover:bg-zinc-600"
+                        variant={'custom'}
+                        type="submit"
+                    >
+                        <IoSend />
+                    </Button>
+                </div>
             </form>
         </div>
     );

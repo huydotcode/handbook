@@ -9,7 +9,7 @@ const Sidebar = () => {
     const user = session?.user as ISessionUser;
 
     return (
-        <div className="mt-4 mr-4 rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">
+        <div className="mr-4 w-[80%] rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">
             <div className="p-2">
                 {user && (
                     <Link
@@ -24,7 +24,7 @@ const Sidebar = () => {
                             alt={user?.name || ''}
                         />
 
-                        <span className="ml-2 md:hidden dark:text-primary">
+                        <span className="ml-2 lg:hidden text-sm dark:text-primary">
                             {user?.name}
                         </span>
                     </Link>

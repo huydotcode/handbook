@@ -21,11 +21,13 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
                 <ThemeProvider attribute="class">
                     <SessionProvider>
                         <SocketProvider>
-                            <Toaster
-                                position="bottom-center"
-                                reverseOrder={false}
-                            />
-                            {children}
+                            <ChatProvider>
+                                <Toaster
+                                    position="bottom-center"
+                                    reverseOrder={false}
+                                />
+                                {children}
+                            </ChatProvider>
                         </SocketProvider>
                     </SessionProvider>
                 </ThemeProvider>

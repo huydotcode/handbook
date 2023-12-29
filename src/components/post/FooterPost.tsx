@@ -88,7 +88,7 @@ const FooterPost = () => {
                                     />
 
                                     <Button
-                                        className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                        className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
                                         variant={'custom'}
                                         size={'none'}
                                         type="submit"

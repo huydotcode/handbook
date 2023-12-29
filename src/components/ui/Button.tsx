@@ -5,11 +5,11 @@ import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-    'flex items-center justify-center text-black dark:text-white disabled:bg-gray-500 disabled:cursor-not-allowed dark:shadow-none',
+    'flex items-center justify-center text-black dark:text-white disabled:cursor-not-allowed dark:shadow-none',
     {
         variants: {
             variant: {
-                default: 'rounded-xl shadow-md',
+                default: 'rounded-xl shadow-md disabled:bg-gray-500',
                 contained: 'bg-primary hover:bg-[rgb(61,61,236)]',
                 outlined:
                     'border border-primary hover:border-transparent hover:bg-primary hover:text-white',
