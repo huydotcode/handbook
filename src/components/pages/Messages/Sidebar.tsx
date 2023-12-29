@@ -124,8 +124,8 @@ const Sidebar: React.FC<Props> = () => {
                     return (
                         <>
                             <div
-                                className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer ${
-                                    isSelect && 'bg-gray-200 dark:bg-gray-800'
+                                className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
+                                    isSelect && 'bg-gray-200 dark:bg-dark-500'
                                 }`}
                                 key={user._id}
                                 onClick={() => handleJoinRoom(user)}

@@ -109,7 +109,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                     {showMenu && isOwnMsg && (
                         <form
                             className={
-                                'absolute flex items-center bottom-0 h-full right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
+                                'absolute flex items-center top-0 right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
                             }
                             onSubmit={handleDeleteMsg}
                         >

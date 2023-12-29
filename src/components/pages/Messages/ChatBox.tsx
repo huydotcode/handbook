@@ -122,9 +122,9 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         >
             {/* Header */}
             <div
-                className={cn('flex items-center justify-between p-4 h-16', {
-                    'border-b-2 dark:border-gray-700': !isPopup,
-                })}
+                className={cn(
+                    'flex items-center justify-between p-4 h-16 border-b-2 dark:border-gray-700'
+                )}
             >
                 <div className="flex items-center">
                     <Avatar imgSrc={currentRoom.image} />
@@ -177,7 +177,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {/* Footer */}
             <form
                 className={cn(
-                    'fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t',
+                    'fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t dark:border-gray-700',
                     {
                         'h-12 absolute w-auto': isPopup,
                     }
@@ -185,18 +185,18 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
-                <div className="relative flex items-center w-[80%] max-w-[600px] border shadow-xl rounded-full py-2 px-4 dark:bg-dark-500 dark:text-white">
+                <div className="relative flex items-center w-[80%] max-w-[600px] border shadow-xl rounded-full   dark:bg-dark-500 dark:text-white justify-center">
                     <input
                         {...register('text')}
                         type="text"
-                        className="flex-1 outline-none text-sm bg-transparent mr-16"
+                        className="flex-1 outline-none text-sm bg-transparent w-[calc(100%-64px)] py-2 px-4"
                         placeholder="Nhập tin nhắn..."
                         spellCheck={false}
                         autoComplete="off"
                     />
 
                     <Button
-                        className="absolute right-0 rounded-r-full w-16 border-l h-full text-base hover:bg-light-100 dark:hover:bg-zinc-600"
+                        className="rounded-r-full w-16 border-l min-h-full text-base hover:bg-light-100 dark:hover:bg-zinc-600 "
                         variant={'custom'}
                         type="submit"
                     >
@@ -207,7 +207,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
 
             {!isPopup && (
                 <Button
-                    className="absolute bottom-[60px] right-4 z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300"
+                    className="fixed bottom-[60px] right-4 z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300"
                     onClick={() => {
                         setScrollDown(true);
                     }}
