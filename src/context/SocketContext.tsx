@@ -15,13 +15,13 @@ import { io as ClientIO } from 'socket.io-client';
 
 type SocketContextType = {
     socket: Socket | null;
-    isConnected: boolean;
+    // isConnected: boolean;
     isLoading: boolean;
 };
 
 const SocketContext = createContext<SocketContextType | null>({
     socket: null,
-    isConnected: false,
+    // isConnected: false,
     isLoading: false,
 });
 
@@ -32,14 +32,14 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const { data: session, status } = useSession();
-    const [isConnected, setIsConnected] = useState<boolean>(false);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const [isJoin, setIsJoin] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const socketInitializer = useCallback(async () => {
-        if (isInitialized || !session?.user || isConnected) return;
+        if (isInitialized || !session?.user) return;
+
+        console.log('Socket initializing...');
 
         const socketIO = await ClientIO(
             process.env.SERVER_API ||
@@ -64,17 +64,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         socketIO.on('connect', () => {
             console.log('Socket connected');
-            setIsConnected(true);
         });
 
         socketIO.on('disconnect', () => {
             console.log('Socket disconnected');
-            setIsConnected(false);
         });
 
         socketIO.on('connect_error', (err) => {
             toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
-            setIsConnected(false);
         });
 
         return () => {
@@ -83,9 +80,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 socket.disconnect();
             }
             setSocket(null);
-            setIsConnected(false);
         };
-    }, [socket, session?.user, isInitialized, isConnected]);
+    }, [socket, session?.user, isInitialized]);
 
     useEffect(() => {
         if (session?.user) {
@@ -95,7 +91,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     const values = {
         socket,
-        isConnected,
         isLoading,
     };
 

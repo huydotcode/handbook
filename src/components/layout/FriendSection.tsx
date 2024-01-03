@@ -16,7 +16,7 @@ interface Props {}
 const FriendSection: React.FC<Props> = ({}) => {
     const { friends, friendsOnline, setCurrentRoom } = useChat();
     const { data: session } = useSession();
-    const { socket, isLoading, isConnected } = useSocket();
+    const { socket, isLoading } = useSocket();
 
     const [showFriendSection, setShowFriendSection] = useState(true);
 
@@ -44,10 +44,6 @@ const FriendSection: React.FC<Props> = ({}) => {
 
     const handleToggleShow = () => setShowFriendSection((prev) => !prev);
 
-    useEffect(() => {
-        console.log('FRIENDS', friends);
-    }, [friends]);
-
     if (!session) return <></>;
 
     return (
@@ -74,7 +70,7 @@ const FriendSection: React.FC<Props> = ({}) => {
                     </div>
                 )}
 
-                {!isLoading && isConnected && (
+                {!isLoading && (
                     <div>
                         {friends.map((friend) => {
                             const isOnline = friendsOnline.find(

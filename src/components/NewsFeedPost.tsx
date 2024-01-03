@@ -24,7 +24,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
     const pageSize = 3;
-    const { socket, isConnected } = useSocket();
+    const { socket } = useSocket();
 
     const [firstRender, setFirstRender] = useState<boolean>(true);
 

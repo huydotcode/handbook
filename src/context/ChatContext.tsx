@@ -83,18 +83,17 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         if (!socket) return;
 
         socket.on('users', (users) => {
-            console.log('USERS ONLINE', users);
-            // const newUsers = [] as any;
-            // users.forEach((user: any) => {
-            //     const isIncluded =
-            //         friends.includes(user.userId) &&
-            //         !friendsOnline.includes(user.userId);
-            //     if (!isIncluded) {
-            //         newUsers.push(user);
-            //     }
-            // });
+            const newUsers = [] as any;
+            users.forEach((user: any) => {
+                const isIncluded =
+                    friends.includes(user.userId) &&
+                    !friendsOnline.includes(user.userId);
+                if (!isIncluded) {
+                    newUsers.push(user);
+                }
+            });
 
-            // setFriendsOnline(newUsers);
+            setFriendsOnline(newUsers);
         });
     }, [socket, friends, friendsOnline]);
 
@@ -177,6 +176,28 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                         );
                     });
                     break;
+                case 'ADD_FRIEND':
+                    socket.on('add-friend-success', (data) => {
+                        const newFriend = {
+                            _id: data._id,
+                            name: data.name,
+                            image: data.image,
+                        };
+
+                        if (data) {
+                            setFriends((prev) => [...prev, newFriend]);
+                        }
+                    });
+                    break;
+                case 'UN_FRIEND':
+                    socket.on('un-friend-success', (friendId) => {
+                        if (friendId) {
+                            setFriends((prev) =>
+                                prev.filter((friend) => friend._id !== friendId)
+                            );
+                        }
+                    });
+                    break;
                 default:
                     break;
             }
@@ -204,46 +225,14 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         handleSocketAction('GET_LAST_MESSAGES');
         handleSocketAction('READ_MESSAGE');
         handleSocketAction('DELETE_MESSAGE');
+        handleSocketAction('ADD_FRIEND');
+        handleSocketAction('UN_FRIEND');
     }, [handleSocketAction]);
 
     // Get messages
     useEffect(() => {
         handleGetMessages();
     }, [handleGetMessages]);
-
-    // useEffect(() => {
-    //     console.log('ChatProvider: useEffect');
-    // }, []);
-
-    // log friends online
-    useEffect(() => {
-        console.log('friends online', friendsOnline);
-    }, [friendsOnline]);
-
-    // // log messages
-    // useEffect(() => {
-    //     console.log('messages', messages);
-    // }, [messages]);
-
-    // // log last messages
-    // useEffect(() => {
-    //     console.log('last messages', lastMessages);
-    // }, [lastMessages]);
-
-    // // log current room
-    // useEffect(() => {
-    //     console.log('current room', currentRoom);
-    // }, [currentRoom]);
-
-    // // log rooms have get messages
-    // useEffect(() => {
-    //     console.log('rooms have get messages', roomsHaveGetMessages);
-    // }, [roomsHaveGetMessages]);
-
-    // // log friends
-    // useEffect(() => {
-    //     console.log('friends', friends);
-    // }, [friends]);
 
     const values = {
         friends: friends,

@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components';
-import { addFriend } from '@/lib/actions/profile.action';
+import { useChat } from '@/context/ChatContext';
+import { useSocket } from '@/context/SocketContext';
 import React, { FormEventHandler } from 'react';
 
 interface Props {
@@ -8,17 +9,40 @@ interface Props {
 }
 
 const Action: React.FC<Props> = ({ userId }) => {
+    const { friends } = useChat();
+    const { socket } = useSocket();
     const handleAddFriend: FormEventHandler = async (e) => {
         e.preventDefault();
 
-        await addFriend({
-            userId,
-        });
+        if (socket) {
+            await socket.emit('add-friend', {
+                friendId: userId,
+            });
+        }
     };
+
+    const handleRemoveFriend = async () => {
+        if (socket) {
+            await socket.emit('un-friend', {
+                friendId: userId,
+            });
+        }
+    };
+
+    if (friends.find((friend) => friend._id === userId))
+        return (
+            <Button
+                onClick={handleRemoveFriend}
+                variant={'event'}
+                size={'medium'}
+            >
+                Đã kết bạn
+            </Button>
+        );
 
     return (
         <form onSubmit={handleAddFriend}>
-            <Button variant={'event'} size={'medium'}>
+            <Button className="bg-primary" variant={'event'} size={'medium'}>
                 Thêm bạn bè
             </Button>
         </form>
