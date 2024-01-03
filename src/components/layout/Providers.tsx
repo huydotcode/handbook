@@ -17,21 +17,21 @@ interface ProvidersProps {
 const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
     return (
         <>
-            <QueryClientProvider client={queryClient}>
-                <ThemeProvider attribute="class">
-                    <SessionProvider>
-                        <SocketProvider>
-                            <ChatProvider>
+            <SessionProvider>
+                <SocketProvider>
+                    <ChatProvider>
+                        <QueryClientProvider client={queryClient}>
+                            <ThemeProvider attribute="class">
                                 <Toaster
                                     position="bottom-center"
                                     reverseOrder={false}
                                 />
                                 {children}
-                            </ChatProvider>
-                        </SocketProvider>
-                    </SessionProvider>
-                </ThemeProvider>
-            </QueryClientProvider>
+                            </ThemeProvider>
+                        </QueryClientProvider>
+                    </ChatProvider>
+                </SocketProvider>
+            </SessionProvider>
         </>
     );
 };

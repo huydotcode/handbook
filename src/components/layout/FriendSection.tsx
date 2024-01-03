@@ -1,22 +1,22 @@
 'use client';
 import { useChat } from '@/context/ChatContext';
-import React, { useEffect, useState } from 'react';
-import { FaCircle } from 'react-icons/fa';
-import { Button } from '..';
-import Avatar from '../Avatar';
+import { useSocket } from '@/context/SocketContext';
+import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
-import { useSocket } from '@/context/SocketContext';
+import React, { useEffect, useState } from 'react';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { FaCircle } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { cn } from '@/lib/utils';
-import ChatBox from '../pages/Messages/ChatBox';
+import { Button } from '..';
+import Avatar from '../Avatar';
 
 interface Props {}
 
 const FriendSection: React.FC<Props> = ({}) => {
     const { friends, friendsOnline, setCurrentRoom } = useChat();
     const { data: session } = useSession();
-    const { socket } = useSocket();
+    const { socket, isLoading, isConnected } = useSocket();
 
     const [showFriendSection, setShowFriendSection] = useState(true);
 
@@ -44,6 +44,10 @@ const FriendSection: React.FC<Props> = ({}) => {
 
     const handleToggleShow = () => setShowFriendSection((prev) => !prev);
 
+    useEffect(() => {
+        console.log('FRIENDS', friends);
+    }, [friends]);
+
     if (!session) return <></>;
 
     return (
@@ -64,38 +68,50 @@ const FriendSection: React.FC<Props> = ({}) => {
                     </Button>
                 </div>
 
-                <div>
-                    {friends.map((friend) => {
-                        const isOnline = friendsOnline.find(
-                            (user) => user.userId === friend._id
-                        );
+                {isLoading && (
+                    <div className="flex items-center justify-center h-full">
+                        <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
+                    </div>
+                )}
 
-                        return (
-                            <>
-                                <Button
-                                    variant={'custom'}
-                                    className="flex items-center justify-between p-3 shadow-sm w-full text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-500"
-                                    key={friend._id}
-                                    // href={`profile/${friend._id}`}
-                                    onClick={() => handleClickFriend(friend)}
-                                >
-                                    <div className="flex items-center">
-                                        <Avatar imgSrc={friend.image || ''} />
-                                        <span className="ml-2">
-                                            {friend.name}
+                {!isLoading && isConnected && (
+                    <div>
+                        {friends.map((friend) => {
+                            const isOnline = friendsOnline.find(
+                                (user) => user.userId === friend._id
+                            );
+
+                            return (
+                                <>
+                                    <Button
+                                        variant={'custom'}
+                                        className="flex items-center justify-between p-3 shadow-sm w-full text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-500"
+                                        key={friend._id}
+                                        // href={`profile/${friend._id}`}
+                                        onClick={() =>
+                                            handleClickFriend(friend)
+                                        }
+                                    >
+                                        <div className="flex items-center">
+                                            <Avatar
+                                                imgSrc={friend.image || ''}
+                                            />
+                                            <span className="ml-2">
+                                                {friend.name}
+                                            </span>
+                                        </div>
+
+                                        <span>
+                                            {isOnline && (
+                                                <FaCircle className="text-sm text-blue-500" />
+                                            )}
                                         </span>
-                                    </div>
-
-                                    <span>
-                                        {isOnline && (
-                                            <FaCircle className="text-sm text-blue-500" />
-                                        )}
-                                    </span>
-                                </Button>
-                            </>
-                        );
-                    })}
-                </div>
+                                    </Button>
+                                </>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             {!showFriendSection && (

@@ -36,6 +36,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
+    const [showScrollDown, setShowScrollDown] = useState<boolean>(true);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -50,19 +51,25 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
 
     const onSubmit = async (data: IFormData) => {
         if (!session) {
-            toast.error('Vui lòng đăng nhập để gửi tin nhắn');
+            toast.error('Vui lòng đăng nhập để gửi tin nhắn', {
+                id: 'login-to-send-message',
+            });
             return;
         }
 
         if (!socket) {
-            toast.error('Không thể gửi tin nhắn! Vui lòng thử lại sau');
+            toast.error('Không thể gửi tin nhắn! Vui lòng thử lại sau', {
+                id: 'login-to-send-message',
+            });
             return;
         }
 
         const { text } = data;
 
         if (text.trim().length === 0) {
-            toast.error('Vui lòng nhập tin nhắn');
+            toast.error('Vui lòng nhập tin nhắn', {
+                id: 'text-is-required',
+            });
             return;
         }
 
@@ -75,7 +82,9 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         if (newMsg) {
             socket.emit('send-message', newMsg);
         } else {
-            toast.error('Không thể gửi tin nhắn!');
+            toast.error('Không thể gửi tin nhắn!', {
+                id: 'send-message',
+            });
         }
 
         reset();
@@ -107,7 +116,20 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         }
     }, [scrollDown]);
 
-    if (!currentRoom || !currentRoom.id) return <></>;
+    // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
+    useEffect(() => {
+        if (!bottomRef.current) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            setShowScrollDown(!entries[0].isIntersecting);
+        });
+
+        observer.observe(bottomRef.current);
+
+        return () => observer.disconnect();
+    }, [bottomRef]);
+
+    if (!currentRoom || !currentRoom.id) return null;
 
     return (
         <div
@@ -170,7 +192,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                         <Message key={msg._id} data={msg} />
                     ))}
 
-                    <div ref={bottomRef}></div>
+                    <div ref={bottomRef} />
                 </div>
             </div>
 
@@ -205,9 +227,15 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 </div>
             </form>
 
-            {!isPopup && (
+            {showScrollDown && (
                 <Button
-                    className="fixed bottom-[60px] right-4 z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300"
+                    className={cn(
+                        ' z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300',
+                        {
+                            'fixed bottom-[60px] right-4': !isPopup,
+                            'absolute bottom-[60px] right-4 w-8 h-8': isPopup,
+                        }
+                    )}
                     onClick={() => {
                         setScrollDown(true);
                     }}

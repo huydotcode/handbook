@@ -1,6 +1,7 @@
 'use client';
 import { fetchFriends } from '@/lib/actions/user.action';
-import { signIn, useSession } from 'next-auth/react';
+import { set } from 'mongoose';
+import { useSession } from 'next-auth/react';
 import {
     createContext,
     useCallback,
@@ -15,11 +16,13 @@ import { io as ClientIO } from 'socket.io-client';
 type SocketContextType = {
     socket: Socket | null;
     isConnected: boolean;
+    isLoading: boolean;
 };
 
 const SocketContext = createContext<SocketContextType | null>({
     socket: null,
     isConnected: false,
+    isLoading: false,
 });
 
 export const useSocket = () => {
@@ -28,24 +31,25 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [isInitialized, setIsInitialized] = useState<boolean>(false);
+    const [isJoin, setIsJoin] = useState<boolean>(false);
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const socketInitializer = useCallback(async () => {
-        if (!session || isConnected || socket) {
-            return;
-        }
+        if (isInitialized || !session?.user || isConnected) return;
 
-        const friends = await fetchFriends({
-            userId: session?.user?.id,
-        });
-
-        const socketIO = ClientIO(
-            process.env.SERVER_API || 'https://handbook-server.onrender.com',
+        const socketIO = await ClientIO(
+            process.env.SERVER_API ||
+                'http://localhost:5000' ||
+                'https://handbook-server.onrender.com',
             {
                 withCredentials: true,
-                extraHeaders: {
-                    'my-custom-header': 'abcd',
+                transports: ['websocket', 'polling'],
+                auth: {
+                    user: session.user,
                 },
             }
         );
@@ -55,12 +59,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             return newSocket;
         });
 
-        socketIO.auth = {
-            user: {
-                ...session?.user,
-                friends,
-            },
-        };
+        setIsLoading(false);
+        setIsInitialized(true);
 
         socketIO.on('connect', () => {
             console.log('Socket connected');
@@ -76,15 +76,31 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
             setIsConnected(false);
         });
-    }, [session, isConnected, socket]);
+
+        return () => {
+            console.log('Socket disconnected');
+            if (socket) {
+                socket.disconnect();
+            }
+            setSocket(null);
+            setIsConnected(false);
+        };
+    }, [socket, session?.user, isInitialized, isConnected]);
 
     useEffect(() => {
-        if (socket && socket.connected) return;
-        socketInitializer();
-    }, [socketInitializer, socket, session]);
+        if (session?.user) {
+            socketInitializer();
+        }
+    }, [socketInitializer, session?.user]);
+
+    const values = {
+        socket,
+        isConnected,
+        isLoading,
+    };
 
     return (
-        <SocketContext.Provider value={{ socket, isConnected }}>
+        <SocketContext.Provider value={values}>
             {children}
         </SocketContext.Provider>
     );
