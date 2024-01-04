@@ -110,6 +110,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             bottomRef.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'end',
+                inline: 'nearest',
             });
 
             setScrollDown(false);
@@ -127,7 +128,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         observer.observe(bottomRef.current);
 
         return () => observer.disconnect();
-    }, [bottomRef]);
+    }, [bottomRef.current]);
 
     if (!currentRoom || !currentRoom.id) return null;
 
@@ -181,18 +182,18 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {/* Body */}
             <div
                 className={cn(
-                    'absolute bottom-[52px] w-full h-[calc(100%-56px-64px)] dark:border-y-gray-600 over',
+                    'absolute bottom-[52px] w-full h-[calc(100%-56px-64px)] dark:border-y-gray-600 py-2 ',
                     {
                         'overflow-y-hidden': isPopup,
                     }
                 )}
             >
-                <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden p-2">
+                <div className="flex flex-col-reverse h-full overflow-y-auto overflow-x-hidden">
+                    <div ref={bottomRef} />
+
                     {messagesInRoom.map((msg) => (
                         <Message key={msg._id} data={msg} />
                     ))}
-
-                    <div ref={bottomRef} />
                 </div>
             </div>
 

@@ -91,48 +91,57 @@ const Message: React.FC<Props> = ({ data: msg }) => {
         >
             <div
                 className={`flex flex-col items-${
-                    isOwnMsg ? 'end' : 'start'
+                    isOwnMsg ? 'end mr-1' : 'start ml-1'
                 } w-full`}
             >
-                <div
-                    className={cn(
-                        `relative flex items-center  text-white px-4 py-2 w-fit max-w-[70%]`,
-                        {
-                            'items-end bg-blue-500 rounded-l-xl rounded-r-sm':
-                                isOwnMsg,
-                            'bg-light-100 text-black rounded-l-sm rounded-r-xl dark:bg-dark-500 dark:text-white':
-                                !isOwnMsg,
-                        }
-                    )}
-                    onClick={handleToggleShowTime}
+                <Tooltip
+                    title={
+                        <TimeAgoConverted
+                            className={'text-xs text-white dark:text-gray-400'}
+                            time={msg.createdAt}
+                        />
+                    }
                 >
-                    {showMenu && isOwnMsg && (
-                        <form
-                            className={
-                                'absolute flex items-center top-0 right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
+                    <div
+                        className={cn(
+                            `relative flex items-center  text-white px-4 py-2 w-fit max-w-[70%]`,
+                            {
+                                'items-end bg-blue-500 rounded-xl rounded-r-md':
+                                    isOwnMsg,
+                                'bg-light-100 text-black  rounded-xl rounded-l-md dark:bg-dark-500 dark:text-white':
+                                    !isOwnMsg,
                             }
-                            onSubmit={handleDeleteMsg}
-                        >
-                            <Button
-                                variant={'text'}
-                                size={'small'}
-                                type="submit"
-                            >
-                                <MdDelete />
-                            </Button>
-                        </form>
-                    )}
-
-                    <p
-                        className={cn('text-xs', {
-                            'text-justify': msg.text.length > 100,
-                        })}
+                        )}
+                        onClick={handleToggleShowTime}
                     >
-                        {msg.text}
-                    </p>
-                </div>
+                        {showMenu && isOwnMsg && (
+                            <form
+                                className={
+                                    'absolute flex items-center top-0 right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
+                                }
+                                onSubmit={handleDeleteMsg}
+                            >
+                                <Button
+                                    variant={'text'}
+                                    size={'small'}
+                                    type="submit"
+                                >
+                                    <MdDelete />
+                                </Button>
+                            </form>
+                        )}
 
-                {showTime && (
+                        <p
+                            className={cn('text-xs', {
+                                'text-justify': msg.text.length > 100,
+                            })}
+                        >
+                            {msg.text}
+                        </p>
+                    </div>
+                </Tooltip>
+
+                {/* {showTime && (
                     <>
                         <TimeAgoConverted
                             className={
@@ -141,16 +150,16 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                             time={msg.createdAt}
                         />
                     </>
-                )}
+                )} */}
 
-                {msg.isRead &&
+                {/* {msg.isRead &&
                     isLastMessage &&
                     session?.user.id === msg.userId && (
                         <Avatar
                             className={'w-4 h-4 ml-2 mt-2'}
                             imgSrc={currentRoom.image || ''}
                         />
-                    )}
+                    )} */}
             </div>
         </div>
     );

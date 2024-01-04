@@ -127,7 +127,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
             switch (action) {
                 case 'RECEIVE_MESSAGE':
                     socket.on('receive-message', (data: any) => {
-                        setMessages((prev) => [...prev, data]);
+                        setMessages((prev) => [data, ...prev]);
                     });
                     break;
                 case 'DELETE_MESSAGE':

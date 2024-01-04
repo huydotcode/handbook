@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types, model } from 'mongoose';
+import mongoose, { Schema, Types, model, models } from 'mongoose';
 
 interface INotification {
     type: string;
@@ -22,6 +22,8 @@ const NotificationSchema = new Schema<INotification>({
     isRead: { type: Boolean, default: false },
 });
 
-const Notification = model<INotification>('Notification', NotificationSchema);
+const Notification =
+    models.Notification ||
+    model<INotification>('Notification', NotificationSchema);
 
 export default Notification;
