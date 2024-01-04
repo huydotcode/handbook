@@ -7,7 +7,14 @@ import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
-import React, { FormEventHandler, useEffect, useMemo, useState } from 'react';
+import React, {
+    FormEventHandler,
+    use,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import toast from 'react-hot-toast';
 import { MdDelete } from 'react-icons/md';
 
@@ -21,6 +28,8 @@ const Message: React.FC<Props> = ({ data: msg }) => {
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+
+    const menuRef = useRef<HTMLFormElement>(null);
 
     const topAndBottomMsgIsSameUser =
         messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId ===
@@ -78,6 +87,22 @@ const Message: React.FC<Props> = ({ data: msg }) => {
         }
     }, [showTime]);
 
+    useEffect(() => {
+        if (menuRef.current) {
+            const handleClickOutside = (e: MouseEvent) => {
+                if (!menuRef.current?.contains(e.target as Node)) {
+                    setShowMenu(false);
+                }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [menuRef.current]);
+
     return (
         <div
             key={msg._id}
@@ -86,8 +111,9 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                 'justify-start': !isOwnMsg,
                 'mb-[1px]': topAndBottomMsgIsSameUser || bottomMsgIsSameUser,
             })}
-            onMouseEnter={handleShowMenu}
-            onMouseLeave={handleHideMenu}
+            // onMouseEnter={handleShowMenu}
+            // onMouseLeave={handleHideMenu}
+            onClick={handleShowMenu}
         >
             <div
                 className={`flex flex-col items-${
@@ -99,8 +125,13 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                         <TimeAgoConverted
                             className={'text-xs text-white dark:text-gray-400'}
                             time={msg.createdAt}
+                            textBefore="Đã gửi"
+                            textAfter="trước"
                         />
                     }
+                    arrow
+                    followCursor
+                    enterDelay={500}
                 >
                     <div
                         className={cn(
@@ -116,6 +147,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                     >
                         {showMenu && isOwnMsg && (
                             <form
+                                ref={menuRef}
                                 className={
                                     'absolute flex items-center top-0 right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
                                 }
