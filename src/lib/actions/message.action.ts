@@ -1,5 +1,5 @@
 'use server';
-import Message from '@/models/Message';
+import { Message } from '@/models';
 import connectToDB from '@/services/mongoose';
 
 export const fetchMessagesByRoomId = async ({ roomId }: { roomId: string }) => {

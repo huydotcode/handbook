@@ -1,5 +1,5 @@
 import { getAuthSession } from '@/lib/auth';
-import Image from '@/models/Image';
+import { Image } from '@/models';
 import logger from '@/utils/logger';
 import { v2 as cloudinary } from 'cloudinary';
 

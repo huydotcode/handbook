@@ -1,5 +1,4 @@
-import Profile from '@/models/Profile';
-import User from '@/models/User';
+import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';

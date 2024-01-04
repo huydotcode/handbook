@@ -1,7 +1,6 @@
 'use server';
 import connectToDB from '@/services/mongoose';
-import User from '@/models/User';
-import Profile from '@/models/Profile';
+import { User, Profile } from '@/models';
 import mongoose, { FilterQuery, SortOrder } from 'mongoose';
 
 export const fetchProfileByUserId = async (userId: string) => {

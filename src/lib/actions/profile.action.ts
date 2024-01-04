@@ -1,7 +1,5 @@
 'use server';
-import Image from '@/models/Image';
-import Profile from '@/models/Profile';
-import User from '@/models/User';
+import { Image, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';

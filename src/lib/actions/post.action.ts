@@ -1,7 +1,5 @@
 'use server';
-import Comment from '@/models/Comment';
-import Post from '@/models/Post';
-import User from '@/models/User';
+import { Comment, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
