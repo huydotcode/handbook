@@ -90,6 +90,16 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         reset();
     };
 
+    const scrollDownFn = () => {
+        if (bottomRef.current) {
+            bottomRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest',
+            });
+        }
+    };
+
     useEffect(() => {
         if (messages.length && bottomRef.current && currentRoom.id) {
             bottomRef.current?.scrollIntoView({
@@ -182,10 +192,10 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {/* Body */}
             <div
                 className={cn(
-                    'absolute bottom-[52px] w-full h-[calc(100vh-56px-64px-56px)] dark:border-y-gray-600 py-2 ',
+                    'absolute w-full dark:border-y-gray-600 py-2 overflow-y-auto overflow-x-hidden',
                     {
-                        'overflow-y-hidden': isPopup,
-                        'md:absolute md:top-16 md:bottom-14 md:overflow-y-auto md:overflow-x-hidden':
+                        'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
+                        'md:top-16 md:bottom-14 md:overflow-x-hidden h-[calc(100vh-56px-64px-56px)]':
                             !isPopup,
                     }
                 )}
@@ -218,6 +228,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                         placeholder="Nhập tin nhắn..."
                         spellCheck={false}
                         autoComplete="off"
+                        onFocus={scrollDownFn}
                     />
 
                     <Button
