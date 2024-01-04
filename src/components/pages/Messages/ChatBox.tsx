@@ -185,7 +185,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                     'absolute bottom-[52px] w-full h-[calc(100vh-56px-64px-56px)] dark:border-y-gray-600 py-2 ',
                     {
                         'overflow-y-hidden': isPopup,
-                        'md:fixed md:top-[120px] md:overflow-y-auto md:overflow-x-hidden':
+                        'md:absolute md:top-16 md:bottom-14 md:overflow-y-auto md:overflow-x-hidden':
                             !isPopup,
                     }
                 )}
