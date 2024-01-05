@@ -15,7 +15,11 @@ export default async function Home() {
 
             <div className="min-w-[500px] max-w-[50vw] mx-auto sm:w-screen sm:m-0 sm:max-w-none sm:min-w-0 md:min-w-[400px] lg:min-w-[400px]">
                 <div className="hidden sm:block">
-                    <NavigationPages className="flex items-center shadow-xl bg-white w-screen overflow-hidden dark:bg-dark-200 dark:border-t-gray-700 dark:border-t" />
+                    <NavigationPages
+                        direction="row"
+                        className="flex items-center shadow-xl bg-white w-screen overflow-hidden dark:bg-dark-200 dark:border-t-gray-700 dark:border-t"
+                        itemClassName="w-full"
+                    />
                 </div>
 
                 <NewsFeedPost />

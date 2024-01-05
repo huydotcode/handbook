@@ -1,4 +1,5 @@
-import { HiChat, HiHome } from 'react-icons/hi';
+import path from 'path';
+import { HiChat, HiHome, HiUser } from 'react-icons/hi';
 import { IoChatbubbleEllipses } from 'react-icons/io5';
 
 export const navLink = [

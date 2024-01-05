@@ -145,7 +145,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     return (
         <div
             className={cn(
-                `relative flex-1 bg-white dark:bg-dark-200 ${className}`,
+                `relative flex flex-col flex-1 bg-white dark:bg-dark-200 ${className}`,
                 {
                     'w-full h-full': !isPopup,
                     'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50':
@@ -192,10 +192,10 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {/* Body */}
             <div
                 className={cn(
-                    'absolute w-full dark:border-y-gray-600 py-2 overflow-y-auto overflow-x-hidden',
+                    'w-full dark:border-y-gray-600 py-2 overflow-y-auto overflow-x-hidden',
                     {
                         'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
-                        'md:top-16 md:bottom-14 md:overflow-x-hidden h-[calc(100%-56px-64px)]':
+                        '-md:top-16 -md:bottom-14 md:overflow-x-hidden h-[calc(100%-56px-64px)]':
                             !isPopup,
                     }
                 )}

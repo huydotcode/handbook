@@ -4,16 +4,25 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
+import { on } from 'events';
 
 interface Props {
     className?: string;
+    itemClassName?: string;
+    onlyIcon?: boolean;
+    direction?: 'row' | 'col';
 }
 
-const NavigationPages: React.FC<Props> = ({ className }) => {
+const NavigationPages: React.FC<Props> = ({
+    className = '',
+    itemClassName = '',
+    onlyIcon = false,
+    direction = 'col',
+}) => {
     const path = usePathname();
 
     return (
-        <ul className={className || ''}>
+        <ul className={cn(`${className} flex-${direction}`)}>
             {navLink.map((link, index) => {
                 const isActived = link.path === path;
                 const Icon = () => {
@@ -23,17 +32,33 @@ const NavigationPages: React.FC<Props> = ({ className }) => {
                     <li
                         key={index}
                         className={cn(
-                            'flex items-center w-full cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500'
+                            `flex items-center cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
+                            {
+                                'w-[50%]': onlyIcon,
+                                'bg-light-100': isActived,
+                                'rounded-none': direction === 'row',
+                                'rounded-l-xl': index === 0,
+                                'rounded-r-xl': index === navLink.length - 1,
+                            },
+                            `${itemClassName}`
                         )}
                     >
                         <Link
-                            className="flex items-center w-full h-full md:justify-center"
+                            className={cn(
+                                'flex items-center w-full h-full md:justify-center',
+                                {
+                                    'justify-center': onlyIcon,
+                                    'text-blue-500': isActived,
+                                }
+                            )}
                             href={link.path || '/'}
                         >
                             <Icon />
-                            <span className="ml-2 text-sm lg:hidden dark:text-primary">
-                                {link.name}
-                            </span>
+                            {!onlyIcon && (
+                                <span className="ml-2 text-sm lg:hidden dark:text-primary">
+                                    {link.name}
+                                </span>
+                            )}
                         </Link>
                     </li>
                 );

@@ -130,7 +130,6 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                         />
                     }
                     arrow
-                    followCursor
                     enterDelay={500}
                 >
                     <div

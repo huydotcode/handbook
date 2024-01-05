@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { SocketProvider } from '@/context/SocketContext';
 import ChatProvider from '@/context/ChatContext';
+import { AppProvider } from '@/context/AppContext';
 
 const queryClient = new QueryClient();
 
@@ -19,17 +20,19 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
         <>
             <SessionProvider>
                 <SocketProvider>
-                    <ChatProvider>
-                        <QueryClientProvider client={queryClient}>
-                            <ThemeProvider attribute="class">
-                                <Toaster
-                                    position="bottom-center"
-                                    reverseOrder={false}
-                                />
-                                {children}
-                            </ThemeProvider>
-                        </QueryClientProvider>
-                    </ChatProvider>
+                    <AppProvider>
+                        <ChatProvider>
+                            <QueryClientProvider client={queryClient}>
+                                <ThemeProvider attribute="class">
+                                    <Toaster
+                                        position="bottom-center"
+                                        reverseOrder={false}
+                                    />
+                                    {children}
+                                </ThemeProvider>
+                            </QueryClientProvider>
+                        </ChatProvider>
+                    </AppProvider>
                 </SocketProvider>
             </SessionProvider>
         </>

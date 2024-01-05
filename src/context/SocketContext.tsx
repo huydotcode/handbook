@@ -1,5 +1,4 @@
 'use client';
-import { fetchFriends } from '@/lib/actions/user.action';
 import { set } from 'mongoose';
 import { useSession } from 'next-auth/react';
 import {
@@ -15,13 +14,13 @@ import { io as ClientIO } from 'socket.io-client';
 
 type SocketContextType = {
     socket: Socket | null;
-    // isConnected: boolean;
+    isConnected: boolean;
     isLoading: boolean;
 };
 
 const SocketContext = createContext<SocketContextType | null>({
     socket: null,
-    // isConnected: false,
+    isConnected: false,
     isLoading: false,
 });
 
@@ -33,6 +32,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const { data: session, status } = useSession();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
+    const [isConnected, setIsConnected] = useState<boolean>(true);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -64,10 +64,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         socketIO.on('connect', () => {
             console.log('Socket connected');
+            setIsConnected(true);
         });
 
         socketIO.on('disconnect', () => {
             console.log('Socket disconnected');
+            setIsConnected(false);
         });
 
         socketIO.on('connect_error', (err) => {
@@ -92,6 +94,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const values = {
         socket,
         isLoading,
+        isConnected,
     };
 
     return (
