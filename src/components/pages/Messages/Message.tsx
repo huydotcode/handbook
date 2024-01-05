@@ -50,7 +50,10 @@ const Message: React.FC<Props> = ({ data: msg }) => {
     // is user cmt
     const isOwnMsg = msg.userId === session?.user.id;
 
-    const handleToggleShowTime = () => setShowTime((prev) => !prev);
+    const handleClickContent = () => {
+        setShowTime((prev) => !prev);
+        setShowMenu(true);
+    };
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
 
@@ -119,7 +122,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                 'justify-start': !isOwnMsg,
                 'mb-[1px]': topAndBottomMsgIsSameUser || bottomMsgIsSameUser,
             })}
-            onClick={handleShowMenu}
+            // onClick={handleShowMenu}
         >
             <div
                 className={`flex flex-col items-${
@@ -136,7 +139,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                         />
                     }
                     arrow
-                    enterDelay={500}
+                    enterDelay={1000}
                 >
                     <div
                         className={cn(
@@ -148,7 +151,7 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                                     !isOwnMsg,
                             }
                         )}
-                        onClick={handleToggleShowTime}
+                        onClick={handleClickContent}
                     >
                         {showMenu && isOwnMsg && (
                             <form
