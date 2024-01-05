@@ -36,7 +36,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
-    const [showScrollDown, setShowScrollDown] = useState<boolean>(true);
+    const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -143,7 +143,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 `relative flex flex-col flex-1 bg-white dark:bg-dark-200 ${className}`,
                 {
                     'w-full h-full': !isPopup,
-                    'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50':
+                    'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50 dark:border dark:border-gray-700':
                         isPopup,
                 }
             )}
@@ -173,7 +173,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
 
                     {isPopup && (
                         <Button
-                            className="absolute top-2 right-2"
+                            className="absolute top-2 right-2 dark:hover:bg-dark-500"
                             onClick={() => {
                                 setCurrentRoom({} as IRoomChat);
                             }}
@@ -239,7 +239,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {showScrollDown && (
                 <Button
                     className={cn(
-                        ' z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300',
+                        ' z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300 dark:text-black',
                         {
                             'fixed bottom-[60px] right-4': !isPopup,
                             'absolute bottom-[60px] right-4 w-8 h-8': isPopup,

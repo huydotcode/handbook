@@ -4,7 +4,7 @@ import { useSocket } from '@/context/SocketContext';
 import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaCircle } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
@@ -50,7 +50,7 @@ const FriendSection: React.FC<Props> = ({}) => {
         <>
             <div
                 className={cn(
-                    'absolute pt-2 flex flex-col w-full rounded-l-xl bottom-0 right-0  border-l-2  bg-white dark:border-none transition-all duration-300',
+                    'absolute pt-2 flex flex-col w-full rounded-l-xl bottom-0 right-0  border-l-2  bg-white dark:border-none transition-all duration-300 dark:bg-dark-200',
                     {
                         'mt-4 h-full': showFriendSection,
                         'h-0 overflow-hidden  p-0': !showFriendSection,
@@ -59,7 +59,10 @@ const FriendSection: React.FC<Props> = ({}) => {
             >
                 <div className="flex justify-between items-center px-2">
                     <h1 className="p-2 font-bold text-md">Bạn bè</h1>
-                    <Button onClick={handleToggleShow}>
+                    <Button
+                        className="dark:hover:bg-dark-500"
+                        onClick={handleToggleShow}
+                    >
                         <IoIosArrowDown />
                     </Button>
                 </div>
@@ -112,7 +115,7 @@ const FriendSection: React.FC<Props> = ({}) => {
 
             {!showFriendSection && (
                 <Button
-                    className="absolute bottom-1 right-4 opacity-50 hover:opacity-100 hover:bottom-4 transition-all duration-300"
+                    className="absolute bottom-1 right-4 opacity-50 hover:opacity-100 hover:bottom-4 transition-all duration-300 dark:hover:bg-dark-500"
                     onClick={handleToggleShow}
                 >
                     <IoIosArrowUp />

@@ -72,7 +72,9 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                                     <br />
                                 </div>
                             </div>
-                            <Action userId={user._id} />
+                            <Action
+                                userId={JSON.parse(JSON.stringify(user._id))}
+                            />
                         </div>
                     </header>
 

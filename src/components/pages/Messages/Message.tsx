@@ -103,6 +103,14 @@ const Message: React.FC<Props> = ({ data: msg }) => {
         }
     }, [menuRef.current]);
 
+    useEffect(() => {
+        if (showMenu) {
+            setTimeout(() => {
+                handleHideMenu();
+            }, 2000);
+        }
+    }, [showMenu]);
+
     return (
         <div
             key={msg._id}
@@ -111,8 +119,6 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                 'justify-start': !isOwnMsg,
                 'mb-[1px]': topAndBottomMsgIsSameUser || bottomMsgIsSameUser,
             })}
-            // onMouseEnter={handleShowMenu}
-            // onMouseLeave={handleHideMenu}
             onClick={handleShowMenu}
         >
             <div

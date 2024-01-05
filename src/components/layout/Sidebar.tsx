@@ -13,7 +13,7 @@ const Sidebar = () => {
             <div className="p-2">
                 {user && (
                     <Link
-                        href={'/'}
+                        href={`/profile/${user?.id}`}
                         className="flex items-center hover:bg-light-100 p-2 rounded-xl border-b md:justify-center dark:border-none dark:hover:bg-dark-500"
                     >
                         <Image

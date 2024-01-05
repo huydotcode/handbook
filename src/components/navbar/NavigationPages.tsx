@@ -35,7 +35,7 @@ const NavigationPages: React.FC<Props> = ({
                             `flex items-center cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
                             {
                                 'w-[50%]': onlyIcon,
-                                'bg-light-100': isActived,
+                                'bg-light-100 dark:bg-dark-100': isActived,
                                 'rounded-none': direction === 'row',
                                 'rounded-l-xl': index === 0,
                                 'rounded-r-xl': index === navLink.length - 1,

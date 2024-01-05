@@ -10,10 +10,12 @@ export const fetchMessagesByRoomId = async ({ roomId }: { roomId: string }) => {
 
         const messages = await Message.find({
             roomId: roomId,
-        });
+        }).sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(messages));
-    } catch (error) {}
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 export const sendMessage = async ({
