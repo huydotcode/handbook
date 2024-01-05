@@ -94,8 +94,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         if (bottomRef.current) {
             bottomRef.current?.scrollIntoView({
                 behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
             });
         }
     };
@@ -104,7 +102,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         if (messages.length && bottomRef.current && currentRoom.id) {
             bottomRef.current?.scrollIntoView({
                 behavior: 'smooth',
-                block: 'end',
             });
         }
     }, [messages.length, bottomRef, currentRoom.id]);
@@ -119,8 +116,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         if (scrollDown && bottomRef.current) {
             bottomRef.current?.scrollIntoView({
                 behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
             });
 
             setScrollDown(false);
