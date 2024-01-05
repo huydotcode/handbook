@@ -212,7 +212,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
             {/* Footer */}
             <form
                 className={cn(
-                    '-fixed -bottom-0 -left-0 -right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t dark:border-gray-700 h-14',
+                    'zfixed zbottom-0 zleft-0 zright-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t dark:border-gray-700 h-14',
                     {
                         'h-12 absolute w-auto': isPopup,
                     }
