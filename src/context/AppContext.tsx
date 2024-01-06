@@ -44,6 +44,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
                     name: data.name,
                     image: data.image,
                     isOnline: data.isOnline,
+                    lastAccessed: data.lastAccessed,
                 };
 
                 if (data) {

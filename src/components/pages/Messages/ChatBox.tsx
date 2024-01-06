@@ -13,6 +13,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
 import { useAppContext } from '@/context/AppContext';
+import TimeAgoConverted from '@/utils/timeConvert';
 
 interface Props {
     isPopup?: boolean;
@@ -161,9 +162,16 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                             {currentRoom.name}
                         </h3>
                         <span className="text-xs ml-2 text-gray-500">
-                            {userIsOnline
-                                ? 'Đang hoạt động'
-                                : 'Không hoạt động'}
+                            {userIsOnline ? (
+                                'Đang hoạt động'
+                            ) : (
+                                <TimeAgoConverted
+                                    time={currentRoom.lastAccessed}
+                                    className="text-xs text-gray-500"
+                                    textBefore="Hoạt động "
+                                    textAfter=" trước"
+                                />
+                            )}
                         </span>
                     </div>
 

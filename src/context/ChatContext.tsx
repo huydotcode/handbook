@@ -28,13 +28,6 @@ interface IChatContext {
     loading: ILoading;
 }
 
-interface ISocketUser {
-    socketId: string;
-    userId: string;
-    name: string;
-    image: string;
-}
-
 const ChatContext = React.createContext<IChatContext>({} as IChatContext);
 
 export const useChat = () => {
@@ -43,7 +36,6 @@ export const useChat = () => {
 
 const ChatProvider: React.FC<Props> = ({ children }) => {
     const { socket } = useSocket();
-    const { data: session } = useSession();
     const { friends } = useAppContext();
     const [messages, setMessages] = useState<IMessage[]>([]);
 

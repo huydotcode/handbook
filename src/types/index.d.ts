@@ -39,6 +39,7 @@ interface IUser {
     request?: any[];
     createdAt: Date;
     updatedAt: Date;
+    lastAccessed: Date;
 }
 
 interface IParams {
@@ -69,6 +70,7 @@ interface IFriend {
     name: string;
     image: string;
     isOnline: boolean;
+    lastAccessed: Date;
 }
 
 interface IRoomChat {
@@ -77,6 +79,7 @@ interface IRoomChat {
     image: string;
     members: any[];
     messages: IMessage[];
+    lastAccessed: Date;
 }
 
 interface ILastMessage {

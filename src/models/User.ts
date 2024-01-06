@@ -28,6 +28,7 @@ interface IUser {
     ];
     createdAt: Date;
     updatedAt: Date;
+    lastAccessed: Date;
     comparePassword(arg0: string): Promise<boolean>;
 }
 
@@ -76,6 +77,10 @@ const UserSchema = new Schema<IUser>(
                 },
             },
         ],
+        lastAccessed: {
+            type: Date,
+            default: Date.now(),
+        },
     },
     {
         timestamps: true,

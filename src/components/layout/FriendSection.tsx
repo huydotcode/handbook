@@ -22,7 +22,12 @@ const FriendSection: React.FC<Props> = ({}) => {
 
     const [showFriendSection, setShowFriendSection] = useState(true);
 
-    const handleClickFriend = async ({ _id, image, name }: IFriend) => {
+    const handleClickFriend = async ({
+        _id,
+        image,
+        name,
+        lastAccessed,
+    }: IFriend) => {
         if (!socket || !session) return;
 
         const roomId = generateRoomId(session.user.id, _id);
@@ -41,6 +46,7 @@ const FriendSection: React.FC<Props> = ({}) => {
             image: image,
             members: [session.user.id, _id],
             messages: [],
+            lastAccessed: lastAccessed,
         });
     };
 
@@ -80,6 +86,8 @@ const FriendSection: React.FC<Props> = ({}) => {
                     <div>
                         {friends.map((friend) => {
                             const isOnline = friend.isOnline;
+
+                            console.log('friend', friend);
 
                             return (
                                 <>

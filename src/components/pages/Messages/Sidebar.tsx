@@ -40,6 +40,7 @@ const Sidebar: React.FC<Props> = () => {
             image: friend.image,
             members: [session.user.id, friend._id],
             messages: [],
+            lastAccessed: friend.lastAccessed,
         });
 
         if (window.innerWidth < 768) {
