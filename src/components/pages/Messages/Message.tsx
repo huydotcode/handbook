@@ -1,5 +1,4 @@
 import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { deleteMessage } from '@/lib/actions/message.action';
@@ -9,7 +8,6 @@ import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import React, {
     FormEventHandler,
-    use,
     useEffect,
     useMemo,
     useRef,
@@ -24,39 +22,46 @@ interface Props {
 
 const Message: React.FC<Props> = ({ data: msg }) => {
     const { data: session } = useSession();
-    const { currentRoom, messages, setMessages, messagesInRoom } = useChat();
+    const { setMessages, messagesInRoom } = useChat();
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
 
+    const newDate = new Date(msg.createdAt).toLocaleTimeString('en-US', {
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
     const menuRef = useRef<HTMLFormElement>(null);
 
-    const topAndBottomMsgIsSameUser =
-        messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId ===
-            msg.userId &&
-        messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId === msg.userId;
-
-    const bottomMsgIsSameUser = useMemo(() => {
+    const canShowTime = useMemo(() => {
+        // if before msg is not same user and after msg is same user
         return (
+            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId !==
+                msg.userId &&
             messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId ===
-            msg.userId
+                msg.userId
         );
-    }, [messagesInRoom, msg]);
+    }, []);
 
-    const isLastMessage = useMemo(() => {
-        return messages[messages.length - 1]._id === msg._id;
-    }, [messages, msg]);
+    const topAndBottomMsgIsNotSameUser = useMemo(() => {
+        return (
+            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId !==
+                msg.userId &&
+            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId !==
+                msg.userId
+        );
+    }, []);
 
-    // is user cmt
     const isOwnMsg = msg.userId === session?.user.id;
 
-    const handleClickContent = () => {
-        setShowTime((prev) => !prev);
-        setShowMenu(true);
-    };
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
-
+    const handleClickContent = () => {
+        setShowTime((prev) => !prev);
+        handleShowMenu();
+    };
     const handleDeleteMsg: FormEventHandler = async (e) => {
         e.preventDefault();
 
@@ -117,17 +122,27 @@ const Message: React.FC<Props> = ({ data: msg }) => {
     return (
         <div
             key={msg._id}
-            className={cn('relative flex items-center mb-2 w-full', {
-                'justify-end': isOwnMsg,
-                'justify-start': !isOwnMsg,
-                'mb-[1px]': topAndBottomMsgIsSameUser || bottomMsgIsSameUser,
-            })}
-            // onClick={handleShowMenu}
+            className={cn(
+                'relative flex flex-col items-center mb-[2px] w-full',
+                {
+                    'justify-end': isOwnMsg,
+                    'justify-start': !isOwnMsg,
+                }
+            )}
         >
+            {canShowTime ||
+                (topAndBottomMsgIsNotSameUser && !isOwnMsg && (
+                    <div className="text-[10px] text-secondary ml-2">
+                        {newDate}
+                    </div>
+                ))}
+
             <div
-                className={`flex flex-col items-${
-                    isOwnMsg ? 'end mr-1' : 'start ml-1'
-                } w-full`}
+                className={cn(
+                    `flex items-center justify-${
+                        isOwnMsg ? 'end mr-1' : 'start ml-1'
+                    } w-full`
+                )}
             >
                 <Tooltip
                     title={
@@ -180,17 +195,6 @@ const Message: React.FC<Props> = ({ data: msg }) => {
                         </p>
                     </div>
                 </Tooltip>
-
-                {/* {showTime && (
-                    <>
-                        <TimeAgoConverted
-                            className={
-                                'text-xs text-gray-500 dark:text-gray-400'
-                            }
-                            time={msg.createdAt}
-                        />
-                    </>
-                )} */}
 
                 {/* {msg.isRead &&
                     isLastMessage &&
