@@ -10,11 +10,13 @@ import { FaCircle } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { Button } from '..';
 import Avatar from '../Avatar';
+import { useAppContext } from '@/context/AppContext';
 
 interface Props {}
 
 const FriendSection: React.FC<Props> = ({}) => {
-    const { friends, friendsOnline, setCurrentRoom } = useChat();
+    const { setCurrentRoom } = useChat();
+    const { friends, loadingFriends } = useAppContext();
     const { data: session } = useSession();
     const { socket, isLoading } = useSocket();
 
@@ -67,18 +69,17 @@ const FriendSection: React.FC<Props> = ({}) => {
                     </Button>
                 </div>
 
-                {isLoading && (
-                    <div className="flex items-center justify-center h-full">
-                        <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
-                    </div>
-                )}
+                {isLoading ||
+                    (loadingFriends && (
+                        <div className="flex items-center justify-center h-full">
+                            <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
+                        </div>
+                    ))}
 
                 {!isLoading && (
                     <div>
                         {friends.map((friend) => {
-                            const isOnline = friendsOnline.find(
-                                (user) => user.userId === friend._id
-                            );
+                            const isOnline = friend.isOnline;
 
                             return (
                                 <>

@@ -96,9 +96,9 @@ export const fetchFriends = async ({ userId }: { userId: string }) => {
 
         const friends = await User.find({
             _id: { $in: user?.friends },
-        }).select('_id name image username');
+        }).select('_id name image username isOnline');
 
-        return JSON.parse(JSON.stringify(friends)) || [];
+        return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
         console.log(error);
     }

@@ -4,15 +4,15 @@ import Avatar from '@/components/Avatar';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { sendMessage } from '@/lib/actions/message.action';
-import TimeAgoConverted from '@/utils/timeConvert';
+import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { IoIosArrowDown } from 'react-icons/io';
 import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
-import { cn } from '@/lib/utils';
-import { IoIosArrowDown, IoIosClose } from 'react-icons/io';
+import { useAppContext } from '@/context/AppContext';
 
 interface Props {
     isPopup?: boolean;
@@ -24,15 +24,10 @@ interface IFormData {
 }
 
 const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
-    const {
-        currentRoom,
-        messages,
-        friendsOnline,
-        setCurrentRoom,
-        messagesInRoom,
-    } = useChat();
     const { data: session } = useSession();
     const { socket } = useSocket();
+    const { friends } = useAppContext();
+    const { currentRoom, messages, setCurrentRoom, messagesInRoom } = useChat();
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
@@ -41,11 +36,12 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
 
-        return friendsOnline.find(
-            (f) =>
-                f.userId == currentRoom.id.replace(session?.user.id || '', '')
+        const friend = friends.find(
+            (f) => f._id === currentRoom.id.replace(session?.user?.id || '', '')
         );
-    }, [friendsOnline, currentRoom.id, session?.user.id]);
+
+        return friend?.isOnline || false;
+    }, [friends, session?.user?.id, currentRoom.id]);
 
     const bottomRef = React.useRef<HTMLDivElement>(null);
 
@@ -124,7 +120,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     useEffect(() => {
-        if (!bottomRef.current) return;
+        if (!bottomRef.current || messagesInRoom.length === 0) return;
 
         const observer = new IntersectionObserver((entries) => {
             setShowScrollDown(!entries[0].isIntersecting);

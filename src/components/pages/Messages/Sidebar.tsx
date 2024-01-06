@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components';
 import Avatar from '@/components/Avatar';
+import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { cn } from '@/lib/utils';
@@ -14,14 +15,8 @@ interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
     const { data: session } = useSession();
-    const {
-        friends,
-        currentRoom,
-        setCurrentRoom,
-        friendsOnline,
-        lastMessages,
-        loading,
-    } = useChat();
+    const { friends } = useAppContext();
+    const { currentRoom, setCurrentRoom, lastMessages, loading } = useChat();
     const { socket } = useSocket();
     const [showSidebar, setShowSidebar] = useState(true);
     const [isHover, setIsHover] = useState(false);
@@ -106,19 +101,17 @@ const Sidebar: React.FC<Props> = () => {
                     Bạn bè
                 </span>
 
-                {friends.map((user: IFriend) => {
-                    const isOnline = friendsOnline.find(
-                        (f) => f.userId === user._id
-                    );
+                {friends.map((friend: IFriend) => {
+                    const isOnline = friend.isOnline;
 
                     const isSelect =
                         currentRoom.id ==
-                        [session.user.id, user._id].sort().join('');
+                        [session.user.id, friend._id].sort().join('');
 
                     const lastMsg = lastMessages.find(
                         (msg) =>
                             msg.roomId ===
-                            generateRoomId(session.user.id, user._id)
+                            generateRoomId(session.user.id, friend._id)
                     );
 
                     return (
@@ -127,15 +120,15 @@ const Sidebar: React.FC<Props> = () => {
                                 className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
                                     isSelect && 'bg-gray-200 dark:bg-dark-500'
                                 }`}
-                                key={user._id}
-                                onClick={() => handleJoinRoom(user)}
+                                key={friend._id}
+                                onClick={() => handleJoinRoom(friend)}
                             >
-                                <Avatar imgSrc={user.image} />
+                                <Avatar imgSrc={friend.image} />
 
                                 <div className="flex flex-1 flex-col">
                                     <div className="flex items-center justify-between">
                                         <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
-                                            {user.name}
+                                            {friend.name}
                                         </h3>
                                         <span className="text-xs ml-2 text-gray-500">
                                             <FaCircle

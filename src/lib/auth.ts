@@ -100,8 +100,6 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async jwt({ token, user }) {
-            console.log('JWT ', token, user);
-
             await connectToDB();
 
             if (!token.email) {
@@ -130,8 +128,6 @@ export const authOptions: NextAuthOptions = {
             };
         },
         async session({ session, token }) {
-            console.log('SESSION ', session, token);
-
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
@@ -149,8 +145,6 @@ export const authOptions: NextAuthOptions = {
                 let profileExists;
 
                 if (profile) {
-                    console.log('PROFILE SIGN IN ', profile);
-
                     userExists = await User.findOne({
                         email: profile.email,
                     });
@@ -161,8 +155,6 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 if (credentials) {
-                    console.log('CREDENTIALS SIGN IN ', credentials);
-
                     userExists = await User.findOne({
                         email: credentials.email,
                     });

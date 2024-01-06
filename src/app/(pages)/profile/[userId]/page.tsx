@@ -3,6 +3,7 @@ import Action from '@/components/pages/Profile/Action';
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
 import { addFriend } from '@/lib/actions/profile.action';
 import { fetchProfileByUserId } from '@/lib/actions/user.action';
+import { getAuthSession } from '@/lib/auth';
 import mongoose from 'mongoose';
 
 import Image from 'next/image';
@@ -26,6 +27,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
         user: IUser;
         profile: IProfile;
     };
+    const session = await getAuthSession();
     const friends = [] as Friend[];
 
     const props = mongoose.isValidObjectId(params.userId)
@@ -35,6 +37,8 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
         : { username: params.userId };
 
     if (!user || !profile) notFound();
+
+    const haveAction = session && session.user.id !== user._id.toString();
 
     return (
         <>
@@ -72,9 +76,13 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                                     <br />
                                 </div>
                             </div>
-                            <Action
-                                userId={JSON.parse(JSON.stringify(user._id))}
-                            />
+                            {haveAction && (
+                                <Action
+                                    userId={JSON.parse(
+                                        JSON.stringify(user._id)
+                                    )}
+                                />
+                            )}
                         </div>
                     </header>
 

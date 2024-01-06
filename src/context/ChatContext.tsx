@@ -10,6 +10,7 @@ import React, {
     useState,
 } from 'react';
 import { useSocket } from './SocketContext';
+import { useAppContext } from './AppContext';
 
 interface Props {
     children: React.ReactNode;
@@ -17,7 +18,6 @@ interface Props {
 
 interface IChatContext {
     friends: IFriend[];
-    friendsOnline: any[];
     currentRoom: IRoomChat;
     setCurrentRoom: React.Dispatch<React.SetStateAction<IRoomChat>>;
     messages: IMessage[];
@@ -44,8 +44,7 @@ export const useChat = () => {
 const ChatProvider: React.FC<Props> = ({ children }) => {
     const { socket } = useSocket();
     const { data: session } = useSession();
-    const [friends, setFriends] = useState<IFriend[]>([]);
-    const [friendsOnline, setFriendsOnline] = useState<ISocketUser[]>([]);
+    const { friends } = useAppContext();
     const [messages, setMessages] = useState<IMessage[]>([]);
 
     const [currentRoom, setCurrentRoom] = useState<IRoomChat>({} as IRoomChat);
@@ -61,41 +60,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
     const messagesInRoom = useMemo(() => {
         return messages.filter((msg) => msg.roomId === currentRoom.id);
     }, [messages, currentRoom.id]);
-
-    const handleGetFriends = useCallback(async () => {
-        if (!session) return;
-        setLoading((prev) => ({ ...prev, friends: true }));
-        const data =
-            (await fetchFriends({
-                userId: session.user.id,
-            })) || [];
-
-        setFriends(data);
-    }, [session]);
-
-    const handleEmitFriends = useCallback(() => {
-        if (socket?.connected) {
-            socket.emit('users', friends);
-        }
-    }, [socket, friends]);
-
-    const handleFriendsOnline = useCallback(() => {
-        if (!socket) return;
-
-        socket.on('users', (users) => {
-            const newUsers = [] as any;
-            users.forEach((user: any) => {
-                const isIncluded =
-                    friends.includes(user.userId) &&
-                    !friendsOnline.includes(user.userId);
-                if (!isIncluded) {
-                    newUsers.push(user);
-                }
-            });
-
-            setFriendsOnline(newUsers);
-        });
-    }, [socket, friends, friendsOnline]);
 
     const handleGetMessages = useCallback(() => {
         if (
@@ -176,28 +140,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                         );
                     });
                     break;
-                case 'ADD_FRIEND':
-                    socket.on('add-friend-success', (data) => {
-                        const newFriend = {
-                            _id: data._id,
-                            name: data.name,
-                            image: data.image,
-                        };
-
-                        if (data) {
-                            setFriends((prev) => [...prev, newFriend]);
-                        }
-                    });
-                    break;
-                case 'UN_FRIEND':
-                    socket.on('un-friend-success', (friendId) => {
-                        if (friendId) {
-                            setFriends((prev) =>
-                                prev.filter((friend) => friend._id !== friendId)
-                            );
-                        }
-                    });
-                    break;
                 default:
                     break;
             }
@@ -205,28 +147,11 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         [socket]
     );
 
-    // Fetch friends
-    useEffect(() => {
-        handleGetFriends();
-    }, [handleGetFriends]);
-
-    // Emit friends to socket
-    useEffect(() => {
-        // handleEmitFriends();
-    }, [handleEmitFriends]);
-
-    // Listen to friends online
-    useEffect(() => {
-        handleFriendsOnline();
-    }, [handleFriendsOnline]);
-
     useEffect(() => {
         handleSocketAction('RECEIVE_MESSAGE');
         handleSocketAction('GET_LAST_MESSAGES');
         handleSocketAction('READ_MESSAGE');
         handleSocketAction('DELETE_MESSAGE');
-        handleSocketAction('ADD_FRIEND');
-        handleSocketAction('UN_FRIEND');
     }, [handleSocketAction]);
 
     // Get messages
@@ -236,7 +161,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
 
     const values = {
         friends: friends,
-        friendsOnline: friendsOnline,
         currentRoom: currentRoom,
         setCurrentRoom: setCurrentRoom,
         messages,

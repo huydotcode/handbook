@@ -68,6 +68,7 @@ interface IFriend {
     _id: string;
     name: string;
     image: string;
+    isOnline: boolean;
 }
 
 interface IRoomChat {
