@@ -33,7 +33,7 @@ const Navbar = () => {
 
                         {showPages && (
                             <NavigationPages
-                                className="fixed top-14 left-0 flex items-center min-w-[400px] max-w-[50vw] h-[calc(100vh-56px)] bg-white shadow-xl"
+                                className="fixed top-14 left-0 flex items-center min-w-[200px] max-w-[100vw] h-[calc(100vh-56px)] bg-white shadow-xl"
                                 direction="col"
                                 itemClassName="w-full h-14 rounded-none mx-2"
                             />

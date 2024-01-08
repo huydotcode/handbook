@@ -52,7 +52,7 @@ const FriendSection: React.FC<Props> = ({}) => {
 
     const handleToggleShow = () => setShowFriendSection((prev) => !prev);
 
-    if (!session) return <></>;
+    if ((!socket && !isLoading) || !session) return null;
 
     return (
         <>
@@ -86,8 +86,6 @@ const FriendSection: React.FC<Props> = ({}) => {
                     <div>
                         {friends.map((friend) => {
                             const isOnline = friend.isOnline;
-
-                            console.log('friend', friend);
 
                             return (
                                 <>

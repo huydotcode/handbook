@@ -5,7 +5,7 @@ export const navLink = [
     {
         name: 'Trang chủ',
         path: '/',
-        icon: <HiHome className="w-8 h-8 dark:text-primary " />,
+        icon: <HiHome className="w-8 h-8 dark:text-primary" />,
     },
     {
         name: 'Trò chuyện',

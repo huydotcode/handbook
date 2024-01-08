@@ -132,7 +132,17 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
         return () => observer.disconnect();
     }, [bottomRef.current]);
 
-    if (!currentRoom || !currentRoom.id) return null;
+    if (!currentRoom || !currentRoom.id) {
+        if (isPopup) return null;
+
+        return (
+            <div className="flex-1 h-[calc(100vh-56px)] flex items-center justify-center">
+                <p className="text-xl text-center text-gray-500 dark:text-gray-400">
+                    Hãy chọn một cuộc trò chuyện
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -145,7 +155,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 }
             )}
         >
-            {/* Header */}
             <div
                 className={cn(
                     'flex items-center justify-between p-4 h-16 border-b-2 dark:border-gray-700'
@@ -188,7 +197,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 </div>
             </div>
 
-            {/* Body */}
             <div
                 className={cn(
                     'w-full dark:border-y-gray-600 py-2 overflow-y-auto overflow-x-hidden',
@@ -208,7 +216,6 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                 </div>
             </div>
 
-            {/* Footer */}
             <form
                 className={cn(
                     'fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t dark:border-gray-700 h-14',

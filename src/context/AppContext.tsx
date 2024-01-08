@@ -76,7 +76,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             });
 
             socket.on('user-disconnected', (userId) => {
-                console.log('user-disconnected', userId);
                 setFriends((prev) => {
                     const friend = prev.find((f) => f._id === userId);
                     if (friend) {
