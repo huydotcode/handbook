@@ -54,7 +54,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             }
         );
 
-        setSocket((prev) => {
+        setSocket(() => {
             const newSocket = socketIO as any;
             return newSocket;
         });

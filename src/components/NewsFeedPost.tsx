@@ -24,7 +24,6 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
     const pageSize = 3;
-    const { socket } = useSocket();
 
     const [firstRender, setFirstRender] = useState<boolean>(true);
 
@@ -105,19 +104,21 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
 
             {firstRender && renderLoadingSkeletons()}
 
-            <InfinityScrollComponent
-                dataLength={posts.length}
-                hasMore={posts.length / pageSize === page}
-                className="min-h-[100vh] no-scrollbar"
-                loader={<SkeletonPost />}
-                next={() => setPage((prev) => prev + 1)}
-                scrollThreshold={0}
-                endMessage={renderEndMessage()}
-            >
-                {posts.map((post) => (
-                    <Post key={post?._id} data={post} setPosts={setPosts} />
-                ))}
-            </InfinityScrollComponent>
+            {!firstRender && (
+                <InfinityScrollComponent
+                    dataLength={posts.length}
+                    hasMore={posts.length / pageSize === page}
+                    className="min-h-[100vh] no-scrollbar"
+                    loader={<SkeletonPost />}
+                    next={() => setPage((prev) => prev + 1)}
+                    scrollThreshold={0}
+                    endMessage={renderEndMessage()}
+                >
+                    {posts.map((post) => (
+                        <Post key={post?._id} data={post} setPosts={setPosts} />
+                    ))}
+                </InfinityScrollComponent>
+            )}
 
             {renderLoadingSkeletons()}
         </>

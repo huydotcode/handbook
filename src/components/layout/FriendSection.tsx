@@ -1,4 +1,5 @@
 'use client';
+import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { cn } from '@/lib/utils';
@@ -10,12 +11,12 @@ import { FaCircle } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { Button } from '..';
 import Avatar from '../Avatar';
-import { useAppContext } from '@/context/AppContext';
+import { ChatBox } from '../pages/Messages';
 
 interface Props {}
 
 const FriendSection: React.FC<Props> = ({}) => {
-    const { setCurrentRoom } = useChat();
+    const { setCurrentRoom, setRooms, rooms } = useChat();
     const { friends, loadingFriends } = useAppContext();
     const { data: session } = useSession();
     const { socket, isLoading } = useSocket();
@@ -47,6 +48,28 @@ const FriendSection: React.FC<Props> = ({}) => {
             members: [session.user.id, _id],
             messages: [],
             lastAccessed: lastAccessed,
+        });
+
+        setRooms((prev) => {
+            const roomIndex = prev.findIndex((room) => room.id === roomId);
+
+            if (roomIndex === -1) {
+                if (prev.length === 3) prev.pop();
+
+                return [
+                    {
+                        id: roomId,
+                        name: name,
+                        image: image,
+                        members: [session.user.id, _id],
+                        messages: [],
+                        lastAccessed: lastAccessed,
+                    },
+                    ...prev,
+                ];
+            }
+
+            return prev;
         });
     };
 
@@ -128,6 +151,18 @@ const FriendSection: React.FC<Props> = ({}) => {
                     <IoIosArrowUp />
                 </Button>
             )}
+
+            <div className="flex absolute bottom-0 right-[100%]">
+                {rooms.map((room) => {
+                    return (
+                        <ChatBox
+                            className="shadow-xl"
+                            currentRoom={room}
+                            isPopup
+                        />
+                    );
+                })}
+            </div>
         </>
     );
 };

@@ -3,15 +3,17 @@ import Link from 'next/link';
 
 import { usePathname } from 'next/navigation';
 import { BsFacebook } from 'react-icons/bs';
-import { NavigationPages } from '../navbar';
+import { NavigationPages, Notification } from '../navbar';
 import NavUser from '../navbar/NavUser';
 import Searchbar from '../navbar/Searchbar';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import { useState } from 'react';
 import { Button } from '..';
 import { AiOutlineMenu } from 'react-icons/ai';
+import { useSession } from 'next-auth/react';
 
 const Navbar = () => {
+    const { data: session } = useSession();
     const path = usePathname();
     const [showPages, setShowPages] = useState<boolean>(false);
 
@@ -59,7 +61,7 @@ const Navbar = () => {
                         <DarkmodeButton />
                     </div>
                     <div className="flex items-center justify-center h-full mr-2">
-                        {/* {session?.user && <Notification />} */}
+                        {session?.user && <Notification />}
                     </div>
                     <div className="flex items-center h-full">
                         <NavUser />

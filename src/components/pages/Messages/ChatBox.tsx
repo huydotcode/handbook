@@ -18,21 +18,26 @@ import TimeAgoConverted from '@/utils/timeConvert';
 interface Props {
     isPopup?: boolean;
     className?: string;
+    currentRoom: IRoomChat;
 }
 
 interface IFormData {
     text: string;
 }
 
-const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
+const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
     const { friends } = useAppContext();
-    const { currentRoom, messages, setCurrentRoom, messagesInRoom } = useChat();
+    const { messages, setCurrentRoom, setRooms } = useChat();
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
+
+    const messagesInRoom = useMemo(() => {
+        return messages.filter((msg) => msg.roomId === currentRoom.id);
+    }, [currentRoom.id, messages]);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -147,12 +152,13 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
     return (
         <div
             className={cn(
-                `relative flex flex-col flex-1 bg-white dark:bg-dark-200 ${className}`,
+                `relative flex flex-col flex-1 bg-white dark:bg-dark-200`,
                 {
                     'w-full h-full': !isPopup,
                     'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50 dark:border dark:border-gray-700':
                         isPopup,
-                }
+                },
+                { className }
             )}
         >
             <div
@@ -188,6 +194,17 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                         <Button
                             className="absolute top-2 right-2 dark:hover:bg-dark-500"
                             onClick={() => {
+                                setRooms((prev) => {
+                                    const index = prev.findIndex(
+                                        (room) => room.id === currentRoom.id
+                                    );
+
+                                    if (index !== -1) {
+                                        prev.splice(index, 1);
+                                    }
+
+                                    return prev;
+                                });
                                 setCurrentRoom({} as IRoomChat);
                             }}
                         >
@@ -211,7 +228,11 @@ const ChatBox: React.FC<Props> = ({ isPopup, className }) => {
                     <div ref={bottomRef} />
 
                     {messagesInRoom.map((msg) => (
-                        <Message key={msg._id} data={msg} />
+                        <Message
+                            key={msg._id}
+                            data={msg}
+                            messagesInRoom={messagesInRoom}
+                        />
                     ))}
                 </div>
             </div>

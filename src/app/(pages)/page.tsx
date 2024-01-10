@@ -1,12 +1,8 @@
 import { NewsFeedPost } from '@/components';
 import { FriendSection, Sidebar } from '@/components/layout';
 import { NavigationPages } from '@/components/navbar';
-import ChatBox from '@/components/pages/Messages/ChatBox';
-import { getAuthSession } from '@/lib/auth';
 
 export default async function Home() {
-    const session = await getAuthSession();
-
     return (
         <>
             <aside className="fixed top-[72px] left-0 min-w-[280px] max-w-[360px] sm:hidden lg:min-w-0 transition-all duration-300">
@@ -28,9 +24,6 @@ export default async function Home() {
             <aside className="fixed top-[72px] right-0 w-[280px] max-w-[360px] h-[calc(100vh-72px)] lg:hidden flex justify-end">
                 <div className="relative right-0 w-[80%] h-full">
                     <FriendSection />
-                    <div className="absolute bottom-0 right-[100%]">
-                        <ChatBox isPopup />
-                    </div>
                 </div>
             </aside>
         </>

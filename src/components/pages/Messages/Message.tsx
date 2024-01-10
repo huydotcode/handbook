@@ -18,11 +18,12 @@ import { MdDelete } from 'react-icons/md';
 
 interface Props {
     data: IMessage;
+    messagesInRoom: IMessage[];
 }
 
-const Message: React.FC<Props> = ({ data: msg }) => {
+const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const { data: session } = useSession();
-    const { setMessages, messagesInRoom } = useChat();
+    const { setMessages } = useChat();
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);

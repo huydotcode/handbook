@@ -2,11 +2,13 @@
 import { Button, Loading } from '@/components';
 import { Sidebar } from '@/components/pages/Messages';
 import ChatBox from '@/components/pages/Messages/ChatBox';
+import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';
 
 function MessagesPage() {
     const { socket, isLoading } = useSocket();
+    const { currentRoom } = useChat();
     const router = useRouter();
 
     if (isLoading) return <Loading fullScreen />;
@@ -46,7 +48,7 @@ function MessagesPage() {
         <>
             <div className="fixed top-[56px] flex justify-between w-screen h-[calc(100vh-56px)] overflow-hidden   dark:border-t dark:border-t-gray-600">
                 <Sidebar />
-                <ChatBox />
+                <ChatBox currentRoom={currentRoom} />
             </div>
         </>
     );

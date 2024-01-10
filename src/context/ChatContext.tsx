@@ -24,8 +24,9 @@ interface IChatContext {
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
     lastMessages: ILastMessage[];
     setLastMessages: React.Dispatch<React.SetStateAction<ILastMessage[]>>;
-    messagesInRoom: IMessage[];
     loading: ILoading;
+    rooms: IRoomChat[];
+    setRooms: React.Dispatch<React.SetStateAction<IRoomChat[]>>;
 }
 
 const ChatContext = React.createContext<IChatContext>({} as IChatContext);
@@ -40,6 +41,8 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
 
     const [currentRoom, setCurrentRoom] = useState<IRoomChat>({} as IRoomChat);
+    const [rooms, setRooms] = useState<IRoomChat[]>([]);
+
     const [roomsHaveGetMessages, setRoomsHaveGetMessages] = useState<string[]>(
         []
     );
@@ -48,10 +51,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         messages: false,
     });
     const [lastMessages, setLastMessages] = useState<ILastMessage[]>([]);
-
-    const messagesInRoom = useMemo(() => {
-        return messages.filter((msg) => msg.roomId === currentRoom.id);
-    }, [messages, currentRoom.id]);
 
     const handleGetMessages = useCallback(() => {
         if (
@@ -158,9 +157,10 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         messages,
         setMessages,
         lastMessages,
-        messagesInRoom,
         setLastMessages,
         loading,
+        rooms,
+        setRooms,
     };
     return (
         <ChatContext.Provider value={values}>{children}</ChatContext.Provider>
