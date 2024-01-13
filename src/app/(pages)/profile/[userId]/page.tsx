@@ -2,7 +2,7 @@ import { Button, NewsFeedPost } from '@/components';
 import Action from '@/components/pages/Profile/Action';
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
 import { addFriend } from '@/lib/actions/profile.action';
-import { fetchProfileByUserId } from '@/lib/actions/user.action';
+import { fetchFriends, fetchProfileByUserId } from '@/lib/actions/user.action';
 import { getAuthSession } from '@/lib/auth';
 import mongoose from 'mongoose';
 
@@ -28,7 +28,9 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
         profile: IProfile;
     };
     const session = await getAuthSession();
-    const friends = [] as Friend[];
+    const friends = (await fetchFriends({
+        userId: params.userId,
+    })) as IFriend[];
 
     const props = mongoose.isValidObjectId(params.userId)
         ? {
@@ -38,7 +40,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
 
     if (!user || !profile) notFound();
 
-    const haveAction = session && session.user.id !== user._id.toString();
+    const notCurrentUser = session && session.user.id !== user._id.toString();
 
     return (
         <>
@@ -76,7 +78,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                                     <br />
                                 </div>
                             </div>
-                            {haveAction && (
+                            {notCurrentUser && (
                                 <Action
                                     userId={JSON.parse(
                                         JSON.stringify(user._id)

@@ -106,10 +106,6 @@ export const authOptions: NextAuthOptions = {
                 return token;
             }
 
-            if (!token.email) {
-                return token;
-            }
-
             const userExists = await User.findOne({ email: token.email });
 
             if (!userExists) {

@@ -13,26 +13,27 @@ type State = {
 };
 
 export default function useAsyncSession({ fn, setState, agrs }: Args): State {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [data, setData] = useState<any>();
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (status === 'unauthenticated') return;
-
+        if (!session?.user.id) return;
         (async () => {
             try {
                 const data = await fn(agrs);
 
-                if (setState) setState(data);
-                setData(data);
+                if (data) {
+                    if (setState) setState(data);
+                    setData(data);
+                }
             } catch (error: any) {
                 throw new Error(error);
             } finally {
                 setLoading(false);
             }
         })();
-    }, [status]);
+    }, [session?.user.id]);
 
     return { data, loading };
 }

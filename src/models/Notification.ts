@@ -6,21 +6,32 @@ interface INotification {
     receive: Types.ObjectId;
     message: string;
     createdAt: Date;
+    updatedAt: Date;
     isRead: boolean;
 }
 
-const NotificationSchema = new Schema<INotification>({
-    type: { type: String, required: true, default: 'friend' },
-    send: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    receive: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+const NotificationSchema = new Schema<INotification>(
+    {
+        type: { type: String, required: true },
+        send: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        receive: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        message: {
+            type: String,
+            default: 'Bạn có thông báo mới',
+        },
+
+        isRead: { type: Boolean, default: false },
     },
-    message: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    isRead: { type: Boolean, default: false },
-});
+    { timestamps: true }
+);
 
 const Notification =
     models.Notification ||

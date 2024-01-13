@@ -1,6 +1,6 @@
 'use server';
+import { Notification, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { User, Profile } from '@/models';
 import mongoose, { FilterQuery, SortOrder } from 'mongoose';
 
 export const fetchProfileByUserId = async (userId: string) => {
@@ -90,6 +90,8 @@ export async function fetchUsers({
 }
 
 export const fetchFriends = async ({ userId }: { userId: string }) => {
+    if (userId.trim().length === 0) return;
+
     try {
         await connectToDB();
         const user = await User.findById(userId).exec();
@@ -100,6 +102,25 @@ export const fetchFriends = async ({ userId }: { userId: string }) => {
 
         return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
+        console.log(error);
+    }
+};
+
+export const fetchNotifications = async ({ userId }: { userId: string }) => {
+    if (userId.trim().length === 0) return;
+
+    try {
+        await connectToDB();
+
+        const notifications = await Notification.find({
+            receive: userId,
+        })
+            .populate('send', 'name image')
+            .sort({ createdAt: 'desc' })
+            .exec();
+
+        return JSON.parse(JSON.stringify(notifications));
+    } catch (error) {
         console.log(error);
     }
 };

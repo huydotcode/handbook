@@ -65,3 +65,17 @@ interface IMessage {
     createdAt: Date;
     updatedAt: Date;
 }
+
+interface INotification {
+    _id: string;
+    type: string;
+    send: {
+        _id: string;
+        name: string;
+        image: string;
+    };
+    receive: string;
+    message: string;
+    createdAt: Date;
+    isRead: boolean;
+}

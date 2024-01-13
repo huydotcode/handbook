@@ -22,8 +22,8 @@ const Action: React.FC<Props> = ({ userId }) => {
         e.preventDefault();
 
         if (socket) {
-            await socket.emit('add-friend', {
-                friendId: userId,
+            await socket.emit('send-request-add-friend', {
+                receiverId: userId,
             });
         }
     };
@@ -35,25 +35,6 @@ const Action: React.FC<Props> = ({ userId }) => {
             });
         }
     };
-
-    // if (isFriend)
-    //     return (
-    //         <Button
-    //             onClick={handleRemoveFriend}
-    //             variant={'event'}
-    //             size={'medium'}
-    //         >
-    //             Đã kết bạn
-    //         </Button>
-    //     );
-
-    // return (
-    //     <form onSubmit={handleAddFriend}>
-    //         <Button className="bg-primary" variant={'event'} size={'medium'}>
-    //             Thêm bạn bè
-    //         </Button>
-    //     </form>
-    // );
 
     return (
         <Button
@@ -67,7 +48,7 @@ const Action: React.FC<Props> = ({ userId }) => {
             <span>{isFriend ? <FaUserFriends /> : <IoPersonAdd />}</span>
 
             <p className="ml-2 md:hidden">
-                {isFriend ? 'Bỏ kết bạn' : 'Thêm bạn bè'}
+                {isFriend ? 'Hủy kết bạn' : 'Thêm bạn bè'}
             </p>
         </Button>
     );

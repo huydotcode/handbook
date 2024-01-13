@@ -15,15 +15,10 @@ import { TextareaAutosize } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { SlideShow } from '@/components/ui';
-
-interface Friend {
-    id: string;
-    image: string;
-    name: string;
-}
+import Avatar from '@/components/Avatar';
 
 interface Props {
-    friends: Friend[];
+    friends: IFriend[];
     profile: IProfile;
 }
 
@@ -206,25 +201,26 @@ const InfomationSection: React.FC<Props> = ({ profile, friends }) => {
                 <h5 className="text-xl font-bold">Bạn bè</h5>
                 <div>
                     <div className="grid grid-cols-5 gap-2 mt-2">
-                        {friends.slice(0, 5).map((friend: Friend) => {
+                        {friends.slice(0, 5).map((friend: IFriend) => {
+                            const name = friend.name
+                                .split(' ')
+                                .filter((s) => s != '')[
+                                friend.name.split(' ').filter((s) => s != '')
+                                    .length - 1
+                            ];
+
                             return (
                                 <>
-                                    <Link
-                                        key={friend.id}
-                                        className="flex items-center flex-col rounded-md m-1 min-w-[50px] p-2 shadow-md"
-                                        href={`/profile/${friend.id}`}
-                                    >
-                                        <Image
-                                            className="rounded-md"
-                                            src={friend.image}
-                                            alt={friend.name}
-                                            width={48}
-                                            height={48}
+                                    <div className="flex flex-col items-center justify-center hover:bg-light-100 p-2">
+                                        <Avatar
+                                            width={42}
+                                            height={42}
+                                            imgSrc={friend.image}
+                                            userUrl={friend._id}
                                         />
-                                        <h5 className="mt-1 text-xs">
-                                            {friend.name}
-                                        </h5>
-                                    </Link>
+
+                                        <span>{name}</span>
+                                    </div>
                                 </>
                             );
                         })}

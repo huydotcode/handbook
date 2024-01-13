@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { usePathname } from 'next/navigation';
 import { BsFacebook } from 'react-icons/bs';
-import { NavigationPages, Notification } from '../navbar';
+import { NavigationPages, NavNotification } from '../navbar';
 import NavUser from '../navbar/NavUser';
 import Searchbar from '../navbar/Searchbar';
 import DarkmodeButton from '../ui/DarkmodeButton';
@@ -61,7 +61,7 @@ const Navbar = () => {
                         <DarkmodeButton />
                     </div>
                     <div className="flex items-center justify-center h-full mr-2">
-                        {session?.user && <Notification />}
+                        {session?.user && <NavNotification />}
                     </div>
                     <div className="flex items-center h-full">
                         <NavUser />

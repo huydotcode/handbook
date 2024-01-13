@@ -32,7 +32,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const { data: session, status } = useSession();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const [isConnected, setIsConnected] = useState<boolean>(true);
+    const [isConnected, setIsConnected] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
