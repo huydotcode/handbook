@@ -1,10 +1,9 @@
 'use client';
-import Link from 'next/link';
-import React from 'react';
-import { usePathname } from 'next/navigation';
 import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
-import { on } from 'events';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React from 'react';
 
 interface Props {
     className?: string;

@@ -7,7 +7,7 @@ interface Props {
 
 const HomeLayout: React.FC<Props> = async ({ children }) => {
     return (
-        <div className="block">
+        <div>
             <Navbar />
 
             <main className="relative top-14 flex justify-between w-full min-h-[calc(100vh-56px)]">

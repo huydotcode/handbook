@@ -1,13 +1,19 @@
 import { Button } from '@/components';
 import Avatar from '@/components/Avatar';
 import { useAppContext } from '@/context/AppContext';
+import { TiTick } from 'react-icons/ti';
 import React from 'react';
+import { IoClose } from 'react-icons/io5';
 
 interface Props {
     data: INotification;
+    showMessage?: boolean;
 }
 
-const NotificationItem: React.FC<Props> = ({ data: notification }) => {
+const NotificationItem: React.FC<Props> = ({
+    data: notification,
+    showMessage = true,
+}) => {
     const { handleAcceptFriend, handleDeclineFriend } = useAppContext();
 
     return (
@@ -16,8 +22,8 @@ const NotificationItem: React.FC<Props> = ({ data: notification }) => {
                 <div className="flex items-center w-full hover:bg-light-100 p-2 dark:text-white dark:hover:bg-dark-500">
                     <div>
                         <p className="text-sm">
-                            {notification.send.name} đã gửi cho bạn lời mời kết
-                            bạn
+                            {notification.send.name}{' '}
+                            {showMessage && 'đã gửi lời mời kết bạn'}
                         </p>
                         <div className="mt-2 flex justify-end items-center">
                             <Button
@@ -30,7 +36,7 @@ const NotificationItem: React.FC<Props> = ({ data: notification }) => {
                                     })
                                 }
                             >
-                                Chấp nhận
+                                {showMessage ? 'Chấp nhận' : <TiTick />}
                             </Button>
                             <Button
                                 className="bg-gray-200 hover:bg-gray-400 dark:bg-dark-200 dark:hover:bg-dark-300 dark:hover:bg-dark-100"
@@ -42,7 +48,7 @@ const NotificationItem: React.FC<Props> = ({ data: notification }) => {
                                     });
                                 }}
                             >
-                                Từ chối
+                                {showMessage ? 'Từ chối' : <IoClose />}
                             </Button>
                         </div>
                     </div>

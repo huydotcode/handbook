@@ -1,15 +1,14 @@
-'use client';
-import { useSession } from 'next-auth/react';
+import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import NavigationPages from '../navbar/NavigationPages';
 
-const Sidebar = () => {
-    const { data: session } = useSession();
-    const user = session?.user as ISessionUser;
+const Sidebar = async () => {
+    const session = await getAuthSession();
+    const user = session?.user;
 
     return (
-        <div className="mr-4 w-[80%] rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">
+        <div className="mt-4 mr-4 w-full overflow-scroll no-scrollbar rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">
             <div className="p-2">
                 {user && (
                     <Link
@@ -30,7 +29,7 @@ const Sidebar = () => {
                     </Link>
                 )}
 
-                <div className="block">
+                <div>
                     <NavigationPages />
                 </div>
             </div>

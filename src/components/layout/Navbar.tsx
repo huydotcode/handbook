@@ -21,7 +21,7 @@ const Navbar = () => {
         <nav className="fixed w-screen h-14 top-0 left-0 right-0 shadow-md z-50 dark:shadow-none md:px-2">
             <div className="relative flex items-center justify-between h-full w-full px-5 md:px-1">
                 {/* Left */}
-                <div className="flex items-center min-w-min">
+                <div className="min-w-min flex items-center ">
                     <Link className="flex items-center" href={'/'}>
                         <BsFacebook className="text-4xl text-blue-500" />
                     </Link>

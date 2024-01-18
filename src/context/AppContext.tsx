@@ -172,9 +172,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     if (!session) return children;
 
     const values = {
-        friends,
+        friends: friends || [],
+        notifications: notifications || [],
         loadingFriends: loading.friend,
-        notifications,
         loadingNotifications: loading.notification,
         handleAcceptFriend,
         handleDeclineFriend,

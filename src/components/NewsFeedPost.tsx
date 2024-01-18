@@ -1,6 +1,7 @@
 'use client';
 import { fetchNewFeedPost } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoReloadOutline } from 'react-icons/io5';
@@ -9,8 +10,6 @@ import CreatePost from './post/CreatePost';
 import Post from './post/Post';
 import SkeletonPost from './post/SkeletonPost';
 import Button from './ui/Button';
-import { useRouter } from 'next/navigation';
-import { useSocket } from '@/context/SocketContext';
 
 interface Props {
     userId?: string;
@@ -108,7 +107,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                 <InfinityScrollComponent
                     dataLength={posts.length}
                     hasMore={posts.length / pageSize === page}
-                    className="min-h-[100vh] no-scrollbar"
+                    className="w-[500px] sm:w-screen min-h-[100vh] no-scrollbar"
                     loader={<SkeletonPost />}
                     next={() => setPage((prev) => prev + 1)}
                     scrollThreshold={0}

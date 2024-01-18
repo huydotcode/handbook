@@ -1,12 +1,10 @@
 import usePostContext from '@/hooks/usePostContext';
-import React, { useEffect, useMemo } from 'react';
-import Comment from './Comment';
-import { Button } from '..';
 import { fetchCommentPostId } from '@/lib/actions/post.action';
+import React, { useEffect, useMemo } from 'react';
+import { Button } from '..';
+import Comment from './Comment';
 
-interface Props {}
-
-const CommentSection: React.FC<Props> = ({}) => {
+const CommentSection: React.FC = ({}) => {
     const [page, setPage] = React.useState<number>(1);
     const pageSize = 5;
 

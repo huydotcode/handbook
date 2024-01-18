@@ -11,9 +11,7 @@ import React, { useEffect, useState } from 'react';
 import { FaCircle } from 'react-icons/fa6';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
-interface Props {}
-
-const Sidebar: React.FC<Props> = () => {
+const Sidebar = () => {
     const { data: session } = useSession();
     const { friends } = useAppContext();
     const { currentRoom, setCurrentRoom, lastMessages, loading } = useChat();
@@ -102,56 +100,58 @@ const Sidebar: React.FC<Props> = () => {
                     Bạn bè
                 </span>
 
-                {friends.map((friend: IFriend) => {
-                    const isOnline = friend.isOnline;
+                {friends &&
+                    friends.map((friend: IFriend) => {
+                        const isOnline = friend.isOnline;
 
-                    const isSelect =
-                        currentRoom.id ==
-                        [session.user.id, friend._id].sort().join('');
+                        const isSelect =
+                            currentRoom.id ==
+                            [session.user.id, friend._id].sort().join('');
 
-                    const lastMsg = lastMessages.find(
-                        (msg) =>
-                            msg.roomId ===
-                            generateRoomId(session.user.id, friend._id)
-                    );
+                        const lastMsg = lastMessages.find(
+                            (msg) =>
+                                msg.roomId ===
+                                generateRoomId(session.user.id, friend._id)
+                        );
 
-                    return (
-                        <>
-                            <div
-                                className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
-                                    isSelect && 'bg-gray-200 dark:bg-dark-500'
-                                }`}
-                                key={friend._id}
-                                onClick={() => handleJoinRoom(friend)}
-                            >
-                                <Avatar imgSrc={friend.image} />
+                        return (
+                            <>
+                                <div
+                                    className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
+                                        isSelect &&
+                                        'bg-gray-200 dark:bg-dark-500'
+                                    }`}
+                                    key={friend._id}
+                                    onClick={() => handleJoinRoom(friend)}
+                                >
+                                    <Avatar imgSrc={friend.image} />
 
-                                <div className="flex flex-1 flex-col">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
-                                            {friend.name}
-                                        </h3>
-                                        <span className="text-xs ml-2 text-gray-500">
-                                            <FaCircle
-                                                className={`${
-                                                    isOnline
-                                                        ? 'text-blue-600'
-                                                        : 'text-gray-500'
-                                                }`}
-                                            />
-                                        </span>
+                                    <div className="flex flex-1 flex-col">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
+                                                {friend.name}
+                                            </h3>
+                                            <span className="text-xs ml-2 text-gray-500">
+                                                <FaCircle
+                                                    className={`${
+                                                        isOnline
+                                                            ? 'text-blue-600'
+                                                            : 'text-gray-500'
+                                                    }`}
+                                                />
+                                            </span>
+                                        </div>
+                                        {lastMsg && (
+                                            <p className="text-xs text-gray-500 ml-2">
+                                                {lastMsg.data.text ||
+                                                    'Chưa có tin nhắn'}
+                                            </p>
+                                        )}
                                     </div>
-                                    {lastMsg && (
-                                        <p className="text-xs text-gray-500 ml-2">
-                                            {lastMsg.data.text ||
-                                                'Chưa có tin nhắn'}
-                                        </p>
-                                    )}
                                 </div>
-                            </div>
-                        </>
-                    );
-                })}
+                            </>
+                        );
+                    })}
 
                 {!loading.friends && friends.length === 0 && (
                     <div className="flex items-center justify-center h-full">
