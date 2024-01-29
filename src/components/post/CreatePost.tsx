@@ -12,11 +12,6 @@ interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-interface IFormData {
-    option: 'public' | 'option';
-    content: string;
-}
-
 const CreatePost: FC<Props> = ({ setPosts }) => {
     const { data: session } = useSession();
 
@@ -26,13 +21,13 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
     const [photos, setPhotos] = useState<any[]>([]);
     const { control, register, handleSubmit, formState, reset } =
-        useForm<IFormData>({
+        useForm<IPostFormData>({
             defaultValues: {
                 option: 'public',
             },
         });
 
-    const onSubmit: SubmitHandler<IFormData> = async (data) => {
+    const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
         if (formState.isSubmitting) return;
         const { content, option } = data;
 
