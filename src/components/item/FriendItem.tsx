@@ -28,21 +28,22 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
 
         const roomId = generateRoomId(session.user.id, _id);
 
-        await socket.emit('join-room', {
-            roomId,
-        });
+        // await socket.emit('join-room', {
+        //     roomId,
+        // });
 
-        await socket.emit('read-message', {
-            roomId: roomId,
-        });
+        // await socket.emit('read-message', {
+        //     roomId: roomId,
+        // });
 
         setCurrentRoom({
             id: roomId,
             name: name,
             image: image,
+            lastAccessed: lastAccessed,
             members: [session.user.id, _id],
             messages: [],
-            lastAccessed: lastAccessed,
+            type: 'f',
         });
 
         setRooms((prev) => {
@@ -51,17 +52,17 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
             if (roomIndex === -1) {
                 if (prev.length === 3) prev.pop();
 
-                return [
-                    {
-                        id: roomId,
-                        name: name,
-                        image: image,
-                        members: [session.user.id, _id],
-                        messages: [],
-                        lastAccessed: lastAccessed,
-                    },
-                    ...prev,
-                ];
+                const newRoom = {
+                    id: roomId,
+                    image: image,
+                    lastAccessed: lastAccessed,
+                    members: [session.user.id, _id],
+                    messages: [],
+                    name: name,
+                    type: 'f',
+                } as IRoomChat;
+
+                return [newRoom, ...prev];
             }
 
             return prev;
@@ -71,12 +72,13 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
     return (
         <Button
             variant={'custom'}
-            className="flex items-center justify-between p-3 shadow-sm w-full text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-500"
+            className="flex items-center justify-between p-3 shadow-sm w-full text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
             key={friend._id}
             onClick={() => handleClickFriend(friend)}
         >
             <div className="flex items-center">
                 <Avatar imgSrc={friend.image || ''} />
+
                 <span className="ml-2 lg:hidden">{friend.name}</span>
             </div>
 

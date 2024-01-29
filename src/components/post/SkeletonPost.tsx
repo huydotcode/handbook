@@ -7,7 +7,7 @@ interface SkeletonPostProps {
 
 const SkeletonPost: FC<SkeletonPostProps> = ({ refInView }) => {
     return (
-        <div className="w-[500px] sm:w-screen min-h-[100vh] no-scrollbar">
+        <div className="w-[500px] sm:w-screen no-scrollbar">
             <div
                 className="relative my-4 px-4 py-2 bg-white rounded-xl shadow-md dark:bg-dark-200"
                 ref={refInView}

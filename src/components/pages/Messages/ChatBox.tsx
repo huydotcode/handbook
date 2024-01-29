@@ -29,7 +29,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
     const { friends } = useAppContext();
-    const { messages, setCurrentRoom, setRooms } = useChat();
+    const { messages, setCurrentRoom, setRooms, setMessages } = useChat();
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
@@ -37,7 +37,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
 
     const messagesInRoom = useMemo(() => {
         return messages.filter((msg) => msg.roomId === currentRoom.id);
-    }, [currentRoom.id, messages]);
+    }, [messages]);
 
     const userIsOnline = useMemo(() => {
         if (!currentRoom.id) return null;
@@ -83,6 +83,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
 
         if (newMsg) {
             socket.emit('send-message', newMsg);
+            socket.emit('get-last-messages', { roomId: currentRoom.id });
         } else {
             toast.error('Không thể gửi tin nhắn!', {
                 id: 'send-message',
@@ -111,7 +112,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     useEffect(() => {
         if (!socket || !currentRoom.id) return;
 
-        socket.emit('read-message', { roomId: currentRoom.id });
+        // socket.emit('read-message', { roomId: currentRoom.id });
     }, [socket, currentRoom.id]);
 
     useEffect(() => {

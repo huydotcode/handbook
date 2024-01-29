@@ -106,6 +106,22 @@ export const fetchFriends = async ({ userId }: { userId: string }) => {
     }
 };
 
+export const fetchUserByUserId = async ({ userId }: { userId: string }) => {
+    if (userId.trim().length === 0) return;
+
+    try {
+        await connectToDB();
+
+        const friend = await User.findById(userId).select(
+            '_id name image username isOnline lastAccessed'
+        );
+
+        return JSON.parse(JSON.stringify(friend));
+    } catch (error: any) {
+        console.log(error);
+    }
+};
+
 export const fetchNotifications = async ({ userId }: { userId: string }) => {
     if (userId.trim().length === 0) return;
 

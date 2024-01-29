@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './SocketContext';
 import { send } from 'process';
+import { useAudio } from '@/hooks';
 
 type AppContextType = {
     friends: IFriend[];
@@ -52,6 +53,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         notification: true,
     });
 
+    const { playing, toggle: togglePlayingSound } = useAudio({
+        type: 'message',
+    });
+
     useEffect(() => {
         if (session?.user?.id) {
             (async () => {
@@ -78,13 +83,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         senderId: string;
     }) => {
         if (!socket) return;
-        // Send to server
+
         socket.emit('accept-request-add-friend', {
             notificationId,
             senderId,
         });
 
-        // Remove notification
         setNotifications((prev) =>
             prev.filter((notification) => notification._id !== notificationId)
         );
@@ -96,13 +100,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         notificationId: string;
     }) => {
         if (!socket) return;
-        // Send to server
+
         socket.emit('decline-request-add-friend', {
             notificationId,
             senderId: session?.user?.id,
         });
 
-        // Remove notification
         setNotifications((prev) =>
             prev.filter((notification) => notification._id !== notificationId)
         );
@@ -164,6 +167,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             });
 
             socket.on('receive-request-add-friend', (data) => {
+                togglePlayingSound();
+
                 setNotifications((prev) => [...prev, data.notification]);
             });
         }

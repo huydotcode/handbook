@@ -1,16 +1,12 @@
 'use client';
 import { fetchMessagesByRoomId } from '@/lib/actions/message.action';
-import { fetchFriends } from '@/lib/actions/user.action';
+import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
-import React, {
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
-import { useSocket } from './SocketContext';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAppContext } from './AppContext';
+import { useSocket } from './SocketContext';
+import { useAudio } from '@/hooks';
 
 interface Props {
     children: React.ReactNode;
@@ -22,11 +18,13 @@ interface IChatContext {
     setCurrentRoom: React.Dispatch<React.SetStateAction<IRoomChat>>;
     messages: IMessage[];
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
-    lastMessages: ILastMessage[];
-    setLastMessages: React.Dispatch<React.SetStateAction<ILastMessage[]>>;
+    lastMessages: IMessage[];
+    setLastMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
     loading: ILoading;
     rooms: IRoomChat[];
     setRooms: React.Dispatch<React.SetStateAction<IRoomChat[]>>;
+    conversations: IRoomChat[];
+    setConversations: React.Dispatch<React.SetStateAction<IRoomChat[]>>;
 }
 
 const ChatContext = React.createContext<IChatContext>({} as IChatContext);
@@ -36,22 +34,29 @@ export const useChat = () => {
 };
 
 const ChatProvider: React.FC<Props> = ({ children }) => {
+    //* Context
+    const { data: session } = useSession();
     const { socket } = useSocket();
     const { friends } = useAppContext();
-    const [messages, setMessages] = useState<IMessage[]>([]);
+    const { toggle } = useAudio({ type: 'message' });
 
-    const [currentRoom, setCurrentRoom] = useState<IRoomChat>({} as IRoomChat);
+    //* State
     const [rooms, setRooms] = useState<IRoomChat[]>([]);
-
+    const [conversations, setConversations] = useState<IRoomChat[]>([]);
+    const [currentRoom, setCurrentRoom] = useState<IRoomChat>({} as IRoomChat);
+    const [messages, setMessages] = useState<IMessage[]>([]);
     const [roomsHaveGetMessages, setRoomsHaveGetMessages] = useState<string[]>(
         []
     );
+    const [roomsHaveJoin, setRoomsHaveJoin] = useState<string[]>([]);
+
     const [loading, setLoading] = useState<ILoading>({
         friends: false,
         messages: false,
     });
-    const [lastMessages, setLastMessages] = useState<ILastMessage[]>([]);
+    const [lastMessages, setLastMessages] = useState<IMessage[]>([]);
 
+    //* Callback
     const handleGetMessages = useCallback(() => {
         if (
             !currentRoom ||
@@ -59,19 +64,15 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
             roomsHaveGetMessages.includes(currentRoom.id)
         )
             return;
-
         const fetchMessages = async () => {
             const data = await fetchMessagesByRoomId({
                 roomId: currentRoom.id,
             });
-
             if (data) {
                 setMessages((prev) => [...prev, ...data]);
             }
-
             setRoomsHaveGetMessages((prev) => [...prev, currentRoom.id]);
         };
-
         fetchMessages();
     }, [currentRoom, roomsHaveGetMessages]);
 
@@ -99,18 +100,16 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                                 (msg) => msg.roomId === roomId
                             );
                             if (index !== -1) {
-                                prev[index] = {
-                                    roomId: roomId,
-                                    data: data,
-                                };
-                            } else {
-                                prev.push({
-                                    roomId: roomId,
-                                    data: data,
-                                });
+                                prev[index] = data;
+                                return [...prev];
                             }
-                            return prev;
+                            return [...prev, data];
                         });
+
+                        // Kiểm tra nếu không ở trong phòng thì phát âm thanh
+                        if (currentRoom.id !== roomId) {
+                            toggle();
+                        }
                     });
                     break;
                 case 'READ_MESSAGE':
@@ -138,11 +137,69 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         [socket]
     );
 
+    // Tham gia vào phòng là bạn bè
+    useEffect(() => {
+        if (!socket || !session) return;
+
+        (async () => {
+            for (const friend of friends) {
+                const roomId = generateRoomId(friend._id, session.user.id);
+
+                if (roomsHaveJoin.includes(roomId)) continue;
+
+                socket.emit('join-room', {
+                    roomId,
+                });
+
+                socket.emit('get-last-messages', {
+                    roomId,
+                });
+
+                setRoomsHaveJoin((prev) => [...prev, roomId]);
+            }
+        })();
+    }, [socket, session?.user.id, friends]);
+
+    // Tham gia vào phòng không phải bạn bè
+    useEffect(() => {
+        if (!socket || !session) return;
+        if (
+            currentRoom.id &&
+            !roomsHaveJoin.includes(currentRoom.id) &&
+            currentRoom.type == 'r'
+        ) {
+            const roomId = currentRoom.id;
+            const otherUserId = roomId.replace(session.user.id, '');
+            const isFriend = friends.find(
+                (friend) => friend._id === otherUserId
+            );
+
+            // Kiểm tra nếu không phải friend thì join vào room
+            if (!isFriend) {
+                socket.emit('join-room', {
+                    roomId,
+                });
+
+                setRoomsHaveJoin((prev) => [...prev, roomId]);
+            }
+        }
+    }, [currentRoom.id]);
+
+    useEffect(() => {
+        if (socket && currentRoom.id) {
+            socket.emit('read-message', {
+                roomId: currentRoom.id,
+            });
+        }
+    }, [currentRoom.id]);
+
+    //* Effect
     useEffect(() => {
         handleSocketAction('RECEIVE_MESSAGE');
         handleSocketAction('GET_LAST_MESSAGES');
         handleSocketAction('READ_MESSAGE');
         handleSocketAction('DELETE_MESSAGE');
+        handleSocketAction('RECEIVE_MESSAGES_FROM_UNKNOWN_USER');
     }, [handleSocketAction]);
 
     // Get messages
@@ -161,6 +218,8 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         loading,
         rooms,
         setRooms,
+        conversations,
+        setConversations,
     };
     return (
         <ChatContext.Provider value={values}>{children}</ChatContext.Provider>

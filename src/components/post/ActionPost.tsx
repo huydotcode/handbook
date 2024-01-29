@@ -1,5 +1,5 @@
 'use client';
-import React, { FormEventHandler, useState } from 'react';
+import React, { FormEventHandler, MouseEventHandler, useState } from 'react';
 
 import usePostContext from '@/hooks/usePostContext';
 import { deletePost } from '@/lib/actions/post.action';
@@ -9,40 +9,45 @@ import { MdMoreVert } from 'react-icons/md';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import Button from '../ui/Button';
 import Popover, { usePopover } from '../ui/Popover';
+import { BiEdit } from 'react-icons/bi';
+import DeletePostModal from './action/DeletePostModal';
+import EditPostModal from './action/EditPostModal';
 
 interface Props {
     post: IPost;
     setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export type IShowModal = {
+    editModal: boolean;
+    deleteModal: boolean;
+};
+
 const ActionPost: React.FC<Props> = ({ post }) => {
-    const [showModal, setShowModal] = useState<boolean>(false);
-    const { setPosts } = usePostContext();
-    const [isSubmitting, setIsSubmitting] = useState<boolean>();
+    const { anchorEl, setAnchorEl } = usePopover();
 
-    const {
-        anchorEl,
-        handleClose: handleCloseDropdown,
-        handleShow: handleOpenDropdown,
-        open,
-    } = usePopover();
+    const [showDropdown, setShowDropdown] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState<IShowModal>({
+        editModal: false,
+        deleteModal: false,
+    });
 
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
-
-    const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            await deletePost({
-                postId: post._id,
-            });
-            setPosts((prev) => prev.filter((item) => item._id != post._id));
-        } catch (error: any) {
-            throw new Error(error);
-        } finally {
-            handleCloseModal();
+    const handleToggleDropdown: MouseEventHandler<HTMLButtonElement> = (e) => {
+        if (!anchorEl) {
+            setAnchorEl(e.currentTarget);
+        } else {
+            setShowDropdown((prev) => !prev);
         }
+    };
+
+    const handleShowModal = (type: keyof IShowModal) => {
+        setShowModal((prev) => ({ ...prev, [type]: true }));
+        setShowDropdown(false);
+    };
+
+    const handleCloseModal = (type: keyof IShowModal) => {
+        setShowModal((prev) => ({ ...prev, [type]: false }));
+        setShowDropdown(false);
     };
 
     return (
@@ -50,70 +55,53 @@ const ActionPost: React.FC<Props> = ({ post }) => {
             <Button
                 className="bg-transparent shadow-none"
                 variant={'event'}
-                onClick={handleOpenDropdown}
+                onClick={handleToggleDropdown}
             >
                 <MdMoreVert className="text-3xl" />
             </Button>
 
             <Popover
+                open={showDropdown}
                 anchorEl={anchorEl}
-                open={open}
-                handleClose={handleCloseDropdown}
+                setAnchorEl={setAnchorEl}
+                handleClose={() => setShowDropdown(false)}
             >
                 <div className="relative flex flex-col min-w-[200px]">
                     <Button
                         className="justify-start w-full rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
                         variant={'custom'}
                         size={'medium'}
-                        onClick={() => {
-                            handleShowModal();
-                            handleCloseDropdown();
-                        }}
+                        onClick={() => handleShowModal('editModal')}
+                    >
+                        <BiEdit className="mr-2" /> Chỉnh sửa bài viết
+                    </Button>
+
+                    <Button
+                        className="justify-start w-full rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
+                        variant={'custom'}
+                        size={'medium'}
+                        onClick={() => handleShowModal('deleteModal')}
                     >
                         <RiDeleteBin5Fill className="mr-2" /> Xóa bài viết
                     </Button>
                 </div>
             </Popover>
 
-            <Modal
-                open={showModal}
-                onClose={handleCloseModal}
-                className="flex items-center justify-center"
-                disableAutoFocus
-            >
-                <Fade in={showModal}>
-                    <div className="relative p-4 rounded-xl bg-white dark:bg-dark-200">
-                        <div className="border-b pb-2">
-                            <p>Bạn có chắc muốn xóa bài viết?</p>
-                        </div>
+            {showModal.editModal && (
+                <EditPostModal
+                    show={showModal.editModal}
+                    setShow={setShowModal}
+                    handleClose={() => handleCloseModal('editModal')}
+                />
+            )}
 
-                        <div className="flex justify-end mt-4">
-                            <form onSubmit={handleDeletePost}>
-                                <Button
-                                    variant={'warning'}
-                                    size={'medium'}
-                                    className="mr-2 min-w-[80px] text-white"
-                                    disabled={isSubmitting}
-                                    type="submit"
-                                >
-                                    {isSubmitting ? 'Đang xóa...' : 'Xóa'}
-                                </Button>
-                            </form>
-                            <Button
-                                className="w-[30%] text-white"
-                                variant={'secondary'}
-                                size={'medium'}
-                                onClick={() => {
-                                    setShowModal(false);
-                                    handleCloseDropdown();
-                                }}
-                            >
-                                Không
-                            </Button>
-                        </div>
-                    </div>
-                </Fade>
-            </Modal>
+            {showModal.deleteModal && (
+                <DeletePostModal
+                    show={showModal.deleteModal}
+                    postId={post._id}
+                    handleClose={() => handleCloseModal('deleteModal')}
+                />
+            )}
         </>
     );
 };

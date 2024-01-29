@@ -17,23 +17,18 @@ import { CgClose } from 'react-icons/cg';
 import TextEditor from '../TextEditor';
 import Button from '../ui/Button';
 
-interface IFormData {
-    option: 'public' | 'option';
-    content: string;
-}
-
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
     handleClose: () => void;
-    register: UseFormRegister<IFormData>;
+    register: UseFormRegister<IPostFormData>;
     submit: (
         e?: BaseSyntheticEvent<object, any, any> | undefined
     ) => Promise<void>;
     photos: any;
     setPhotos: React.Dispatch<React.SetStateAction<any[]>>;
-    formState: FormState<IFormData>;
-    control: Control<IFormData, any>;
+    formState: FormState<IPostFormData>;
+    control: Control<IPostFormData, any>;
 }
 
 const ModalCreatePost: React.FC<Props> = ({

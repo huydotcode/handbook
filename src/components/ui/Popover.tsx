@@ -9,6 +9,7 @@ interface Props {
     children: React.ReactNode;
     handleClose: () => void;
     positionArrow?: number;
+    setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 }
 
 export const usePopover = () => {
@@ -22,7 +23,7 @@ export const usePopover = () => {
         setAnchorEl(null);
     };
 
-    return { open, anchorEl, handleShow, handleClose };
+    return { open, setAnchorEl, anchorEl, handleShow, handleClose };
 };
 
 const Popover: FC<Props> = ({

@@ -13,7 +13,7 @@ function MessagesPage() {
 
     if (isLoading) return <Loading fullScreen />;
 
-    if (!socket || socket.disconnected) {
+    if (!socket) {
         return (
             <div className="flex flex-col items-center justify-center w-screen h-[calc(100vh-56px)]">
                 <div className="flex flex-col justify-center items-center bg-light-100 min-w-[500px] max-w-[50vw] h-[500px] rounded-xl dark:bg-dark-200">
@@ -29,7 +29,6 @@ function MessagesPage() {
                     >
                         Kết nối lại
                     </Button>
-
                     <Button
                         className="mt-2 bg-primary text-white"
                         size="medium"

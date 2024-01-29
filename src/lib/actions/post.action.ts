@@ -37,16 +37,50 @@ export const createPost = async ({
     }
 };
 
+export const editPost = async ({
+    content,
+    images,
+    option,
+    postId,
+}: {
+    content: string;
+    images: CloudinaryImage[];
+    option: string;
+    postId: string;
+}) => {
+    try {
+        await Post.findByIdAndUpdate(postId, {
+            content,
+            images,
+            option,
+        });
+
+        const postEdited = await Post.findById(postId);
+
+        await User.populate(postEdited, {
+            path: 'creator',
+            select: 'name image',
+        });
+        await postEdited.save();
+
+        return JSON.parse(JSON.stringify(postEdited));
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const fetchNewFeedPost = async ({
     page = 1,
     pageSize = 5,
     userId = '',
     username = '',
+    isCurrentUser = false,
 }: {
     userId: string | undefined;
     username: string | undefined;
     page: number;
     pageSize: number;
+    isCurrentUser?: boolean;
 }) => {
     let query = {} as any;
 
@@ -59,7 +93,17 @@ export const fetchNewFeedPost = async ({
             user = await User.findOne({ username });
         }
 
-        query = user ? { creator: user._id } : {};
+        if (user) {
+            query.creator = user._id;
+        }
+
+        if (isCurrentUser) {
+            query.option = { $in: ['public', 'private'] };
+        } else {
+            query.option = 'public';
+        }
+    } else {
+        query.option = 'public';
     }
 
     try {

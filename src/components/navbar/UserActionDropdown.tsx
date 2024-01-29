@@ -135,7 +135,7 @@ const UserActionDropdown = () => {
                         })}
 
                         <Button
-                            className="w-[50%] lg:w-full "
+                            className="w-full"
                             variant={'event'}
                             size={'medium'}
                             onClick={handleLogout}

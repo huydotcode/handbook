@@ -42,6 +42,8 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
 
     const notCurrentUser = session && session.user.id !== user._id.toString();
 
+    const isCurrentUser = session && session.user.id === user._id.toString();
+
     return (
         <>
             <div className="max-w-[80%] min-h-[100vh-56px] pb-[200px] mx-auto lg:max-w-full">
@@ -95,7 +97,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                         />
 
                         <div className="w-[60%] md:w-full">
-                            <NewsFeedPost {...props} />
+                            <NewsFeedPost {...props} className="w-full" />
                         </div>
                     </main>
                 </div>

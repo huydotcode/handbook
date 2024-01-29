@@ -14,9 +14,14 @@ import Button from './ui/Button';
 interface Props {
     userId?: string;
     username?: string;
+    className?: string;
 }
 
-const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
+const NewsFeedPost: React.FC<Props> = ({
+    userId,
+    username,
+    className = '',
+}) => {
     const { data: session } = useSession();
     const [posts, setPosts] = useState<IPost[]>([]);
     const [page, setPage] = useState<number>(1);
@@ -42,6 +47,7 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                 pageSize: pageSize,
                 userId: userId,
                 username: username,
+                isCurrentUser: session?.user.id === userId,
             });
 
             setPosts((prev) => [...prev, ...posts]);
@@ -107,7 +113,10 @@ const NewsFeedPost: React.FC<Props> = ({ userId, username }) => {
                 <InfinityScrollComponent
                     dataLength={posts.length}
                     hasMore={posts.length / pageSize === page}
-                    className="w-[500px] sm:w-screen min-h-[100vh] no-scrollbar"
+                    className={
+                        'w-[500px] sm:w-screen min-h-[100vh] no-scrollbar ' +
+                        className
+                    }
                     loader={<SkeletonPost />}
                     next={() => setPage((prev) => prev + 1)}
                     scrollThreshold={0}

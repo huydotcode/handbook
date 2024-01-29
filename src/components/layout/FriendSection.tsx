@@ -64,7 +64,7 @@ const FriendSection: React.FC = ({}) => {
                             Bạn bè
                         </h1>
 
-                        <div className="w-full p-1 hidden lg:block">
+                        <div className="w-full p-1 hidden lg:flex justify-center items-center">
                             <FaUserFriends className="w-8 h-8" />
                         </div>
 
@@ -86,7 +86,7 @@ const FriendSection: React.FC = ({}) => {
                         ))}
 
                     {!isLoading && (
-                        <div>
+                        <>
                             {friends &&
                                 friends.map((friend) => (
                                     <FriendItem
@@ -94,7 +94,7 @@ const FriendSection: React.FC = ({}) => {
                                         data={friend}
                                     />
                                 ))}
-                        </div>
+                        </>
                     )}
                 </div>
 

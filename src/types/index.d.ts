@@ -80,6 +80,7 @@ interface IRoomChat {
     members: any[];
     messages: IMessage[];
     lastAccessed: Date;
+    type: 'f' | 'r' | 'd' | 'c';
 }
 
 interface ILastMessage {
@@ -92,23 +93,7 @@ interface ILoading {
     messages: boolean;
 }
 
-/*
-handleSocketAction('RECEIVE_MESSAGE');
-        handleSocketAction('GET_LAST_MESSAGES');
-        handleSocketAction('READ_MESSAGE');
-        handleSocketAction('DELETE_MESSAGE');
-        handleSocketAction('ADD_FRIEND');
-        handleSocketAction('UN_FRIEND');
-*/
-
-// enum EChatAction {
-//     GET_FRIENDS = 'GET_FRIENDS',
-//     RECEIVE_MESSAGE = 'RECEIVE_MESSAGE',
-//     GET_LAST_MESSAGES = 'GET_LAST_MESSAGES',
-//     READ_MESSAGE = 'READ_MESSAGE',
-//     DELETE_MESSAGE = 'DELETE_MESSAGE',
-//     ADD_FRIEND = 'ADD_FRIEND',
-//     UN_FRIEND = 'UN_FRIEND',
-//     LOADING_FRIENDS = 'LOADING_FRIENDS',
-//     LOADING_MESSAGES = 'LOADING_MESSAGES',
-// }
+interface IPostFormData {
+    option: 'public' | 'friend' | 'private';
+    content: string;
+}
