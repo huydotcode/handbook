@@ -19,7 +19,8 @@ const UserActionDropdown = () => {
     const currentHistory = history[history.length - 1] as any;
 
     const user = session?.user as ISessionUser;
-    const { open, anchorEl, handleClose, handleShow } = usePopover();
+    const { open, anchorEl, setAnchorEl, handleClose, handleShow } =
+        usePopover();
 
     const handleLogout = () => {
         signOut();
@@ -46,7 +47,12 @@ const UserActionDropdown = () => {
                 </Button>
             </Tooltip>
 
-            <Popover open={open} anchorEl={anchorEl} handleClose={handleClose}>
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+                handleClose={handleClose}
+            >
                 <div className="relative flex flex-col min-w-[300px] text-primary dark:text-dark-100">
                     <div className="flex items-center p-2 w-full">
                         {currentHistory == history[0] ? (
