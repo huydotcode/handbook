@@ -43,7 +43,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         const socketIO = await ClientIO(
             process.env.SERVER_API ||
-                'http://localhost:5000' ||
+                // 'http://localhost:5000' ||
                 'https://handbook-server.onrender.com',
             {
                 withCredentials: true,
