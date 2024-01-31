@@ -195,10 +195,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         }
     }, [currentRoom.id]);
 
-    useEffect(() => {
-        console.log(lastMessages);
-    }, [lastMessages]);
-
     //* Effect
     useEffect(() => {
         handleSocketAction('RECEIVE_MESSAGE');

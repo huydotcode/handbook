@@ -44,11 +44,11 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
 
     return (
         <>
-            <div className="max-w-[80%] min-h-[100vh-56px] mx-auto lg:max-w-full">
+            <div className="w-full min-h-[100vh-56px] ">
                 <div className="w-full">
-                    <header className="w-full">
+                    <header className="w-full bg-white">
                         <div
-                            className="relative w-[1000px] max-w-[100vw] min-h-[300px] h-[40vh] rounded-b-xl overflow-hidden bg-center bg-cover bg-no-repeat"
+                            className="relative w-full min-h-[300px] h-[40vh] rounded-b-xl overflow-hidden bg-center bg-cover bg-no-repeat"
                             style={{
                                 backgroundImage: `url("${profile.coverPhoto}`,
                             }}
@@ -104,9 +104,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                 </div>
             </div>
 
-            <aside className="fixed top-[72px] right-0 h-[calc(100vh-90px)] md:hidden flex justify-end">
-                <FriendSection show={false} />
-            </aside>
+            <FriendSection show={false} />
         </>
     );
 };

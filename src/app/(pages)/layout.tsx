@@ -10,7 +10,7 @@ const HomeLayout: React.FC<Props> = async ({ children }) => {
         <div>
             <Navbar />
 
-            <main className="relative top-14 flex justify-between w-full min-h-[calc(100vh-56px)]">
+            <main className="relative top-14 flex justify-between w-[1150px] md:w-screen mx-auto min-h-[calc(100vh-56px)]">
                 {children}
             </main>
         </div>

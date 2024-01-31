@@ -1,13 +1,14 @@
 'use client';
 import { FC } from 'react';
 
-interface SkeletonPostProps {
+interface Props {
     refInView?: any;
+    className?: string;
 }
 
-const SkeletonPost: FC<SkeletonPostProps> = ({ refInView }) => {
+const SkeletonPost: FC<Props> = ({ className, refInView }) => {
     return (
-        <div className="w-[500px] sm:w-screen no-scrollbar">
+        <div className={'w-full sm:w-screen no-scrollbar' + className}>
             <div
                 className="relative my-4 px-4 py-2 bg-white rounded-xl shadow-md dark:bg-dark-200"
                 ref={refInView}

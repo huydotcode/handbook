@@ -36,94 +36,96 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
 
     return (
         <>
-            <div className="mt-4 relative w-[200px] h-[calc(100vh-72px)] lg:w-[70px]">
-                <div
-                    className={cn(
-                        'absolute pt-2 flex flex-col w-full h-[calc(100vh-72px)] rounded-l-xl bottom-0 right-0  border-l-2 bg-white dark:border-none transition-all duration-500 dark:bg-dark-200',
-                        {
-                            'mt-4 h-full': showFriendSection,
-                            'h-0 overflow-hidden  p-0': !showFriendSection,
-                        }
-                    )}
-                >
-                    {haveNotificationFriend && (
-                        <>
-                            <div className="flex justify-between items-center px-2">
-                                <h1 className="p-2 font-bold text-md">
-                                    Lời mời kết bạn
-                                </h1>
+            <aside className="fixed top-[72px] right-0 h-[calc(100vh-90px)] md:hidden flex justify-end">
+                <div className="mt-4 relative w-[200px] h-[calc(100vh-90px)] lg:w-[70px]">
+                    <div
+                        className={cn(
+                            'absolute pt-2 flex flex-col w-full h-[calc(100vh-72px)] rounded-l-xl bottom-0 right-0  border-l-2 bg-white dark:border-none transition-all duration-500 dark:bg-dark-200',
+                            {
+                                'mt-4 h-full': showFriendSection,
+                                'h-0 overflow-hidden  p-0': !showFriendSection,
+                            }
+                        )}
+                    >
+                        {haveNotificationFriend && (
+                            <>
+                                <div className="flex justify-between items-center px-2">
+                                    <h1 className="p-2 font-bold text-md">
+                                        Lời mời kết bạn
+                                    </h1>
+                                    <Button
+                                        className="dark:hover:bg-dark-500 lg:hidden"
+                                        onClick={handleToggleShow}
+                                    >
+                                        <IoIosArrowDown />
+                                    </Button>
+                                </div>
+
+                                <NotificationList showMessage={false} />
+                            </>
+                        )}
+
+                        <div className="flex justify-between items-center px-2">
+                            <h1 className="p-2 font-bold text-md lg:hidden">
+                                Bạn bè
+                            </h1>
+
+                            <div className="w-full p-1 hidden lg:flex justify-center items-center">
+                                <FaUserFriends className="w-8 h-8" />
+                            </div>
+
+                            {!haveNotificationFriend && (
                                 <Button
                                     className="dark:hover:bg-dark-500 lg:hidden"
                                     onClick={handleToggleShow}
                                 >
                                     <IoIosArrowDown />
                                 </Button>
-                            </div>
-
-                            <NotificationList showMessage={false} />
-                        </>
-                    )}
-
-                    <div className="flex justify-between items-center px-2">
-                        <h1 className="p-2 font-bold text-md lg:hidden">
-                            Bạn bè
-                        </h1>
-
-                        <div className="w-full p-1 hidden lg:flex justify-center items-center">
-                            <FaUserFriends className="w-8 h-8" />
+                            )}
                         </div>
 
-                        {!haveNotificationFriend && (
-                            <Button
-                                className="dark:hover:bg-dark-500 lg:hidden"
-                                onClick={handleToggleShow}
-                            >
-                                <IoIosArrowDown />
-                            </Button>
+                        {isLoading ||
+                            (loadingFriends && (
+                                <div className="flex items-center justify-center h-full">
+                                    <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
+                                </div>
+                            ))}
+
+                        {!isLoading && (
+                            <>
+                                {friends &&
+                                    friends.map((friend) => (
+                                        <FriendItem
+                                            key={friend._id}
+                                            data={friend}
+                                        />
+                                    ))}
+                            </>
                         )}
                     </div>
 
-                    {isLoading ||
-                        (loadingFriends && (
-                            <div className="flex items-center justify-center h-full">
-                                <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
-                            </div>
-                        ))}
-
-                    {!isLoading && (
-                        <>
-                            {friends &&
-                                friends.map((friend) => (
-                                    <FriendItem
-                                        key={friend._id}
-                                        data={friend}
-                                    />
-                                ))}
-                        </>
+                    {!showFriendSection && (
+                        <Button
+                            className="absolute bottom-1 right-4 opacity-50 hover:opacity-100 hover:bottom-4 transition-all duration-300 dark:hover:bg-dark-500"
+                            onClick={handleToggleShow}
+                        >
+                            <IoIosArrowUp />
+                        </Button>
                     )}
-                </div>
 
-                {!showFriendSection && (
-                    <Button
-                        className="absolute bottom-1 right-4 opacity-50 hover:opacity-100 hover:bottom-4 transition-all duration-300 dark:hover:bg-dark-500"
-                        onClick={handleToggleShow}
-                    >
-                        <IoIosArrowUp />
-                    </Button>
-                )}
-
-                <div className="flex absolute bottom-0 right-[100%]">
-                    {rooms.map((room) => {
-                        return (
-                            <ChatBox
-                                className="shadow-xl"
-                                currentRoom={room}
-                                isPopup
-                            />
-                        );
-                    })}
+                    <div className="flex absolute bottom-0 right-[100%]">
+                        {rooms.map((room) => {
+                            return (
+                                <ChatBox
+                                    className="shadow-xl"
+                                    currentRoom={room}
+                                    isPopup
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            </aside>
         </>
     );
 };
