@@ -1,9 +1,10 @@
 'use client';
 import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import React from 'react';
+import NavItem from './NavItem';
+import { useSession } from 'next-auth/react';
+import { RiAdminFill } from 'react-icons/ri';
 
 interface Props {
     className?: string;
@@ -18,48 +19,37 @@ const NavigationPages: React.FC<Props> = ({
     onlyIcon = false,
     direction = 'col',
 }) => {
-    const path = usePathname();
+    const { data: session } = useSession();
 
     return (
         <ul className={cn(`${className} flex-${direction}`)}>
+            {session?.user.role === 'admin' && (
+                <NavItem
+                    index={0}
+                    link={{
+                        name: 'Admin',
+                        path: '/admin',
+                        icon: (
+                            <RiAdminFill className="w-8 h-8 dark:text-primary" />
+                        ),
+                    }}
+                    key={0}
+                    className={itemClassName}
+                    onlyIcon={onlyIcon}
+                    direction={direction}
+                />
+            )}
+
             {navLink.map((link, index) => {
-                const isActived = link.path === path;
-                const Icon = () => {
-                    return link.icon;
-                };
                 return (
-                    <li
+                    <NavItem
+                        index={index}
+                        link={link}
                         key={index}
-                        className={cn(
-                            `flex items-center cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
-                            {
-                                'w-[50%]': onlyIcon,
-                                'bg-light-100 dark:bg-dark-100': isActived,
-                                'rounded-none': direction === 'row',
-                                'rounded-l-xl': index === 0,
-                                'rounded-r-xl': index === navLink.length - 1,
-                            },
-                            `${itemClassName}`
-                        )}
-                    >
-                        <Link
-                            className={cn(
-                                'flex items-center w-full h-full md:justify-center',
-                                {
-                                    'justify-center': onlyIcon,
-                                    'text-blue-500': isActived,
-                                }
-                            )}
-                            href={link.path || '/'}
-                        >
-                            <Icon />
-                            {!onlyIcon && (
-                                <span className="ml-2 text-sm lg:hidden dark:text-primary">
-                                    {link.name}
-                                </span>
-                            )}
-                        </Link>
-                    </li>
+                        className={itemClassName}
+                        onlyIcon={onlyIcon}
+                        direction={direction}
+                    />
                 );
             })}
         </ul>

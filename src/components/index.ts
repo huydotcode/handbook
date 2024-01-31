@@ -1,7 +1,7 @@
 export { default as Searchbar } from './navbar/Searchbar';
 export { default as UserActionDropdown } from './navbar/UserActionDropdown';
 export { default as TextEditor } from './TextEditor';
-export { default as NewsFeedPost } from './NewsFeedPost';
+export { default as InfinityPostComponent } from './post/InfinityPostComponent';
 
 // Post
 export { default as CreatePost } from './post/CreatePost';

@@ -1,8 +1,8 @@
 'use client';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { createPost } from '@/lib/actions/post.action';

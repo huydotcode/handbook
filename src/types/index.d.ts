@@ -40,6 +40,7 @@ interface IUser {
     createdAt: Date;
     updatedAt: Date;
     lastAccessed: Date;
+    role: string;
 }
 
 interface IParams {

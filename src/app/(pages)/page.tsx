@@ -1,7 +1,7 @@
-import { NewsFeedPost } from '@/components';
 import { FriendSection, Sidebar } from '@/components/layout';
 import { NavigationPages } from '@/components/navbar';
 import { IndexLayout } from '@/layouts';
+import InfinityPostComponent from '../../components/post/InfinityPostComponent';
 
 export default async function Home() {
     return (
@@ -17,11 +17,11 @@ export default async function Home() {
                             />
                         </div>
 
-                        <NewsFeedPost />
+                        <InfinityPostComponent />
                     </>
                 }
                 Left={<Sidebar />}
-                Right={<FriendSection />}
+                Right={<FriendSection show />}
             />
         </>
     );

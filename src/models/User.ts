@@ -18,13 +18,14 @@ interface IUser {
     followers?: Types.Array<Types.ObjectId>;
     following?: Types.Array<Types.ObjectId>;
     notifications?: Types.Array<Types.ObjectId>;
+    role?: string;
     request?: [
         {
             to: {
                 _id: Types.ObjectId;
             };
             type: string;
-        }
+        },
     ];
     createdAt: Date;
     updatedAt: Date;
@@ -50,6 +51,10 @@ const UserSchema = new Schema<IUser>(
         image: {
             type: String,
             required: true,
+        },
+        role: {
+            type: String,
+            default: 'user',
         },
         isOnline: {
             type: Boolean,

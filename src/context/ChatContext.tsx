@@ -95,6 +95,8 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                     break;
                 case 'GET_LAST_MESSAGES':
                     socket.on('get-last-messages', ({ roomId, data }) => {
+                        if (!data || !roomId) return;
+
                         setLastMessages((prev) => {
                             const index = prev.findIndex(
                                 (msg) => msg.roomId === roomId
@@ -108,7 +110,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
 
                         // Kiểm tra nếu không ở trong phòng thì phát âm thanh
                         if (currentRoom.id !== roomId) {
-                            toggle();
+                            // toggle();
                         }
                     });
                     break;
@@ -192,6 +194,10 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
             });
         }
     }, [currentRoom.id]);
+
+    useEffect(() => {
+        console.log(lastMessages);
+    }, [lastMessages]);
 
     //* Effect
     useEffect(() => {

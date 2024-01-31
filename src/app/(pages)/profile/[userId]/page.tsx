@@ -1,7 +1,7 @@
-import { Button, NewsFeedPost } from '@/components';
+import { FriendSection } from '@/components/layout';
 import Action from '@/components/pages/Profile/Action';
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
-import { addFriend } from '@/lib/actions/profile.action';
+import InfinityPostComponent from '@/components/post/InfinityPostComponent';
 import { fetchFriends, fetchProfileByUserId } from '@/lib/actions/user.action';
 import { getAuthSession } from '@/lib/auth';
 import mongoose from 'mongoose';
@@ -42,11 +42,9 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
 
     const notCurrentUser = session && session.user.id !== user._id.toString();
 
-    const isCurrentUser = session && session.user.id === user._id.toString();
-
     return (
         <>
-            <div className="max-w-[80%] min-h-[100vh-56px] pb-[200px] mx-auto lg:max-w-full">
+            <div className="max-w-[80%] min-h-[100vh-56px] mx-auto lg:max-w-full">
                 <div className="w-full">
                     <header className="w-full">
                         <div
@@ -97,11 +95,18 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
                         />
 
                         <div className="w-[60%] md:w-full">
-                            <NewsFeedPost {...props} className="w-full" />
+                            <InfinityPostComponent
+                                className="w-full"
+                                {...props}
+                            />
                         </div>
                     </main>
                 </div>
             </div>
+
+            <aside className="fixed top-[72px] right-0 h-[calc(100vh-90px)] md:hidden flex justify-end">
+                <FriendSection show={false} />
+            </aside>
         </>
     );
 };

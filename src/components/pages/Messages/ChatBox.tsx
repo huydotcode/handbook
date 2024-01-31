@@ -14,6 +14,7 @@ import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
 import { useAppContext } from '@/context/AppContext';
 import TimeAgoConverted from '@/utils/timeConvert';
+import Image from 'next/image';
 
 interface Props {
     isPopup?: boolean;
@@ -29,7 +30,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
     const { friends } = useAppContext();
-    const { messages, setCurrentRoom, setRooms, setMessages } = useChat();
+    const { messages, setCurrentRoom, setRooms } = useChat();
     const { handleSubmit, register, reset } = useForm<IFormData>();
 
     const [scrollDown, setScrollDown] = useState<boolean>(false);
@@ -168,7 +169,13 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                 )}
             >
                 <div className="flex items-center">
-                    <Avatar imgSrc={currentRoom.image} />
+                    <Image
+                        className="rounded-full"
+                        alt={currentRoom.name}
+                        src={currentRoom.image}
+                        width={32}
+                        height={32}
+                    />
                     <div className="flex flex-col">
                         <h3
                             className={cn('font-bold text-md ml-2', {

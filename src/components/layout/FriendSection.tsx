@@ -13,7 +13,12 @@ import FriendItem from '../item/FriendItem';
 import NotificationList from '../navbar/notification/NotificationList';
 import { ChatBox } from '../pages/Messages';
 
-const FriendSection: React.FC = ({}) => {
+interface Props {
+    className?: string;
+    show?: boolean;
+}
+
+const FriendSection: React.FC<Props> = ({ className, show }) => {
     const { rooms } = useChat();
     const { friends, loadingFriends, notifications } = useAppContext();
     const { data: session } = useSession();
@@ -23,7 +28,7 @@ const FriendSection: React.FC = ({}) => {
         notifications &&
         notifications.filter((noti) => noti.type == 'friend').length > 0;
 
-    const [showFriendSection, setShowFriendSection] = useState(true);
+    const [showFriendSection, setShowFriendSection] = useState(show);
 
     const handleToggleShow = () => setShowFriendSection((prev) => !prev);
 
