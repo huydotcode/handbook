@@ -1,11 +1,10 @@
 'use client';
-import useAsyncSession from '@/hooks/useAsyncSession';
+import { useAudio } from '@/hooks';
 import { fetchFriends, fetchNotifications } from '@/lib/actions/user.action';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useSocket } from './SocketContext';
-import { send } from 'process';
-import { useAudio } from '@/hooks';
 
 type AppContextType = {
     friends: IFriend[];
@@ -173,6 +172,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             });
         }
     }, [socket, loading.friend]);
+
+    useEffect(() => {
+        (async () => {
+            toast.success('NODE ENV: ' + process.env.NODE_ENV);
+            console.log('NODE ENV: ' + process.env.NODE_ENV);
+        })();
+    }, []);
 
     if (!session) return children;
 
