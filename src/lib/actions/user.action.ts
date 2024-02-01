@@ -90,8 +90,6 @@ export async function fetchUsers({
 }
 
 export const fetchFriends = async ({ userId }: { userId: string }) => {
-    if (userId.trim().length === 0) return;
-
     try {
         await connectToDB();
         const user = await User.findById(userId).exec();

@@ -16,6 +16,7 @@ const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
                 notifications.map((notification) => {
                     return (
                         <NotificationItem
+                            key={notification._id}
                             data={notification}
                             showMessage={showMessage}
                         />

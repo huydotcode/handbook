@@ -59,3 +59,20 @@ export const addFriend = async ({ userId }: { userId: string }) => {
         throw new Error(error);
     }
 };
+
+export const fetchInfomation = async ({ userId }: { userId: string }) => {
+    try {
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const fetchPhotos = async ({ userId }: { userId: string }) => {
+    try {
+        const images = await Image.find({ user_id: userId });
+
+        return JSON.parse(JSON.stringify(images));
+    } catch (error) {
+        console.log(error);
+    }
+};

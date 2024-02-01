@@ -36,21 +36,26 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
 
     return (
         <>
-            <aside className="fixed top-[72px] right-0 h-[calc(100vh-90px)] md:hidden flex justify-end">
-                <div className="mt-4 relative w-[200px] h-[calc(100vh-90px)] lg:w-[70px]">
+            <aside
+                className={
+                    'fixed right-0 top-[72px] flex h-[calc(100vh-72px)] justify-end md:hidden ' +
+                    className
+                }
+            >
+                <div className="relative h-full w-[200px] lg:w-[70px]">
                     <div
                         className={cn(
-                            'absolute pt-2 flex flex-col w-full h-[calc(100vh-72px)] rounded-l-xl bottom-0 right-0  border-l-2 bg-white dark:border-none transition-all duration-500 dark:bg-dark-200',
+                            'absolute bottom-0 right-0 flex h-[calc(100vh-72px)] w-full flex-col rounded-l-xl border-l-2  bg-white pt-2 transition-all duration-500 dark:border-none dark:bg-dark-200',
                             {
                                 'mt-4 h-full': showFriendSection,
-                                'h-0 overflow-hidden  p-0': !showFriendSection,
+                                'h-0 overflow-hidden p-0': !showFriendSection,
                             }
                         )}
                     >
                         {haveNotificationFriend && (
                             <>
-                                <div className="flex justify-between items-center px-2">
-                                    <h1 className="p-2 font-bold text-md">
+                                <div className="flex items-center justify-between px-2">
+                                    <h1 className="text-md p-2 font-bold">
                                         Lời mời kết bạn
                                     </h1>
                                     <Button
@@ -65,13 +70,13 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                             </>
                         )}
 
-                        <div className="flex justify-between items-center px-2">
-                            <h1 className="p-2 font-bold text-md lg:hidden">
+                        <div className="flex items-center justify-between px-2">
+                            <h1 className="text-md p-2 font-bold lg:hidden">
                                 Bạn bè
                             </h1>
 
-                            <div className="w-full p-1 hidden lg:flex justify-center items-center">
-                                <FaUserFriends className="w-8 h-8" />
+                            <div className="hidden w-full items-center justify-center p-1 lg:flex">
+                                <FaUserFriends className="h-8 w-8" />
                             </div>
 
                             {!haveNotificationFriend && (
@@ -86,8 +91,8 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
 
                         {isLoading ||
                             (loadingFriends && (
-                                <div className="flex items-center justify-center h-full">
-                                    <AiOutlineLoading3Quarters className="animate-spin w-8 h-8 text-gray-500" />
+                                <div className="flex h-full items-center justify-center">
+                                    <AiOutlineLoading3Quarters className="h-8 w-8 animate-spin text-gray-500" />
                                 </div>
                             ))}
 
@@ -106,17 +111,18 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
 
                     {!showFriendSection && (
                         <Button
-                            className="absolute bottom-1 right-4 opacity-50 hover:opacity-100 hover:bottom-4 transition-all duration-300 dark:hover:bg-dark-500"
+                            className="absolute bottom-1 right-4 opacity-50 transition-all duration-300 hover:bottom-4 hover:opacity-100 dark:hover:bg-dark-500"
                             onClick={handleToggleShow}
                         >
                             <IoIosArrowUp />
                         </Button>
                     )}
 
-                    <div className="flex absolute bottom-0 right-[100%]">
+                    <div className="absolute bottom-0 right-[100%] flex">
                         {rooms.map((room) => {
                             return (
                                 <ChatBox
+                                    key={room.id}
                                     className="shadow-xl"
                                     currentRoom={room}
                                     isPopup

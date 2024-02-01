@@ -1,0 +1,57 @@
+import Avatar from '@/components/Avatar';
+import PhotosSection from '@/components/pages/Profile/PhotosSection';
+import {
+    fetchPhotos,
+    getProfilePicturesAction,
+} from '@/lib/actions/profile.action';
+import { fetchFriends } from '@/lib/actions/user.action';
+import React from 'react';
+
+interface Props {
+    params: {
+        userId: string;
+    };
+}
+
+const FriendsPage: React.FC<Props> = async ({ params }) => {
+    const friends = (await fetchFriends({
+        userId: params.userId,
+    })) as IFriend[];
+
+    const photos = await getProfilePicturesAction({
+        userId: params.userId,
+    });
+
+    return (
+        <>
+            <section className="relative my-3 py-2 px-4 w-full bg-white rounded-xl shadow-md dark:bg-dark-200">
+                <h5 className="text-xl font-bold">Bạn bè</h5>
+                <article>
+                    <ul className="grid grid-cols-2 gap-2">
+                        {friends.map((friend) => {
+                            return (
+                                <div
+                                    className="flex items-center hover:bg-light-100 p-2 cursor-pointer rounded-xl border"
+                                    key={friend._id}
+                                >
+                                    <Avatar
+                                        className="mr-2"
+                                        width={42}
+                                        height={42}
+                                        imgSrc={friend.image}
+                                        userUrl={friend._id}
+                                    />
+
+                                    <span>{friend.name}</span>
+                                </div>
+                            );
+                        })}
+                    </ul>
+                </article>
+            </section>
+
+            <PhotosSection photos={photos} />
+        </>
+    );
+};
+export default FriendsPage;

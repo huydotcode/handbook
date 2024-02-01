@@ -8,13 +8,13 @@ const Sidebar = async () => {
     const user = session?.user;
 
     return (
-        <aside className="fixed top-[72px] left-0 transition-all duration-300 md:hidden h-[calc(100vh-72px)]">
-            <div className="mt-4 mr-4 w-full overflow-scroll no-scrollbar rounded-r-xl border-[1px] pr-2 bg-white shadow-md dark:bg-dark-200 dark:shadow-none dark:border-none">
+        <aside className="fixed left-0 top-[72px] h-[calc(100vh-72px)] transition-all duration-300 md:hidden">
+            <div className="no-scrollbar w-full overflow-scroll rounded-r-xl border-[1px] bg-white pr-2 shadow-md dark:border-none dark:bg-dark-200 dark:shadow-none">
                 <div className="p-2">
                     {user && (
                         <Link
                             href={`/profile/${user?.id}`}
-                            className="flex items-center hover:bg-light-100 p-2 rounded-xl border-b md:justify-center dark:border-none dark:hover:bg-dark-500"
+                            className="flex items-center rounded-xl border-b p-2 hover:bg-light-100 dark:border-none dark:hover:bg-dark-500 md:justify-center"
                         >
                             <Image
                                 className="rounded-full "
@@ -24,7 +24,7 @@ const Sidebar = async () => {
                                 alt={user?.name || ''}
                             />
 
-                            <span className="ml-2 lg:hidden text-sm dark:text-primary">
+                            <span className="ml-2 text-sm dark:text-primary lg:hidden">
                                 {user?.name}
                             </span>
                         </Link>
