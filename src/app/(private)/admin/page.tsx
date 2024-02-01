@@ -14,17 +14,17 @@ const AdminPage = async ({}: Props) => {
 
     return (
         <>
-            <div className="grid col-auto gap-4 flex-1 m-4 h-fit">
-                <div className="max-w-[300px] bg-white shadow-xl rounded-xl p-4 max-h-[200px]">
+            <div className="col-auto m-4 grid h-fit flex-1 gap-4">
+                <div className="max-h-[200px] max-w-[300px] rounded-xl bg-white p-4 shadow-xl">
                     <h5>Người dùng: {userCount}</h5>
-                    <div className="flex items-center mt-2">
+                    <div className="mt-2 flex items-center">
                         {users.map((user: IUser) => {
                             return <UserItem data={user} key={user._id} />;
                         })}
 
                         {userCount - users.length > 0 && (
-                            <div className="relative flex items-center justify-center w-8 h-8 rounded-full overflow-hidden bg-gray-500">
-                                <span className="text-white text-center">
+                            <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gray-500">
+                                <span className="text-center text-white">
                                     +{userCount - users.length}
                                 </span>
                             </div>
@@ -32,7 +32,7 @@ const AdminPage = async ({}: Props) => {
                     </div>
                 </div>
 
-                <div className="max-w-[300px] bg-white shadow-xl rounded-xl p-4 max-h-[200px]">
+                <div className="max-h-[200px] max-w-[300px] rounded-xl bg-white p-4 shadow-xl">
                     <h5>Bài viết: {postCount}</h5>
                 </div>
             </div>

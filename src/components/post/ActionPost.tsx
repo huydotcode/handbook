@@ -66,9 +66,9 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                 setAnchorEl={setAnchorEl}
                 handleClose={() => setShowDropdown(false)}
             >
-                <div className="relative flex flex-col min-w-[200px]">
+                <div className="relative flex min-w-[200px] flex-col">
                     <Button
-                        className="justify-start w-full rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
+                        className="w-full justify-start rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
                         variant={'custom'}
                         size={'medium'}
                         onClick={() => handleShowModal('editModal')}
@@ -77,7 +77,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     </Button>
 
                     <Button
-                        className="justify-start w-full rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
+                        className="w-full justify-start rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
                         variant={'custom'}
                         size={'medium'}
                         onClick={() => handleShowModal('deleteModal')}

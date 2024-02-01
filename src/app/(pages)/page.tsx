@@ -12,7 +12,7 @@ export default async function Home() {
                         <div className="hidden w-full sm:block">
                             <NavigationPages
                                 direction="row"
-                                className="flex items-center shadow-xl bg-white max-w-full overflow-hidden rounded-xl dark:bg-dark-200 dark:border-t-gray-700 dark:border-t"
+                                className="flex max-w-full items-center overflow-hidden rounded-xl bg-white shadow-xl dark:border-t dark:border-t-gray-700 dark:bg-dark-200"
                                 itemClassName="w-full"
                             />
                         </div>

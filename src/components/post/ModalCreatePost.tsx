@@ -82,9 +82,9 @@ const ModalCreatePost: React.FC<Props> = ({
                 disableAutoFocus
             >
                 <Fade in={show}>
-                    <div className="fixed flex flex-col top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] rounded-xl p-6 max-w-[800px] min-w-[50vw] bg-white shadow-md border-t-2 md:w-screen  md:rounded-none md:h-screen md:max-h-none md:top-0 md:translate-y-0 xl:max-w-none xl:w-[60vw] dark:bg-dark-200 dark:shadow-none dark:border-none">
-                        <div className="flex items-center h-12 border-b-2 dark:border-gray-500">
-                            <div className="w-full text-xl font-extrabold text-center">
+                    <div className="fixed left-1/2 top-1/2 flex min-w-[50vw] max-w-[800px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-white p-6 shadow-md dark:border-none  dark:bg-dark-200 dark:shadow-none xl:w-[60vw] xl:max-w-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none">
+                        <div className="flex h-12 items-center border-b-2 dark:border-gray-500">
+                            <div className="w-full text-center text-xl font-extrabold">
                                 Tạo bài viết
                             </div>
                             <Button
@@ -97,19 +97,19 @@ const ModalCreatePost: React.FC<Props> = ({
                             </Button>
                         </div>
 
-                        <div className="flex flex-col mt-3">
+                        <div className="mt-3 flex flex-col">
                             <div className="flex items-center">
                                 <Link href="/">
                                     <Image
                                         width={48}
                                         height={48}
-                                        className="object-cover rounded-full"
+                                        className="rounded-full object-cover"
                                         src={session?.user.image || ''}
                                         alt={session?.user.name || ''}
                                     />
                                 </Link>
 
-                                <div className="flex flex-col ml-2 h-12">
+                                <div className="ml-2 flex h-12 flex-col">
                                     <Link
                                         className="h-6"
                                         href={`/profile/${session?.user.id}`}
@@ -120,7 +120,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                     </Link>
 
                                     <select
-                                        className="text-[10px] border h-6 py-1 cursor-pointer dark:border-none"
+                                        className="h-6 cursor-pointer border py-1 text-[10px] dark:border-none"
                                         {...register('option')}
                                     >
                                         <option
@@ -141,7 +141,7 @@ const ModalCreatePost: React.FC<Props> = ({
 
                             {/* //! FORM HERE */}
                             <form
-                                className="pt-3 flex flex-col justify-between flex-1"
+                                className="flex flex-1 flex-col justify-between pt-3"
                                 onSubmit={submit}
                                 encType="multipart/form-data"
                             >
@@ -150,7 +150,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                     render={({ field }) => (
                                         <>
                                             <TextEditor
-                                                className="relative w-full min-h-[150px] max-h-[20vh] cursor-text text-base overflow-scroll dark:text-primary dark:no-scrollbar"
+                                                className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base dark:text-primary"
                                                 handleSubmit={submit}
                                                 field={field}
                                             />
@@ -170,25 +170,25 @@ const ModalCreatePost: React.FC<Props> = ({
 
                                 {/* Images */}
                                 {photos && photos.length > 0 && (
-                                    <div className="flex flex-wrap p-2 border-[1px solid #ccc] rounded-xl max-h-[200px] overflow-y-scroll">
+                                    <div className="border-[1px solid #ccc] flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
                                         {photos.map(
                                             (img: string, index: number) => {
                                                 return (
                                                     <div
-                                                        className="relative px-1 w-[50%] overflow-hidden"
+                                                        className="relative w-[50%] overflow-hidden px-1"
                                                         key={index}
                                                     >
                                                         <span
-                                                            className="absolute top-2 left-2 flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)] z-10"
+                                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)]"
                                                             onClick={() =>
                                                                 handleRemoveImage(
                                                                     index
                                                                 )
                                                             }
                                                         >
-                                                            <CgClose className="w-5 h-5" />
+                                                            <CgClose className="h-5 w-5" />
                                                         </span>
-                                                        <div className="relative w-full min-h-[500px] object-cover">
+                                                        <div className="relative min-h-[500px] w-full object-cover">
                                                             <Image
                                                                 className="mt-2 align-middle "
                                                                 quality={100}
@@ -206,15 +206,15 @@ const ModalCreatePost: React.FC<Props> = ({
                                 )}
 
                                 <div>
-                                    <div className="relative flex items-center justify-between mt-2 px-2 py-2 border-[1px solid #ccc] rounded-xl border-t-2 shadow-md dark:shadow-none dark:border-gray-500">
+                                    <div className="border-[1px solid #ccc] relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md dark:border-gray-500 dark:shadow-none">
                                         <h5 className="text-base font-bold dark:text-primary">
                                             Thêm vào bài viết của bạn
                                         </h5>
 
                                         <div className="flex items-center">
-                                            <div className="flex items-center justify-center w-10 h-10 rounded-xl hover:cursor-pointer hover:bg cursor-pointer">
+                                            <div className="hover:bg flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
                                                 <label
-                                                    className="flex items-center justify-center w-10 h-10 rounded-xl hover:cursor-pointer  cursor-pointer hover:bg-light-100 dark:hover:bg-dark-500 "
+                                                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl  hover:cursor-pointer hover:bg-light-100 dark:hover:bg-dark-500 "
                                                     htmlFor="input-file"
                                                 >
                                                     <Image
@@ -245,7 +245,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                     >
                                         <Button
                                             type="submit"
-                                            className="w-full h-10 mt-3 p-2 rounded-xl text-base text-white bg-primary hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                                            className="mt-3 h-10 w-full rounded-xl bg-primary p-2 text-base text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-500"
                                             variant={'custom'}
                                             size={'none'}
                                             disabled={

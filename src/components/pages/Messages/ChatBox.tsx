@@ -143,8 +143,8 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
         if (isPopup) return null;
 
         return (
-            <div className="flex-1 h-[calc(100vh-56px)] flex items-center justify-center">
-                <p className="text-xl text-center text-gray-500 dark:text-gray-400">
+            <div className="flex h-[calc(100vh-56px)] flex-1 items-center justify-center">
+                <p className="text-center text-xl text-gray-500 dark:text-gray-400">
                     Hãy chọn một cuộc trò chuyện
                 </p>
             </div>
@@ -154,10 +154,10 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     return (
         <div
             className={cn(
-                `relative flex flex-col flex-1 bg-white dark:bg-dark-200`,
+                `relative flex flex-1 flex-col bg-white dark:bg-dark-200`,
                 {
-                    'w-full h-full': !isPopup,
-                    'w-[280px] h-[50vh] shadow-2xl rounded-xl bg-white z-50 dark:border dark:border-gray-700':
+                    'h-full w-full': !isPopup,
+                    'z-50 h-[50vh] w-[280px] rounded-xl bg-white shadow-2xl dark:border dark:border-gray-700':
                         isPopup,
                 },
                 { className }
@@ -165,7 +165,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
         >
             <div
                 className={cn(
-                    'flex items-center justify-between p-4 h-16 border-b-2 dark:border-gray-700'
+                    'flex h-16 items-center justify-between border-b-2 p-4 dark:border-gray-700'
                 )}
             >
                 <div className="flex items-center">
@@ -178,13 +178,13 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                     />
                     <div className="flex flex-col">
                         <h3
-                            className={cn('font-bold text-md ml-2', {
+                            className={cn('text-md ml-2 font-bold', {
                                 'text-sm': isPopup,
                             })}
                         >
                             {currentRoom.name}
                         </h3>
-                        <span className="text-xs ml-2 text-gray-500">
+                        <span className="ml-2 text-xs text-gray-500">
                             {userIsOnline ? (
                                 'Đang hoạt động'
                             ) : (
@@ -200,7 +200,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
 
                     {isPopup && (
                         <Button
-                            className="absolute top-2 right-2 dark:hover:bg-dark-500"
+                            className="absolute right-2 top-2 dark:hover:bg-dark-500"
                             onClick={() => {
                                 setRooms((prev) => {
                                     const index = prev.findIndex(
@@ -224,15 +224,15 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
 
             <div
                 className={cn(
-                    'w-full dark:border-y-gray-600 py-2 overflow-y-auto overflow-x-hidden',
+                    'w-full overflow-y-auto overflow-x-hidden py-2 dark:border-y-gray-600',
                     {
                         'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
-                        'md:fixed md:left-0 md:right-0 md:bottom-14 md:pt-16 h-[calc(100%-56px-64px)]':
+                        'h-[calc(100%-56px-64px)] md:fixed md:bottom-14 md:left-0 md:right-0 md:pt-16':
                             !isPopup,
                     }
                 )}
             >
-                <div className="flex flex-col-reverse h-full overflow-y-auto overflow-x-hidden">
+                <div className="flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden">
                     <div ref={bottomRef} />
 
                     {messagesInRoom.map((msg) => (
@@ -247,19 +247,19 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
 
             <form
                 className={cn(
-                    'fixed bottom-0 left-0 right-0 w-full flex items-center justify-center p-2 z-50 bg-white dark:bg-dark-200 border-t dark:border-gray-700 h-14',
+                    'fixed bottom-0 left-0 right-0 z-50 flex h-14 w-full items-center justify-center border-t bg-white p-2 dark:border-gray-700 dark:bg-dark-200',
                     {
-                        'h-12 absolute w-auto': isPopup,
+                        'absolute h-12 w-auto': isPopup,
                     }
                 )}
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
-                <div className="relative flex items-center w-[80%] max-w-[600px] border shadow-xl rounded-full   dark:bg-dark-500 dark:text-white justify-center">
+                <div className="relative flex w-[80%] max-w-[600px] items-center justify-center rounded-full border   shadow-xl dark:bg-dark-500 dark:text-white">
                     <input
                         {...register('text')}
                         type="text"
-                        className="flex-1 outline-none text-sm bg-transparent w-[calc(100%-64px)] py-2 px-4"
+                        className="w-[calc(100%-64px)] flex-1 bg-transparent px-4 py-2 text-sm outline-none"
                         placeholder="Nhập tin nhắn..."
                         spellCheck={false}
                         autoComplete="off"
@@ -267,7 +267,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                     />
 
                     <Button
-                        className="rounded-r-full w-16 border-l min-h-full text-base hover:bg-light-100 dark:hover:bg-zinc-600 "
+                        className="min-h-full w-16 rounded-r-full border-l text-base hover:bg-light-100 dark:hover:bg-zinc-600 "
                         variant={'custom'}
                         type="submit"
                     >
@@ -279,10 +279,10 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
             {showScrollDown && (
                 <Button
                     className={cn(
-                        ' z-50 bg-light-100 opacity-30 hover:opacity-100 transition-all duration-300 dark:text-black',
+                        ' z-50 bg-light-100 opacity-30 transition-all duration-300 hover:opacity-100 dark:text-black',
                         {
                             'fixed bottom-[60px] right-4': !isPopup,
-                            'absolute bottom-[60px] right-4 w-8 h-8': isPopup,
+                            'absolute bottom-[60px] right-4 h-8 w-8': isPopup,
                         }
                     )}
                     onClick={() => {

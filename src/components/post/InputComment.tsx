@@ -24,7 +24,7 @@ const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {
 
     return (
         <TextareaAutosize
-            className="h-10 bg-secondary flex-1 p-2 rounded-l-xl cursor-text text-sm text-start pt-[9px] overflow-y-scroll w-[calc(100%-40px)] resize-none outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
+            className="h-10 w-[calc(100%-40px)] flex-1 cursor-text resize-none overflow-y-scroll rounded-l-xl bg-secondary p-2 pt-[9px] text-start text-sm outline-none dark:bg-dark-500 dark:placeholder:text-gray-400"
             placeholder={placeholder || 'Viết bình luận...'}
             spellCheck={false}
             autoComplete="off"

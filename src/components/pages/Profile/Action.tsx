@@ -54,7 +54,7 @@ const Action: React.FC<Props> = ({ userId }) => {
     return (
         <div className="flex items-center">
             <Button
-                className={`bg-primary text-white h-12 min-w-[48px] mr-2`}
+                className={`mr-2 h-12 min-w-[48px] bg-primary text-white`}
                 variant={'event'}
                 size={'medium'}
                 href={

@@ -14,12 +14,12 @@ const UserItem: FC<Props> = ({ data, handleHideModal }) => {
     return (
         <>
             <Link
-                className="relative flex items-center h-[50px] px-4 rounded-xl shadow-md mb-2 dark:bg-dark-100 dark:hover:bg-dark-200"
+                className="relative mb-2 flex h-[50px] items-center rounded-xl px-4 shadow-md dark:bg-dark-100 dark:hover:bg-dark-200"
                 href={`/profile/${_id}`}
                 onClick={handleHideModal}
             >
                 <Image
-                    className="object-cover rounded-full overflow-hidden"
+                    className="overflow-hidden rounded-full object-cover"
                     src={image || ''}
                     alt={name || ''}
                     width={32}
@@ -27,7 +27,7 @@ const UserItem: FC<Props> = ({ data, handleHideModal }) => {
                 />
 
                 <Link
-                    className="text-base text-dark-100 hover:underline ml-2 dark:text-primary"
+                    className="ml-2 text-base text-dark-100 hover:underline dark:text-primary"
                     href={`/profile/${_id}`}
                 >
                     {name}

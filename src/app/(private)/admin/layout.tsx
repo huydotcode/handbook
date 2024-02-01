@@ -15,7 +15,7 @@ const AdminLayout = async ({ children }: Props) => {
     return (
         <>
             <Navbar />
-            <main className="relative mt-[56px] h-[calc(100vh-56px)] flex overflow-hidden">
+            <main className="relative mt-[56px] flex h-[calc(100vh-56px)] overflow-hidden">
                 <Sidebar />
                 {children}
             </main>

@@ -110,7 +110,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                 </div>
             </div>
 
-            <span className="ml-1 mr-2 text-md">{loves.length}</span>
+            <span className="text-md ml-1 mr-2">{loves.length}</span>
         </>
     );
 };

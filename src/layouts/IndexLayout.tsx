@@ -14,7 +14,7 @@ const IndexLayout: React.FC<Props> = ({ Center, Left, Right }) => {
             {Left && <>{Left}</>}
 
             {Center && (
-                <div className="mx-auto sm:min-w-0 md:min-w-[300px] lg:min-w-[400px]">
+                <div className="mx-auto lg:min-w-[400px] md:min-w-[300px] sm:min-w-0">
                     {Center}
                 </div>
             )}

@@ -7,7 +7,7 @@ const NavUser = () => {
 
     if (status == 'loading') {
         return (
-            <div className="w-10 h-10 rounded-full bg-light-500 animate-skeleton dark:bg-dark-500"></div>
+            <div className="h-10 w-10 animate-skeleton rounded-full bg-light-500 dark:bg-dark-500"></div>
         );
     }
 
@@ -19,7 +19,7 @@ const NavUser = () => {
                 <>
                     <Tooltip title="Đăng nhập">
                         <Button
-                            className="bg-primary rounded-xl text-white"
+                            className="rounded-xl bg-primary text-white"
                             variant={'custom'}
                             size={'small'}
                             href="/login"

@@ -78,19 +78,19 @@ const LoginForm: React.FC<Props> = ({}) => {
     };
 
     return (
-        <div className="w-full flex flex-col items-center max-w-md space-y-8 px-10 py-10 rounded-xl shadow-lg bg-glass">
+        <div className="bg-glass flex w-full max-w-md flex-col items-center space-y-8 rounded-xl px-10 py-10 shadow-lg">
             <h2 className="mt-6 text-center text-2xl tracking-tight">
                 Đăng nhập với Handbook
             </h2>
 
-            <div className="flex flex-col w-full">
+            <div className="flex w-full flex-col">
                 <form onSubmit={handleSubmit(loginWithCrenditals)}>
                     <div className="flex flex-col space-y-1">
                         <label htmlFor="username" className="">
                             Email
                         </label>
                         <input
-                            className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="text"
                             id="username"
                             placeholder="Nhập email của bạn"
@@ -110,7 +110,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                             Mật khẩu
                         </label>
                         <input
-                            className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="password"
                             id="password"
                             placeholder="Nhập mật khẩu"
@@ -140,7 +140,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                     </Button>
                 </form>
 
-                <div className="flex justify-center items-center mt-4">
+                <div className="mt-4 flex items-center justify-center">
                     <h5>Bạn chưa có tài khoản?</h5>
                     <Button
                         className="ml-2 text-blue-600"
@@ -162,7 +162,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                 disabled={isLoading}
             >
                 <svg
-                    className="w-6 mr-2"
+                    className="mr-2 w-6"
                     aria-hidden="true"
                     focusable="false"
                     data-prefix="fab"

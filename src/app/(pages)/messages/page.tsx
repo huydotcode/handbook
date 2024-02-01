@@ -15,8 +15,8 @@ function MessagesPage() {
 
     if (!socket) {
         return (
-            <div className="flex flex-col items-center justify-center w-screen h-[calc(100vh-56px)]">
-                <div className="flex flex-col justify-center items-center bg-light-100 min-w-[500px] max-w-[50vw] h-[500px] rounded-xl dark:bg-dark-200">
+            <div className="flex h-[calc(100vh-56px)] w-screen flex-col items-center justify-center">
+                <div className="flex h-[500px] min-w-[500px] max-w-[50vw] flex-col items-center justify-center rounded-xl bg-light-100 dark:bg-dark-200">
                     <h1 className="text-xl uppercase">
                         Không thể kết nối với Server
                     </h1>
@@ -45,7 +45,7 @@ function MessagesPage() {
 
     return (
         <>
-            <div className="fixed top-[56px] flex justify-between w-screen h-[calc(100vh-56px)] overflow-hidden   dark:border-t dark:border-t-gray-600">
+            <div className="fixed top-[56px] flex h-[calc(100vh-56px)] w-screen justify-between overflow-hidden   dark:border-t dark:border-t-gray-600">
                 <Sidebar />
                 <ChatBox currentRoom={currentRoom} />
             </div>

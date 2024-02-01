@@ -24,14 +24,14 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
 
     return (
         <>
-            <section className="relative my-3 py-2 px-4 w-full bg-white rounded-xl shadow-md dark:bg-dark-200">
+            <section className="relative my-3 w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
                 <h5 className="text-xl font-bold">Bạn bè</h5>
                 <article>
                     <ul className="grid grid-cols-2 gap-2">
                         {friends.map((friend) => {
                             return (
                                 <div
-                                    className="flex items-center hover:bg-light-100 p-2 cursor-pointer rounded-xl border"
+                                    className="flex cursor-pointer items-center rounded-xl border p-2 hover:bg-light-100"
                                     key={friend._id}
                                 >
                                     <Avatar

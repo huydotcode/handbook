@@ -18,10 +18,10 @@ const Navbar = () => {
     const [showPages, setShowPages] = useState<boolean>(false);
 
     return (
-        <nav className="fixed w-screen h-14 top-0 left-0 right-0 shadow-md z-50 dark:shadow-none md:px-2">
-            <div className="relative flex items-center justify-between h-full w-full px-5 md:px-1">
+        <nav className="fixed left-0 right-0 top-0 z-50 h-14 w-screen shadow-md dark:shadow-none md:px-2">
+            <div className="relative flex h-full w-full items-center justify-between px-5 md:px-1">
                 {/* Left */}
-                <div className="min-w-min flex items-center ">
+                <div className="flex min-w-min items-center ">
                     <Link className="flex items-center" href={'/'}>
                         <BsFacebook className="text-4xl text-blue-500" />
                     </Link>
@@ -35,7 +35,7 @@ const Navbar = () => {
 
                         {showPages && (
                             <NavigationPages
-                                className="fixed top-14 left-0 flex items-center min-w-[200px] max-w-[100vw] h-[calc(100vh-56px)] bg-white shadow-xl"
+                                className="fixed left-0 top-14 flex h-[calc(100vh-56px)] min-w-[200px] max-w-[100vw] items-center bg-white shadow-xl"
                                 direction="col"
                                 itemClassName="w-full h-14 rounded-none mx-2"
                             />
@@ -44,10 +44,10 @@ const Navbar = () => {
                 </div>
 
                 {/* Center */}
-                <div className="flex items-center justify-center flex-1 max-w-[400px] h-full mx-auto md:hidden">
+                <div className="mx-auto flex h-full max-w-[400px] flex-1 items-center justify-center md:hidden">
                     {path !== '/' && (
                         <NavigationPages
-                            className="flex items-center w-full h-full"
+                            className="flex h-full w-full items-center"
                             direction="row"
                             itemClassName="h-full"
                             onlyIcon
@@ -56,14 +56,14 @@ const Navbar = () => {
                 </div>
 
                 {/* Right */}
-                <div className="flex items-center h-full">
-                    <div className="relative flex items-center mr-4">
+                <div className="flex h-full items-center">
+                    <div className="relative mr-4 flex items-center">
                         <DarkmodeButton />
                     </div>
-                    <div className="flex items-center justify-center h-full mr-2">
+                    <div className="mr-2 flex h-full items-center justify-center">
                         {session?.user && <NavNotification />}
                     </div>
-                    <div className="flex items-center h-full">
+                    <div className="flex h-full items-center">
                         <NavUser />
                     </div>
                 </div>

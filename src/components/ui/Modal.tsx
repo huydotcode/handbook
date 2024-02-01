@@ -17,8 +17,8 @@ const Modal: React.FC<Props> = ({ title, show, children, setShow }) => {
 
     const renderHeader = () => {
         return (
-            <div className="flex items-center h-12 border-b-2 dark:border-gray-500">
-                <div className="w-full text-xl font-extrabold text-center">
+            <div className="flex h-12 items-center border-b-2 dark:border-gray-500">
+                <div className="w-full text-center text-xl font-extrabold">
                     {title}
                 </div>
                 <Button
@@ -41,10 +41,10 @@ const Modal: React.FC<Props> = ({ title, show, children, setShow }) => {
             onClose={handleClose}
         >
             <Fade in={show}>
-                <div className="fixed flex flex-col top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] rounded-xl p-6 max-w-[800px] min-w-[50vw] bg-white shadow-md border-t-2 md:w-screen  md:rounded-none md:h-screen md:max-h-none md:top-0 md:translate-y-0 xl:max-w-none xl:w-[60vw] dark:bg-dark-200 dark:shadow-none dark:border-none">
+                <div className="fixed left-1/2 top-1/2 flex min-w-[50vw] max-w-[800px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-white p-6 shadow-md dark:border-none  dark:bg-dark-200 dark:shadow-none xl:w-[60vw] xl:max-w-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none">
                     {title && renderHeader()}
 
-                    <div className="flex flex-col mt-3">{children}</div>
+                    <div className="mt-3 flex flex-col">{children}</div>
                 </div>
             </Fade>
         </ModalMui>

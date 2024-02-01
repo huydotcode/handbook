@@ -10,13 +10,13 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
     return (
         <section
             className={
-                'relative my-3 py-2 px-4 bg-white rounded-xl shadow-md dark:bg-dark-200 ' +
+                'relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200 ' +
                 className
             }
         >
             <h5 className="text-xl font-bold">Bạn bè</h5>
             <div>
-                <div className="grid grid-cols-5 gap-2 mt-2">
+                <div className="mt-2 grid grid-cols-5 gap-2">
                     {friends.slice(0, 5).map((friend: IFriend) => {
                         const name = friend.name
                             .split(' ')
@@ -28,7 +28,7 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
                         return (
                             <>
                                 <div
-                                    className="flex flex-col items-center justify-center hover:bg-light-100 p-2"
+                                    className="flex flex-col items-center justify-center p-2 hover:bg-light-100"
                                     key={friend._id}
                                 >
                                     <Avatar

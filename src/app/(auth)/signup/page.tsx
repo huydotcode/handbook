@@ -12,7 +12,7 @@ const Page: FC = async () => {
 
     return (
         <>
-            <div className="flex h-screen items-center justify-center py-12 px-8 sm:px-6 lg:px-8 ">
+            <div className="flex h-screen items-center justify-center px-8 py-12 lg:px-8 sm:px-6 ">
                 <SignupForm />
             </div>
         </>

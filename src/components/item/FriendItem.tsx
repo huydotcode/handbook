@@ -72,7 +72,7 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
     return (
         <Button
             variant={'custom'}
-            className="flex items-center justify-between p-3 shadow-sm w-full text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
+            className="flex w-full cursor-pointer items-center justify-between p-3 text-sm shadow-sm hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
             key={friend._id}
             onClick={() => handleClickFriend(friend)}
         >

@@ -91,7 +91,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     return (
         <>
-            <div className={'w-[500px] sm:w-screen no-scrollbar ' + className}>
+            <div className={'no-scrollbar w-[500px] sm:w-screen ' + className}>
                 {renderCreatePost()}
 
                 {firstRender && loading && renderSkeletonPosts()}
@@ -103,12 +103,12 @@ const InfinityPostComponent: React.FC<Props> = ({
                 {!firstRender && loading && renderSkeletonPosts()}
 
                 {!isEnd && (
-                    <div className="w-full min-h-[100px]" ref={bottomRef} />
+                    <div className="min-h-[100px] w-full" ref={bottomRef} />
                 )}
 
                 {isEnd && (
                     <div className="text-center">
-                        <p className="text-gray-500 dark:text-gray-400 pb-10">
+                        <p className="pb-10 text-gray-500 dark:text-gray-400">
                             Không còn bài đăng nào!
                         </p>
                     </div>

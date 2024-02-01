@@ -60,11 +60,11 @@ const FooterPost = () => {
     return (
         <>
             <div className="mt-2">
-                <div className="relative flex border-b-2 dark:border-gray-700 py-2 w-full">
+                <div className="relative flex w-full border-b-2 py-2 dark:border-gray-700">
                     <ReactionPost session={session} post={post} />
 
                     <FaRegComment className="ml-2 text-2xl" />
-                    <span className="ml-1 text-md">
+                    <span className="text-md ml-1">
                         {commentState.countAllComments}
                     </span>
                 </div>
@@ -72,10 +72,10 @@ const FooterPost = () => {
                 {/* Input comment */}
                 <>
                     {session?.user ? (
-                        <div className="flex items-center mt-2 mb-2">
+                        <div className="mb-2 mt-2 flex items-center">
                             <Avatar session={session} />
 
-                            <div className="flex-1 ml-2">
+                            <div className="ml-2 flex-1">
                                 <form
                                     className="flex w-full"
                                     onSubmit={handleSubmit(onSubmitComment)}
@@ -88,7 +88,7 @@ const FooterPost = () => {
                                     />
 
                                     <Button
-                                        className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                        className="right-0 w-10 rounded-r-xl border-l-2 bg-secondary px-3 hover:cursor-pointer hover:bg-light-100 dark:bg-dark-500 dark:hover:bg-neutral-500"
                                         variant={'custom'}
                                         size={'none'}
                                         type="submit"
@@ -104,7 +104,7 @@ const FooterPost = () => {
                         </div>
                     ) : (
                         <Button
-                            className="justify-start my-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            className="my-2 justify-start text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             variant={'text'}
                             size={'tiny'}
                             href="/login"

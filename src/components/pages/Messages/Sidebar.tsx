@@ -85,7 +85,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
         <>
             <Button
                 className={cn(
-                    'hidden md:block absolute top-16 left-1 text-3xl w-12 h-12 z-20 bg-white dark:bg-gray-800 dark:text-gray-300 transition-all duration-300',
+                    'absolute left-1 top-16 z-20 hidden h-12 w-12 bg-white text-3xl transition-all duration-300 dark:bg-gray-800 dark:text-gray-300 md:block',
                     {
                         '-left-4 opacity-40': !isHover,
                         '-left-1': isHover,
@@ -101,7 +101,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
             <div
                 className={cn(
-                    'md:fixed top-[56px] left-0 flex flex-col border-r dark:border-r-gray-600 z-10 max-w-[300px] min-h-[calc(100vh-56px-54px)] bg-white dark:bg-dark-200 transition-all duration-500 overflow-x-hidden',
+                    'left-0 top-[56px] z-10 flex min-h-[calc(100vh-56px-54px)] max-w-[300px] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-r-gray-600 dark:bg-dark-200 md:fixed',
                     {
                         'w-0  border-none': !showSidebar,
                         'w-[40%]': showSidebar,
@@ -109,7 +109,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                     }
                 )}
             >
-                <span className="p-2 text-xl font-bold border-b text-center">
+                <span className="border-b p-2 text-center text-xl font-bold">
                     Bạn bè
                 </span>
 
@@ -138,7 +138,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                         return (
                             <>
                                 <Button
-                                    className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
+                                    className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
                                         isSelect &&
                                         'bg-gray-200 dark:bg-dark-500'
                                     }`}
@@ -150,10 +150,10 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
                                     <div className="flex flex-1 flex-col">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
+                                            <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                                                 {friend.name}
                                             </h3>
-                                            <span className="text-xs ml-2 text-gray-500">
+                                            <span className="ml-2 text-xs text-gray-500">
                                                 <FaCircle
                                                     className={`${
                                                         isOnline
@@ -163,7 +163,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                                                 />
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-500 ml-2">
+                                        <p className="ml-2 text-xs text-gray-500">
                                             {lastMsg?.text &&
                                             lastMsg?.userId == session.user.id
                                                 ? 'Bạn: '
@@ -179,7 +179,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
                 {conversations && conversations.length > 0 && (
                     <>
-                        <span className="p-2 text-xl font-bold border-b text-center">
+                        <span className="border-b p-2 text-center text-xl font-bold">
                             Người lạ
                         </span>
 
@@ -194,7 +194,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                             return (
                                 <>
                                     <Button
-                                        className={`flex items-center w-full h-[60px] px-4 py-2 hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-500 ${
+                                        className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
                                             isSelect &&
                                             'bg-gray-200 dark:bg-dark-500'
                                         }`}
@@ -206,7 +206,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
                                         <div className="flex flex-1 flex-col">
                                             <div className="flex items-center justify-between">
-                                                <h3 className="font-bold text-sm ml-2 whitespace-nowrap">
+                                                <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                                                     {conversation.name}
                                                 </h3>
                                             </div>
@@ -219,8 +219,8 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                 )}
 
                 {!loading.friends && friends.length === 0 && (
-                    <div className="flex items-center justify-center h-full p-4 text-justify">
-                        <p className="text-gray-500 max-w-[200px]">
+                    <div className="flex h-full items-center justify-center p-4 text-justify">
+                        <p className="max-w-[200px] text-gray-500">
                             Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt đầu
                             trò chuyện
                         </p>

@@ -20,14 +20,14 @@ const NavNotification = () => {
                 onOpenChange={(open) => setOpen(open)}
                 overlayInnerStyle={{ padding: 0 }}
             >
-                <Button className="relative w-10 h-10 rounded-full bg-secondary dark:bg-dark-500 hover:rotate-12 transition-transform duration-500 ">
+                <Button className="relative h-10 w-10 rounded-full bg-secondary transition-transform duration-500 hover:rotate-12 dark:bg-dark-500 ">
                     {open ? (
                         <Badge
                             color="secondary"
                             badgeContent={notifications.length}
                             max={99}
                         >
-                            <MdNotificationsActive className="w-7 h-7" />
+                            <MdNotificationsActive className="h-7 w-7" />
                         </Badge>
                     ) : (
                         <Badge
@@ -35,7 +35,7 @@ const NavNotification = () => {
                             badgeContent={notifications.length}
                             max={99}
                         >
-                            <MdNotifications className="w-7 h-7" />
+                            <MdNotifications className="h-7 w-7" />
                         </Badge>
                     )}
                 </Button>

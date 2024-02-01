@@ -23,7 +23,7 @@ const InfomationSection: React.FC<Props> = async ({ className, profile }) => {
     return (
         <div
             className={
-                'w-[36%] md:w-full md:grid grid-flow-row grid-cols-1 ' +
+                'w-[36%] grid-flow-row grid-cols-1 md:grid md:w-full ' +
                 className
             }
         >

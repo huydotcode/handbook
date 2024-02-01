@@ -26,14 +26,14 @@ const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
             {showMessage &&
                 !loadingNotifications &&
                 notifications.length == 0 && (
-                    <div className="w-full h-[200px] flex items-center justify-center dark:text-white">
+                    <div className="flex h-[200px] w-full items-center justify-center dark:text-white">
                         <p>Không có thông báo nào</p>
                     </div>
                 )}
 
             {loadingNotifications && (
-                <div className="w-full h-[200px] flex items-center justify-center">
-                    <AiOutlineLoading3Quarters className="text-xl animate-spin" />
+                <div className="flex h-[200px] w-full items-center justify-center">
+                    <AiOutlineLoading3Quarters className="animate-spin text-xl" />
                 </div>
             )}
         </>

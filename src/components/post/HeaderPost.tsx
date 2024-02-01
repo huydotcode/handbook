@@ -22,10 +22,10 @@ const HeaderPost = () => {
                     height={40}
                 />
 
-                <div className="flex items-center flex-col ml-2 ">
+                <div className="ml-2 flex flex-col items-center ">
                     <Link
                         href={`/profile/${user?._id}`}
-                        className="text-base dark:text-primary hover:underline"
+                        className="text-base hover:underline dark:text-primary"
                     >
                         {user?.name}
                     </Link>

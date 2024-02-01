@@ -111,7 +111,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
 
                     {!showFriendSection && (
                         <Button
-                            className="absolute bottom-1 right-4 opacity-50 transition-all duration-300 hover:bottom-4 hover:opacity-100 dark:hover:bg-dark-500"
+                            className="absolute  bottom-1 right-4 opacity-50 transition-all duration-300 hover:bottom-4 hover:opacity-100 dark:hover:bg-dark-500"
                             onClick={handleToggleShow}
                         >
                             <IoIosArrowUp />

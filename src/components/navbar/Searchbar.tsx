@@ -61,19 +61,19 @@ const Searchbar = () => {
     return (
         <>
             <div
-                className="flex items-center justify-center rounded-full h-10 ml-3 px-3 bg-secondary dark:bg-dark-100"
+                className="ml-3 flex h-10 items-center justify-center rounded-full bg-secondary px-3 dark:bg-dark-100"
                 onClick={() => {
                     setShowModal(true);
                 }}
             >
                 {/* PC icon */}
-                <div className="lg:hidden flex items-center text-lg text-input-color">
+                <div className="text-input-color flex items-center text-lg lg:hidden">
                     <GoSearch />
                 </div>
 
                 {/* Mobile icon*/}
                 <label
-                    className="items-center text-lg text-input-color cursor-pointer hidden lg:flex"
+                    className="text-input-color hidden cursor-pointer items-center text-lg lg:flex"
                     onClick={() => setShowModal((prev) => !prev)}
                 >
                     <GoSearch />
@@ -82,9 +82,9 @@ const Searchbar = () => {
                 {/* Search-input */}
                 <div
                     ref={inputRef}
-                    className="lg:hidden min-w-[170px] h-10 px-2 text-xs bg-transparent"
+                    className="h-10 min-w-[170px] bg-transparent px-2 text-xs lg:hidden"
                 >
-                    <div className="h-full flex items-center bg-secondary text-secondary dark:bg-dark-100  dark:placeholder:text-dark-100">
+                    <div className="flex h-full items-center bg-secondary text-secondary dark:bg-dark-100  dark:placeholder:text-dark-100">
                         Tìm kiếm trên Handbook
                     </div>
                 </div>
@@ -97,17 +97,17 @@ const Searchbar = () => {
                 disableAutoFocus
             >
                 <Fade in={showModal}>
-                    <div className="relative w-[400px] h-[60vh] px-4 py-2 pt-6 bg-white my-auto rounded-xl md:w-full md:h-full md:rounded-none dark:bg-dark-200">
+                    <div className="relative my-auto h-[60vh] w-[400px] rounded-xl bg-white px-4 py-2 pt-6 dark:bg-dark-200 md:h-full md:w-full md:rounded-none">
                         <Button
-                            className="absolute top-4 right-2 rounded-full flex items-center justify-center text-3xl z-20"
+                            className="absolute right-2 top-4 z-20 flex items-center justify-center rounded-full text-3xl"
                             variant={'custom'}
                             onClick={handleClose}
                         >
                             <IoClose />
                         </Button>
 
-                        <div className="flex w-[80%] mx-auto mt-4 px-2 rounded-xl bg-light-100 dark:bg-dark-100">
-                            <div className="flex items-center text-lg text-input-color">
+                        <div className="mx-auto mt-4 flex w-[80%] rounded-xl bg-light-100 px-2 dark:bg-dark-100">
+                            <div className="text-input-color flex items-center text-lg">
                                 <GoSearch />
                             </div>
 
@@ -116,7 +116,7 @@ const Searchbar = () => {
                                 value={searchValue}
                                 onChange={handleChangeInput}
                                 name="q"
-                                className="w-full h-10 px-2 text-base bg-transparent dark:placeholder:text-dark-200"
+                                className="dark:placeholder:text-dark-200 h-10 w-full bg-transparent px-2 text-base"
                                 dir="ltr"
                                 placeholder="Tìm kiếm trên Handbook"
                                 autoComplete="off"
@@ -127,7 +127,7 @@ const Searchbar = () => {
                         {searchResult.length > 0 &&
                             debounceValue.trim().length > 0 && (
                                 <>
-                                    <div className="mt-4 w-full overflow-scroll dark:no-scrollbar">
+                                    <div className="dark:no-scrollbar mt-4 w-full overflow-scroll">
                                         {searchResult.map((user: IUser) => {
                                             return (
                                                 <UserItem
@@ -146,7 +146,7 @@ const Searchbar = () => {
                         {!isSearching &&
                             searchResult.length === 0 &&
                             debounceValue.trim().length > 0 && (
-                                <div className="text-center mt-2 text-sm">
+                                <div className="mt-2 text-center text-sm">
                                     Không có kết quả
                                 </div>
                             )}

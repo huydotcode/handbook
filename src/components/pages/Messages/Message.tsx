@@ -124,7 +124,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         <div
             key={msg._id}
             className={cn(
-                'relative flex flex-col items-center mb-[2px] w-full',
+                'relative mb-[2px] flex w-full flex-col items-center',
                 {
                     'justify-end': isOwnMsg,
                     'justify-start': !isOwnMsg,
@@ -133,7 +133,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         >
             {canShowTime ||
                 (topAndBottomMsgIsNotSameUser && !isOwnMsg && (
-                    <div className="text-[10px] text-secondary ml-2">
+                    <div className="ml-2 text-[10px] text-secondary">
                         {newDate}
                     </div>
                 ))}
@@ -159,11 +159,11 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 >
                     <div
                         className={cn(
-                            `relative flex items-center  text-white px-4 py-2 w-fit max-w-[70%]`,
+                            `relative flex w-fit  max-w-[70%] items-center px-4 py-2 text-white`,
                             {
-                                'items-end bg-blue-500 rounded-xl rounded-r-md':
+                                'items-end rounded-xl rounded-r-md bg-blue-500':
                                     isOwnMsg,
-                                'bg-light-100 text-black  rounded-xl rounded-l-md dark:bg-dark-500 dark:text-white':
+                                'rounded-xl rounded-l-md  bg-light-100 text-black dark:bg-dark-500 dark:text-white':
                                     !isOwnMsg,
                             }
                         )}
@@ -173,7 +173,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                             <form
                                 ref={menuRef}
                                 className={
-                                    'absolute flex items-center top-0 right-[120%] bg-light-100 rounded-xl text-white dark:bg-dark-500 dark:text-white'
+                                    'absolute right-[120%] top-0 flex items-center rounded-xl bg-light-100 text-white dark:bg-dark-500 dark:text-white'
                                 }
                                 onSubmit={handleDeleteMsg}
                             >

@@ -37,7 +37,7 @@ const UserActionDropdown = () => {
                     aria-expanded={open ? 'true' : undefined}
                 >
                     <Image
-                        className="rounded-full cursor-pointer"
+                        className="cursor-pointer rounded-full"
                         width={40}
                         height={40}
                         src={(session?.user && session?.user.image) || ''}
@@ -53,15 +53,15 @@ const UserActionDropdown = () => {
                 setAnchorEl={setAnchorEl}
                 handleClose={handleClose}
             >
-                <div className="relative flex flex-col min-w-[300px] text-primary dark:text-dark-100">
-                    <div className="flex items-center p-2 w-full">
+                <div className="relative flex min-w-[300px] flex-col text-primary dark:text-dark-100">
+                    <div className="flex w-full items-center p-2">
                         {currentHistory == history[0] ? (
                             <Link
-                                className="flex items-center w-full p-2 rounded-xl  shadow-md  text-primary hover:bg-light-100 dark:text-dark-100 dark:hover:bg-dark-500 "
+                                className="flex w-full items-center rounded-xl p-2  text-primary  shadow-md hover:bg-light-100 dark:text-dark-100 dark:hover:bg-dark-500 "
                                 onClick={handleClose}
                                 href={`/profile/${user.id}`}
                             >
-                                <div className="w-9 h-9 object-cover">
+                                <div className="h-9 w-9 object-cover">
                                     <Image
                                         className="rounded-full"
                                         width={40}
@@ -77,7 +77,7 @@ const UserActionDropdown = () => {
                         ) : (
                             <>
                                 <Button
-                                    className="bg-transparent p-3 mr-2 dark:text-primary dark:hover:bg-dark-500"
+                                    className="mr-2 bg-transparent p-3 dark:text-primary dark:hover:bg-dark-500"
                                     onClick={() =>
                                         setHistory((prev) =>
                                             prev.slice(0, prev.length - 1)
@@ -93,7 +93,7 @@ const UserActionDropdown = () => {
                         )}
                     </div>
 
-                    <ul className="pt-3 bg-transparent">
+                    <ul className="bg-transparent pt-3">
                         {currentHistory.data.map((item: any, index: number) => {
                             const handleClick = () => {
                                 if (item.action) {
@@ -113,13 +113,13 @@ const UserActionDropdown = () => {
 
                             return (
                                 <MenuItem
-                                    className="relative flex items-center w-full h-[52px] rounded-xl px-2 cursor-pointer dark:hover:bg-dark-500"
+                                    className="relative flex h-[52px] w-full cursor-pointer items-center rounded-xl px-2 dark:hover:bg-dark-500"
                                     key={item.title}
                                     onClick={handleClick}
                                 >
                                     {/* Icon */}
                                     {item.icon && (
-                                        <span className="flex items-center justify-center w-9 h-9 rounded-full bg-[#e4e6eb] mr-2 text-2xl text-black">
+                                        <span className="mr-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e4e6eb] text-2xl text-black">
                                             {item.icon()}
                                         </span>
                                     )}
@@ -146,7 +146,7 @@ const UserActionDropdown = () => {
                             size={'medium'}
                             onClick={handleLogout}
                         >
-                            <BiLogOut className="text-xl mr-2" />
+                            <BiLogOut className="mr-2 text-xl" />
                             Đăng xuất
                         </Button>
                     </ul>

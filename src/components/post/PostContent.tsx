@@ -13,7 +13,7 @@ const PostContent = () => {
     }, [post, contentLength]);
 
     return (
-        <main className="mt-4 mb-2 bg-transparent">
+        <main className="mb-2 mt-4 bg-transparent">
             <div
                 className="text-sm"
                 dangerouslySetInnerHTML={{
@@ -23,7 +23,7 @@ const PostContent = () => {
 
             {post?.content.length > 100 && (
                 <Button
-                    className="mt-1 text-xs hover:underline text-secondary"
+                    className="mt-1 text-xs text-secondary hover:underline"
                     variant={'custom'}
                     size={'none'}
                     onClick={() => {

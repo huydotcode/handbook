@@ -66,14 +66,14 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
     return (
         <>
-            <div className="my-4 py-2 px-4 rounded-xl shadow-md min-w-[200px] bg-white dark:bg-dark-200">
+            <div className="my-4 min-w-[200px] rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
                 <div className="flex items-center">
                     <Link
-                        className="w-10 h-10"
+                        className="h-10 w-10"
                         href={`/profile/${session?.user.id}`}
                     >
                         <Image
-                            className="w-full h-full object-cover rounded-full"
+                            className="h-full w-full rounded-full object-cover"
                             width={40}
                             height={40}
                             src={session?.user.image || ''}
@@ -81,7 +81,7 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
                         />
                     </Link>
                     <div
-                        className="flex items-center h-10 flex-1 rounded-xl ml-3 px-3 cursor-text bg-secondary dark:bg-dark-500"
+                        className="ml-3 flex h-10 flex-1 cursor-text items-center rounded-xl bg-secondary px-3 dark:bg-dark-500"
                         onClick={handleShow}
                     >
                         <h5 className="text-gray-400 dark:text-primary">

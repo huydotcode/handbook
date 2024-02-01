@@ -125,11 +125,11 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         />
                     )}
 
-                    <div className="flex flex-col flex-1 max-w-[calc(100%-32px)] ml-2">
+                    <div className="ml-2 flex max-w-[calc(100%-32px)] flex-1 flex-col">
                         {/* Content */}
                         <div className="relative w-fit">
                             <div
-                                className="bg-light-100 w-fit px-4 py-1 text-sm rounded-md break-all dark:bg-dark-500 dark:text-primary"
+                                className="w-fit break-all rounded-md bg-light-100 px-4 py-1 text-sm dark:bg-dark-500 dark:text-primary"
                                 dangerouslySetInnerHTML={{
                                     __html: commentIsDeleted
                                         ? "<h5 style='color:gray'>Bình luận đã bị xóa</h5>"
@@ -139,7 +139,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         </div>
 
                         {!commentIsDeleted && (
-                            <div className="mt-2 flex items-center h-4">
+                            <div className="mt-2 flex h-4 items-center">
                                 {/* Trả lời */}
                                 <Button
                                     className="mr-2"
@@ -177,10 +177,10 @@ const Comment: FC<Props> = ({ data: cmt }) => {
 
                         {/* <Input Comment Reply /> */}
                         {session?.user && replyCommentState.showInputReply && (
-                            <div className="relative flex mt-2">
+                            <div className="relative mt-2 flex">
                                 <Avatar session={session} />
 
-                                <div className="ml-2 w-full flex flex-col">
+                                <div className="ml-2 flex w-full flex-col">
                                     <form
                                         ref={formRef}
                                         className="flex w-full"
@@ -195,7 +195,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         />
 
                                         <Button
-                                            className="bg-secondary w-10 right-0 rounded-r-xl hover:bg-light-100 hover:cursor-pointer px-3 z-10 border-l-2 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                            className="right-0 z-10 w-10 rounded-r-xl border-l-2 bg-secondary px-3 hover:cursor-pointer hover:bg-light-100 dark:bg-dark-500 dark:hover:bg-neutral-500"
                                             variant={'custom'}
                                             size={'none'}
                                             type="submit"
@@ -227,7 +227,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         )}
 
                         {ownComment.length > 0 && (
-                            <div className="grid gap-2 border-l-2 pl-4 py-1 mt-2 rounded-bl-xl ">
+                            <div className="mt-2 grid gap-2 rounded-bl-xl border-l-2 py-1 pl-4 ">
                                 {ownComment.map((cmt) => {
                                     return <Comment key={cmt._id} data={cmt} />;
                                 })}
@@ -238,7 +238,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         {!replyCommentState.showReplyComments &&
                             cmt.replies.length > 0 && (
                                 <Button
-                                    className="justify-start mt-2 ml-2 "
+                                    className="ml-2 mt-2 justify-start "
                                     variant={'text'}
                                     size={'tiny'}
                                     onClick={() =>

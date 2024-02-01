@@ -19,15 +19,15 @@ const NotificationItem: React.FC<Props> = ({
     return (
         <>
             {notification.type == 'friend' && (
-                <div className="flex items-center w-full hover:bg-light-100 p-2 dark:text-white dark:hover:bg-dark-500">
+                <div className="flex w-full items-center p-2 hover:bg-light-100 dark:text-white dark:hover:bg-dark-500">
                     <div>
                         <p className="text-sm">
                             {notification.send.name}{' '}
                             {showMessage && 'đã gửi lời mời kết bạn'}
                         </p>
-                        <div className="mt-2 flex justify-end items-center">
+                        <div className="mt-2 flex items-center justify-end">
                             <Button
-                                className="bg-primary mr-2 hover:bg-blue-400"
+                                className="mr-2 bg-primary hover:bg-blue-400"
                                 size={'small'}
                                 onClick={() =>
                                     handleAcceptFriend({
@@ -39,7 +39,7 @@ const NotificationItem: React.FC<Props> = ({
                                 {showMessage ? 'Chấp nhận' : <TiTick />}
                             </Button>
                             <Button
-                                className="bg-gray-200 hover:bg-gray-400 dark:bg-dark-200 dark:hover:bg-dark-300 dark:hover:bg-dark-100"
+                                className="dark:hover:bg-dark-300 bg-gray-200 hover:bg-gray-400 dark:bg-dark-200 dark:hover:bg-dark-100"
                                 size={'small'}
                                 onClick={() => {
                                     handleDeclineFriend({

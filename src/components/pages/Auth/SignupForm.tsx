@@ -81,18 +81,18 @@ const SignupForm: React.FC = () => {
     };
 
     return (
-        <div className="w-full flex flex-col items-center max-w-md space-y-8 px-10 py-10 rounded-xl shadow-lg bg-glass">
+        <div className="bg-glass flex w-full max-w-md flex-col items-center space-y-8 rounded-xl px-10 py-10 shadow-lg">
             <h2 className="mt-6 text-center text-2xl tracking-tight">
                 Đăng ký với Handbook
             </h2>
 
-            <div className="flex flex-col w-full">
+            <div className="flex w-full flex-col">
                 <form onSubmit={handleSubmit(signUp)}>
                     {/* Email */}
-                    <div className="flex flex-col mt-2">
+                    <div className="mt-2 flex flex-col">
                         <label htmlFor="username">Email của bạn</label>
                         <input
-                            className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md  border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="text"
                             id="email"
                             placeholder="Email của bạn"
@@ -105,17 +105,17 @@ const SignupForm: React.FC = () => {
                             })}
                         />
                         {errors.email && (
-                            <span className="text-red-500 text-sm mt-1">
+                            <span className="mt-1 text-sm text-red-500">
                                 {errors.email.message}
                             </span>
                         )}
                     </div>
 
                     {/* User name */}
-                    <div className="flex flex-col mt-2">
+                    <div className="mt-2 flex flex-col">
                         <label htmlFor="username">Tên đăng nhập</label>
                         <input
-                            className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md  border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="text"
                             id="username"
                             placeholder="Tên đăng nhập của bạn"
@@ -134,17 +134,17 @@ const SignupForm: React.FC = () => {
                             })}
                         />
                         {errors.username && (
-                            <span className="text-red-500 text-sm mt-1">
+                            <span className="mt-1 text-sm text-red-500">
                                 {errors.username.message}
                             </span>
                         )}
                     </div>
 
                     {/* Full name */}
-                    <div className="flex flex-col mt-2">
+                    <div className="mt-2 flex flex-col">
                         <label htmlFor="name">Họ và tên của bạn</label>
                         <input
-                            className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md  border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="text"
                             id="name"
                             placeholder="Họ và tên của bạn"
@@ -163,19 +163,19 @@ const SignupForm: React.FC = () => {
                             })}
                         />
                         {errors.name && (
-                            <span className="text-red-500 text-sm mt-1">
+                            <span className="mt-1 text-sm text-red-500">
                                 {errors.name.message}
                             </span>
                         )}
                     </div>
 
                     {/* Password */}
-                    <div className="flex flex-col mt-2">
+                    <div className="mt-2 flex flex-col">
                         <label htmlFor="password" className=" mt-2">
                             Mật khẩu
                         </label>
                         <input
-                            className="p-2  bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md  border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="password"
                             id="password"
                             placeholder="Nhập mật khẩu"
@@ -192,19 +192,19 @@ const SignupForm: React.FC = () => {
                             })}
                         />
                         {errors.password && (
-                            <span className="text-red-500 text-sm mt-1">
+                            <span className="mt-1 text-sm text-red-500">
                                 {errors.password.message}
                             </span>
                         )}
                     </div>
 
                     {/* Re-password */}
-                    <div className="flex flex-col mt-2">
+                    <div className="mt-2 flex flex-col">
                         <label htmlFor="repassword" className=" mt-2">
                             Nhập lại mật khẩu
                         </label>
                         <input
-                            className="p-2 bg-transparent shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="rounded-md border border-gray-300 bg-transparent p-2 shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
                             type="password"
                             id="repassword"
                             placeholder="Nhập lại mật khẩu"
@@ -221,7 +221,7 @@ const SignupForm: React.FC = () => {
                             })}
                         />
                         {errors.repassword && (
-                            <span className="text-red-500 text-sm mt-1">
+                            <span className="mt-1 text-sm text-red-500">
                                 {errors.repassword.message}
                             </span>
                         )}
@@ -239,7 +239,7 @@ const SignupForm: React.FC = () => {
                     </Button>
                 </form>
 
-                <div className="flex justify-center items-center mt-4">
+                <div className="mt-4 flex items-center justify-center">
                     <h5>Bạn đã có tài khoản?</h5>
                     <Link
                         className="ml-2 text-blue-600 hover:underline"
@@ -258,7 +258,7 @@ const SignupForm: React.FC = () => {
                 disabled={isLoading}
             >
                 <svg
-                    className="w-6 mr-2"
+                    className="mr-2 w-6"
                     aria-hidden="true"
                     focusable="false"
                     data-prefix="fab"

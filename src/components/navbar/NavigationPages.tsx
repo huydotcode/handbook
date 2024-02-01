@@ -30,7 +30,7 @@ const NavigationPages: React.FC<Props> = ({
                         name: 'Admin',
                         path: '/admin',
                         icon: (
-                            <RiAdminFill className="w-8 h-8 dark:text-primary" />
+                            <RiAdminFill className="h-8 w-8 dark:text-primary" />
                         ),
                     }}
                     key={0}

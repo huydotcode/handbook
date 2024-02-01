@@ -14,7 +14,7 @@ const UserItem: React.FC<Props> = ({ data: user }) => {
                 imgSrc={user.image}
                 userUrl={user._id}
                 alt={user.name}
-                className="w-8 h-8 rounded-full overflow-hidden"
+                className="h-8 w-8 overflow-hidden rounded-full"
             />
         </Tooltip>
     );

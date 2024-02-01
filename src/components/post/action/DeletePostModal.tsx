@@ -40,12 +40,12 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
                 disableAutoFocus
             >
                 <Fade in={show}>
-                    <div className="relative p-4 rounded-xl bg-white dark:bg-dark-200">
+                    <div className="relative rounded-xl bg-white p-4 dark:bg-dark-200">
                         <div className="border-b pb-2">
                             <p>Bạn có chắc muốn xóa bài viết?</p>
                         </div>
 
-                        <div className="flex justify-end mt-4">
+                        <div className="mt-4 flex justify-end">
                             <form onSubmit={handleDeletePost}>
                                 <Button
                                     variant={'warning'}

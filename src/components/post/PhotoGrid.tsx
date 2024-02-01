@@ -15,7 +15,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
             <div className="relative mt-3 h-[300px]">
                 <div>
                     <div
-                        className="w-full h-[300px] bg-cover rounded-md bg-no-repeat bg-center cursor-pointer hover:opacity-80 transition-all"
+                        className="h-[300px] w-full cursor-pointer rounded-md bg-cover bg-center bg-no-repeat transition-all hover:opacity-80"
                         style={{ backgroundImage: `url(${images[0].url})` }}
                         onClick={() => setShowSlide((prev) => !prev)}
                     ></div>
@@ -23,9 +23,9 @@ const PhotoGrid: FC<Props> = ({ images }) => {
 
                 {images.length > 1 && (
                     <>
-                        <div className="flex items-center justify-center flex-col absolute bottom-0 right-0  rounded-l-md overflow-hidden">
-                            <div className="relative flex items-center justify-center transition-all h-full">
-                                <div className="relative w-[80px] h-[80px]">
+                        <div className="absolute bottom-0 right-0 flex flex-col items-center justify-center  overflow-hidden rounded-l-md">
+                            <div className="relative flex h-full items-center justify-center transition-all">
+                                <div className="relative h-[80px] w-[80px]">
                                     <Image
                                         className=" object-cover"
                                         src={images[1].url || ''}
@@ -36,15 +36,15 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                 </div>
 
                                 <div
-                                    className="flex items-center justify-center flex-col absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.6)] cursor-pointer"
+                                    className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-[rgba(0,0,0,0.6)]"
                                     onClick={() =>
                                         setShowSlide((prev) => !prev)
                                     }
                                 >
-                                    <p className="text-white text-2xl">
+                                    <p className="text-2xl text-white">
                                         +{images.length - 1}
                                     </p>
-                                    <h5 className="text-white text-sm hover:underline">
+                                    <h5 className="text-sm text-white hover:underline">
                                         Xem thêm
                                     </h5>
                                 </div>

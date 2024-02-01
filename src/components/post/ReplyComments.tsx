@@ -86,7 +86,7 @@ const ReplyComments: FC<CommentPostProps> = ({
     return (
         <>
             {commentsReply.length > 0 && (
-                <div className="grid gap-2 border-l-2 pt-1 mt-2 rounded-bl-xl pl-4">
+                <div className="mt-2 grid gap-2 rounded-bl-xl border-l-2 pl-4 pt-1">
                     {commentsReply.slice(0, page * pageSize).map((cmt) => {
                         return <Comment key={cmt._id} data={cmt} />;
                     })}

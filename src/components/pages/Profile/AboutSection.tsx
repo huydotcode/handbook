@@ -84,7 +84,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 <form onSubmit={handleSubmit(changeBio)}>
                     {showChangeBio && (
                         <TextareaAutosize
-                            className="w-full mt-2 p-2 resize-none bg-light-100 dark:bg-[rgba(255,255,255,.1)] focus:border-none focus:outline-none rounded-xl"
+                            className="mt-2 w-full resize-none rounded-xl bg-light-100 p-2 focus:border-none focus:outline-none dark:bg-[rgba(255,255,255,.1)]"
                             spellCheck={false}
                             autoComplete="off"
                             placeholder="Nhập tiểu sử"
@@ -102,7 +102,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
 
                     {showChangeBio && (
                         <Button
-                            className={`w-full mt-2 ${
+                            className={`mt-2 w-full ${
                                 !isSubmitting && 'bg-primary'
                             }`}
                             variant={'event'}
@@ -116,7 +116,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
 
                 {bio.length > 0 ? (
                     <Button
-                        className="w-full mt-2"
+                        className="mt-2 w-full"
                         variant={'event'}
                         size={'small'}
                         onClick={() => setShowChangeBio((prev) => !prev)}
@@ -125,7 +125,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                     </Button>
                 ) : (
                     <Button
-                        className="w-full mt-2"
+                        className="mt-2 w-full"
                         variant={'event'}
                         size={'small'}
                         onClick={() => setShowChangeBio((prev) => !prev)}
@@ -140,7 +140,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
     return (
         <section
             className={cn(
-                'relative my-3 py-2 px-4 bg-white rounded-xl shadow-md dark:bg-dark-200',
+                'relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200',
                 isAboutPage && 'flex'
             )}
         >

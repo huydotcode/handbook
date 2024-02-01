@@ -75,7 +75,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         imgSrc={session?.user.image || ''}
                     />
 
-                    <div className="flex flex-col ml-2 h-12">
+                    <div className="ml-2 flex h-12 flex-col">
                         <Link
                             className="h-6"
                             href={`/profile/${session?.user.id}`}
@@ -86,7 +86,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         </Link>
 
                         <select
-                            className="text-[10px] border h-6 py-1 cursor-pointer dark:border-none"
+                            className="h-6 cursor-pointer border py-1 text-[10px] dark:border-none"
                             {...register('option')}
                             defaultValue={
                                 post.option as 'public' | 'option' | 'private'
@@ -102,7 +102,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                     </div>
                 </div>
                 <form
-                    className="pt-3 flex flex-col justify-between flex-1"
+                    className="flex flex-1 flex-col justify-between pt-3"
                     onSubmit={submit}
                     encType="multipart/form-data"
                 >
@@ -110,7 +110,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         render={({ field }) => (
                             <>
                                 <TextEditor
-                                    className="relative w-full min-h-[150px] max-h-[20vh] cursor-text text-base overflow-scroll dark:text-primary dark:no-scrollbar"
+                                    className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base dark:text-primary"
                                     handleSubmit={submit}
                                     field={field}
                                 />
@@ -129,15 +129,15 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                     />
 
                     {photos && photos.length > 0 && (
-                        <div className="flex flex-wrap p-2 border-[1px solid #ccc] rounded-xl max-h-[200px] overflow-y-scroll">
+                        <div className="border-[1px solid #ccc] flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
                             {photos.map((img: string, index: number) => {
                                 return (
                                     <div
-                                        className="relative px-1 w-[50%] overflow-hidden"
+                                        className="relative w-[50%] overflow-hidden px-1"
                                         key={index}
                                     >
                                         <span
-                                            className="absolute top-2 left-2 flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)] z-10"
+                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)]"
                                             onClick={() =>
                                                 setPhotos((prev) =>
                                                     prev.filter(
@@ -146,9 +146,9 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                                                 )
                                             }
                                         >
-                                            <CgClose className="w-5 h-5" />
+                                            <CgClose className="h-5 w-5" />
                                         </span>
-                                        <div className="relative w-full min-h-[500px] object-cover">
+                                        <div className="relative min-h-[500px] w-full object-cover">
                                             <Image
                                                 className="mt-2 align-middle "
                                                 quality={100}
@@ -165,15 +165,15 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                     )}
 
                     <div>
-                        <div className="relative flex items-center justify-between mt-2 px-2 py-2 border-[1px solid #ccc] rounded-xl border-t-2 shadow-md dark:shadow-none dark:border-gray-500">
+                        <div className="border-[1px solid #ccc] relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md dark:border-gray-500 dark:shadow-none">
                             <h5 className="text-base font-bold dark:text-primary">
                                 Thêm vào bài viết của bạn
                             </h5>
 
                             <div className="flex items-center">
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl hover:cursor-pointer hover:bg cursor-pointer">
+                                <div className="hover:bg flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
                                     <label
-                                        className="flex items-center justify-center w-10 h-10 rounded-xl hover:cursor-pointer  cursor-pointer hover:bg-light-100 dark:hover:bg-dark-500 "
+                                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl  hover:cursor-pointer hover:bg-light-100 dark:hover:bg-dark-500 "
                                         htmlFor="input-file"
                                     >
                                         <Image
@@ -198,7 +198,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         <Tooltip title={formState.errors.content?.message}>
                             <Button
                                 type="submit"
-                                className="w-full h-10 mt-3 p-2 rounded-xl text-base text-white bg-primary hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                                className="mt-3 h-10 w-full rounded-xl bg-primary p-2 text-base text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-500"
                                 variant={'custom'}
                                 size={'none'}
                                 disabled={

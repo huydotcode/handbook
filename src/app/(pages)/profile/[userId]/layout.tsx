@@ -30,19 +30,19 @@ export default async function ProfileLayout({ params, children }: Props) {
 
     return (
         <>
-            <div className="w-full min-h-[100vh-56px]">
+            <div className="min-h-[100vh-56px] w-full">
                 <div className="w-full">
-                    <header className="w-full bg-white rounded-b-xl pb-2">
+                    <header className="w-full rounded-b-xl bg-white pb-2">
                         <div
-                            className="relative w-full min-h-[300px] h-[40vh] rounded-b-xl overflow-hidden bg-center bg-cover bg-no-repeat"
+                            className="relative h-[40vh] min-h-[300px] w-full overflow-hidden rounded-b-xl bg-cover bg-center bg-no-repeat"
                             style={{
                                 backgroundImage: `url("${profile.coverPhoto}`,
                             }}
                         />
 
-                        <div className="flex items-center justify-between lg:px-2 border-b">
+                        <div className="flex items-center justify-between border-b lg:px-2">
                             <div className="flex items-center">
-                                <div className="relative w-[164px] h-[164px] top-[-30px] rounded-full border-8 mr-4 object-cover overflow-hidden dark:border-neutral-500 md:w-[120px] md:h-[120px]">
+                                <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-neutral-500 md:h-[120px] md:w-[120px]">
                                     <Image
                                         className="rounded-full"
                                         src={user?.image || ''}
@@ -70,7 +70,7 @@ export default async function ProfileLayout({ params, children }: Props) {
                             )}
                         </div>
 
-                        <div className="flex items-center w-[600px] max-w-[100vw] pt-2 px-2">
+                        <div className="flex w-[600px] max-w-[100vw] items-center px-2 pt-2">
                             {navProfile.map((item, index) => (
                                 <NavProfileItem
                                     key={index}

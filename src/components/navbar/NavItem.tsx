@@ -40,7 +40,7 @@ const NavItem: React.FC<Props> = ({
             <li
                 key={index}
                 className={cn(
-                    `flex items-center cursor-pointer rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
+                    `flex cursor-pointer items-center rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
                     {
                         'w-[50%]': onlyIcon,
                         'bg-light-100 dark:bg-dark-100': isActived,
@@ -53,7 +53,7 @@ const NavItem: React.FC<Props> = ({
             >
                 <Link
                     className={cn(
-                        'flex items-center w-full h-full md:justify-center',
+                        'flex h-full w-full items-center md:justify-center',
                         {
                             'justify-center': onlyIcon,
                             'text-blue-500': isActived,
@@ -63,7 +63,7 @@ const NavItem: React.FC<Props> = ({
                 >
                     <Icon />
                     {!onlyIcon && (
-                        <span className="ml-2 text-sm lg:hidden dark:text-primary">
+                        <span className="ml-2 text-sm dark:text-primary lg:hidden">
                             {link.name}
                         </span>
                     )}
