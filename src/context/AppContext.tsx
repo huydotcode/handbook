@@ -173,13 +173,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [socket, loading.friend]);
 
-    useEffect(() => {
-        (async () => {
-            toast.success('NODE ENV: ' + process.env.NODE_ENV);
-            console.log('NODE ENV: ' + process.env.NODE_ENV);
-        })();
-    }, []);
-
     if (!session) return children;
 
     const values = {

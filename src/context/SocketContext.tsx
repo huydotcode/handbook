@@ -28,6 +28,11 @@ export const useSocket = () => {
     return useContext(SocketContext) as SocketContextType;
 };
 
+const SOCKET_API =
+    process.env.NODE_ENV == 'production'
+        ? 'https://handbook-server.onrender.com'
+        : 'http://localhost:5000';
+
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const { data: session, status } = useSession();
@@ -41,18 +46,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         console.log('Socket initializing...');
 
-        const socketIO = await ClientIO(
-            process.env.SERVER_API ||
-                'http://localhost:5000' ||
-                'https://handbook-server.onrender.com',
-            {
-                withCredentials: true,
-                transports: ['websocket', 'polling'],
-                auth: {
-                    user: session.user,
-                },
-            }
-        );
+        const socketIO = await ClientIO(SOCKET_API, {
+            withCredentials: true,
+            transports: ['websocket', 'polling'],
+            auth: {
+                user: session.user,
+            },
+        });
 
         setSocket(() => {
             const newSocket = socketIO as any;
