@@ -65,6 +65,7 @@ export const POST = async (req: Request, res: Response) => {
             }
         );
     } catch (error) {
+        console.log('Error', error);
         return new Response(
             JSON.stringify({ msg: 'Đăng ký thất bại', success: false, error }),
             {

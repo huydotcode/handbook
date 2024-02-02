@@ -124,7 +124,7 @@ const MessagePage: React.FC<Props> = ({ params }) => {
 
     return (
         <div className="fixed top-[56px] flex h-[calc(100vh-56px)] w-screen justify-between overflow-hidden   dark:border-t dark:border-t-gray-600">
-            <Sidebar firstShow={false} />
+            <Sidebar />
             {currentRoom.id && <ChatBox currentRoom={currentRoom} />}
         </div>
     );

@@ -1,9 +1,7 @@
 import InfomationSection from '@/components/pages/Profile/InfomationSection';
 import InfinityPostComponent from '@/components/post/InfinityPostComponent';
-import { fetchFriends, fetchProfileByUserId } from '@/lib/actions/user.action';
+import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import mongoose from 'mongoose';
-
-import { notFound } from 'next/navigation';
 import { FC } from 'react';
 
 interface ProfilePageProps {
@@ -24,7 +22,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
         : { username: params.userId };
 
     return (
-        <div className="flex justify-between">
+        <div className="flex justify-between md:flex-col">
             <InfomationSection profile={JSON.parse(JSON.stringify(profile))} />
 
             <div className="w-[60%] md:w-full">

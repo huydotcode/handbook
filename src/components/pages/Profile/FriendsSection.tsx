@@ -15,39 +15,35 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
             }
         >
             <h5 className="text-xl font-bold">Bạn bè</h5>
-            <div>
-                <div className="mt-2 grid grid-cols-5 gap-2">
-                    {friends.slice(0, 5).map((friend: IFriend) => {
-                        const name = friend.name
-                            .split(' ')
-                            .filter((s) => s != '')[
-                            friend.name.split(' ').filter((s) => s != '')
-                                .length - 1
-                        ];
 
-                        return (
-                            <>
-                                <div
-                                    className="flex flex-col items-center justify-center p-2 hover:bg-light-100"
-                                    key={friend._id}
-                                >
-                                    <Avatar
-                                        width={42}
-                                        height={42}
-                                        imgSrc={friend.image}
-                                        userUrl={friend._id}
-                                    />
+            <div className="mt-2 grid grid-cols-5 gap-2">
+                {friends.slice(0, 5).map((friend: IFriend) => {
+                    const name = friend.name.split(' ').filter((s) => s != '')[
+                        friend.name.split(' ').filter((s) => s != '').length - 1
+                    ];
 
-                                    <span>{name}</span>
-                                </div>
-                            </>
-                        );
-                    })}
-                </div>
-                {friends.length === 0 && (
-                    <p className="text-sm text-secondary">Không có bạn bè</p>
-                )}
+                    return (
+                        <>
+                            <div
+                                className="flex flex-col items-center justify-center p-2 hover:bg-light-100"
+                                key={friend._id}
+                            >
+                                <Avatar
+                                    width={42}
+                                    height={42}
+                                    imgSrc={friend.image}
+                                    userUrl={friend._id}
+                                />
+
+                                <span>{name}</span>
+                            </div>
+                        </>
+                    );
+                })}
             </div>
+            {friends.length === 0 && (
+                <p className="text-sm text-secondary">Không có bạn bè</p>
+            )}
         </section>
     );
 };

@@ -45,14 +45,12 @@ const Navbar = () => {
 
                 {/* Center */}
                 <div className="mx-auto flex h-full max-w-[400px] flex-1 items-center justify-center md:hidden">
-                    {path !== '/' && (
-                        <NavigationPages
-                            className="flex h-full w-full items-center"
-                            direction="row"
-                            itemClassName="h-full"
-                            onlyIcon
-                        />
-                    )}
+                    <NavigationPages
+                        className="flex h-full w-full items-center"
+                        direction="row"
+                        itemClassName="h-full"
+                        onlyIcon
+                    />
                 </div>
 
                 {/* Right */}

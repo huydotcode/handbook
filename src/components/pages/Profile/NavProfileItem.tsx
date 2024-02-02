@@ -18,7 +18,7 @@ const NavProfileItem: React.FC<Props> = ({ userId, name, path }) => {
         <Link
             href={`/profile/${userId}/${path}`}
             className={cn(
-                'relative flex h-10 items-center justify-center rounded-md px-3 hover:bg-neutral-100 dark:hover:bg-neutral-800',
+                'relative flex h-10 items-center justify-center rounded-md px-3 hover:bg-neutral-100 dark:text-white dark:hover:bg-dark-500',
                 isActived && 'text-blue-500 dark:text-blue-500'
             )}
         >

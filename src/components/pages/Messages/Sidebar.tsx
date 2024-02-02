@@ -11,6 +11,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FaCircle } from 'react-icons/fa6';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import FriendChatItem from './item/FriendChatItem';
+import ConversationChatItem from './item/ConversationChatItem';
 
 interface Props {
     firstShow?: boolean;
@@ -19,45 +21,9 @@ interface Props {
 const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
     const { data: session } = useSession();
     const { friends } = useAppContext();
-    const {
-        currentRoom,
-        setCurrentRoom,
-        lastMessages,
-        loading,
-        conversations,
-        messages,
-    } = useChat();
-    const { socket } = useSocket();
+    const { currentRoom, loading, conversations } = useChat();
     const [showSidebar, setShowSidebar] = useState(firstShow);
     const [isHover, setIsHover] = useState(false);
-
-    const handleJoinRoom = async (friend: IFriend) => {
-        if (!socket || !session) return;
-
-        const roomId = [session.user.id, friend._id].sort().join('');
-
-        // await socket.emit('join-room', {
-        //     roomId,
-        // });
-
-        // await socket.emit('read-message', {
-        //     roomId: roomId,
-        // });
-
-        setCurrentRoom({
-            id: roomId,
-            name: friend.name,
-            image: friend.image,
-            members: [session.user.id, friend._id],
-            messages: [],
-            lastAccessed: friend.lastAccessed,
-            type: 'f',
-        });
-
-        if (window.innerWidth < 768) {
-            setShowSidebar(false);
-        }
-    };
 
     const handleToggleSidebar = () => {
         setShowSidebar((prev) => !prev);
@@ -70,6 +36,12 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
             setShowSidebar(true);
         }
     };
+
+    useEffect(() => {
+        if (window.innerWidth < 768) {
+            setShowSidebar(false);
+        }
+    }, []);
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
@@ -114,68 +86,9 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                 </span>
 
                 {friends &&
-                    friends.map((friend: IFriend) => {
-                        const isOnline = friend.isOnline;
-
-                        const isSelect =
-                            currentRoom.id ==
-                            [session.user.id, friend._id].sort().join('');
-
-                        const roomId = generateRoomId(
-                            session.user.id,
-                            friend._id
-                        );
-
-                        const lastMsg = lastMessages.find(
-                            (msg) => msg.roomId == roomId
-                        );
-
-                        const friendName =
-                            friend.name.split(' ')[
-                                friend.name.split(' ').length - 2
-                            ];
-
-                        return (
-                            <>
-                                <Button
-                                    className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
-                                        isSelect &&
-                                        'bg-gray-200 dark:bg-dark-500'
-                                    }`}
-                                    variant={'custom'}
-                                    key={friend._id}
-                                    href={`/messages/f/${friend._id}`}
-                                >
-                                    <Avatar imgSrc={friend.image} />
-
-                                    <div className="flex flex-1 flex-col">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
-                                                {friend.name}
-                                            </h3>
-                                            <span className="ml-2 text-xs text-gray-500">
-                                                <FaCircle
-                                                    className={`${
-                                                        isOnline
-                                                            ? 'text-blue-600'
-                                                            : 'text-gray-500'
-                                                    }`}
-                                                />
-                                            </span>
-                                        </div>
-                                        <p className="ml-2 text-xs text-gray-500">
-                                            {lastMsg?.text &&
-                                            lastMsg?.userId == session.user.id
-                                                ? 'Bạn: '
-                                                : `${friendName}: `}
-                                            {lastMsg?.text ||
-                                                'Chưa có tin nhắn'}
-                                        </p>
-                                    </div>
-                                </Button>
-                            </>
-                        );
-                    })}
+                    friends.map((friend: IFriend) => (
+                        <FriendChatItem data={friend} key={friend._id} />
+                    ))}
 
                 {conversations && conversations.length > 0 && (
                     <>
@@ -183,38 +96,12 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                             Người lạ
                         </span>
 
-                        {conversations.map((conversation: IRoomChat) => {
-                            const otherUserId = conversation.id.replace(
-                                session.user.id,
-                                ''
-                            );
-
-                            const isSelect = currentRoom.id == conversation.id;
-
-                            return (
-                                <>
-                                    <Button
-                                        className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
-                                            isSelect &&
-                                            'bg-gray-200 dark:bg-dark-500'
-                                        }`}
-                                        key={otherUserId}
-                                        href={`/messages/r/${otherUserId}`}
-                                        variant={'custom'}
-                                    >
-                                        <Avatar imgSrc={conversation.image} />
-
-                                        <div className="flex flex-1 flex-col">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
-                                                    {conversation.name}
-                                                </h3>
-                                            </div>
-                                        </div>
-                                    </Button>
-                                </>
-                            );
-                        })}
+                        {conversations.map((conversation: IRoomChat) => (
+                            <ConversationChatItem
+                                data={conversation}
+                                key={conversation.id}
+                            />
+                        ))}
                     </>
                 )}
 

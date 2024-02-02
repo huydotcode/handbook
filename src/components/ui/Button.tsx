@@ -16,7 +16,8 @@ const buttonVariants = cva(
                 text: 'text-xs hover:underline',
                 event: 'rounded-xl p-2 bg-light-100 hover:bg-gray-300 dark:bg-[rgba(255,255,255,.1)] dark:hover:bg-[#6a6b6c]',
                 custom: '',
-                warning: 'bg-red-500 hover:bg-red-700 rounded-xl shadow-md',
+                warning:
+                    'bg-red-500 hover:bg-red-700 rounded-xl shadow-md text-white',
                 secondary: 'bg-gray-400 hover:bg-gray-500 rounded-xl',
             },
             size: {

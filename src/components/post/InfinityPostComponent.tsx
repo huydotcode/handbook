@@ -12,7 +12,7 @@ interface Props {
     username?: string;
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 3;
 
 const InfinityPostComponent: React.FC<Props> = ({
     userId,

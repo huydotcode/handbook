@@ -44,8 +44,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const socketInitializer = useCallback(async () => {
         if (isInitialized || !session?.user) return;
 
-        console.log('Socket initializing...');
-
         const socketIO = await ClientIO(SOCKET_API, {
             withCredentials: true,
             transports: ['websocket', 'polling'],
@@ -63,12 +61,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         setIsInitialized(true);
 
         socketIO.on('connect', () => {
-            console.log('Socket connected');
             setIsConnected(true);
         });
 
         socketIO.on('disconnect', () => {
-            console.log('Socket disconnected');
             setIsConnected(false);
         });
 
@@ -77,7 +73,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         return () => {
-            console.log('Socket disconnected');
             if (socket) {
                 socket.disconnect();
             }

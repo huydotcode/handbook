@@ -6,7 +6,7 @@ interface Props {}
 
 const Sidebar = ({}: Props) => {
     return (
-        <aside className="h-full w-[200px] bg-white">
+        <aside className="fixed top-[56px] h-[calc(100vh-56px)] w-[200px] bg-white dark:bg-dark-200">
             <ul>
                 {navAdmin.map((link, index) => {
                     return (

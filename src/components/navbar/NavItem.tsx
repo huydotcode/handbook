@@ -1,4 +1,3 @@
-import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@mui/material';
 import Link from 'next/link';
@@ -45,8 +44,6 @@ const NavItem: React.FC<Props> = ({
                         'w-[50%]': onlyIcon,
                         'bg-light-100 dark:bg-dark-100': isActived,
                         'rounded-none': direction === 'row',
-                        'rounded-l-xl': index === 0,
-                        'rounded-r-xl': index === navLink.length - 1,
                     },
                     `${className}`
                 )}

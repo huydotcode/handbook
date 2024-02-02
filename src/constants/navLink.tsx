@@ -3,6 +3,7 @@ import { IoChatbubbleEllipses } from 'react-icons/io5';
 
 import { FaUsers } from 'react-icons/fa';
 import React from 'react';
+import { BsFileEarmarkPost } from 'react-icons/bs';
 
 interface NavLink {
     name: string;
@@ -14,12 +15,12 @@ export const navLink: NavLink[] = [
     {
         name: 'Trang chủ',
         path: '/',
-        icon: <HiHome className="w-8 h-8 dark:text-primary" />,
+        icon: <HiHome className="h-8 w-8 dark:text-primary" />,
     },
     {
         name: 'Trò chuyện',
         path: '/messages',
-        icon: <IoChatbubbleEllipses className="w-8 h-8 dark:text-primary" />,
+        icon: <IoChatbubbleEllipses className="h-8 w-8 dark:text-primary" />,
     },
 ];
 
@@ -28,7 +29,12 @@ export const navAdmin: NavLink[] = [
     {
         name: 'Người dùng',
         path: '/admin/users',
-        icon: <FaUsers className="w-8 h-8 dark:text-primary" />,
+        icon: <FaUsers className="h-8 w-8 dark:text-primary" />,
+    },
+    {
+        name: 'Bài viết',
+        path: '/admin/posts',
+        icon: <BsFileEarmarkPost className="h-8 w-8 dark:text-primary" />,
     },
 ];
 
