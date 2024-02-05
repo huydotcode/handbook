@@ -1,11 +1,11 @@
 'use client';
 import { Button } from '@/components';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+import Icons from '@/components/ui/Icons';
 import { deletePost } from '@/lib/actions/admin/post.action';
 import { deleteUser } from '@/lib/actions/admin/user.action';
 import React, { FormEventHandler, useState } from 'react';
 import toast from 'react-hot-toast';
-import { MdDelete } from 'react-icons/md';
 
 interface Props {
     id: string;
@@ -56,7 +56,7 @@ const AdminAction: React.FC<Props> = ({ id, path, type }) => {
                     setShowConfirm(true);
                 }}
             >
-                <MdDelete className="h-6 w-6 text-red-500" />
+                <Icons.Delete className="h-6 w-6 text-red-500" />
             </Button>
 
             <ConfirmModal

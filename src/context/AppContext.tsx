@@ -1,5 +1,6 @@
 'use client';
 import { useAudio } from '@/hooks';
+import { getGroups } from '@/lib/actions/group.action';
 import { fetchFriends, fetchNotifications } from '@/lib/actions/user.action';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -12,6 +13,10 @@ type AppContextType = {
 
     notifications: INotification[];
     loadingNotifications: boolean;
+
+    groups: IGroup[];
+    loadingGroups: boolean;
+    setGroups: React.Dispatch<React.SetStateAction<IGroup[]>>;
 
     handleAcceptFriend: ({
         notificationId,
@@ -46,6 +51,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const { socket } = useSocket();
     const [friends, setFriends] = useState<IFriend[]>([]);
     const [notifications, setNotifications] = useState<INotification[]>([]);
+    const [groups, setGroups] = useState<IGroup[]>([]);
 
     const [loading, setLoading] = useState<Loading>({
         friend: true,
@@ -173,6 +179,21 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [socket, loading.friend]);
 
+    // Group
+    useEffect(() => {
+        if (!session?.user?.id) return;
+
+        (async () => {
+            const groups = await getGroups();
+
+            if (!groups.success) {
+                toast.error(groups.msg);
+            } else {
+                setGroups(groups.data);
+            }
+        })();
+    }, [session?.user?.id]);
+
     if (!session) return children;
 
     const values = {
@@ -180,6 +201,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         notifications: notifications || [],
         loadingFriends: loading.friend,
         loadingNotifications: loading.notification,
+
+        groups,
+        loadingGroups: false,
+        setGroups,
+
         handleAcceptFriend,
         handleDeclineFriend,
     };

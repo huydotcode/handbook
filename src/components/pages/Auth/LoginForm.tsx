@@ -1,11 +1,11 @@
 'use client';
 import { Button } from '@/components';
+import Icons from '@/components/ui/Icons';
 import { signIn, useSession } from 'next-auth/react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 interface Props {}
 interface IFormData {
@@ -133,7 +133,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                         disabled={isSubmitting || isLoading}
                     >
                         {isSubmitting || isLoading ? (
-                            <AiOutlineLoading3Quarters className="animate-spin" />
+                            <Icons.Loading className="animate-spin" />
                         ) : (
                             <h5 className="text-lg text-white ">Đăng nhập</h5>
                         )}

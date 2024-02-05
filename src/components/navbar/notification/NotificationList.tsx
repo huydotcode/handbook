@@ -1,7 +1,7 @@
+import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import React from 'react';
 import NotificationItem from './NotificationItem';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 interface Props {
     showMessage?: boolean;
@@ -33,7 +33,7 @@ const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
 
             {loadingNotifications && (
                 <div className="flex h-[200px] w-full items-center justify-center">
-                    <AiOutlineLoading3Quarters className="animate-spin text-xl" />
+                    <Icons.Loading className="animate-spin text-xl" />
                 </div>
             )}
         </>

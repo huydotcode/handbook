@@ -1,6 +1,3 @@
-import React from 'react';
-import { FaReply } from 'react-icons/fa';
-
 const CommentSkeleton = () => {
     return (
         <div className="mb-4">

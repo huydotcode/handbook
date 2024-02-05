@@ -1,18 +1,15 @@
 'use client';
 import { useRef } from 'react';
 
-import { FaRegComment } from 'react-icons/fa';
 import Avatar from '../Avatar';
 import ReactionPost from './ReactionPost';
-
 import usePostContext from '@/hooks/usePostContext';
 import { sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { AiOutlineLoading } from 'react-icons/ai';
-import { BsFillSendFill } from 'react-icons/bs';
 import { InputComment } from '.';
 import Button from '../ui/Button';
+import Icons from '../ui/Icons';
 import CommentSection from './CommentSection';
 
 type FormData = {
@@ -20,7 +17,6 @@ type FormData = {
 };
 
 const FooterPost = () => {
-    //! Hook
     const { data: session } = useSession();
     const { post, commentState, setCommentState } = usePostContext();
     const {
@@ -30,7 +26,6 @@ const FooterPost = () => {
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    //! Function
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
 
@@ -63,7 +58,7 @@ const FooterPost = () => {
                 <div className="relative flex w-full border-b-2 py-2 dark:border-gray-700">
                     <ReactionPost session={session} post={post} />
 
-                    <FaRegComment className="ml-2 text-2xl" />
+                    <Icons.Comment className="text-xl dark:text-gray-400" />
                     <span className="text-md ml-1">
                         {commentState.countAllComments}
                     </span>
@@ -94,9 +89,9 @@ const FooterPost = () => {
                                         type="submit"
                                     >
                                         {isSubmitting ? (
-                                            <AiOutlineLoading className="animate-spin" />
+                                            <Icons.Loading className="animate-spin" />
                                         ) : (
-                                            <BsFillSendFill />
+                                            <Icons.Send className="text-xl" />
                                         )}
                                     </Button>
                                 </form>

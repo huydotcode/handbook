@@ -1,9 +1,5 @@
-import { HiHome } from 'react-icons/hi';
-import { IoChatbubbleEllipses } from 'react-icons/io5';
-
-import { FaUsers } from 'react-icons/fa';
+import Icons from '@/components/ui/Icons';
 import React from 'react';
-import { BsFileEarmarkPost } from 'react-icons/bs';
 
 interface NavLink {
     name: string;
@@ -15,26 +11,40 @@ export const navLink: NavLink[] = [
     {
         name: 'Trang chủ',
         path: '/',
-        icon: <HiHome className="h-8 w-8 dark:text-primary" />,
+        icon: <Icons.Home className="h-8 w-8 dark:text-primary" />,
     },
     {
         name: 'Trò chuyện',
         path: '/messages',
-        icon: <IoChatbubbleEllipses className="h-8 w-8 dark:text-primary" />,
+        icon: <Icons.Message className="h-8 w-8 dark:text-primary" />,
+    },
+    {
+        name: 'Nhóm',
+        path: '/groups',
+        icon: <Icons.Group className="h-8 w-8 dark:text-primary" />,
     },
 ];
 
 export const navAdmin: NavLink[] = [
-    ...navLink,
+    {
+        name: 'Trang chủ',
+        path: '/',
+        icon: <Icons.Home className="h-8 w-8 dark:text-primary" />,
+    },
     {
         name: 'Người dùng',
         path: '/admin/users',
-        icon: <FaUsers className="h-8 w-8 dark:text-primary" />,
+        icon: <Icons.Users className="h-8 w-8 dark:text-primary" />,
     },
     {
         name: 'Bài viết',
         path: '/admin/posts',
-        icon: <BsFileEarmarkPost className="h-8 w-8 dark:text-primary" />,
+        icon: <Icons.Posts className="h-8 w-8 dark:text-primary" />,
+    },
+    {
+        name: 'Hình ảnh',
+        path: '/admin/photos',
+        icon: <Icons.Images className="h-8 w-8 dark:text-primary" />,
     },
 ];
 

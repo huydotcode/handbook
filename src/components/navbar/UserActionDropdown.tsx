@@ -1,17 +1,13 @@
 'use client';
-// import { userActions } from '@/constants/actions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SetStateAction, useState } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
-import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 
 import { MenuItem, Tooltip } from '@mui/material';
 import { signOut, useSession } from 'next-auth/react';
-import Popover, { usePopover } from '../ui/Popover';
 import Button from '../ui/Button';
-import { useSocket } from '@/context/SocketContext';
-import { BiLogOut } from 'react-icons/bi';
+import Icons from '../ui/Icons';
+import Popover, { usePopover } from '../ui/Popover';
 
 const UserActionDropdown = () => {
     const { data: session } = useSession();
@@ -84,7 +80,7 @@ const UserActionDropdown = () => {
                                         )
                                     }
                                 >
-                                    <FaArrowLeft className="text-base" />
+                                    <Icons.ArrowLeft className="text-base" />
                                 </Button>
                                 <span className="text-dark-100 dark:text-primary">
                                     {currentHistory.title}
@@ -117,24 +113,20 @@ const UserActionDropdown = () => {
                                     key={item.title}
                                     onClick={handleClick}
                                 >
-                                    {/* Icon */}
                                     {item.icon && (
                                         <span className="mr-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e4e6eb] text-2xl text-black">
                                             {item.icon()}
                                         </span>
                                     )}
 
-                                    {/* Title */}
                                     {item.title && (
                                         <h5 className="ml-2 text-base font-semibold text-dark-100 dark:text-primary">
                                             {item.title}
                                         </h5>
                                     )}
 
-                                    {/* {item.button && item.button()} */}
-
                                     {item.children && (
-                                        <MdOutlineKeyboardArrowRight className="absolute right-2 text-2xl text-dark-100 dark:text-primary" />
+                                        <Icons.ArrowRight className="absolute right-2 text-2xl text-dark-100 dark:text-primary" />
                                     )}
                                 </MenuItem>
                             );
@@ -146,7 +138,7 @@ const UserActionDropdown = () => {
                             size={'medium'}
                             onClick={handleLogout}
                         >
-                            <BiLogOut className="mr-2 text-xl" />
+                            <Icons.LogOut className="mr-2 text-xl" />
                             Đăng xuất
                         </Button>
                     </ul>

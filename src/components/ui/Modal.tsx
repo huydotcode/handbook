@@ -1,20 +1,16 @@
-import React from 'react';
 import { Fade, Modal as ModalMui } from '@mui/material';
+import React from 'react';
 import { Button } from '..';
-import { CgClose } from 'react-icons/cg';
-import { IShowModal } from '../post/ActionPost';
+import Icons from './Icons';
 
 interface Props {
     children: React.ReactNode;
     title?: string;
     show: boolean;
-    setShow: React.Dispatch<React.SetStateAction<IShowModal>>;
+    handleClose: () => void;
 }
 
-const Modal: React.FC<Props> = ({ title, show, children, setShow }) => {
-    const handleClose = () =>
-        setShow((prev) => ({ ...prev, editModal: false, deleteModal: false }));
-
+const Modal: React.FC<Props> = ({ title, show, children, handleClose }) => {
     const renderHeader = () => {
         return (
             <div className="flex h-12 items-center border-b-2 dark:border-gray-500">
@@ -27,7 +23,7 @@ const Modal: React.FC<Props> = ({ title, show, children, setShow }) => {
                     size={'none'}
                     onClick={handleClose}
                 >
-                    <CgClose />
+                    <Icons.Close />
                 </Button>
             </div>
         );

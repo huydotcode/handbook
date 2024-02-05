@@ -11,6 +11,7 @@ interface IPost {
     createdAt: Date;
     updatedAt: Date;
     commentCount?: number;
+    groupId?: Types.ObjectId;
 }
 
 const PostSchema = new Schema<IPost>({
@@ -27,6 +28,11 @@ const PostSchema = new Schema<IPost>({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     commentCount: { type: Number, default: 0 },
+    groupId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Group',
+        default: null,
+    },
 });
 
 const Post = models.Post || model<IPost>('Post', PostSchema);

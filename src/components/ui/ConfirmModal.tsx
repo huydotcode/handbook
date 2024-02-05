@@ -1,7 +1,7 @@
 import { Modal } from '@mui/material';
 import React, { FormEventHandler } from 'react';
 import { Button } from '..';
-import { IoClose } from 'react-icons/io5';
+import Icons from './Icons';
 
 interface Props {
     open: boolean;
@@ -33,7 +33,7 @@ const ConfirmModal: React.FC<Props> = ({
                     <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">{title}</h3>
                         <Button onClick={handleClose}>
-                            <IoClose />
+                            <Icons.Close />
                         </Button>
                     </div>
                     <p className="mt-2">{message}</p>

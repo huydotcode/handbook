@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components';
+import Icons from '@/components/ui/Icons';
 import { changeBioAction } from '@/lib/actions/profile.action';
 import { cn } from '@/lib/utils';
 import { TextareaAutosize } from '@mui/material';
@@ -9,10 +10,6 @@ import { usePathname } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { FaHeart } from 'react-icons/fa';
-import { FaLocationDot } from 'react-icons/fa6';
-import { IoMdSchool } from 'react-icons/io';
-import { MdWork } from 'react-icons/md';
 
 interface Props {
     profile: IProfile;
@@ -163,22 +160,22 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 <article className="flex-1 p-2">
                     <ul>
                         <li className="flex items-center p-2 text-sm">
-                            <MdWork className="mr-2 text-gray-500" />
+                            <Icons.Work className="mr-2 text-gray-500" />
                             Làm việc tại {MOCK_DATA.work}
                         </li>
 
                         <li className="flex items-center px-2 py-4 text-sm">
-                            <IoMdSchool className="mr-2 text-gray-500" />
+                            <Icons.School className="mr-2 text-gray-500" />
                             Học tại {MOCK_DATA.school}
                         </li>
 
                         <li className="flex items-center p-2 text-sm">
-                            <FaLocationDot className="mr-2 text-gray-500" />
+                            <Icons.Location className="mr-2 text-gray-500" />
                             Sống tại {MOCK_DATA.lives}
                         </li>
 
                         <li className="flex items-center p-2 text-sm">
-                            <FaHeart className="mr-2 text-gray-500" />
+                            <Icons.Heart className="mr-2 text-gray-500" />
                             {MOCK_DATA.relationship}
                         </li>
                     </ul>

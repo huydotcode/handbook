@@ -33,18 +33,6 @@ const UserItem: FC<Props> = ({ data, handleHideModal }) => {
                     {name}
                 </Link>
             </Link>
-
-            {/* {!user && isLoading && (
-        <div className="relative flex items-center h-[50px] px-4 rounded-xl shadow-md mb-2 dark:bg-dark-100 dark:hover:bg-dark-200">
-          <div className="object-cover rounded-full overflow-hidden">
-            <div className="w-8 h-8 bg-dark-500 animate-skeleton"></div>
-          </div>
-
-          <div className="text-base text-primary hover:underline ml-2">
-            <div className="w-12 h-4 bg-dark-500 animate-skeleton rounded-xl"></div>
-          </div>
-        </div>
-      )} */}
         </>
     );
 };

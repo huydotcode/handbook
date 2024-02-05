@@ -3,10 +3,9 @@ import { useSocket } from '@/context/SocketContext';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import { FaCircle } from 'react-icons/fa';
 import { Button } from '..';
 import Avatar from '../Avatar';
-
+import Icons from '../ui/Icons';
 interface Props {
     data: IFriend;
 }
@@ -27,14 +26,6 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
         if (!socket || !session) return;
 
         const roomId = generateRoomId(session.user.id, _id);
-
-        // await socket.emit('join-room', {
-        //     roomId,
-        // });
-
-        // await socket.emit('read-message', {
-        //     roomId: roomId,
-        // });
 
         setCurrentRoom({
             id: roomId,
@@ -72,18 +63,18 @@ const FriendItem: React.FC<Props> = ({ data: friend }) => {
     return (
         <Button
             variant={'custom'}
-            className="flex w-full cursor-pointer items-center justify-between p-3 text-sm shadow-sm hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
+            className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
             key={friend._id}
             onClick={() => handleClickFriend(friend)}
         >
             <div className="flex items-center">
                 <Avatar imgSrc={friend.image || ''} />
 
-                <span className="ml-2 lg:hidden">{friend.name}</span>
+                <span className="ml-2 text-xs lg:hidden">{friend.name}</span>
             </div>
 
             <span className="lg:hidden">
-                {isOnline && <FaCircle className="text-sm text-blue-500" />}
+                {isOnline && <Icons.Circle className="text-sm text-blue-500" />}
             </span>
         </Button>
     );

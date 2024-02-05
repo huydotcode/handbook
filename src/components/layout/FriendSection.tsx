@@ -5,13 +5,12 @@ import { useSocket } from '@/context/SocketContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaUserFriends } from 'react-icons/fa';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+
 import { Button } from '..';
-import FriendItem from '../item/FriendItem';
+import Items from '../item/Items';
 import NotificationList from '../navbar/notification/NotificationList';
 import { ChatBox } from '../pages/Messages';
+import Icons from '../ui/Icons';
 
 interface Props {
     className?: string;
@@ -62,7 +61,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                                         className="dark:hover:bg-dark-500 lg:hidden"
                                         onClick={handleToggleShow}
                                     >
-                                        <IoIosArrowDown />
+                                        <Icons.ArrowDown />
                                     </Button>
                                 </div>
 
@@ -76,7 +75,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                             </h1>
 
                             <div className="hidden w-full items-center justify-center p-1 lg:flex">
-                                <FaUserFriends className="h-8 w-8" />
+                                <Icons.Users />
                             </div>
 
                             {!haveNotificationFriend && (
@@ -84,7 +83,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                                     className="dark:hover:bg-dark-500 lg:hidden"
                                     onClick={handleToggleShow}
                                 >
-                                    <IoIosArrowDown />
+                                    <Icons.ArrowDown />
                                 </Button>
                             )}
                         </div>
@@ -92,7 +91,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                         {isLoading ||
                             (loadingFriends && (
                                 <div className="flex h-full items-center justify-center">
-                                    <AiOutlineLoading3Quarters className="h-8 w-8 animate-spin text-gray-500" />
+                                    <Icons.Loading className="h-8 w-8 animate-spin text-gray-500" />
                                 </div>
                             ))}
 
@@ -100,10 +99,12 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                             <>
                                 {friends &&
                                     friends.map((friend) => (
-                                        <FriendItem
-                                            key={friend._id}
-                                            data={friend}
-                                        />
+                                        <>
+                                            <Items.Friend
+                                                key={friend._id}
+                                                data={friend}
+                                            />
+                                        </>
                                     ))}
                             </>
                         )}
@@ -114,7 +115,7 @@ const FriendSection: React.FC<Props> = ({ className, show }) => {
                             className="absolute  bottom-1 right-4 opacity-50 transition-all duration-300 hover:bottom-4 hover:opacity-100 dark:hover:bg-dark-500"
                             onClick={handleToggleShow}
                         >
-                            <IoIosArrowUp />
+                            <Icons.ArrowUp />
                         </Button>
                     )}
 

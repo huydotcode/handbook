@@ -1,9 +1,9 @@
 'use client';
+import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import { Badge } from '@mui/material';
 import { Popover } from 'antd';
 import { useState } from 'react';
-import { MdNotifications, MdNotificationsActive } from 'react-icons/md';
 import Button from '../../ui/Button';
 import NotificationPopover from './NotificationPopover';
 
@@ -27,7 +27,7 @@ const NavNotification = () => {
                             badgeContent={notifications.length}
                             max={99}
                         >
-                            <MdNotificationsActive className="h-7 w-7" />
+                            <Icons.NotificationActive className="h-7 w-7" />
                         </Badge>
                     ) : (
                         <Badge
@@ -35,7 +35,7 @@ const NavNotification = () => {
                             badgeContent={notifications.length}
                             max={99}
                         >
-                            <MdNotifications className="h-7 w-7" />
+                            <Icons.Notification className="h-7 w-7" />
                         </Badge>
                     )}
                 </Button>

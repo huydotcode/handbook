@@ -21,7 +21,7 @@ const buttonVariants = cva(
                 secondary: 'bg-gray-400 hover:bg-gray-500 rounded-xl',
             },
             size: {
-                default: 'text-2xl p-2',
+                default: 'text-xl p-2',
                 tiny: 'text-xs p-1',
                 small: 'text-sm p-2',
                 medium: 'text-base p-3',

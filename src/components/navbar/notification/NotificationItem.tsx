@@ -1,9 +1,8 @@
 import { Button } from '@/components';
 import Avatar from '@/components/Avatar';
+import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
-import { TiTick } from 'react-icons/ti';
 import React from 'react';
-import { IoClose } from 'react-icons/io5';
 
 interface Props {
     data: INotification;
@@ -36,7 +35,7 @@ const NotificationItem: React.FC<Props> = ({
                                     })
                                 }
                             >
-                                {showMessage ? 'Chấp nhận' : <TiTick />}
+                                {showMessage ? 'Chấp nhận' : <Icons.Tick />}
                             </Button>
                             <Button
                                 className="dark:hover:bg-dark-300 bg-gray-200 hover:bg-gray-400 dark:bg-dark-200 dark:hover:bg-dark-100"
@@ -48,7 +47,7 @@ const NotificationItem: React.FC<Props> = ({
                                     });
                                 }}
                             >
-                                {showMessage ? 'Từ chối' : <IoClose />}
+                                {showMessage ? 'Từ chối' : <Icons.Close />}
                             </Button>
                         </div>
                     </div>

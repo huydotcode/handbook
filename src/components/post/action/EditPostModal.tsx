@@ -3,16 +3,16 @@ import { useSession } from 'next-auth/react';
 import React, { FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import usePostContext from '@/hooks/usePostContext';
-import Modal from '@/components/ui/Modal';
-import Link from 'next/link';
-import Image from 'next/image';
-import { IShowModal } from '../ActionPost';
-import Avatar from '@/components/Avatar';
 import { Button, TextEditor } from '@/components';
-import { CgClose } from 'react-icons/cg';
-import { Tooltip } from 'antd';
+import Avatar from '@/components/Avatar';
+import Icons from '@/components/ui/Icons';
+import Modal from '@/components/ui/Modal';
+import usePostContext from '@/hooks/usePostContext';
 import { editPost } from '@/lib/actions/post.action';
+import { Tooltip } from 'antd';
+import Image from 'next/image';
+import Link from 'next/link';
+import { IShowModal } from '../ActionPost';
 
 interface Props {
     show: boolean;
@@ -68,7 +68,11 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
 
     return (
         <>
-            <Modal title="Chỉnh sửa bài viết" show={show} setShow={setShow}>
+            <Modal
+                title="Chỉnh sửa bài viết"
+                show={show}
+                handleClose={handleClose}
+            >
                 <div className="flex items-center">
                     <Avatar
                         userUrl={session?.user.id}
@@ -146,7 +150,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                                                 )
                                             }
                                         >
-                                            <CgClose className="h-5 w-5" />
+                                            <Icons.Close className="h-5 w-5" />
                                         </span>
                                         <div className="relative min-h-[500px] w-full object-cover">
                                             <Image

@@ -50,13 +50,13 @@ const TextEditor: React.FC<Props> = React.forwardRef(function TextEditor(
                     value={value}
                     onChange={handleChange}
                     onKeyPress={handleKeyPress}
-                    className="h-auto w-full resize-none bg-transparent outline-none"
+                    className="no-scrollbar h-auto w-full resize-none bg-transparent outline-none"
                     placeholder="Bạn đang nghĩ gì thế?"
                     spellCheck={false}
                     aria-label="Bạn đang nghĩ gì?"
                     wrap="hard"
                     rows={5}
-                ></TextAreaAutosize>
+                />
             </div>
         </>
     );

@@ -1,11 +1,10 @@
 'use client';
 import { Button } from '@/components';
+import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import { useSocket } from '@/context/SocketContext';
 import React, { FormEventHandler, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaUserFriends } from 'react-icons/fa';
-import { IoChatbubbleEllipses, IoPersonAdd } from 'react-icons/io5';
 
 interface Props {
     userId: string;
@@ -62,7 +61,7 @@ const Action: React.FC<Props> = ({ userId }) => {
                 }
             >
                 <span>
-                    <IoChatbubbleEllipses />
+                    <Icons.Message />
                 </span>
 
                 <p className="ml-2 md:hidden">Nhắn tin</p>
@@ -76,7 +75,7 @@ const Action: React.FC<Props> = ({ userId }) => {
                 size={'medium'}
                 onClick={isFriend ? handleRemoveFriend : handleAddFriend}
             >
-                <span>{isFriend ? <FaUserFriends /> : <IoPersonAdd />}</span>
+                <span>{isFriend ? <Icons.Users /> : <Icons.PersonAdd />}</span>
 
                 <p className="ml-2 md:hidden">
                     {isRequest && !isFriend

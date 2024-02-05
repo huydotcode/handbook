@@ -1,20 +1,18 @@
 'use client';
 import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
+import Icons from '@/components/ui/Icons';
+import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { sendMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
+import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { IoIosArrowDown } from 'react-icons/io';
-import { IoClose, IoSend } from 'react-icons/io5';
 import Message from './Message';
-import { useAppContext } from '@/context/AppContext';
-import TimeAgoConverted from '@/utils/timeConvert';
-import Image from 'next/image';
 
 interface Props {
     isPopup?: boolean;
@@ -216,7 +214,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                                 setCurrentRoom({} as IRoomChat);
                             }}
                         >
-                            <IoClose />
+                            <Icons.Close />
                         </Button>
                     )}
                 </div>
@@ -271,7 +269,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                         variant={'custom'}
                         type="submit"
                     >
-                        <IoSend />
+                        <Icons.Send />
                     </Button>
                 </div>
             </form>
@@ -289,7 +287,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
                         setScrollDown(true);
                     }}
                 >
-                    <IoIosArrowDown />
+                    <Icons.ArrowDown />
                 </Button>
             )}
         </div>

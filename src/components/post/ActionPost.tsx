@@ -1,15 +1,9 @@
 'use client';
-import React, { FormEventHandler, MouseEventHandler, useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 
-import usePostContext from '@/hooks/usePostContext';
-import { deletePost } from '@/lib/actions/post.action';
-import { Fade, Modal } from '@mui/material';
-import { usePathname } from 'next/navigation';
-import { MdMoreVert } from 'react-icons/md';
-import { RiDeleteBin5Fill } from 'react-icons/ri';
 import Button from '../ui/Button';
+import Icons from '../ui/Icons';
 import Popover, { usePopover } from '../ui/Popover';
-import { BiEdit } from 'react-icons/bi';
 import DeletePostModal from './action/DeletePostModal';
 import EditPostModal from './action/EditPostModal';
 
@@ -57,7 +51,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                 variant={'event'}
                 onClick={handleToggleDropdown}
             >
-                <MdMoreVert className="text-3xl" />
+                <Icons.More className="text-3xl" />
             </Button>
 
             <Popover
@@ -73,7 +67,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                         size={'medium'}
                         onClick={() => handleShowModal('editModal')}
                     >
-                        <BiEdit className="mr-2" /> Chỉnh sửa bài viết
+                        <Icons.Edit className="mr-2" /> Chỉnh sửa bài viết
                     </Button>
 
                     <Button
@@ -82,7 +76,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                         size={'medium'}
                         onClick={() => handleShowModal('deleteModal')}
                     >
-                        <RiDeleteBin5Fill className="mr-2" /> Xóa bài viết
+                        <Icons.Delete className="mr-2" /> Xóa bài viết
                     </Button>
                 </div>
             </Popover>

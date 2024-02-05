@@ -13,10 +13,9 @@ import { Fade, Modal, Tooltip } from '@mui/material';
 import { toast } from 'react-hot-toast';
 
 import { useSession } from 'next-auth/react';
-import { CgClose } from 'react-icons/cg';
 import TextEditor from '../TextEditor';
 import Button from '../ui/Button';
-
+import Icons from '../ui/Icons';
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -93,7 +92,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                 size={'none'}
                                 onClick={() => setShow(false)}
                             >
-                                <CgClose />
+                                <Icons.Close />
                             </Button>
                         </div>
 
@@ -186,7 +185,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                                                 )
                                                             }
                                                         >
-                                                            <CgClose className="h-5 w-5" />
+                                                            <Icons.Close className="h-5 w-5" />
                                                         </span>
                                                         <div className="relative min-h-[500px] w-full object-cover">
                                                             <Image

@@ -2,8 +2,8 @@
 import { Button } from '@/components';
 import Avatar from '@/components/Avatar';
 import { SlideShow } from '@/components/ui';
+import Icons from '@/components/ui/Icons';
 import React, { useState } from 'react';
-import { FaHeart, FaRegComment, FaShare } from 'react-icons/fa';
 import AdminAction from '../action/AdminAction';
 
 interface Props {
@@ -59,13 +59,13 @@ const PostItem: React.FC<Props> = ({ data }) => {
 
                 <div className="flex items-center">
                     <div className="mr-2 flex items-center text-xs text-gray-400">
-                        <FaHeart className="mr-1" /> {loves.length}
+                        <Icons.Heart className="mr-1" /> {loves.length}
                     </div>
                     <div className="mr-2 flex items-center text-xs text-gray-400">
-                        <FaShare className="mr-1" /> {shares}
+                        <Icons.Share className="mr-1" /> {shares}
                     </div>
                     <div className="flex items-center text-xs text-gray-400">
-                        <FaRegComment className="mr-1" /> {commentCount}
+                        <Icons.Comment className="mr-1" /> {commentCount}
                     </div>
                 </div>
             </div>

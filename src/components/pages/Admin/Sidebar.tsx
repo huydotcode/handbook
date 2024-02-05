@@ -1,5 +1,6 @@
 'use client';
-import NavItem from '@/components/navbar/NavItem';
+
+import Items from '@/components/item/Items';
 import { navAdmin } from '@/constants/navLink';
 
 interface Props {}
@@ -10,7 +11,7 @@ const Sidebar = ({}: Props) => {
             <ul>
                 {navAdmin.map((link, index) => {
                     return (
-                        <NavItem
+                        <Items.Nav
                             link={link}
                             key={index}
                             direction="col"

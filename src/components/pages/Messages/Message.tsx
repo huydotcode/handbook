@@ -1,4 +1,5 @@
 import { Button } from '@/components';
+import Icons from '@/components/ui/Icons';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { deleteMessage } from '@/lib/actions/message.action';
@@ -14,7 +15,6 @@ import React, {
     useState,
 } from 'react';
 import toast from 'react-hot-toast';
-import { MdDelete } from 'react-icons/md';
 
 interface Props {
     data: IMessage;
@@ -182,7 +182,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                                     size={'small'}
                                     type="submit"
                                 >
-                                    <MdDelete />
+                                    <Icons.Delete />
                                 </Button>
                             </form>
                         )}

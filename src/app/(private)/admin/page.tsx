@@ -1,5 +1,5 @@
 import InfoGroup from '@/components/pages/Admin/InfoGroup';
-import UserItem from '@/components/pages/Admin/item/UserItem';
+import Users from '@/components/pages/Admin/Users';
 import {
     fetchAllPosts,
     fetchPostsCount,
@@ -24,7 +24,7 @@ const AdminPage = async ({}: Props) => {
         <>
             <div className="col-auto m-4 grid h-fit flex-1 gap-4">
                 <InfoGroup
-                    ItemComponent={UserItem}
+                    ItemComponent={Users}
                     title="Người dùng"
                     path="/admin/users"
                     count={userCount}

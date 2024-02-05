@@ -66,7 +66,7 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
     return (
         <>
-            <div className="my-4 min-w-[200px] rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
+            <div className="mb-4 mt-2 min-w-[200px] rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
                 <div className="flex items-center">
                     <Link
                         className="h-10 w-10"

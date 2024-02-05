@@ -79,3 +79,14 @@ interface INotification {
     createdAt: Date;
     isRead: boolean;
 }
+
+interface IGroup {
+    _id: string;
+    name: string;
+    description: string;
+    members: string[];
+    owner: string;
+    image: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

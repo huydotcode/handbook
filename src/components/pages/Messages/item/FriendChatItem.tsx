@@ -1,11 +1,11 @@
 'use client';
 import { Button } from '@/components';
 import Avatar from '@/components/Avatar';
+import Icons from '@/components/ui/Icons';
 import { useChat } from '@/context/ChatContext';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import { FaCircle } from 'react-icons/fa';
 
 interface Props {
     data: IFriend;
@@ -44,7 +44,7 @@ const FriendChatItem: React.FC<Props> = ({ data: friend }) => {
                             {friend.name}
                         </h3>
                         <span className="ml-2 text-xs text-gray-500">
-                            <FaCircle
+                            <Icons.Circle
                                 className={`${
                                     isOnline ? 'text-blue-600' : 'text-gray-500'
                                 }`}

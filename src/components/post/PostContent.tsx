@@ -1,8 +1,7 @@
+import usePostContext from '@/hooks/usePostContext';
 import React from 'react';
 import Button from '../ui/Button';
 import PhotoGrid from './PhotoGrid';
-import usePostContext from '@/hooks/usePostContext';
-import { sanitize } from 'dompurify';
 
 const PostContent = () => {
     const { post } = usePostContext();

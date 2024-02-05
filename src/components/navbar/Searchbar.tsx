@@ -3,14 +3,15 @@ import useDebounce from '@/hooks/useDebounce';
 import { fetchUsers } from '@/lib/actions/user.action';
 import { Fade, Modal } from '@mui/material';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CgSearchLoading } from 'react-icons/cg';
-import { GoSearch } from 'react-icons/go';
-import { IoClose } from 'react-icons/io5';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UserItem from '../search/UserItem';
 import Button from '../ui/Button';
+import Icons from '../ui/Icons';
+interface Props {
+    className?: string;
+}
 
-const Searchbar = () => {
+const Searchbar: React.FC<Props> = ({ className }) => {
     const { data: session } = useSession();
     const [showModal, setShowModal] = useState(false);
     const [searchValue, setSearchValue] = useState('');
@@ -61,14 +62,17 @@ const Searchbar = () => {
     return (
         <>
             <div
-                className="ml-3 flex h-10 items-center justify-center rounded-full bg-secondary px-3 dark:bg-dark-100"
+                className={
+                    'ml-3 flex h-10 items-center justify-center rounded-full bg-secondary px-3 dark:bg-dark-100 ' +
+                    className
+                }
                 onClick={() => {
                     setShowModal(true);
                 }}
             >
                 {/* PC icon */}
                 <div className="text-input-color flex items-center text-lg lg:hidden">
-                    <GoSearch />
+                    <Icons.Search />
                 </div>
 
                 {/* Mobile icon*/}
@@ -76,7 +80,7 @@ const Searchbar = () => {
                     className="text-input-color hidden cursor-pointer items-center text-lg lg:flex"
                     onClick={() => setShowModal((prev) => !prev)}
                 >
-                    <GoSearch />
+                    <Icons.Search />
                 </label>
 
                 {/* Search-input */}
@@ -103,12 +107,12 @@ const Searchbar = () => {
                             variant={'custom'}
                             onClick={handleClose}
                         >
-                            <IoClose />
+                            <Icons.Close />
                         </Button>
 
                         <div className="mx-auto mt-4 flex w-[80%] rounded-xl bg-light-100 px-2 dark:bg-dark-100">
                             <div className="text-input-color flex items-center text-lg">
-                                <GoSearch />
+                                <Icons.Search />
                             </div>
 
                             <input
@@ -153,7 +157,7 @@ const Searchbar = () => {
 
                         {isSearching && searchResult.length === 0 && (
                             <div className="mt-4 flex justify-center">
-                                <CgSearchLoading className="animate-skeleton text-6xl" />
+                                <Icons.Loading className="animate-spin text-6xl" />
                             </div>
                         )}
                     </div>

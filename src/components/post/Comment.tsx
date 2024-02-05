@@ -1,20 +1,17 @@
 'use client';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { FaReply } from 'react-icons/fa';
+import { FC, useMemo, useRef, useState } from 'react';
 
 import usePostContext from '@/hooks/usePostContext';
 import { deleteComment, sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { AiOutlineLoading } from 'react-icons/ai';
-import { BsFillSendFill } from 'react-icons/bs';
 import { InputComment } from '.';
 import Avatar from '../Avatar';
 import Button from '../ui/Button';
+import Icons from '../ui/Icons';
 import ReplyComments from './ReplyComments';
-import { set } from 'mongoose';
 
 interface Props {
     data: Comment;
@@ -201,9 +198,9 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                             type="submit"
                                         >
                                             {formState.isSubmitting ? (
-                                                <AiOutlineLoading className="animate-spin" />
+                                                <Icons.Loading className="animate-spin" />
                                             ) : (
-                                                <BsFillSendFill />
+                                                <Icons.Send />
                                             )}
                                         </Button>
                                     </form>
@@ -249,7 +246,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         }))
                                     }
                                 >
-                                    <FaReply className="rotate-180" />{' '}
+                                    <Icons.Reply className="rotate-180" />{' '}
                                     <span className="ml-2">
                                         {replyCommentState.showReplyComments
                                             ? 'Ẩn các phản hồi'

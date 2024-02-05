@@ -1,11 +1,9 @@
-import { Session } from 'next-auth';
+import usePostContext from '@/hooks/usePostContext';
+import TimeAgoConverted from '@/utils/timeConvert';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React from 'react';
 import Avatar from '../Avatar';
 import ActionPost from './ActionPost';
-import TimeAgoConverted from '@/utils/timeConvert';
-import usePostContext from '@/hooks/usePostContext';
-import { useSession } from 'next-auth/react';
 
 const HeaderPost = () => {
     const { data: session } = useSession();

@@ -1,18 +1,13 @@
 'use client';
 import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
+import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
 import { cn } from '@/lib/utils';
-import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
-import { FaCircle } from 'react-icons/fa6';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import FriendChatItem from './item/FriendChatItem';
+import React, { useEffect, useState } from 'react';
 import ConversationChatItem from './item/ConversationChatItem';
+import FriendChatItem from './item/FriendChatItem';
 
 interface Props {
     firstShow?: boolean;
@@ -68,7 +63,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
                 onMouseEnter={() => setIsHover(true)}
                 onMouseLeave={() => setIsHover(false)}
             >
-                {showSidebar ? <IoIosArrowBack /> : <IoIosArrowForward />}
+                {showSidebar ? <Icons.ArrowBack /> : <Icons.ArrowForward />}
             </Button>
 
             <div
