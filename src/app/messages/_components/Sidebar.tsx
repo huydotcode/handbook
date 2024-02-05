@@ -1,13 +1,11 @@
 'use client';
-import { Button } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
+import { Button, Icons } from '@/components/ui';
 import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import ConversationChatItem from './item/ConversationChatItem';
-import FriendChatItem from './item/FriendChatItem';
+import { ConversationChatItem, FriendChatItem } from '.';
 
 interface Props {
     firstShow?: boolean;

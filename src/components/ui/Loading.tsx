@@ -12,7 +12,7 @@ const Loading: FC<Props> = ({ fullScreen, className }) => {
             className={cn(
                 'flex items-center justify-center overflow-hidden',
                 className,
-                fullScreen && 'h-[calc(100vh-56px)] w-screen'
+                fullScreen && 'fixed left-0 top-0 z-50 h-screen w-screen'
             )}
         >
             <div className="loader">

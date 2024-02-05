@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
+import { Button, Icons } from '@/components/ui';
+
 import { useAppContext } from '@/context/AppContext';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
@@ -12,7 +12,7 @@ import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import Message from './Message';
+import { Message } from '.';
 
 interface Props {
     isPopup?: boolean;

@@ -4,7 +4,7 @@ import {
 } from '@/lib/actions/admin/post.action';
 import { fetchUsers, fetchUsersCount } from '@/lib/actions/admin/user.action';
 import { getAuthSession } from '@/lib/auth';
-import { InfoGroup, Users } from './_components';
+import { InfoGroup, UserItem } from './_components';
 
 interface Props {}
 
@@ -23,7 +23,7 @@ const AdminPage = async ({}: Props) => {
         <>
             <div className="col-auto m-4 grid h-fit flex-1 gap-4">
                 <InfoGroup
-                    ItemComponent={Users}
+                    ItemComponent={UserItem}
                     title="Người dùng"
                     path="/admin/users"
                     count={userCount}

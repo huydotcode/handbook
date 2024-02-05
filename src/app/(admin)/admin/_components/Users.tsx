@@ -1,8 +1,10 @@
 import React from 'react';
 
-interface Props {}
+interface Props {
+    data: IUser;
+}
 
-const Users: React.FC<Props> = ({}) => {
+const Users: React.FC<Props> = ({ data: user }) => {
     return <div>Users</div>;
 };
 export default Users;

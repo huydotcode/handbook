@@ -40,7 +40,7 @@ const PostItem: React.FC<Props> = ({ data }) => {
                     <AdminAction id={_id} path="/admin/posts" type="post" />
                 </div>
                 <div className="mt-2">
-                    <p>{content}</p>
+                    <p className="max-h-[20vh] overflow-scroll">{content}</p>
                 </div>
                 <div className="mt-2">
                     {images.length > 0 && (
@@ -56,7 +56,7 @@ const PostItem: React.FC<Props> = ({ data }) => {
 
                 <div className="flex items-center">
                     <div className="mr-2 flex items-center text-xs text-gray-400">
-                        <Icons.Heart className="mr-1" /> {loves.length}
+                        <Icons.Heart2 className="mr-1" /> {loves.length}
                     </div>
                     <div className="mr-2 flex items-center text-xs text-gray-400">
                         <Icons.Share className="mr-1" /> {shares}

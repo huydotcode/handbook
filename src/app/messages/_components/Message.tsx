@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
+import { Button, Icons } from '@/components/ui';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { deleteMessage } from '@/lib/actions/message.action';
