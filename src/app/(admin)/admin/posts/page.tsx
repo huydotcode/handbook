@@ -1,5 +1,5 @@
-import RefreshButton from '@/components/pages/Admin/action/RefreshButton';
-import PostItem from '@/components/pages/Admin/item/PostItem';
+import RefreshButton from '@/app/(private)/admin/_components/action/RefreshButton';
+import PostItem from '@/app/(private)/admin/_components/item/PostItem';
 import { fetchAllPosts } from '@/lib/actions/admin/post.action';
 import React from 'react';
 

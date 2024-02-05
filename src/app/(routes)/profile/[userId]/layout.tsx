@@ -1,7 +1,7 @@
 import { FriendSection } from '@/components/layout';
-import Action from '@/components/pages/Profile/Action';
-import Header from '@/components/pages/Profile/Header';
-import NavProfileItem from '@/components/pages/Profile/NavProfileItem';
+import Action from '@/app/(pages)/profile/_components/Action';
+import Header from '@/app/(pages)/profile/_components/Header';
+import NavProfileItem from '@/app/(pages)/profile/_components/NavProfileItem';
 import { navProfile } from '@/constants/navLink';
 import ProfileProvider from '@/context/ProfileContext';
 import { fetchFriends, fetchProfileByUserId } from '@/lib/actions/user.action';

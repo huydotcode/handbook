@@ -1,5 +1,5 @@
-import FriendsSection from '@/components/pages/Profile/FriendsSection';
-import PhotosSection from '@/components/pages/Profile/PhotosSection';
+import FriendsSection from '@/app/(pages)/profile/_components/FriendsSection';
+import PhotosSection from '@/app/(pages)/profile/_components/PhotosSection';
 import {
     fetchPhotos,
     getProfilePicturesAction,

@@ -1,7 +1,7 @@
 'use client';
 import { Button, Loading } from '@/components';
-import { Sidebar } from '@/components/pages/Messages';
-import ChatBox from '@/components/pages/Messages/ChatBox';
+import { Sidebar } from '@/app/messages/_components';
+import ChatBox from '@/app/messages/_components/ChatBox';
 import { useChat } from '@/context/ChatContext';
 import { useSocket } from '@/context/SocketContext';
 import { useRouter } from 'next/navigation';

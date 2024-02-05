@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/layout';
-import Sidebar from '@/components/pages/Admin/Sidebar';
+import Sidebar from '@/app/(private)/admin/_components/Sidebar';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 

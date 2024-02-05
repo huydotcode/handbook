@@ -1,5 +1,5 @@
-import AdminAction from '@/components/pages/Admin/action/AdminAction';
-import RefreshButton from '@/components/pages/Admin/action/RefreshButton';
+import AdminAction from '@/app/(private)/admin/_components/action/AdminAction';
+import RefreshButton from '@/app/(private)/admin/_components/action/RefreshButton';
 import { fetchUsers } from '@/lib/actions/admin/user.action';
 import { getAuthSession } from '@/lib/auth';
 

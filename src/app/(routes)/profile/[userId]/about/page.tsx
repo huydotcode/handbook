@@ -1,4 +1,4 @@
-import InfomationSection from '@/components/pages/Profile/InfomationSection';
+import InfomationSection from '@/app/(pages)/profile/_components/InfomationSection';
 import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import React from 'react';
 

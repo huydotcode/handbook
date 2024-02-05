@@ -1,4 +1,4 @@
-import LoginForm from '@/components/pages/Auth/LoginForm';
+import LoginForm from '@/app/(auth)/_components/LoginForm';
 import { getAuthSession } from '@/lib/auth';
 import { FC } from 'react';
 

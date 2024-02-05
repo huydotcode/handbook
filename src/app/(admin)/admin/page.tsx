@@ -1,5 +1,5 @@
-import InfoGroup from '@/components/pages/Admin/InfoGroup';
-import Users from '@/components/pages/Admin/Users';
+import InfoGroup from '@/app/(private)/admin/_components/InfoGroup';
+import Users from '@/app/(private)/admin/_components/Users';
 import {
     fetchAllPosts,
     fetchPostsCount,

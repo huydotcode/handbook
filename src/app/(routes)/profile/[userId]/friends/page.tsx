@@ -1,5 +1,5 @@
 import Avatar from '@/components/Avatar';
-import PhotosSection from '@/components/pages/Profile/PhotosSection';
+import PhotosSection from '@/app/(pages)/profile/_components/PhotosSection';
 import {
     fetchPhotos,
     getProfilePicturesAction,

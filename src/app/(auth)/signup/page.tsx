@@ -1,4 +1,4 @@
-import SignupForm from '@/components/pages/Auth/SignupForm';
+import SignupForm from '@/app/(auth)/_components/SignupForm';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { FC } from 'react';

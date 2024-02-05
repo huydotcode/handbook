@@ -1,4 +1,4 @@
-import InfomationSection from '@/components/pages/Profile/InfomationSection';
+import InfomationSection from '@/app/(pages)/profile/_components/InfomationSection';
 import InfinityPostComponent from '@/components/post/InfinityPostComponent';
 import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import mongoose from 'mongoose';

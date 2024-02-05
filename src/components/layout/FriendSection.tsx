@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { Button } from '..';
 import Items from '../item/Items';
 import NotificationList from '../navbar/notification/NotificationList';
-import { ChatBox } from '../pages/Messages';
+import { ChatBox } from '../../app/messages/_components';
 import Icons from '../ui/Icons';
 
 interface Props {

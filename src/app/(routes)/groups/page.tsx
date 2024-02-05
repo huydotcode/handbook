@@ -1,6 +1,6 @@
 import { FriendSection } from '@/components/layout';
-import CreateGroup from '@/components/pages/Groups/CreateGroup';
-import Sidebar from '@/components/pages/Groups/Sidebar';
+import CreateGroup from '@/app/(pages)/groups/_components/CreateGroup';
+import Sidebar from '@/app/(pages)/groups/_components/Sidebar';
 import { IndexLayout } from '@/layouts';
 import React from 'react';
 

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
-import { ChatBox, Sidebar } from '@/components/pages/Messages';
+import { ChatBox, Sidebar } from '@/app/messages/_components';
 import { fetchFriends, fetchUserByUserId } from '@/lib/actions/user.action';
 import { useChat } from '@/context/ChatContext';
 import { useSession } from 'next-auth/react';
