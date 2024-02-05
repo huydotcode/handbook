@@ -10,13 +10,15 @@ const page: React.FC<Props> = async ({}) => {
     return (
         <>
             <div className="grid min-h-screen w-full grid-cols-3 gap-4 p-2 lg:grid-cols-2 md:grid-cols-1">
-                {photos.map((image, index) => {
+                {photos.map((image) => {
                     return (
-                        <div className="relative min-h-[400px]">
+                        <div
+                            className="relative min-h-[400px]"
+                            key={image.asset_id}
+                        >
                             <Image
                                 className="h-full w-full rounded-lg object-cover"
                                 alt={image.user_id}
-                                key={index}
                                 src={image.url}
                                 fill
                                 quality={100}

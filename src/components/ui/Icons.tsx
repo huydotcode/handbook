@@ -5,6 +5,7 @@ import { CgClose } from 'react-icons/cg';
 import {
     FaArrowLeft,
     FaCircle,
+    FaHeart,
     FaImage,
     FaRegComment,
     FaReply,
@@ -101,6 +102,7 @@ const Icons = {
             </>
         );
     },
+    Heart2: (props: IconProps) => <FaHeart {...props} />,
     Close: (props: IconProps) => <CgClose {...props} />,
     Search: (props: IconProps) => <GoSearch {...props} />,
     Circle: (props: IconProps) => <FaCircle {...props} />,

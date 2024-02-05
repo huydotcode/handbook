@@ -1,6 +1,5 @@
 'use client';
-import { Button } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
+import { Button, Icons } from '@/components/ui';
 import { changeBioAction } from '@/lib/actions/profile.action';
 import { cn } from '@/lib/utils';
 import { TextareaAutosize } from '@mui/material';
@@ -175,7 +174,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                         </li>
 
                         <li className="flex items-center p-2 text-sm">
-                            <Icons.Heart className="mr-2 text-gray-500" />
+                            <Icons.Heart2 className="mr-2 text-gray-500" />
                             {MOCK_DATA.relationship}
                         </li>
                     </ul>
