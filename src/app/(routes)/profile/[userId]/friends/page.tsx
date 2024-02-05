@@ -1,11 +1,8 @@
-import Avatar from '@/components/Avatar';
-import PhotosSection from '@/app/(pages)/profile/_components/PhotosSection';
-import {
-    fetchPhotos,
-    getProfilePicturesAction,
-} from '@/lib/actions/profile.action';
+import { Avatar } from '@/components/ui';
+import { getProfilePicturesAction } from '@/lib/actions/profile.action';
 import { fetchFriends } from '@/lib/actions/user.action';
 import React from 'react';
+import { PhotosSection } from '../../_components';
 
 interface Props {
     params: {

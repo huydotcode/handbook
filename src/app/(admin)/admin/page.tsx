@@ -1,11 +1,10 @@
-import InfoGroup from '@/app/(private)/admin/_components/InfoGroup';
-import Users from '@/app/(private)/admin/_components/Users';
 import {
     fetchAllPosts,
     fetchPostsCount,
 } from '@/lib/actions/admin/post.action';
 import { fetchUsers, fetchUsersCount } from '@/lib/actions/admin/user.action';
 import { getAuthSession } from '@/lib/auth';
+import { InfoGroup, Users } from './_components';
 
 interface Props {}
 

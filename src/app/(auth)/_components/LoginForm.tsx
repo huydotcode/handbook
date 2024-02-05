@@ -1,11 +1,10 @@
 'use client';
-import { Button } from '@/components';
-import Icons from '@/components/ui/Icons';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button, Icons } from '@/components/ui';
 
 interface Props {}
 interface IFormData {

@@ -4,7 +4,7 @@ import { useAppContext } from '@/context/AppContext';
 import { Badge } from '@mui/material';
 import { Popover } from 'antd';
 import { useState } from 'react';
-import Button from '../../ui/Button';
+import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
 
 const NavNotification = () => {

@@ -1,11 +1,11 @@
 'use client';
-import { Button } from '@/components';
+import React, { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui';
 
 type FormData = {
     email: string;

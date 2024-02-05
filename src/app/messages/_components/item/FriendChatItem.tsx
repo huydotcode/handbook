@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
+import { Button } from '@/components/ui';
+import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import { useChat } from '@/context/ChatContext';
 import generateRoomId from '@/utils/generateRoomId';

@@ -13,7 +13,7 @@ import { Fade, Modal, Tooltip } from '@mui/material';
 import { toast } from 'react-hot-toast';
 
 import { useSession } from 'next-auth/react';
-import TextEditor from '../TextEditor';
+import TextEditor from '../ui/TextEditor';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
 interface Props {

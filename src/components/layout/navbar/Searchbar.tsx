@@ -4,9 +4,9 @@ import { fetchUsers } from '@/lib/actions/user.action';
 import { Fade, Modal } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import UserItem from '../search/UserItem';
-import Button from '../ui/Button';
-import Icons from '../ui/Icons';
+import Items from '@/components/shared/Items';
+import Button from '../../ui/Button';
+import Icons from '../../ui/Icons';
 interface Props {
     className?: string;
 }
@@ -134,12 +134,12 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                                     <div className="dark:no-scrollbar mt-4 w-full overflow-scroll">
                                         {searchResult.map((user: IUser) => {
                                             return (
-                                                <UserItem
-                                                    key={user._id}
+                                                <Items.User
                                                     data={user}
-                                                    handleHideModal={() => {
-                                                        handleClose();
-                                                    }}
+                                                    key={user._id}
+                                                    handleHideModal={
+                                                        handleClose
+                                                    }
                                                 />
                                             );
                                         })}

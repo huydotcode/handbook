@@ -1,7 +1,5 @@
 'use client';
-import { Button } from '@/components';
-import ConfirmModal from '@/components/ui/ConfirmModal';
-import Icons from '@/components/ui/Icons';
+import { Button, ConfirmModal, Icons } from '@/components/ui';
 import { deletePost } from '@/lib/actions/admin/post.action';
 import { deleteUser } from '@/lib/actions/admin/user.action';
 import React, { FormEventHandler, useState } from 'react';

@@ -3,10 +3,7 @@ import { useSession } from 'next-auth/react';
 import React, { FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Button, TextEditor } from '@/components';
-import Avatar from '@/components/Avatar';
-import Icons from '@/components/ui/Icons';
-import Modal from '@/components/ui/Modal';
+import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
 import usePostContext from '@/hooks/usePostContext';
 import { editPost } from '@/lib/actions/post.action';
 import { Tooltip } from 'antd';

@@ -7,9 +7,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '..';
-import Avatar from '../Avatar';
-import Icons from '../ui/Icons';
+import { Button, Avatar, Icons } from '@/components/ui';
 
 interface Link {
     name: string;

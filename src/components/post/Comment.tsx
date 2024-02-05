@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { InputComment } from '.';
-import Avatar from '../Avatar';
+import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
 import ReplyComments from './ReplyComments';

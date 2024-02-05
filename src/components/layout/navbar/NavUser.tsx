@@ -1,6 +1,6 @@
 import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
-import Button from '../ui/Button';
+import { Button } from '@/components/ui';
 import UserActionDropdown from './UserActionDropdown';
 const NavUser = () => {
     const { data: session, status } = useSession();

@@ -1,9 +1,9 @@
-import SignupForm from '@/app/(auth)/_components/SignupForm';
+import React from 'react';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { FC } from 'react';
+import { SignupForm } from '../_components';
 
-const Page: FC = async () => {
+const Page: React.FC = async () => {
     const session = await getAuthSession();
 
     if (session) {

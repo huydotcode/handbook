@@ -1,7 +1,6 @@
-import RefreshButton from '@/app/(private)/admin/_components/action/RefreshButton';
-import PostItem from '@/app/(private)/admin/_components/item/PostItem';
-import { fetchAllPosts } from '@/lib/actions/admin/post.action';
 import React from 'react';
+import { fetchAllPosts } from '@/lib/actions/admin/post.action';
+import { PostItem, RefreshButton } from '../_components';
 
 interface Props {}
 

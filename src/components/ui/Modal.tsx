@@ -1,7 +1,7 @@
+'use client';
+import { Button, Icons } from '@/components/ui';
 import { Fade, Modal as ModalMui } from '@mui/material';
 import React from 'react';
-import { Button } from '..';
-import Icons from './Icons';
 
 interface Props {
     children: React.ReactNode;

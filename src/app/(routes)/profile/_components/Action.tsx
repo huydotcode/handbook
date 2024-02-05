@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/components';
+import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import { useSocket } from '@/context/SocketContext';

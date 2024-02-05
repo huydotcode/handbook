@@ -1,5 +1,4 @@
-import { Button } from '@/components';
-import Icons from '@/components/ui/Icons';
+import { Button, Icons } from '@/components/ui';
 import React from 'react';
 
 interface Props {

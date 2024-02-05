@@ -1,7 +1,8 @@
+'use client';
 import usePostContext from '@/hooks/usePostContext';
 import { fetchCommentPostId } from '@/lib/actions/post.action';
 import React, { useEffect, useMemo } from 'react';
-import { Button } from '..';
+import { Button } from '@/components/ui';
 import Comment from './Comment';
 
 const CommentSection: React.FC = ({}) => {

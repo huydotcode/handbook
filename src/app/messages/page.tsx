@@ -1,5 +1,5 @@
 'use client';
-import { Button, Loading } from '@/components';
+import { Button, Loading } from '@/components/ui';
 import { Sidebar } from '@/app/messages/_components';
 import ChatBox from '@/app/messages/_components/ChatBox';
 import { useChat } from '@/context/ChatContext';

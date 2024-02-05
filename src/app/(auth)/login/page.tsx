@@ -1,8 +1,8 @@
-import LoginForm from '@/app/(auth)/_components/LoginForm';
 import { getAuthSession } from '@/lib/auth';
 import { FC } from 'react';
 
 import { redirect } from 'next/navigation';
+import { LoginForm } from '../_components';
 
 const Page: FC = async () => {
     const session = await getAuthSession();

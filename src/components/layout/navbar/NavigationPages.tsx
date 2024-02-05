@@ -3,8 +3,8 @@ import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-import Items from '../item/Items';
-import Icons from '../ui/Icons';
+import Items from '../../shared/Items';
+import Icons from '../../ui/Icons';
 interface Props {
     className?: string;
     itemClassName?: string;

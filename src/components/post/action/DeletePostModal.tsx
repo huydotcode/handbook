@@ -1,4 +1,5 @@
-import { Button } from '@/components';
+'use client';
+import { Button } from '@/components/ui';
 import usePostContext from '@/hooks/usePostContext';
 import { deletePost } from '@/lib/actions/post.action';
 import { Fade, Modal } from '@mui/material';

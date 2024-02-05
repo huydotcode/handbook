@@ -1,6 +1,6 @@
-import InfomationSection from '@/app/(pages)/profile/_components/InfomationSection';
 import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import React from 'react';
+import { InfomationSection } from '../../_components';
 
 interface Props {
     params: {

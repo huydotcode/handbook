@@ -1,7 +1,6 @@
-import AdminAction from '@/app/(private)/admin/_components/action/AdminAction';
-import RefreshButton from '@/app/(private)/admin/_components/action/RefreshButton';
 import { fetchUsers } from '@/lib/actions/admin/user.action';
 import { getAuthSession } from '@/lib/auth';
+import { AdminAction, RefreshButton } from '../_components';
 
 const className = 'border-collapse border p-2';
 const headerClassName =

@@ -1,12 +1,7 @@
-import FriendsSection from '@/app/(pages)/profile/_components/FriendsSection';
-import PhotosSection from '@/app/(pages)/profile/_components/PhotosSection';
-import {
-    fetchPhotos,
-    getProfilePicturesAction,
-} from '@/lib/actions/profile.action';
+import { getProfilePicturesAction } from '@/lib/actions/profile.action';
 import { fetchFriends } from '@/lib/actions/user.action';
-import Image from 'next/image';
 import React from 'react';
+import { FriendsSection, PhotosSection } from '../../_components';
 
 interface Props {
     params: {
@@ -15,10 +10,6 @@ interface Props {
 }
 
 const PhotosPage: React.FC<Props> = async ({ params }) => {
-    // const photos = (await fetchPhotos({
-    //     userId: params.userId,
-    // })) as CloudinaryImage[];
-
     const photos = (await getProfilePicturesAction({
         userId: params.userId,
     })) as string[];

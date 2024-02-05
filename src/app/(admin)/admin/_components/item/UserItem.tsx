@@ -1,6 +1,5 @@
-import Avatar from '@/components/Avatar';
+import Avatar from '@/components/ui/Avatar';
 import { Tooltip } from '@mui/material';
-import Image from 'next/image';
 import React from 'react';
 
 interface Props {

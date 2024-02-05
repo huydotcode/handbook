@@ -5,9 +5,9 @@ import { SetStateAction, useState } from 'react';
 
 import { MenuItem, Tooltip } from '@mui/material';
 import { signOut, useSession } from 'next-auth/react';
-import Button from '../ui/Button';
-import Icons from '../ui/Icons';
-import Popover, { usePopover } from '../ui/Popover';
+import Button from '../../ui/Button';
+import Icons from '../../ui/Icons';
+import Popover, { usePopover } from '../../ui/Popover';
 
 const UserActionDropdown = () => {
     const { data: session } = useSession();

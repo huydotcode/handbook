@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/components';
+import { Button } from '@/components/ui';
 import Modal from '@/components/ui/Modal';
 import { createGroup } from '@/lib/actions/group.action';
 import React, { useState } from 'react';

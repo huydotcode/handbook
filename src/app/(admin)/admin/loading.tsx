@@ -1,4 +1,4 @@
-import { Loading } from '@/components';
+import { Loading } from '@/components/ui';
 
 export default function LoadingPage() {
     return <Loading fullScreen />;

@@ -6,11 +6,10 @@ import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 
-import { Button } from '..';
-import Items from '../item/Items';
-import NotificationList from '../navbar/notification/NotificationList';
+import { Items } from '@/components/shared';
+import { Button, Icons } from '@/components/ui';
 import { ChatBox } from '../../app/messages/_components';
-import Icons from '../ui/Icons';
+import NotificationList from './navbar/notification/NotificationList';
 
 interface Props {
     className?: string;

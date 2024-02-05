@@ -1,4 +1,3 @@
-import { Searchbar } from '@/components';
 import React from 'react';
 import GroupList from './GroupList';
 

@@ -1,10 +1,10 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { CreatePost, Post, SkeletonPost } from '..';
-import toast from 'react-hot-toast';
+import { CreatePost, Post, SkeletonPost } from '@/components/post';
 import { fetchNewFeedPost } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 interface Props {
     className?: string;

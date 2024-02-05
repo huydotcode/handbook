@@ -1,7 +1,7 @@
 import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import NavigationPages from '../navbar/NavigationPages';
+import NavigationPages from './navbar/NavigationPages';
 
 const Sidebar = async () => {
     const session = await getAuthSession();

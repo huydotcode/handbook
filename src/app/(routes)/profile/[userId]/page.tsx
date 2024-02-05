@@ -1,8 +1,8 @@
-import InfomationSection from '@/app/(pages)/profile/_components/InfomationSection';
-import InfinityPostComponent from '@/components/post/InfinityPostComponent';
-import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import mongoose from 'mongoose';
 import { FC } from 'react';
+import { fetchProfileByUserId } from '@/lib/actions/user.action';
+import { InfomationSection } from '../_components';
+import { InfinityPostComponent } from '@/components/post';
 
 interface ProfilePageProps {
     params: {

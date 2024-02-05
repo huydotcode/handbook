@@ -1,7 +1,7 @@
 'use client';
 import { useRef } from 'react';
 
-import Avatar from '../Avatar';
+import Avatar from '../ui/Avatar';
 import ReactionPost from './ReactionPost';
 import usePostContext from '@/hooks/usePostContext';
 import { sendComment } from '@/lib/actions/post.action';

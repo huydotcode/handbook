@@ -1,8 +1,5 @@
 'use client';
-import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
-import { SlideShow } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
+import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
 import React, { useState } from 'react';
 import AdminAction from '../action/AdminAction';
 

@@ -6,7 +6,7 @@ import React, { FC, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { createPost } from '@/lib/actions/post.action';
-import { ModalCreatePost } from '..';
+import { ModalCreatePost } from '.';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;

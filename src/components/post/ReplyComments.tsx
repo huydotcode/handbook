@@ -6,7 +6,7 @@ import {
 } from '@/lib/actions/post.action';
 import { FC, useEffect, useMemo, useState } from 'react';
 
-import { Button } from '..';
+import { Button } from '@/components/ui';
 import Comment from './Comment';
 import { useSession } from 'next-auth/react';
 

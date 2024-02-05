@@ -1,6 +1,5 @@
 'use client';
-
-import Items from '@/components/item/Items';
+import { Items } from '@/components/shared';
 import { navAdmin } from '@/constants/navLink';
 
 interface Props {}

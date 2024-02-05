@@ -1,5 +1,5 @@
-import { Button } from '@/components';
-import Avatar from '@/components/Avatar';
+import { Button } from '@/components/ui';
+import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import { useAppContext } from '@/context/AppContext';
 import React from 'react';

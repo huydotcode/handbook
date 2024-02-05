@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Button } from '..';
-import { NavigationPages, NavNotification } from '../navbar';
-import NavUser from '../navbar/NavUser';
-import Searchbar from '../navbar/Searchbar';
-import DarkmodeButton from '../ui/DarkmodeButton';
-import Icons from '../ui/Icons';
+import { Button } from '@/components/ui';
+import NavigationPages from './NavigationPages';
+import NavUser from './NavUser';
+import Searchbar from './Searchbar';
+import DarkmodeButton from '../../ui/DarkmodeButton';
+import Icons from '../../ui/Icons';
+import NavNotification from './notification/NavNotification';
 
 const Navbar = () => {
     const { data: session } = useSession();

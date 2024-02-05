@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/components';
+import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
 import { changeBioAction } from '@/lib/actions/profile.action';
 import { cn } from '@/lib/utils';
