@@ -1,9 +1,9 @@
 import Providers from '@/components/layout/Providers';
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+import { Be_Vietnam_Pro } from 'next/font/google';
 import '@/styles/globals.scss';
 
-const roboto = Roboto({
+const font = Be_Vietnam_Pro({
     subsets: ['vietnamese'],
     weight: '400',
 });
@@ -28,7 +28,7 @@ export default function RootLayout(props: Props) {
                     sizes="svg"
                 />
             </head>
-            <body className={roboto.className}>
+            <body className={font.className}>
                 <Providers>{props.children}</Providers>
             </body>
         </html>
