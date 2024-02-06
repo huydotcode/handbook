@@ -4,7 +4,7 @@ import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useAppContext } from './AppContext';
+import { useApp } from '.';
 import { useSocket } from './SocketContext';
 import { useAudio } from '@/hooks';
 
@@ -37,7 +37,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
     //* Context
     const { data: session } = useSession();
     const { socket } = useSocket();
-    const { friends } = useAppContext();
+    const { friends } = useApp();
     const { toggle } = useAudio({ type: 'message' });
 
     //* State
@@ -173,7 +173,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
             const roomId = currentRoom.id;
             const otherUserId = roomId.replace(session.user.id, '');
             const isFriend = friends.find(
-                (friend) => friend._id === otherUserId
+                (friend: IFriend) => friend._id === otherUserId
             );
 
             // Kiểm tra nếu không phải friend thì join vào room

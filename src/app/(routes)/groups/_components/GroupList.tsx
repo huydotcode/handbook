@@ -1,12 +1,17 @@
 'use client';
-import { useAppContext } from '@/context/AppContext';
-import React from 'react';
+import { useApp } from '@/context';
+import React, { useEffect } from 'react';
 import GroupItem from './GroupItem';
 
 interface Props {}
 
 const GroupList: React.FC<Props> = ({}) => {
-    const { groups } = useAppContext();
+    const { groups } = useApp();
+
+    // log groups
+    useEffect(() => {
+        console.log(groups);
+    }, [groups]);
 
     return (
         <div className="mt-2">

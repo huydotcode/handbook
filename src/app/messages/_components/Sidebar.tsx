@@ -1,7 +1,6 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-import { useAppContext } from '@/context/AppContext';
-import { useChat } from '@/context/ChatContext';
+import { useApp, useChat } from '@/context';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
@@ -13,7 +12,7 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
     const { data: session } = useSession();
-    const { friends } = useAppContext();
+    const { friends } = useApp();
     const { currentRoom, loading, conversations } = useChat();
     const [showSidebar, setShowSidebar] = useState(firstShow);
     const [isHover, setIsHover] = useState(false);

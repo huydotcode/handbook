@@ -1,9 +1,8 @@
 'use client';
 import { Button, Loading } from '@/components/ui';
-import { ChatBox, Sidebar } from './_components';
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { useChat, useSocket } from '@/context';
 import { useRouter } from 'next/navigation';
+import { ChatBox, Sidebar } from './_components';
 
 function MessagesPage() {
     const { socket, isLoading } = useSocket();

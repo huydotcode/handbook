@@ -1,8 +1,8 @@
 'use client';
 import { getCountCommentsParent } from '@/lib/actions/post.action';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
-export const PostContext = React.createContext<IPostContext | null>(null);
+const PostContext = React.createContext<IPostContext | null>(null);
 
 interface Props {
     post: IPost;
@@ -15,6 +15,10 @@ interface ICommentState {
     countAllComments: number;
     countAllParentComments: number;
 }
+
+export const usePost = () => {
+    return useContext(PostContext) as IPostContext;
+};
 
 function PostProvider({ post, setPosts, children }: Props) {
     // setState for comments

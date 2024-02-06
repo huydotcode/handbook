@@ -1,7 +1,5 @@
 'use client';
-import { useAppContext } from '@/context/AppContext';
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { useApp, useChat, useSocket } from '@/context';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
@@ -18,7 +16,7 @@ interface Props {
 
 const FriendSection: React.FC<Props> = ({ className, show }) => {
     const { rooms } = useChat();
-    const { friends, loadingFriends, notifications } = useAppContext();
+    const { friends, loadingFriends, notifications } = useApp();
     const { data: session } = useSession();
     const { socket, isLoading } = useSocket();
 

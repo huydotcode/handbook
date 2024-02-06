@@ -1,14 +1,13 @@
 'use client';
-import usePostContext from '@/hooks/usePostContext';
+import { Button } from '@/components/ui';
+import { usePost } from '@/context';
 import {
     fetchReplyComments,
     fetchReplyCommentsCount,
 } from '@/lib/actions/post.action';
-import { FC, useEffect, useMemo, useState } from 'react';
-
-import { Button } from '@/components/ui';
-import Comment from './Comment';
 import { useSession } from 'next-auth/react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { Comment } from '.';
 
 interface IReplyCommentState {
     data: Comment[];
@@ -31,7 +30,7 @@ const ReplyComments: FC<CommentPostProps> = ({
     const { data: session } = useSession();
     const {
         commentState: { comments },
-    } = usePostContext();
+    } = usePost();
 
     const [countAllReplyComments, setCountAllReplyComments] =
         useState<number>(0);

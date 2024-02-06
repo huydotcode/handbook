@@ -2,7 +2,6 @@
 import TimeAgoConverted from '@/utils/timeConvert';
 import { FC, useMemo, useRef, useState } from 'react';
 
-import usePostContext from '@/hooks/usePostContext';
 import { deleteComment, sendComment } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
 import ReplyComments from './ReplyComments';
+import { usePost } from '@/context';
 
 interface Props {
     data: Comment;
@@ -43,7 +43,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
         return cmt.isDeleted || isDeleted;
     }, [cmt.isDeleted, isDeleted]);
 
-    const { setCommentState } = usePostContext();
+    const { setCommentState } = usePost();
 
     const [replyCommentState, setReplyCommentState] =
         useState<IReplyCommentState>({

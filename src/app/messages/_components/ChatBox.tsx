@@ -1,9 +1,6 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-
-import { useAppContext } from '@/context/AppContext';
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { useApp, useChat, useSocket } from '@/context';
 import { sendMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
@@ -27,7 +24,7 @@ interface IFormData {
 const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
-    const { friends } = useAppContext();
+    const { friends } = useApp();
     const { messages, setCurrentRoom, setRooms } = useChat();
     const { handleSubmit, register, reset } = useForm<IFormData>();
 

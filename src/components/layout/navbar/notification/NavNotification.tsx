@@ -1,14 +1,14 @@
 'use client';
 import Icons from '@/components/ui/Icons';
-import { useAppContext } from '@/context/AppContext';
 import { Badge } from '@mui/material';
 import { Popover } from 'antd';
 import { useState } from 'react';
 import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
+import { useApp } from '@/context';
 
 const NavNotification = () => {
-    const { notifications } = useAppContext();
+    const { notifications } = useApp();
     const [open, setOpen] = useState(false);
 
     return (

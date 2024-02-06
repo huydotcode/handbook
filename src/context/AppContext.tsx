@@ -37,7 +37,7 @@ type AppContextType = {
 
 const AppContext = createContext<AppContextType | any>({});
 
-export const useAppContext = () => {
+export const useApp = () => {
     return useContext(AppContext) as AppContextType;
 };
 

@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
-import usePostContext from '@/hooks/usePostContext';
+import { usePost } from '@/context';
 import { editPost } from '@/lib/actions/post.action';
 import { Tooltip } from 'antd';
 import Image from 'next/image';
@@ -19,7 +19,7 @@ interface Props {
 
 const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
     const { data: session } = useSession();
-    const { post, setPosts } = usePostContext();
+    const { post, setPosts } = usePost();
 
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)

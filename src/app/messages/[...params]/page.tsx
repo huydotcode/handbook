@@ -1,12 +1,11 @@
 'use client';
-import React, { useEffect } from 'react';
-import { ChatBox, Sidebar } from '../_components';
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { useChat, useSocket } from '@/context';
 import { fetchUserByUserId } from '@/lib/actions/user.action';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+import { ChatBox, Sidebar } from '../_components';
 
 interface Props {
     params: {

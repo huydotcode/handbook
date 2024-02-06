@@ -1,10 +1,10 @@
-import usePostContext from '@/hooks/usePostContext';
+import { usePost } from '@/context';
 import React from 'react';
 import Button from '../ui/Button';
 import PhotoGrid from './PhotoGrid';
 
 const PostContent = () => {
-    const { post } = usePostContext();
+    const { post } = usePost();
     const [contentLength, setContentLength] = React.useState<number>(100);
 
     const content = React.useMemo(() => {

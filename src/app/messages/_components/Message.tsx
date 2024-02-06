@@ -1,6 +1,5 @@
 import { Button, Icons } from '@/components/ui';
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { useChat, useSocket } from '@/context';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';

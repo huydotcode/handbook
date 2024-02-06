@@ -1,5 +1,5 @@
 import Icons from '@/components/ui/Icons';
-import { useAppContext } from '@/context/AppContext';
+import { useApp } from '@/context';
 import React from 'react';
 import NotificationItem from './NotificationItem';
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
-    const { loadingNotifications, notifications } = useAppContext();
+    const { loadingNotifications, notifications } = useApp();
 
     return (
         <>

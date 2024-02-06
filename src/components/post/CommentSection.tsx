@@ -1,9 +1,9 @@
 'use client';
-import usePostContext from '@/hooks/usePostContext';
 import { fetchCommentPostId } from '@/lib/actions/post.action';
 import React, { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui';
 import Comment from './Comment';
+import { usePost } from '@/context';
 
 const CommentSection: React.FC = ({}) => {
     const [page, setPage] = React.useState<number>(1);
@@ -13,7 +13,7 @@ const CommentSection: React.FC = ({}) => {
         commentState: { comments, countAllComments, countAllParentComments },
         setCommentState,
         post,
-    } = usePostContext();
+    } = usePost();
 
     const isCommentsEmpty = useMemo(() => {
         return countAllComments === 0;

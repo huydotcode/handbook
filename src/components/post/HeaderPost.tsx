@@ -1,13 +1,13 @@
-import usePostContext from '@/hooks/usePostContext';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Avatar from '../ui/Avatar';
 import ActionPost from './ActionPost';
+import { usePost } from '@/context';
 
 const HeaderPost = () => {
     const { data: session } = useSession();
-    const { post, user } = usePostContext();
+    const { post, user } = usePost();
 
     return (
         <div className="flex items-center justify-between">

@@ -1,7 +1,8 @@
 'use client';
 import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
-import { useAppContext } from '@/context/AppContext';
+import { useApp } from '@/context';
+
 import { useSocket } from '@/context/SocketContext';
 import React, { FormEventHandler, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const Action: React.FC<Props> = ({ userId }) => {
-    const { friends } = useAppContext();
+    const { friends } = useApp();
     const { socket } = useSocket();
 
     const isFriend = friends && friends.find((friend) => friend._id === userId);

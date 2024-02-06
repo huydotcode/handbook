@@ -1,5 +1,5 @@
-import { useChat } from '@/context/ChatContext';
-import { useSocket } from '@/context/SocketContext';
+import { Avatar, Button, Icons } from '@/components/ui';
+import { useChat, useSocket } from '@/context';
 import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { Tooltip } from '@mui/material';
@@ -7,7 +7,6 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button, Avatar, Icons } from '@/components/ui';
 
 interface Link {
     name: string;

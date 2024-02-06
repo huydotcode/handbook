@@ -1,6 +1,6 @@
 'use client';
 import { Avatar, Button } from '@/components/ui';
-import { useChat } from '@/context/ChatContext';
+import { useChat } from '@/context';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 

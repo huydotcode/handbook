@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
-import { useAppContext } from '@/context/AppContext';
+import { useApp } from '@/context';
 import React from 'react';
 
 interface Props {
@@ -13,7 +13,7 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
-    const { handleAcceptFriend, handleDeclineFriend } = useAppContext();
+    const { handleAcceptFriend, handleDeclineFriend } = useApp();
 
     return (
         <>

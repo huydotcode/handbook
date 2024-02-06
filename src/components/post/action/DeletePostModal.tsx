@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@/components/ui';
-import usePostContext from '@/hooks/usePostContext';
+import { usePost } from '@/context';
 import { deletePost } from '@/lib/actions/post.action';
 import { Fade, Modal } from '@mui/material';
 import React, { FormEventHandler, useState } from 'react';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
-    const { setPosts } = usePostContext();
+    const { setPosts } = usePost();
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>();
 

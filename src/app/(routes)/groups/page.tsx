@@ -11,6 +11,10 @@ const GroupsPage: React.FC<Props> = ({}) => {
             Left={<Sidebar />}
             Center={
                 <div className="mx-auto w-[500px] max-w-[100vw]">
+                    <div>
+                        <h5 className="text-xl font-bold">Nhóm của bạn</h5>
+                    </div>
+
                     <CreateGroup />
                 </div>
             }

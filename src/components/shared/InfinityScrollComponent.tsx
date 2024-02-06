@@ -1,7 +1,5 @@
 'use client';
-// TODO: Create InfinityScrollComponent
 import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -56,7 +54,8 @@ const InfinityScrollComponent: React.FC<Props> = ({
         <>
             <div
                 className={cn(
-                    type === 'post' && 'no-scrollbar w-[500px] sm:w-screen',
+                    type === 'post' &&
+                        'no-scrollbar w-[600px] max-w-[100vw] transition-all duration-300 ease-in-out xl:w-[500px]',
                     className
                 )}
             >

@@ -1,16 +1,11 @@
 'use client';
 import { useRef } from 'react';
-
-import Avatar from '../ui/Avatar';
-import ReactionPost from './ReactionPost';
-import usePostContext from '@/hooks/usePostContext';
-import { sendComment } from '@/lib/actions/post.action';
+import { usePost } from '@/context';
 import { useSession } from 'next-auth/react';
+import { sendComment } from '@/lib/actions/post.action';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { InputComment } from '.';
-import Button from '../ui/Button';
-import Icons from '../ui/Icons';
-import CommentSection from './CommentSection';
+import { Avatar, Button, Icons } from '@/components/ui';
+import { ReactionPost, CommentSection, InputComment } from '@/components/post';
 
 type FormData = {
     text: string;
@@ -18,7 +13,7 @@ type FormData = {
 
 const FooterPost = () => {
     const { data: session } = useSession();
-    const { post, commentState, setCommentState } = usePostContext();
+    const { post, commentState, setCommentState } = usePost();
     const {
         handleSubmit,
         register,
