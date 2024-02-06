@@ -67,7 +67,11 @@ const CreateGroup: React.FC<Props> = ({}) => {
                     className="flex flex-col space-y-4"
                     autoComplete="off"
                 >
+                    <label htmlFor="name">
+                        <h2>Tên nhóm</h2>
+                    </label>
                     <input
+                        id="name"
                         type="text"
                         autoComplete="off"
                         placeholder="Tên nhóm"
@@ -75,6 +79,7 @@ const CreateGroup: React.FC<Props> = ({}) => {
                         {...register('name', { required: true })}
                     />
                     <input
+                        id="description"
                         type="text"
                         placeholder="Mô tả"
                         autoComplete="off"

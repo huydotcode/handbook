@@ -1,7 +1,6 @@
 import { FriendSection, Sidebar } from '@/components/layout';
-import { NavigationPages } from '@/components/navbar';
+import { InfinityPostComponent } from '@/components/post';
 import { IndexLayout } from '@/layouts';
-import InfinityPostComponent from '../../components/post/InfinityPostComponent';
 
 export default async function Home() {
     return (
