@@ -32,8 +32,9 @@ const Navbar = () => {
 
                         <NavigationPages
                             className={cn(
-                                'fixed left-0 top-14 z-50 hidden h-[calc(100vh-56px)] items-center bg-white shadow-xl transition-all duration-1000 md:flex md:w-0 ',
-                                showPages && 'md:w-fit'
+                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden bg-white shadow-xl transition-all duration-1000',
+                                showPages && 'md:w-fit',
+                                !showPages && 'md:w-0'
                             )}
                             direction="col"
                             itemClassName="w-full h-14 rounded-none mx-2"
