@@ -1,10 +1,10 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useInView } from 'react-intersection-observer';
-import { CreatePost, Post, SkeletonPost } from '@/components/post';
 import { fetchNewFeedPost } from '@/lib/actions/post.action';
 import { useSession } from 'next-auth/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { CreatePost, Post, SkeletonPost } from '.';
+import { InfinityScrollComponent } from '../shared';
 
 interface Props {
     className?: string;
@@ -15,42 +15,22 @@ interface Props {
 const PAGE_SIZE = 3;
 
 const InfinityPostComponent: React.FC<Props> = ({
+    className,
     userId,
     username,
-    className,
 }) => {
     const { data: session } = useSession();
-
-    const [firstRender, setFirstRender] = useState<boolean>(true);
-
     const [page, setPage] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(true);
 
     const [posts, setPosts] = useState<IPost[]>([]);
-
     const [isEnd, setIsEnd] = useState<boolean>(false);
-
-    const { ref: bottomRef, inView } = useInView({
-        threshold: 0,
-    });
 
     const renderCreatePost = () =>
         session?.user &&
         (!userId || session?.user.id === userId) && (
             <CreatePost setPosts={setPosts} />
         );
-
-    const renderSkeletonPosts = () => {
-        return Array.from({ length: PAGE_SIZE }).map((_, index) => (
-            <SkeletonPost key={index} />
-        ));
-    };
-
-    useEffect(() => {
-        if (inView) {
-            setPage((prev) => prev + 1);
-        }
-    }, [inView]);
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
@@ -82,38 +62,25 @@ const InfinityPostComponent: React.FC<Props> = ({
         fetchPosts();
     }, [fetchPosts]);
 
-    useEffect(() => {
-        if (firstRender) {
-            setFirstRender(false);
-            return;
-        }
-    }, []);
-
     return (
         <>
-            <div className={'no-scrollbar w-[500px] sm:w-screen ' + className}>
-                {renderCreatePost()}
+            {renderCreatePost()}
 
-                {firstRender && loading && renderSkeletonPosts()}
-
-                {posts.map((post) => (
-                    <Post key={post?._id} data={post} setPosts={setPosts} />
-                ))}
-
-                {!firstRender && loading && renderSkeletonPosts()}
-
-                {!isEnd && (
-                    <div className="min-h-[100px] w-full" ref={bottomRef} />
-                )}
-
-                {isEnd && (
-                    <div className="text-center">
-                        <p className="pb-10 text-gray-500 dark:text-gray-400">
-                            Không còn bài đăng nào!
-                        </p>
-                    </div>
-                )}
-            </div>
+            <InfinityScrollComponent
+                Loader={SkeletonPost}
+                fetchMore={() => setPage((prev) => prev + 1)}
+                hasMore={!isEnd}
+                pageSize={PAGE_SIZE}
+                endMessage="Đã hết bài đăng!"
+                type="post"
+                loading={loading}
+            >
+                <>
+                    {posts.map((post) => (
+                        <Post key={post?._id} data={post} setPosts={setPosts} />
+                    ))}
+                </>
+            </InfinityScrollComponent>
         </>
     );
 };
