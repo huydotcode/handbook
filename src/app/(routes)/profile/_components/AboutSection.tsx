@@ -80,7 +80,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 <form onSubmit={handleSubmit(changeBio)}>
                     {showChangeBio && (
                         <TextareaAutosize
-                            className="mt-2 w-full resize-none rounded-xl bg-light-100 p-2 focus:border-none focus:outline-none dark:bg-[rgba(255,255,255,.1)]"
+                            className=" mt-2 w-full resize-none rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none"
                             spellCheck={false}
                             autoComplete="off"
                             placeholder="Nhập tiểu sử"
@@ -91,19 +91,15 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                     )}
 
                     {errors.bio && (
-                        <p className="text-xs text-red-500">
-                            Tiểu sử tối đa 300 kí tự
-                        </p>
+                        <p className="text-xs">Tiểu sử tối đa 300 kí tự</p>
                     )}
 
                     {showChangeBio && (
                         <Button
-                            className={`mt-2 w-full ${
-                                !isSubmitting && 'bg-primary'
-                            }`}
-                            variant={'event'}
+                            className={`mt-2 w-full ${!isSubmitting && ''}`}
                             size={'small'}
                             type="submit"
+                            variant={'warning'}
                         >
                             {isSubmitting ? 'Đang thay đổi...' : 'Thay đổi'}
                         </Button>
@@ -113,7 +109,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 {bio.length > 0 ? (
                     <Button
                         className="mt-2 w-full"
-                        variant={'event'}
+                        variant={'secondary'}
                         size={'small'}
                         onClick={() => setShowChangeBio((prev) => !prev)}
                     >
@@ -122,7 +118,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 ) : (
                     <Button
                         className="mt-2 w-full"
-                        variant={'event'}
+                        variant={'secondary'}
                         size={'small'}
                         onClick={() => setShowChangeBio((prev) => !prev)}
                     >
@@ -136,7 +132,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
     return (
         <section
             className={cn(
-                'relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200',
+                'relative my-3 rounded-xl  bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1',
                 isAboutPage && 'flex'
             )}
         >
@@ -159,22 +155,22 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 <article className="flex-1 p-2">
                     <ul>
                         <li className="flex items-center p-2 text-sm">
-                            <Icons.Work className="mr-2 text-gray-500" />
+                            <Icons.Work className="mr-2 " />
                             Làm việc tại {MOCK_DATA.work}
                         </li>
 
                         <li className="flex items-center px-2 py-4 text-sm">
-                            <Icons.School className="mr-2 text-gray-500" />
+                            <Icons.School className="mr-2 " />
                             Học tại {MOCK_DATA.school}
                         </li>
 
                         <li className="flex items-center p-2 text-sm">
-                            <Icons.Location className="mr-2 text-gray-500" />
+                            <Icons.Location className="mr-2 " />
                             Sống tại {MOCK_DATA.lives}
                         </li>
 
                         <li className="flex items-center p-2 text-sm">
-                            <Icons.Heart2 className="mr-2 text-gray-500" />
+                            <Icons.Heart2 className="mr-2 " />
                             {MOCK_DATA.relationship}
                         </li>
                     </ul>

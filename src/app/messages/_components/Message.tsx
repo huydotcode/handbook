@@ -1,5 +1,7 @@
+'use client';
 import { Button, Icons } from '@/components/ui';
-import { useChat, useSocket } from '@/context';
+import { useSocket } from '@/context';
+import { useChat } from '@/context/ChatContext';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
@@ -35,7 +37,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const menuRef = useRef<HTMLFormElement>(null);
 
     const canShowTime = useMemo(() => {
-        // if before msg is not same user and after msg is same user
+        // Kiểm tra xem tin nhắn trước và sau có phải của cùng 1 người không
         return (
             messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId !==
                 msg.userId &&
@@ -131,9 +133,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         >
             {canShowTime ||
                 (topAndBottomMsgIsNotSameUser && !isOwnMsg && (
-                    <div className="ml-2 text-[10px] text-secondary">
-                        {newDate}
-                    </div>
+                    <div className="ml-2 text-[10px]">{newDate}</div>
                 ))}
 
             <div
@@ -146,7 +146,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 <Tooltip
                     title={
                         <TimeAgoConverted
-                            className={'text-xs text-white dark:text-gray-400'}
+                            className={'text-xs  '}
                             time={msg.createdAt}
                             textBefore="Đã gửi"
                             textAfter="trước"
@@ -157,11 +157,11 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 >
                     <div
                         className={cn(
-                            `relative flex w-fit  max-w-[70%] items-center px-4 py-2 text-white`,
+                            `relative flex w-fit max-w-[70%] items-center  px-4 py-2 `,
                             {
-                                'items-end rounded-xl rounded-r-md bg-blue-500':
+                                'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
                                     isOwnMsg,
-                                'rounded-xl rounded-l-md  bg-light-100 text-black dark:bg-dark-500 dark:text-white':
+                                ' rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
                                     !isOwnMsg,
                             }
                         )}
@@ -171,7 +171,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                             <form
                                 ref={menuRef}
                                 className={
-                                    'absolute right-[120%] top-0 flex items-center rounded-xl bg-light-100 text-white dark:bg-dark-500 dark:text-white'
+                                    ' absolute right-[120%] top-0 flex items-center rounded-xl'
                                 }
                                 onSubmit={handleDeleteMsg}
                             >

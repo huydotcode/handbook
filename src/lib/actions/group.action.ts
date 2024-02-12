@@ -66,7 +66,7 @@ export const getGroups = async () => {
         return {
             msg: 'Lấy danh sách nhóm thành công!',
             success: true,
-            data: JSON.parse(JSON.stringify(groups)),
+            data: JSON.parse(JSON.stringify(groups)) as IGroup[],
         };
     } catch (error) {
         return {

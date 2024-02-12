@@ -7,6 +7,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Items from '@/components/shared/Items';
 import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 interface Props {
     className?: string;
 }
@@ -26,6 +28,8 @@ const Searchbar: React.FC<Props> = ({ className }) => {
         setSearchValue('');
         setShowModal(false);
     }, []);
+
+    const router = useRouter();
 
     const handleChangeInput = useCallback((e: any) => {
         setSearchValue(e.target.value);
@@ -62,22 +66,22 @@ const Searchbar: React.FC<Props> = ({ className }) => {
     return (
         <>
             <div
-                className={
-                    'ml-3 flex h-10 items-center justify-center rounded-full bg-secondary px-3 dark:bg-dark-100 ' +
+                className={cn(
+                    'ml-3 flex h-10 items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2',
                     className
-                }
+                )}
                 onClick={() => {
                     setShowModal(true);
                 }}
             >
                 {/* PC icon */}
-                <div className="text-input-color flex items-center text-lg lg:hidden">
+                <div className="flex items-center text-lg lg:hidden">
                     <Icons.Search />
                 </div>
 
                 {/* Mobile icon*/}
                 <label
-                    className="text-input-color hidden cursor-pointer items-center text-lg lg:flex"
+                    className="hidden cursor-pointer items-center text-lg lg:flex"
                     onClick={() => setShowModal((prev) => !prev)}
                 >
                     <Icons.Search />
@@ -86,9 +90,9 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                 {/* Search-input */}
                 <div
                     ref={inputRef}
-                    className="h-10 min-w-[170px] bg-transparent px-2 text-xs lg:hidden"
+                    className="h-10 min-w-[170px]  px-2 text-xs lg:hidden"
                 >
-                    <div className="flex h-full items-center bg-secondary text-secondary dark:bg-dark-100  dark:placeholder:text-dark-100">
+                    <div className="flex h-full items-center text-dark-secondary-2 dark:text-dark-primary-1">
                         Tìm kiếm trên Handbook
                     </div>
                 </div>
@@ -101,7 +105,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                 disableAutoFocus
             >
                 <Fade in={showModal}>
-                    <div className="relative my-auto h-[60vh] w-[400px] rounded-xl bg-white px-4 py-2 pt-6 dark:bg-dark-200 md:h-full md:w-full md:rounded-none">
+                    <div className="relative my-auto h-[60vh] w-[400px] rounded-xl bg-white px-4 py-2 pt-6 dark:bg-dark-secondary-1 md:h-full md:w-full md:rounded-none">
                         <Button
                             className="absolute right-2 top-4 z-20 flex items-center justify-center rounded-full text-3xl"
                             variant={'custom'}
@@ -110,8 +114,8 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                             <Icons.Close />
                         </Button>
 
-                        <div className="mx-auto mt-4 flex w-[80%] rounded-xl bg-light-100 px-2 dark:bg-dark-100">
-                            <div className="text-input-color flex items-center text-lg">
+                        <div className=" mx-auto mt-4 flex w-[80%] rounded-xl bg-primary-1 px-2 dark:bg-dark-secondary-2">
+                            <div className="flex items-center text-lg">
                                 <Icons.Search />
                             </div>
 
@@ -120,7 +124,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                                 value={searchValue}
                                 onChange={handleChangeInput}
                                 name="q"
-                                className="dark:placeholder:text-dark-200 h-10 w-full bg-transparent px-2 text-base"
+                                className="h-10 w-full bg-transparent px-2 text-base"
                                 dir="ltr"
                                 placeholder="Tìm kiếm trên Handbook"
                                 autoComplete="off"
@@ -137,9 +141,12 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                                                 <Items.User
                                                     data={user}
                                                     key={user._id}
-                                                    handleHideModal={
-                                                        handleClose
-                                                    }
+                                                    handleHideModal={() => {
+                                                        handleClose();
+                                                        router.push(
+                                                            `/profile/${user._id}`
+                                                        );
+                                                    }}
                                                 />
                                             );
                                         })}
@@ -157,7 +164,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
 
                         {isSearching && searchResult.length === 0 && (
                             <div className="mt-4 flex justify-center">
-                                <Icons.Loading className="animate-spin text-6xl" />
+                                <Icons.Loading className="animate-spin text-2xl" />
                             </div>
                         )}
                     </div>

@@ -34,15 +34,15 @@ function PostProvider({ post, setPosts, children }: Props) {
     }, [post.creator]) as IUser;
 
     // get count comments parent
-    useEffect(() => {
-        (async () => {
-            const count = await getCountCommentsParent({ postId: post._id });
-            setCommentState((prev) => ({
-                ...prev,
-                countAllParentComments: count,
-            }));
-        })();
-    }, [post._id]);
+    // useEffect(() => {
+    //     (async () => {
+    //         const count = await getCountCommentsParent({ postId: post._id });
+    //         setCommentState((prev) => ({
+    //             ...prev,
+    //             countAllParentComments: count,
+    //         }));
+    //     })();
+    // }, [post._id]);
 
     const values = {
         post,

@@ -53,7 +53,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
     });
 
     return (
-        <>
+        <div className="like-container flex items-center">
             <div className="con-like">
                 <input
                     className="like"
@@ -63,12 +63,12 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                     onChange={() => mutation.mutate()}
                 />
                 <div className="checkmark">
-                    <Icons.Heart className="text-red-500" />
+                    <Icons.Heart />
                 </div>
             </div>
 
             <span className="text-md ml-1 mr-2">{loves.length}</span>
-        </>
+        </div>
     );
 };
 export default ReactionPost;

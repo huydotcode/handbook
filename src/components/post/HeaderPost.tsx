@@ -23,13 +23,13 @@ const HeaderPost = () => {
                 <div className="ml-2 flex flex-col items-center ">
                     <Link
                         href={`/profile/${user?._id}`}
-                        className="text-base hover:underline dark:text-primary"
+                        className="text-base hover:underline dark:text-dark-primary-1"
                     >
                         {user?.name}
                     </Link>
 
                     <TimeAgoConverted
-                        className="w-full text-xs"
+                        className="w-full text-xs text-secondary-1"
                         time={post.createdAt}
                     />
                 </div>

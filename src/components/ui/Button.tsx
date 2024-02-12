@@ -6,28 +6,29 @@ import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-    'flex items-center justify-center text-black dark:text-white disabled:cursor-not-allowed dark:shadow-none',
+    'flex items-center justify-center disabled:cursor-not-allowed dark:shadow-none text-primary-1 dark:text-dark-primary-1 overflow:hidden',
     {
         variants: {
             variant: {
-                default: 'rounded-xl shadow-md disabled:bg-gray-500',
-                contained: 'bg-primary hover:bg-[rgb(61,61,236)]',
-                outlined:
-                    'border border-primary hover:border-transparent hover:bg-primary hover:text-white',
-                text: 'text-xs hover:underline',
-                event: 'rounded-xl p-2 bg-light-100 hover:bg-gray-300 dark:bg-[rgba(255,255,255,.1)] dark:hover:bg-[#6a6b6c]',
+                default:
+                    'rounded-xl shadow-md hover:bg-hover-1 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
+                primary:
+                    'bg-primary-2 rounded-xl text-white hover:bg-hover-blue',
+                contained: '',
+                outlined: 'border hover:border-transparent hover:',
+                text: 'hover:underline',
+                event: 'rounded-xl p-2 hover:bg-hover-2 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
                 custom: '',
                 warning:
-                    'bg-red-500 hover:bg-red-700 rounded-xl shadow-md text-white',
-                secondary: 'bg-gray-400 hover:bg-gray-500 rounded-xl',
+                    'rounded-xl shadow-md bg-warning text-white hover:bg-hover-warning',
+                secondary:
+                    'rounded-xl bg-secondary-2 text-primary-1 hover:bg-hover-secondary dark:bg-dark-secondary-2 dark:hover:bg-hover-secondary-dark',
             },
             size: {
-                default: 'text-xl p-2',
-                tiny: 'text-xs p-1',
-                small: 'text-sm p-2',
+                default: 'text-sm p-2',
+                small: 'text-xs p-2',
                 medium: 'text-base p-3',
-                large: 'text-4xl p-4',
-                none: '',
+                large: 'text-2xl p-4',
             },
         },
         defaultVariants: {

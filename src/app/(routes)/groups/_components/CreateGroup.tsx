@@ -75,7 +75,7 @@ const CreateGroup: React.FC<Props> = ({}) => {
                         type="text"
                         autoComplete="off"
                         placeholder="Tên nhóm"
-                        className="rounded-md border border-gray-300 p-2"
+                        className="rounded-md border  p-2"
                         {...register('name', { required: true })}
                     />
                     <input
@@ -83,7 +83,7 @@ const CreateGroup: React.FC<Props> = ({}) => {
                         type="text"
                         placeholder="Mô tả"
                         autoComplete="off"
-                        className="rounded-md border border-gray-300 p-2"
+                        className="rounded-md border  p-2"
                         {...register('description', { required: true })}
                     />
                     <Button variant="contained">Tạo nhóm</Button>

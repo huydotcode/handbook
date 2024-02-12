@@ -21,18 +21,21 @@ const Navbar = () => {
             <div className="relative flex h-full w-full items-center justify-between px-5 md:px-1">
                 <div className="flex w-1/4 items-center md:w-1/2">
                     <Link className="flex items-center" href={'/'}>
-                        <Icons.Logo className="text-4xl text-blue-500" />
+                        <Icons.Logo className="text-4xl text-primary-2" />
                     </Link>
                     <Searchbar />
 
                     <div className="ml-2 hidden md:block">
-                        <Button onClick={() => setShowPages((prev) => !prev)}>
+                        <Button
+                            onClick={() => setShowPages((prev) => !prev)}
+                            size={'medium'}
+                        >
                             <Icons.Menu />
                         </Button>
 
                         <NavigationPages
                             className={cn(
-                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden bg-white shadow-xl transition-all duration-1000',
+                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden  shadow-xl transition-all duration-1000',
                                 showPages && 'md:w-fit',
                                 !showPages && 'md:w-0'
                             )}

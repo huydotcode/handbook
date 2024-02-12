@@ -1,3 +1,4 @@
+'use client';
 import Icons from '@/components/ui/Icons';
 import { useApp } from '@/context';
 import React from 'react';
@@ -9,6 +10,8 @@ interface Props {
 
 const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
     const { loadingNotifications, notifications } = useApp();
+
+    if (!notifications) return null;
 
     return (
         <>
@@ -26,14 +29,14 @@ const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
             {showMessage &&
                 !loadingNotifications &&
                 notifications.length == 0 && (
-                    <div className="flex h-[200px] w-full items-center justify-center dark:text-white">
+                    <div className="flex h-[200px] w-full items-center justify-center dark:text-dark-primary-1">
                         <p>Không có thông báo nào</p>
                     </div>
                 )}
 
             {loadingNotifications && (
                 <div className="flex h-[200px] w-full items-center justify-center">
-                    <Icons.Loading className="animate-spin text-xl" />
+                    <Icons.Loading className="animate-spin text-xl dark:text-dark-primary-1" />
                 </div>
             )}
         </>

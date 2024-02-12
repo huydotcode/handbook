@@ -1,8 +1,6 @@
 'use client';
 import PostProvider from '@/context/PostContext';
-import FooterPost from './FooterPost';
-import HeaderPost from './HeaderPost';
-import PostContent from './PostContent';
+import { HeaderPost, PostContent, FooterPost } from '.';
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -25,7 +23,7 @@ const Post: React.FC<Props> = ({ data: post, setPosts }) => {
 
     return (
         <PostProvider post={post} setPosts={setPosts}>
-            <div className="relative my-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
+            <div className="relative my-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                 <HeaderPost />
                 <PostContent />
                 <FooterPost />

@@ -29,11 +29,11 @@ const ConfirmModal: React.FC<Props> = ({
 
     return (
         <Modal open={open} disableAutoFocus>
-            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-                <div className="rounded-xl bg-white px-6 py-4 shadow-xl dark:bg-dark-200">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white dark:bg-dark-secondary-1">
+                <div className="rounded-xl  px-6 py-4 shadow-xl ">
                     <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">{title}</h3>
-                        <Button onClick={handleClose}>
+                        <Button size={'medium'} onClick={handleClose}>
                             <Icons.Close />
                         </Button>
                     </div>
@@ -44,17 +44,11 @@ const ConfirmModal: React.FC<Props> = ({
                                 variant={'warning'}
                                 type="submit"
                                 className="mr-2 "
-                                size={'small'}
                             >
                                 {confirmText}
                             </Button>
                         </form>
-                        <Button
-                            variant={'secondary'}
-                            onClick={onClose}
-                            className="text-secondary"
-                            size={'small'}
-                        >
+                        <Button variant={'secondary'} onClick={onClose}>
                             {cancelText}
                         </Button>
                     </div>

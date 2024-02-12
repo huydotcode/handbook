@@ -6,35 +6,45 @@ module.exports = {
         './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     theme: {
-        screens: {
-            '2xl': { max: '1535px' },
-            xl: { max: '1200px' },
-            lg: { max: '992px' },
-            md: { max: '768px' },
-            sm: { max: '639px' },
-        },
         extend: {
+            textColor: {
+                'primary-1': 'var(--dark-primary-1)',
+                'secondary-1': 'var(--secondary-text-1)',
+                'dark-primary-1': 'var(--primary-1)',
+            },
             colors: {
-                // Light
-                primary: '#e4e6eb',
-                secondary: '#65676b',
+                'primary-1': 'var(--primary-1)',
+                'primary-2': 'var(--primary-2-blue)',
+                'primary-500': '#877EFF',
+                'secondary-1': 'var(--secondary-1)',
+                'secondary-2': 'var(--secondary-2)',
 
-                // Dark
-                'dark-100': '#050505',
+                'background-1': 'var(--background-1)',
+                blue: 'var(--primary-2-blue)',
+
+                skeleton: 'var(--skeleton)',
+
+                dark: {
+                    'primary-1': 'var(--dark-primary-1)',
+                    'secondary-1': 'var(--dark-secondary-1)',
+                    'secondary-2': 'var(--dark-secondary-2)',
+                    'background-1': 'var(--dark-background-1)',
+                },
             },
             backgroundColor: {
-                // Light
-                primary: '#3b82f6',
-                secondary: '#f0f2f5',
+                'hover-1': 'var(--hover-1)',
+                'hover-2': 'var(--hover-2)',
+                'hover-blue': 'var(--hover-blue)',
+                'hover-warning': 'var(--hover-warning)',
+                'hover-secondary': 'var(--hover-secondary)',
+                'hover-secondary-dark': 'var(--hover-secondary-dark)',
 
-                'light-100': '#e4e6eb',
-                'light-500': '#606770',
+                dark: {
+                    'hover-1': 'var(--dark-hover-1)',
+                    'hover-2': 'var(--dark-hover-2)',
+                },
 
-                // Dark
-                'dark-100': '#18191A',
-                'dark-200': '#242526',
-
-                'dark-500': '#626262',
+                warning: 'var(--warning)',
             },
             keyframes: {
                 skeleton: {
@@ -51,6 +61,13 @@ module.exports = {
             boxShadow: {
                 md: '0 1px 5px 1px rgba(0, 0, 0, 0.1)',
             },
+        },
+        screens: {
+            '2xl': { max: '1535px' },
+            xl: { max: '1200px' },
+            lg: { max: '992px' },
+            md: { max: '768px' },
+            sm: { max: '639px' },
         },
     },
     plugins: [],

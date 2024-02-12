@@ -22,9 +22,9 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
     return (
         <Modal open={show} onClose={() => setShow(false)} disableAutoFocus>
             <>
-                <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-between overflow-hidden bg-black">
+                <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-between overflow-hidden">
                     <Button
-                        className="absolute left-[50%] top-2 z-50 translate-x-[-50%] rounded-md bg-[rgba(0,0,0,0.2)] p-2 text-white hover:bg-[(rgba(0,0,0,0.8))]"
+                        className="absolute left-[50%] top-2 z-50 translate-x-[-50%] rounded-md p-2  "
                         variant={'custom'}
                         size={'medium'}
                         onClick={() => setShow(false)}

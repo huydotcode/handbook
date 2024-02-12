@@ -1,8 +1,9 @@
 'use client';
 import { Button, Loading } from '@/components/ui';
-import { useChat, useSocket } from '@/context';
+import { useSocket } from '@/context';
 import { useRouter } from 'next/navigation';
-import { ChatBox, Sidebar } from './_components';
+import { ChatBox } from './_components';
+import { useChat } from '@/context/ChatContext';
 
 function MessagesPage() {
     const { socket, isLoading } = useSocket();
@@ -14,12 +15,12 @@ function MessagesPage() {
     if (!socket) {
         return (
             <div className="flex h-[calc(100vh-56px)] w-screen flex-col items-center justify-center">
-                <div className="flex h-[500px] min-w-[500px] max-w-[50vw] flex-col items-center justify-center rounded-xl bg-light-100 dark:bg-dark-200">
+                <div className=" flex h-[500px] min-w-[500px] max-w-[50vw] flex-col items-center justify-center rounded-xl ">
                     <h1 className="text-xl uppercase">
                         Không thể kết nối với Server
                     </h1>
                     <Button
-                        className="mt-2 dark:bg-dark-500"
+                        className="mt-2 "
                         size="medium"
                         onClick={() => {
                             router.refresh();
@@ -28,7 +29,7 @@ function MessagesPage() {
                         Kết nối lại
                     </Button>
                     <Button
-                        className="mt-2 bg-primary text-white"
+                        className="mt-2  "
                         size="medium"
                         onClick={() => {
                             router.push('/');
@@ -43,10 +44,7 @@ function MessagesPage() {
 
     return (
         <>
-            <div className="fixed top-[56px] flex h-[calc(100vh-56px)] w-screen justify-between overflow-hidden   dark:border-t dark:border-t-gray-600">
-                <Sidebar />
-                <ChatBox currentRoom={currentRoom} />
-            </div>
+            <ChatBox currentRoom={currentRoom} />
         </>
     );
 }

@@ -66,7 +66,7 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
     return (
         <>
-            <div className="mb-4 mt-2 min-w-[200px] rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
+            <div className="mb-4 mt-2 rounded-xl bg-white px-4 py-2 shadow-md transition-all duration-300 ease-in-out dark:bg-dark-secondary-1">
                 <div className="flex items-center">
                     <Link
                         className="h-10 w-10"
@@ -81,10 +81,10 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
                         />
                     </Link>
                     <div
-                        className="ml-3 flex h-10 flex-1 cursor-text items-center rounded-xl bg-secondary px-3 dark:bg-dark-500"
+                        className="ml-3 flex h-10 flex-1 cursor-text items-center rounded-xl bg-primary-1 px-3 dark:bg-dark-secondary-2"
                         onClick={handleShow}
                     >
-                        <h5 className="text-gray-400 dark:text-primary">
+                        <h5 className="text-secondary-1">
                             Bạn đang nghĩ gì thế?
                         </h5>
                     </div>

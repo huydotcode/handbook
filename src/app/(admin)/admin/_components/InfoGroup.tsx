@@ -19,19 +19,14 @@ const InfoGroup: React.FC<Props> = ({
     hasMore = true,
 }) => {
     return (
-        <div className="max-h-[200px] max-w-[300px] rounded-xl bg-white p-4 shadow-xl dark:bg-dark-200">
+        <div className="max-h-[200px] max-w-[300px] rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1">
             <div className="flex items-center justify-between">
                 <h5>
                     {title}: {count}
                 </h5>
 
                 {hasMore && (
-                    <Button
-                        href={path || '/admin'}
-                        className="text-secondary"
-                        size={'tiny'}
-                        variant={'text'}
-                    >
+                    <Button href={path || '/admin'} variant={'text'}>
                         Chi tiết
                         <Icons.ArrowRight />
                     </Button>
@@ -45,8 +40,8 @@ const InfoGroup: React.FC<Props> = ({
                     })}
 
                 {data && count - data.length > 0 && (
-                    <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gray-500">
-                        <span className="text-center text-white">
+                    <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full">
+                        <span className="text-center">
                             +{count - data.length}
                         </span>
                     </div>

@@ -37,11 +37,11 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
             <Modal
                 open={show}
                 onClose={handleClose}
-                className="flex items-center justify-center"
+                className="flex items-center justify-center "
                 disableAutoFocus
             >
                 <Fade in={show}>
-                    <div className="relative rounded-xl bg-white p-4 dark:bg-dark-200">
+                    <div className="relative rounded-xl bg-white p-4 dark:bg-dark-primary-1">
                         <div className="border-b pb-2">
                             <p>Bạn có chắc muốn xóa bài viết?</p>
                         </div>
@@ -51,7 +51,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
                                 <Button
                                     variant={'warning'}
                                     size={'medium'}
-                                    className="mr-2 min-w-[80px] text-white"
+                                    className="mr-2 min-w-[80px] "
                                     disabled={isSubmitting}
                                     type="submit"
                                 >
@@ -59,7 +59,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
                                 </Button>
                             </form>
                             <Button
-                                className="w-[30%] text-white"
+                                className="w-[30%] "
                                 variant={'secondary'}
                                 size={'medium'}
                                 onClick={handleClose}

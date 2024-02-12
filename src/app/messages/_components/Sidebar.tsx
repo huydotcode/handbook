@@ -1,79 +1,30 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
-import { useApp, useChat } from '@/context';
+import { useApp } from '@/context';
+import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ConversationChatItem, FriendChatItem } from '.';
 
-interface Props {
-    firstShow?: boolean;
-}
+interface Props {}
 
-const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
+const Sidebar: React.FC<Props> = () => {
     const { data: session } = useSession();
     const { friends } = useApp();
     const { currentRoom, loading, conversations } = useChat();
-    const [showSidebar, setShowSidebar] = useState(firstShow);
-    const [isHover, setIsHover] = useState(false);
-
-    const handleToggleSidebar = () => {
-        setShowSidebar((prev) => !prev);
-    };
-
-    const handleResize = () => {
-        if (window.innerWidth < 768) {
-            setShowSidebar(false);
-        } else {
-            setShowSidebar(true);
-        }
-    };
-
-    useEffect(() => {
-        if (window.innerWidth < 768) {
-            setShowSidebar(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     if (!session) return null;
 
     return (
         <>
-            <Button
-                className={cn(
-                    'absolute left-1 top-16 z-20 hidden h-12 w-12 bg-white text-3xl transition-all duration-300 dark:bg-gray-800 dark:text-gray-300 md:block',
-                    {
-                        '-left-4 opacity-40': !isHover,
-                        '-left-1': isHover,
-                        block: !showSidebar,
-                    }
-                )}
-                onClick={handleToggleSidebar}
-                onMouseEnter={() => setIsHover(true)}
-                onMouseLeave={() => setIsHover(false)}
-            >
-                {showSidebar ? <Icons.ArrowBack /> : <Icons.ArrowForward />}
-            </Button>
-
             <div
                 className={cn(
-                    'left-0 top-[56px] z-10 flex min-h-[calc(100vh-56px-54px)] max-w-[300px] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-r-gray-600 dark:bg-dark-200 md:fixed',
+                    'z-10 flex min-h-[calc(100vh-56px-54px)] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-dark-secondary-2 dark:bg-dark-secondary-1',
                     {
-                        'w-0  border-none': !showSidebar,
-                        'w-[40%]': showSidebar,
                         'h-[calc(100vh-56px)]': !!!currentRoom.id,
                     }
                 )}
             >
-                <span className="border-b p-2 text-center text-xl font-bold">
+                <span className="border-b p-2 text-center text-xl font-bold dark:border-none">
                     Bạn bè
                 </span>
 
@@ -84,7 +35,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
                 {conversations && conversations.length > 0 && (
                     <>
-                        <span className="border-b p-2 text-center text-xl font-bold">
+                        <span className="border-b p-2 text-center text-xl font-bold dark:border-none">
                             Người lạ
                         </span>
 
@@ -99,7 +50,7 @@ const Sidebar: React.FC<Props> = ({ firstShow = true }) => {
 
                 {!loading.friends && friends.length === 0 && (
                     <div className="flex h-full items-center justify-center p-4 text-justify">
-                        <p className="max-w-[200px] text-gray-500">
+                        <p className="max-w-[200px] ">
                             Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt đầu
                             trò chuyện
                         </p>

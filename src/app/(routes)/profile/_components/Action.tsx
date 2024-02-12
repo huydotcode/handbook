@@ -54,8 +54,8 @@ const Action: React.FC<Props> = ({ userId }) => {
     return (
         <div className="flex items-center">
             <Button
-                className={`mr-2 h-12 min-w-[48px] bg-primary text-white`}
-                variant={'event'}
+                className={`mr-2 h-12 min-w-[48px]`}
+                variant={'primary'}
                 size={'medium'}
                 href={
                     isFriend ? `/messages/f/${userId}` : `/messages/r/${userId}`
@@ -69,21 +69,17 @@ const Action: React.FC<Props> = ({ userId }) => {
             </Button>
 
             <Button
-                className={`${
-                    !isFriend && 'bg-primary text-white'
-                } h-12 min-w-[48px]`}
-                variant={'event'}
+                className={'h-12 min-w-[48px]'}
+                variant={'secondary'}
                 size={'medium'}
                 onClick={isFriend ? handleRemoveFriend : handleAddFriend}
             >
                 <span>{isFriend ? <Icons.Users /> : <Icons.PersonAdd />}</span>
 
                 <p className="ml-2 md:hidden">
-                    {isRequest && !isFriend
-                        ? 'Đã gửi lời mời kết bạn'
-                        : isFriend
-                          ? 'Hủy kết bạn'
-                          : 'Thêm bạn bè'}
+                    {isRequest && 'Đã gửi lời mời kết bạn'}
+                    {isFriend && 'Hủy kết bạn'}
+                    {!isFriend && 'Kết bạn'}
                 </p>
             </Button>
         </div>

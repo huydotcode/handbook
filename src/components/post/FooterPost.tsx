@@ -50,10 +50,10 @@ const FooterPost = () => {
     return (
         <>
             <div className="mt-2">
-                <div className="relative flex w-full border-b-2 py-2 dark:border-gray-700">
+                <div className="relative flex w-full border-b-2 py-2 ">
                     <ReactionPost session={session} post={post} />
 
-                    <Icons.Comment className="text-xl dark:text-gray-400" />
+                    <Icons.Comment className="text-xl " />
                     <span className="text-md ml-1">
                         {commentState.countAllComments}
                     </span>
@@ -67,7 +67,7 @@ const FooterPost = () => {
 
                             <div className="ml-2 flex-1">
                                 <form
-                                    className="flex w-full"
+                                    className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
                                     onSubmit={handleSubmit(onSubmitComment)}
                                     ref={formRef}
                                 >
@@ -78,9 +78,8 @@ const FooterPost = () => {
                                     />
 
                                     <Button
-                                        className="right-0 w-10 rounded-r-xl border-l-2 bg-secondary px-3 hover:cursor-pointer hover:bg-light-100 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                        className="right-0 w-10 rounded-r-xl border-l-2 px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
                                         variant={'custom'}
-                                        size={'none'}
                                         type="submit"
                                     >
                                         {isSubmitting ? (
@@ -94,9 +93,8 @@ const FooterPost = () => {
                         </div>
                     ) : (
                         <Button
-                            className="my-2 justify-start text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            className="my-2 justify-start p-0 text-xs text-secondary-1"
                             variant={'text'}
-                            size={'tiny'}
                             href="/login"
                         >
                             Bạn cần đăng nhập để viết bình luận

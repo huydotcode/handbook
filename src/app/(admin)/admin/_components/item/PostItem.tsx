@@ -25,13 +25,13 @@ const PostItem: React.FC<Props> = ({ data }) => {
 
     return (
         <>
-            <div className="rounded-xl bg-white p-4 shadow-xl dark:bg-dark-200">
+            <div className="rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
                         <Avatar imgSrc={creator.image} userUrl={creator._id} />
                         <div className="ml-2">
                             <p className="font-bold">{creator.name}</p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs">
                                 {new Date(createdAt).toISOString()}
                             </p>
                         </div>
@@ -40,7 +40,9 @@ const PostItem: React.FC<Props> = ({ data }) => {
                     <AdminAction id={_id} path="/admin/posts" type="post" />
                 </div>
                 <div className="mt-2">
-                    <p className="max-h-[20vh] overflow-scroll">{content}</p>
+                    <p className="no-scrollbar max-h-[20vh] overflow-scroll">
+                        {content}
+                    </p>
                 </div>
                 <div className="mt-2">
                     {images.length > 0 && (
@@ -55,13 +57,13 @@ const PostItem: React.FC<Props> = ({ data }) => {
                 </div>
 
                 <div className="flex items-center">
-                    <div className="mr-2 flex items-center text-xs text-gray-400">
+                    <div className="mr-2 flex items-center text-xs ">
                         <Icons.Heart2 className="mr-1" /> {loves.length}
                     </div>
-                    <div className="mr-2 flex items-center text-xs text-gray-400">
+                    <div className="mr-2 flex items-center text-xs ">
                         <Icons.Share className="mr-1" /> {shares}
                     </div>
-                    <div className="flex items-center text-xs text-gray-400">
+                    <div className="flex items-center text-xs ">
                         <Icons.Comment className="mr-1" /> {commentCount}
                     </div>
                 </div>

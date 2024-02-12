@@ -36,15 +36,15 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                 </div>
 
                                 <div
-                                    className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-[rgba(0,0,0,0.6)]"
+                                    className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center"
                                     onClick={() =>
                                         setShowSlide((prev) => !prev)
                                     }
                                 >
-                                    <p className="text-2xl text-white">
+                                    <p className="text-2xl ">
                                         +{images.length - 1}
                                     </p>
-                                    <h5 className="text-sm text-white hover:underline">
+                                    <h5 className="text-sm  hover:underline">
                                         Xem thêm
                                     </h5>
                                 </div>

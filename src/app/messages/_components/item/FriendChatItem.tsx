@@ -1,6 +1,8 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import { useChat } from '@/context';
+import { useChat } from '@/context/ChatContext';
+
+import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React from 'react';
@@ -11,7 +13,7 @@ interface Props {
 
 const FriendChatItem: React.FC<Props> = ({ data: friend }) => {
     const { data: session } = useSession();
-    const { currentRoom, lastMessages, loading, conversations } = useChat();
+    const { currentRoom, lastMessages } = useChat();
     const isOnline = friend.isOnline;
 
     const isSelect =
@@ -27,29 +29,33 @@ const FriendChatItem: React.FC<Props> = ({ data: friend }) => {
     return (
         <>
             <Button
-                className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
-                    isSelect && 'bg-gray-200 dark:bg-dark-500'
-                }`}
-                variant={'custom'}
+                className={cn(
+                    'relative flex w-full justify-start rounded-none p-4 shadow-none md:justify-center md:p-2',
+                    isSelect && 'bg-primary-1'
+                )}
                 key={friend._id}
                 href={`/messages/f/${friend._id}`}
             >
-                <Avatar imgSrc={friend.image} />
+                <Avatar imgSrc={friend.image} userUrl={friend._id} />
 
-                <div className="flex flex-1 flex-col">
+                <span className="absolute right-4 top-2 ml-2 hidden text-xs md:block">
+                    <Icons.Circle
+                        className={`${isOnline ? 'text-blue-600' : 'text-secondary-1'}`}
+                    />
+                </span>
+
+                <div className="flex flex-col md:hidden">
                     <div className="flex items-center justify-between">
                         <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                             {friend.name}
                         </h3>
-                        <span className="ml-2 text-xs text-gray-500">
+                        <span className="ml-2 text-xs">
                             <Icons.Circle
-                                className={`${
-                                    isOnline ? 'text-blue-600' : 'text-gray-500'
-                                }`}
+                                className={`${isOnline ? 'text-blue-600' : 'text-secondary-1'}`}
                             />
                         </span>
                     </div>
-                    <p className="ml-2 text-xs text-gray-500">
+                    <p className="ml-2 text-xs ">
                         {lastMsg?.text && lastMsg?.userId == session?.user.id
                             ? 'Bạn: '
                             : `${friendName}: `}

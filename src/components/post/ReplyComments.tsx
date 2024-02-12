@@ -1,6 +1,5 @@
 'use client';
 import { Button } from '@/components/ui';
-import { usePost } from '@/context';
 import {
     fetchReplyComments,
     fetchReplyCommentsCount,
@@ -22,31 +21,26 @@ interface CommentPostProps {
     setState: React.Dispatch<React.SetStateAction<IReplyCommentState>>;
 }
 
+const PAGE_SIZE = 5;
+
 const ReplyComments: FC<CommentPostProps> = ({
     commentParent,
     state: replyState,
     setState: setReplyState,
 }) => {
     const { data: session } = useSession();
-    const {
-        commentState: { comments },
-    } = usePost();
-
     const [countAllReplyComments, setCountAllReplyComments] =
         useState<number>(0);
-
     const [page, setPage] = useState<number>(1);
-    // const [pageSize, setPageSize] = useState<number>(5);
-    const pageSize = 5;
 
-    // comment from different user
+    // Bình luận của người khác
     const commentsReply = useMemo(() => {
         return replyState.data.filter(
             (cmt) => cmt.userInfo.id !== session?.user.id
         );
     }, [replyState.data, session?.user.id]);
 
-    // own comment
+    // Bình luận của chính mình
     const ownComment = useMemo(() => {
         return replyState.data.filter(
             (cmt) => cmt.userInfo.id === session?.user.id
@@ -58,7 +52,6 @@ const ReplyComments: FC<CommentPostProps> = ({
             const replyComments = await fetchReplyComments({
                 commentId: commentParent._id,
                 commentsHasShow: replyState.data,
-                // page: page,
             });
 
             if (replyComments.length > 0) {
@@ -86,24 +79,23 @@ const ReplyComments: FC<CommentPostProps> = ({
         <>
             {commentsReply.length > 0 && (
                 <div className="mt-2 grid gap-2 rounded-bl-xl border-l-2 pl-4 pt-1">
-                    {commentsReply.slice(0, page * pageSize).map((cmt) => {
+                    {commentsReply.slice(0, page * PAGE_SIZE).map((cmt) => {
                         return <Comment key={cmt._id} data={cmt} />;
                     })}
                 </div>
             )}
 
             {countAllReplyComments >
-                commentsReply.slice(0, page * pageSize).length +
+                commentsReply.slice(0, page * PAGE_SIZE).length +
                     ownComment.length && (
                 <Button
                     className="ml-6 w-fit"
                     variant={'text'}
-                    size={'tiny'}
                     onClick={() => setPage((prev) => prev + 1)}
                 >
                     Xem thêm{' '}
                     {countAllReplyComments -
-                        commentsReply.slice(0, page * pageSize).length +
+                        commentsReply.slice(0, page * PAGE_SIZE).length +
                         ownComment.length}{' '}
                     phản hồi
                 </Button>

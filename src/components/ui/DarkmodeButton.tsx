@@ -1,8 +1,12 @@
 'use client';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const DarkmodeButton = () => {
+interface Props {
+    className?: string;
+}
+
+const DarkmodeButton: React.FC<Props> = ({ className }) => {
     const { systemTheme, theme, setTheme } = useTheme();
     const currentTheme = theme === 'system' ? systemTheme : theme;
 
@@ -15,20 +19,24 @@ const DarkmodeButton = () => {
     return (
         <>
             {render && (
-                <label className="ui-switch">
-                    <input
-                        type="checkbox"
-                        checked={currentTheme == 'dark'}
-                        onChange={(e) => {
-                            const checked: boolean = e.target.checked;
-                            const theme: string = checked ? 'dark' : 'light';
-                            setTheme(theme);
-                        }}
-                    />
-                    <div className="slider">
-                        <div className="circle"></div>
-                    </div>
-                </label>
+                <div className={className}>
+                    <label className="ui-switch">
+                        <input
+                            type="checkbox"
+                            checked={currentTheme == 'dark'}
+                            onChange={(e) => {
+                                const checked: boolean = e.target.checked;
+                                const theme: string = checked
+                                    ? 'dark'
+                                    : 'light';
+                                setTheme(theme);
+                            }}
+                        />
+                        <div className="slider">
+                            <div className="circle"></div>
+                        </div>
+                    </label>
+                </div>
             )}
         </>
     );

@@ -25,8 +25,8 @@ const NavigationPages: React.FC<Props> = ({
     return (
         <ul
             className={cn(
-                `${className} flex-${direction}`,
-                direction == 'col' && 'dark:bg-dark-200'
+                `${className} flex-${direction} bg-white dark:bg-dark-secondary-1`,
+                direction == 'col' && ''
             )}
         >
             {session?.user.role === 'admin' && (
@@ -35,9 +35,7 @@ const NavigationPages: React.FC<Props> = ({
                         link={{
                             name: 'Admin',
                             path: '/admin',
-                            icon: (
-                                <Icons.Admin className="h-8 w-8 dark:text-primary" />
-                            ),
+                            icon: <Icons.Admin className="h-8 w-8 " />,
                         }}
                         key={0}
                         className={itemClassName}

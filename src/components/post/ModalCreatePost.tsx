@@ -81,18 +81,16 @@ const ModalCreatePost: React.FC<Props> = ({
                 disableAutoFocus
             >
                 <Fade in={show}>
-                    <div className="fixed left-1/2 top-1/2 flex min-w-[50vw] max-w-[800px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-white p-6 shadow-md dark:border-none  dark:bg-dark-200 dark:shadow-none xl:w-[60vw] xl:max-w-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none">
-                        <div className="flex h-12 items-center border-b-2 dark:border-gray-500">
-                            <div className="w-full text-center text-xl font-extrabold">
+                    <div className="fixed left-1/2 top-1/2 flex min-w-[50vw] max-w-[800px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-white p-6 shadow-md dark:border-none dark:bg-dark-secondary-1 dark:shadow-none xl:w-[60vw] xl:max-w-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none">
+                        <div className="flex h-12 items-center border-b-2 ">
+                            <div className="w-full text-center text-xl font-extrabold text-primary-1 dark:text-dark-primary-1">
                                 Tạo bài viết
                             </div>
                             <Button
-                                className="text-2xl"
-                                variant={'custom'}
-                                size={'none'}
+                                className="bg-secondary-1 text-2xl"
                                 onClick={() => setShow(false)}
                             >
-                                <Icons.Close />
+                                <Icons.Close className="text-primary-1 dark:text-dark-primary-1" />
                             </Button>
                         </div>
 
@@ -113,13 +111,13 @@ const ModalCreatePost: React.FC<Props> = ({
                                         className="h-6"
                                         href={`/profile/${session?.user.id}`}
                                     >
-                                        <span className="text-base dark:text-primary">
+                                        <span className="text-base dark:text-dark-primary-1">
                                             {session?.user.name}
                                         </span>
                                     </Link>
 
                                     <select
-                                        className="h-6 cursor-pointer border py-1 text-[10px] dark:border-none"
+                                        className="h-6 cursor-pointer border py-1 text-[10px]"
                                         {...register('option')}
                                     >
                                         <option
@@ -149,7 +147,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                     render={({ field }) => (
                                         <>
                                             <TextEditor
-                                                className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base dark:text-primary"
+                                                className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base"
                                                 handleSubmit={submit}
                                                 field={field}
                                             />
@@ -169,7 +167,7 @@ const ModalCreatePost: React.FC<Props> = ({
 
                                 {/* Images */}
                                 {photos && photos.length > 0 && (
-                                    <div className="border-[1px solid #ccc] flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
+                                    <div className=" flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
                                         {photos.map(
                                             (img: string, index: number) => {
                                                 return (
@@ -178,7 +176,7 @@ const ModalCreatePost: React.FC<Props> = ({
                                                         key={index}
                                                     >
                                                         <span
-                                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[rgba(144,144,144,0.5)] hover:bg-[rgba(144,144,144,0.8)] dark:bg-[rgba(88,88,88,0.8)] dark:hover:bg-[rgba(88,88,88,0.9)]"
+                                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full"
                                                             onClick={() =>
                                                                 handleRemoveImage(
                                                                     index
@@ -205,15 +203,15 @@ const ModalCreatePost: React.FC<Props> = ({
                                 )}
 
                                 <div>
-                                    <div className="border-[1px solid #ccc] relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md dark:border-gray-500 dark:shadow-none">
-                                        <h5 className="text-base font-bold dark:text-primary">
+                                    <div className=" relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md  dark:border-none dark:shadow-none">
+                                        <h5 className="text-base font-bold ">
                                             Thêm vào bài viết của bạn
                                         </h5>
 
                                         <div className="flex items-center">
-                                            <div className="hover:bg flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
+                                            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
                                                 <label
-                                                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl  hover:cursor-pointer hover:bg-light-100 dark:hover:bg-dark-500 "
+                                                    className="flex h-10 w-10 cursor-pointer items-center  justify-center rounded-xl hover:cursor-pointer "
                                                     htmlFor="input-file"
                                                 >
                                                     <Image
@@ -244,9 +242,8 @@ const ModalCreatePost: React.FC<Props> = ({
                                     >
                                         <Button
                                             type="submit"
-                                            className="mt-3 h-10 w-full rounded-xl bg-primary p-2 text-base text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-500"
-                                            variant={'custom'}
-                                            size={'none'}
+                                            className="mt-3 h-10 w-full disabled:cursor-not-allowed"
+                                            variant={'primary'}
                                             disabled={
                                                 formState.errors.content
                                                     ? true

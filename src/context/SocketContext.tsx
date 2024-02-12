@@ -34,7 +34,7 @@ const SOCKET_API =
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [isConnected, setIsConnected] = useState<boolean>(false);
 

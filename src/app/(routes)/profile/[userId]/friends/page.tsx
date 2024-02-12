@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/ui';
+import { Avatar, Button } from '@/components/ui';
 import { getProfilePicturesAction } from '@/lib/actions/profile.action';
 import { fetchFriends } from '@/lib/actions/user.action';
 import React from 'react';
@@ -21,14 +21,15 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
 
     return (
         <>
-            <section className="relative my-3 w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
+            <section className="relative my-3 w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                 <h5 className="text-xl font-bold">Bạn bè</h5>
                 <article>
                     <ul className="mt-2 grid grid-cols-2 gap-2">
                         {friends.map((friend) => {
                             return (
-                                <div
-                                    className="flex cursor-pointer items-center rounded-xl border p-2 hover:bg-dark-500"
+                                <Button
+                                    href={`/profile/${friend._id}`}
+                                    className="justify-start border"
                                     key={friend._id}
                                 >
                                     <Avatar
@@ -40,7 +41,7 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                                     />
 
                                     <span>{friend.name}</span>
-                                </div>
+                                </Button>
                             );
                         })}
                     </ul>

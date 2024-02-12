@@ -3,15 +3,14 @@ import { getAuthSession } from '@/lib/auth';
 import { AdminAction, RefreshButton } from '../_components';
 
 const className = 'border-collapse border p-2';
-const headerClassName =
-    'border-collapse border p-2 bg-gray-100 dark:bg-dark-100';
+const headerClassName = 'border-collapse border p-2';
 
 const UsersPage = async ({}) => {
     const users = (await fetchUsers({ limit: 20 })) as IUser[];
     const session = await getAuthSession();
 
     return (
-        <div className="flex w-full flex-col bg-white p-4 dark:bg-dark-200">
+        <div className="flex w-full flex-col p-4">
             <div className="flex items-center">
                 <h5 className="text-2xl font-bold">Quản lý người dùng</h5>
                 <RefreshButton />

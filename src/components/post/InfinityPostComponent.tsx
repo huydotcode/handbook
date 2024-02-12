@@ -34,7 +34,6 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
-
         try {
             const posts = await fetchNewFeedPost({
                 page: page,
@@ -43,12 +42,10 @@ const InfinityPostComponent: React.FC<Props> = ({
                 username: username,
                 isCurrentUser: session?.user.id === userId,
             });
-
             if (posts.length === 0) {
                 setIsEnd(true);
                 return;
             }
-
             setPosts((prev) => [...prev, ...posts]);
         } catch (error: any) {
             console.error('Error', error);
@@ -64,23 +61,29 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     return (
         <>
-            {renderCreatePost()}
+            <div>
+                {renderCreatePost()}
 
-            <InfinityScrollComponent
-                Loader={SkeletonPost}
-                fetchMore={() => setPage((prev) => prev + 1)}
-                hasMore={!isEnd}
-                pageSize={PAGE_SIZE}
-                endMessage="Đã hết bài đăng!"
-                type="post"
-                loading={loading}
-            >
-                <>
-                    {posts.map((post) => (
-                        <Post key={post?._id} data={post} setPosts={setPosts} />
-                    ))}
-                </>
-            </InfinityScrollComponent>
+                <InfinityScrollComponent
+                    Loader={SkeletonPost}
+                    fetchMore={() => setPage((prev) => prev + 1)}
+                    hasMore={!isEnd}
+                    pageSize={PAGE_SIZE}
+                    endMessage="Đã hết bài đăng!"
+                    type="post"
+                    loading={loading}
+                >
+                    <>
+                        {posts.map((post) => (
+                            <Post
+                                key={post?._id}
+                                data={post}
+                                setPosts={setPosts}
+                            />
+                        ))}
+                    </>
+                </InfinityScrollComponent>
+            </div>
         </>
     );
 };

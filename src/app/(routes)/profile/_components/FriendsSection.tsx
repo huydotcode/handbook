@@ -1,4 +1,6 @@
+import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
+import { cn } from '@/lib/utils';
 import React from 'react';
 
 interface Props {
@@ -9,10 +11,10 @@ interface Props {
 const FriendsSection: React.FC<Props> = ({ className, friends }) => {
     return (
         <section
-            className={
-                'relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200 ' +
+            className={cn(
+                'relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1',
                 className
-            }
+            )}
         >
             <h5 className="text-xl font-bold">Bạn bè</h5>
 
@@ -24,8 +26,9 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
 
                     return (
                         <>
-                            <div
-                                className="flex flex-col items-center justify-center p-2 hover:bg-light-100"
+                            <Button
+                                href={`/profile/${friend._id}`}
+                                className="flex-col"
                                 key={friend._id}
                             >
                                 <Avatar
@@ -36,14 +39,12 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
                                 />
 
                                 <span>{name}</span>
-                            </div>
+                            </Button>
                         </>
                     );
                 })}
             </div>
-            {friends.length === 0 && (
-                <p className="text-sm text-secondary">Không có bạn bè</p>
-            )}
+            {friends.length === 0 && <p className="text-sm">Không có bạn bè</p>}
         </section>
     );
 };

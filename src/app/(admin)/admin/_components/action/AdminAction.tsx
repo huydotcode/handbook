@@ -49,12 +49,11 @@ const AdminAction: React.FC<Props> = ({ id, path, type }) => {
         <>
             <Button
                 variant={'custom'}
-                size={'tiny'}
                 onClick={() => {
                     setShowConfirm(true);
                 }}
             >
-                <Icons.Delete className="h-6 w-6 text-red-500" />
+                <Icons.Delete className="h-6 w-6" />
             </Button>
 
             <ConfirmModal

@@ -1,6 +1,7 @@
 'use client';
 import { Avatar, Button } from '@/components/ui';
-import { useChat } from '@/context';
+import { useChat } from '@/context/ChatContext';
+
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
@@ -19,8 +20,8 @@ const ConversationChatItem: React.FC<Props> = ({ data: conversation }) => {
     return (
         <>
             <Button
-                className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-500 ${
-                    isSelect && 'bg-gray-200 dark:bg-dark-500'
+                className={`flex h-[60px] w-full cursor-pointer items-center px-4 py-2 ${
+                    isSelect && ''
                 }`}
                 key={otherUserId}
                 href={`/messages/r/${otherUserId}`}

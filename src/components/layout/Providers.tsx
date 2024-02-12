@@ -23,7 +23,12 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
                     <AppProvider>
                         <ChatProvider>
                             <QueryClientProvider client={queryClient}>
-                                <ThemeProvider attribute="class">
+                                <ThemeProvider
+                                    attribute="class"
+                                    defaultTheme="system"
+                                    enableSystem
+                                    disableTransitionOnChange
+                                >
                                     <Toaster
                                         position="bottom-center"
                                         reverseOrder={false}

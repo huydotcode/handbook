@@ -15,7 +15,7 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
     const notCurrentUser = session && session.user.id !== user._id.toString();
 
     return (
-        <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-200">
+        <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-secondary-1">
             <div
                 className="relative h-[40vh] min-h-[300px] w-full overflow-hidden rounded-b-xl bg-cover bg-center bg-no-repeat"
                 style={{
@@ -25,7 +25,7 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
 
             <div className="flex items-center justify-between border-b lg:px-2">
                 <div className="flex items-center">
-                    <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-neutral-500 md:h-[120px] md:w-[120px]">
+                    <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-dark-secondary-2 md:h-[120px] md:w-[120px]">
                         <Image
                             className="rounded-full"
                             src={user?.image || ''}
@@ -37,11 +37,9 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                         <h5 className="text-2xl font-black md:text-lg">
                             {user?.name}
                         </h5>
-                        <span className="text-sm text-secondary">
+                        <span className="text-sm">
                             {user?.friends?.length} bạn bè
                         </span>
-
-                        <br />
                     </div>
                 </div>
                 {notCurrentUser && (

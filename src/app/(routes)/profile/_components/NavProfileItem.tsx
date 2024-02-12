@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,18 +16,18 @@ const NavProfileItem: React.FC<Props> = ({ userId, name, path }) => {
     const isActived = pathName === `/profile/${userId}${path}`;
 
     return (
-        <Link
+        <Button
             href={`/profile/${userId}/${path}`}
             className={cn(
-                'relative flex h-10 items-center justify-center rounded-md px-3 hover:bg-neutral-100 dark:text-white dark:hover:bg-dark-500',
-                isActived && 'text-blue-500 dark:text-blue-500'
+                'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
+                isActived && 'text-primary-2'
             )}
         >
             <span className="text-sm font-semibold ">{name}</span>
             {isActived && (
-                <div className="absolute bottom-0 h-1 w-full bg-primary"></div>
+                <div className="absolute bottom-0 h-1 w-full bg-primary-2"></div>
             )}
-        </Link>
+        </Button>
     );
 };
 export default NavProfileItem;

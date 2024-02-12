@@ -1,5 +1,7 @@
+'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import { useChat, useSocket } from '@/context';
+import { useSocket } from '@/context';
+import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { Tooltip } from '@mui/material';
@@ -38,10 +40,10 @@ const Items = {
         const { image, _id, name } = data;
 
         return (
-            <Link
-                className="relative mb-2 flex h-[50px] items-center rounded-xl px-4 shadow-md dark:bg-dark-100 dark:hover:bg-dark-200"
-                href={`/profile/${_id}`}
+            <Button
+                className="mb-2 w-full justify-start"
                 onClick={handleHideModal}
+                variant={'default'}
             >
                 <Image
                     className="overflow-hidden rounded-full object-cover"
@@ -52,12 +54,12 @@ const Items = {
                 />
 
                 <Link
-                    className="ml-2 text-base text-dark-100 hover:underline dark:text-primary"
+                    className="ml-2 text-base dark:text-dark-primary-1"
                     href={`/profile/${_id}`}
                 >
                     {name}
                 </Link>
-            </Link>
+            </Button>
         );
     },
     Friend: (props: FriendItem) => {
@@ -114,7 +116,7 @@ const Items = {
         return (
             <Button
                 variant={'custom'}
-                className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-gray-200 dark:hover:bg-dark-500 lg:w-auto lg:justify-center"
+                className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:w-auto lg:justify-center"
                 key={friend._id}
                 onClick={() => handleClickFriend(friend)}
             >
@@ -128,7 +130,7 @@ const Items = {
 
                 <span className="lg:hidden">
                     {isOnline && (
-                        <Icons.Circle className="text-sm text-blue-500" />
+                        <Icons.Circle className="text-blue-500 text-sm" />
                     )}
                 </span>
             </Button>
@@ -151,29 +153,29 @@ const Items = {
                 <li
                     key={index}
                     className={cn(
-                        `flex cursor-pointer items-center rounded-xl p-2 hover:bg-light-100 dark:hover:bg-dark-500 `,
+                        `flex cursor-pointer items-center rounded-xl p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
                         {
-                            'w-[50%] ': onlyIcon,
-                            'bg-light-100 dark:bg-dark-100 ': isActived,
-                            'rounded-none ': direction === 'row',
+                            'w-[50%]': onlyIcon,
+                            'border-b-4 border-b-blue': isActived,
+                            'rounded-none': direction === 'row',
                         },
-                        ` ${className}`
+                        className
                     )}
                     onClick={handleClose}
                 >
                     <Link
                         className={cn(
-                            'flex h-full w-full items-center md:justify-center ',
+                            'flex h-full w-full items-center dark:text-dark-primary-1 md:justify-center',
                             {
                                 'justify-center': onlyIcon,
-                                'text-blue-500': isActived,
+                                'text-blue dark:text-blue': isActived,
                             }
                         )}
                         href={link.path || '/'}
                     >
                         <Icon />
                         {!onlyIcon && (
-                            <span className="ml-2 text-xs dark:text-primary lg:hidden">
+                            <span className="ml-2 text-xs  lg:hidden">
                                 {link.name}
                             </span>
                         )}

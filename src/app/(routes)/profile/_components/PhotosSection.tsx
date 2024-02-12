@@ -17,7 +17,7 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
     const [indexPicture, setIndexPicture] = useState<number>(0);
 
     return (
-        <section className="relative my-3 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-200">
+        <section className="relative my-3 rounded-xl  bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
             <h5 className="text-xl font-bold">Ảnh</h5>
             <div>
                 <div
@@ -56,7 +56,7 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                         })}
                 </div>
                 {photos.length === 0 && (
-                    <p className="text-sm text-secondary">Không có ảnh nào</p>
+                    <p className="text-sm">Không có ảnh nào</p>
                 )}
             </div>
 

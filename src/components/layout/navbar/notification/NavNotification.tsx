@@ -20,7 +20,10 @@ const NavNotification = () => {
                 onOpenChange={(open) => setOpen(open)}
                 overlayInnerStyle={{ padding: 0 }}
             >
-                <Button className="relative h-10 w-10 rounded-full bg-secondary transition-transform duration-500 hover:rotate-12 dark:bg-dark-500 ">
+                <Button
+                    className="hover:bg-hover-2 dark:hover:bg-dark-hover-1 relative h-10 w-10 rounded-xl transition-transform duration-500 hover:rotate-1"
+                    variant={'custom'}
+                >
                     {open ? (
                         <Badge
                             color="secondary"

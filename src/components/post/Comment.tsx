@@ -126,7 +126,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                         {/* Content */}
                         <div className="relative w-fit">
                             <div
-                                className="w-fit break-all rounded-md bg-light-100 px-4 py-1 text-sm dark:bg-dark-500 dark:text-primary"
+                                className=" w-fit break-all rounded-md bg-primary-1 px-4 py-1 text-sm dark:bg-dark-secondary-2"
                                 dangerouslySetInnerHTML={{
                                     __html: commentIsDeleted
                                         ? "<h5 style='color:gray'>Bình luận đã bị xóa</h5>"
@@ -141,7 +141,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                 <Button
                                     className="mr-2"
                                     variant={'text'}
-                                    size={'tiny'}
+                                    size={'small'}
                                     onClick={() =>
                                         setReplyCommentState((prev) => ({
                                             ...prev,
@@ -158,7 +158,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                     <Button
                                         className="mr-2"
                                         variant={'text'}
-                                        size={'tiny'}
+                                        size={'small'}
                                         onClick={handleDeleteComment}
                                     >
                                         Xóa bình luận
@@ -180,7 +180,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                 <div className="ml-2 flex w-full flex-col">
                                     <form
                                         ref={formRef}
-                                        className="flex w-full"
+                                        className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
                                         onSubmit={handleSubmit(
                                             handleSendCommentReply
                                         )}
@@ -192,9 +192,8 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                         />
 
                                         <Button
-                                            className="right-0 z-10 w-10 rounded-r-xl border-l-2 bg-secondary px-3 hover:cursor-pointer hover:bg-light-100 dark:bg-dark-500 dark:hover:bg-neutral-500"
+                                            className="right-0 z-10 w-10 rounded-r-xl border-l-2 bg-transparent px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
                                             variant={'custom'}
-                                            size={'none'}
                                             type="submit"
                                         >
                                             {formState.isSubmitting ? (
@@ -207,7 +206,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
 
                                     <Button
                                         className="w-8 rounded-t-md"
-                                        variant={'custom'}
+                                        variant={'text'}
                                         size={'small'}
                                         onClick={() => {
                                             setReplyCommentState((prev) => ({
@@ -237,7 +236,6 @@ const Comment: FC<Props> = ({ data: cmt }) => {
                                 <Button
                                     className="ml-2 mt-2 justify-start "
                                     variant={'text'}
-                                    size={'tiny'}
                                     onClick={() =>
                                         setReplyCommentState((prev) => ({
                                             ...prev,

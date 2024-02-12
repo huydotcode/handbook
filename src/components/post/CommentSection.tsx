@@ -50,7 +50,7 @@ const CommentSection: React.FC = ({}) => {
     return (
         <>
             {isCommentsEmpty && (
-                <div className="text-center text-xs text-secondary">
+                <div className="text-center text-xs">
                     Không có bình luận nào
                 </div>
             )}
@@ -64,7 +64,6 @@ const CommentSection: React.FC = ({}) => {
             {isHasLoadMore && (
                 <Button
                     variant={'text'}
-                    size={'tiny'}
                     onClick={() => setPage((prev) => prev + 1)}
                 >
                     Xem thêm bình luận

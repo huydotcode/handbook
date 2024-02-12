@@ -52,13 +52,7 @@ const InfinityScrollComponent: React.FC<Props> = ({
 
     return (
         <>
-            <div
-                className={cn(
-                    type === 'post' &&
-                        'no-scrollbar w-[600px] max-w-[100vw] transition-all duration-300 ease-in-out xl:w-[500px]',
-                    className
-                )}
-            >
+            <div className={cn(type === 'post' && 'no-scrollbar', className)}>
                 {firstRender && loading && renderSkeletons()}
 
                 {children}
@@ -71,9 +65,7 @@ const InfinityScrollComponent: React.FC<Props> = ({
 
                 {!hasMore && endMessage && (
                     <div className="text-center">
-                        <p className="pb-10 text-gray-500 dark:text-gray-400">
-                            {endMessage}
-                        </p>
+                        <p className="pb-10  ">{endMessage}</p>
                     </div>
                 )}
             </div>

@@ -1,10 +1,8 @@
 import React from 'react';
-
-import AboutSection from './AboutSection';
-import FriendsSection from './FriendsSection';
-import PhotosSection from './PhotosSection';
+import { AboutSection, PhotosSection, FriendsSection } from '.';
 import { fetchFriends } from '@/lib/actions/user.action';
 import { getProfilePicturesAction } from '@/lib/actions/profile.action';
+import { cn } from '@/lib/utils';
 
 interface Props {
     className?: string;
@@ -22,10 +20,10 @@ const InfomationSection: React.FC<Props> = async ({ className, profile }) => {
 
     return (
         <div
-            className={
-                'w-[36%] grid-flow-row grid-cols-1 md:grid md:w-full ' +
+            className={cn(
+                'w-[36%] grid-flow-row grid-cols-1 md:grid md:w-full',
                 className
-            }
+            )}
         >
             <AboutSection profile={profile} />
             <PhotosSection photos={photos} />

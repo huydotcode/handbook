@@ -1,11 +1,12 @@
 'use client';
-import { useChat, useSocket } from '@/context';
-import { fetchUserByUserId } from '@/lib/actions/user.action';
+import { useSocket } from '@/context';
+import { fetchFriends, fetchUserByUserId } from '@/lib/actions/user.action';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { ChatBox, Sidebar } from '../_components';
+import { useChat } from '@/context/ChatContext';
 
 interface Props {
     params: {
@@ -39,12 +40,16 @@ const MessagePage: React.FC<Props> = ({ params }) => {
         (async () => {
             if (!session || !socket) return;
 
+            const friends = (await fetchFriends({
+                userId: session.user.id,
+            })) as IFriend[];
+
             switch (type) {
                 case 'f':
                     // Nhắn tin với bạn bè
-                    const friend =
-                        friends &&
-                        friends.find((friend) => friend._id === conversation);
+                    const friend = friends.find(
+                        (friend) => friend._id === conversation
+                    );
 
                     if (!friend) {
                         router.push('/messages');
@@ -110,10 +115,10 @@ const MessagePage: React.FC<Props> = ({ params }) => {
                     });
                     break;
                 case 'd':
-                    // Nhắn tin với nhóm
+                    //TODO Nhắn tin với nhóm
                     break;
                 case 'c':
-                    // Nhắn tin với trang
+                    //TODO Nhắn tin với trang
                     break;
                 default:
                     break;
@@ -121,11 +126,6 @@ const MessagePage: React.FC<Props> = ({ params }) => {
         })();
     }, [socket, friends]);
 
-    return (
-        <div className="fixed top-[56px] flex h-[calc(100vh-56px)] w-screen justify-between overflow-hidden   dark:border-t dark:border-t-gray-600">
-            <Sidebar />
-            {currentRoom.id && <ChatBox currentRoom={currentRoom} />}
-        </div>
-    );
+    return <>{currentRoom.id && <ChatBox currentRoom={currentRoom} />}</>;
 };
 export default MessagePage;

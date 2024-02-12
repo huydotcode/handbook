@@ -30,7 +30,8 @@ interface IChatContext {
 const ChatContext = React.createContext<IChatContext>({} as IChatContext);
 
 export const useChat = () => {
-    return useContext(ChatContext) as IChatContext;
+    const context = useContext(ChatContext);
+    return context as IChatContext;
 };
 
 const ChatProvider: React.FC<Props> = ({ children }) => {
@@ -56,7 +57,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
     });
     const [lastMessages, setLastMessages] = useState<IMessage[]>([]);
 
-    //* Callback
+    // Callback
     const handleGetMessages = useCallback(() => {
         if (
             !currentRoom ||
@@ -110,7 +111,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
 
                         // Kiểm tra nếu không ở trong phòng thì phát âm thanh
                         if (currentRoom.id !== roomId) {
-                            // toggle();
+                            toggle();
                         }
                     });
                     break;
@@ -187,6 +188,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         }
     }, [currentRoom.id]);
 
+    // Đánh dấu đã đọc tin nhắn
     useEffect(() => {
         if (socket && currentRoom.id) {
             socket.emit('read-message', {
@@ -195,7 +197,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         }
     }, [currentRoom.id]);
 
-    //* Effect
+    // Socket
     useEffect(() => {
         handleSocketAction('RECEIVE_MESSAGE');
         handleSocketAction('GET_LAST_MESSAGES');
@@ -204,7 +206,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         handleSocketAction('RECEIVE_MESSAGES_FROM_UNKNOWN_USER');
     }, [handleSocketAction]);
 
-    // Get messages
+    // Lấy tin nhắn
     useEffect(() => {
         handleGetMessages();
     }, [handleGetMessages]);

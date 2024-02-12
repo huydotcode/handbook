@@ -1,6 +1,11 @@
 import { FriendSection, Sidebar } from '@/components/layout';
-import { InfinityPostComponent } from '@/components/post';
+import { SkeletonPost } from '@/components/post';
 import { IndexLayout } from '@/layouts';
+import dynamic from 'next/dynamic';
+
+const InfinityPostComponent = dynamic(
+    () => import('@/components/post/InfinityPostComponent')
+);
 
 export default async function Home() {
     return (

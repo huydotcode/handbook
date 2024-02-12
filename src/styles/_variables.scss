@@ -3,60 +3,40 @@
 @tailwind utilities;
 
 :root {
-    --red: rgb(255, 50, 50);
+    --primary-1: #f0f2f5;
+    --primary-2-blue: #0866ff;
+    --secondary-1: #ffffff;
+    --secondary-2: #ccd0d5;
+    --blue-2: #297bff;
+    --red-1: #ea2222;
+    --red-2: #eb5353;
+    --gray-1: #adb0b3;
+    --gray-2: #4c4d4f;
+    --skeleton: #e4e6eb;
 
-    // --background: white;
-    // --foreground: black;
+    --background-1: var(--primary-1);
+    --warning-color: var(--red-1);
+    --hover-1: var(--secondary-2);
+    --hover-2: var(--primary-1);
+    --hover-blue: var(--blue-2);
+    --hover-warning: var(--red-2);
+    --hover-secondary: var(--gray-1);
+    --hover-secondary-dark: var(--gray-2);
+    --dark-hover-1: var(--dark-secondary-2);
+    --dark-hover-2: var(--dark-secondary-1);
 
-    // --header-height: 56px;
-    // --box-shadow-div: 1px 0px 7px 0px rgba(224, 224, 224, 0.75);
-    // --primary-text: #1c1e21;
-    // --primary-button-background: #2374e1;
+    // Dark
+    --dark-primary-1: #18191a;
 
-    // --wash: #e4e6eb;
-    // --web-wash: #f0f2f5;
+    --dark-secondary-1: #242526;
+    --dark-secondary-2: #3a3b3c;
 
-    // --divide-color: rgba(152, 152, 152, 0.4);
+    --dark-background-1: var(--dark-primary-1);
 
-    // // Modal
-    // --overlay-alpha-80: rgba(244, 244, 244, 0.8);
+    // Text
+    --primary-text-1: #e4e6eb;
+    --secondary-text-1: #9d9d9d;
 
-    // // Box-shadow
-    // --shadow-1: rgba(0, 0, 0, 0.1);
-    // --box-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.2);
-    // --shadow-5: rgba(0, 0, 0, 0.5);
-    // --shadow-8: rgba(0, 0, 0, 0.8);
-
-    // // Navbar
-    // --nav-bar-background: #fff;
-    // --placeholder-input-color: #f0f2f5;
-    // --box-shadow-nav-bar: -1px 1px 6px 0px rgba(0, 0, 0, 0.3);
-    // --input-color: #7b7b7b;
-    // --hover-item-color: #f0f2f5;
-    // --text-nav-item-color: #65676b;
-    // --button-nav-bar-color: #e4e6eb;
-    // --button-hover-nav-bar-color: #dee1e8;
-    // --box-shadow-pop-up: 1px 1px 12px 0px rgba(160, 160, 160, 0.75);
-}
-
-// Dark mode
-html[data-theme='dark'] {
-    // --background: #18191a;
-    // --primary-text: #e4e6eb;
-
-    // --box-shadow-div: none;
-
-    // --divide-color: #555555;
-    // --web-wash: #18191a;
-
-    // // Navbar
-    // --nav-bar-background: #242526;
-    // --placeholder-input-color: #3a3b3c;
-    // --box-shadow-nav-bar: none;
-    // --input-color: #d8cbcb;
-    // --text-nav-item-color: #afafaf;
-    // --hover-item-color: rgba(165, 165, 165, 0.2);
-    // --button-nav-bar-color: #4b4c4f;
-    // --button-hover-nav-bar-color: rgba(238, 238, 238, 0.3);
-    // --box-shadow-pop-up: none;
+    // Variant
+    --warning: var(--warning-color);
 }

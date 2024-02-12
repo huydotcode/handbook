@@ -47,7 +47,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
     return (
         <>
             <Button
-                className="bg-transparent shadow-none"
+                className=" shadow-none"
                 variant={'event'}
                 onClick={handleToggleDropdown}
             >
@@ -60,10 +60,9 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                 setAnchorEl={setAnchorEl}
                 handleClose={() => setShowDropdown(false)}
             >
-                <div className="relative flex min-w-[200px] flex-col">
+                <div className="relative mx-2 flex min-w-[200px] flex-col overflow-hidden rounded-xl">
                     <Button
-                        className="w-full justify-start rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
-                        variant={'custom'}
+                        className="w-full justify-start rounded-none shadow-none"
                         size={'medium'}
                         onClick={() => handleShowModal('editModal')}
                     >
@@ -71,8 +70,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     </Button>
 
                     <Button
-                        className="w-full justify-start rounded-xl hover:bg-gray-200 dark:hover:bg-dark-500"
-                        variant={'custom'}
+                        className="w-full justify-start rounded-none shadow-none"
                         size={'medium'}
                         onClick={() => handleShowModal('deleteModal')}
                     >

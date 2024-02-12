@@ -1,11 +1,13 @@
 import { FriendSection } from '@/components/layout';
-import { CreateGroup, Sidebar } from './_components';
 import { IndexLayout } from '@/layouts';
+import { getGroups } from '@/lib/actions/group.action';
 import React from 'react';
+import { CreateGroup, GroupList, Sidebar } from './_components';
 
 interface Props {}
 
-const GroupsPage: React.FC<Props> = ({}) => {
+const GroupsPage: React.FC<Props> = async ({}) => {
+    const groups = await getGroups();
     return (
         <IndexLayout
             Left={<Sidebar />}
@@ -16,6 +18,7 @@ const GroupsPage: React.FC<Props> = ({}) => {
                     </div>
 
                     <CreateGroup />
+                    <GroupList data={groups.data || []} />
                 </div>
             }
             Right={<FriendSection />}

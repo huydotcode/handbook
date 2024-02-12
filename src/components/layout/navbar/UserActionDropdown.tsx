@@ -49,11 +49,11 @@ const UserActionDropdown = () => {
                 setAnchorEl={setAnchorEl}
                 handleClose={handleClose}
             >
-                <div className="relative flex min-w-[300px] flex-col text-primary dark:text-dark-100">
+                <div className="relative flex min-w-[300px] flex-col">
                     <div className="flex w-full items-center p-2">
                         {currentHistory == history[0] ? (
                             <Link
-                                className="flex w-full items-center rounded-xl p-2  text-primary  shadow-md hover:bg-light-100 dark:text-dark-100 dark:hover:bg-dark-500 "
+                                className="flex w-full items-center rounded-xl p-2 shadow-md hover:bg-hover-2 dark:text-dark-primary-1 dark:hover:bg-dark-hover-1"
                                 onClick={handleClose}
                                 href={`/profile/${user.id}`}
                             >
@@ -66,14 +66,14 @@ const UserActionDropdown = () => {
                                         alt={user?.name || ''}
                                     />
                                 </div>
-                                <span className="ml-2 text-lg text-dark-100 dark:text-primary">
+                                <span className="ml-2 text-lg">
                                     {user?.name}
                                 </span>
                             </Link>
                         ) : (
                             <>
                                 <Button
-                                    className="mr-2 bg-transparent p-3 dark:text-primary dark:hover:bg-dark-500"
+                                    className="mr-2 p-3"
                                     onClick={() =>
                                         setHistory((prev) =>
                                             prev.slice(0, prev.length - 1)
@@ -82,14 +82,12 @@ const UserActionDropdown = () => {
                                 >
                                     <Icons.ArrowLeft className="text-base" />
                                 </Button>
-                                <span className="text-dark-100 dark:text-primary">
-                                    {currentHistory.title}
-                                </span>
+                                <span>{currentHistory.title}</span>
                             </>
                         )}
                     </div>
 
-                    <ul className="bg-transparent pt-3">
+                    <ul className=" pt-3">
                         {currentHistory.data.map((item: any, index: number) => {
                             const handleClick = () => {
                                 if (item.action) {
@@ -109,24 +107,24 @@ const UserActionDropdown = () => {
 
                             return (
                                 <MenuItem
-                                    className="relative flex h-[52px] w-full cursor-pointer items-center rounded-xl px-2 dark:hover:bg-dark-500"
+                                    className="relative flex h-[52px] w-full cursor-pointer items-center rounded-xl px-2 hover:bg-hover-2"
                                     key={item.title}
                                     onClick={handleClick}
                                 >
                                     {item.icon && (
-                                        <span className="mr-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e4e6eb] text-2xl text-black">
+                                        <span className="mr-2 flex h-9 w-9 items-center justify-center rounded-full text-2xl">
                                             {item.icon()}
                                         </span>
                                     )}
 
                                     {item.title && (
-                                        <h5 className="ml-2 text-base font-semibold text-dark-100 dark:text-primary">
+                                        <h5 className="ml-2 text-base font-semibold">
                                             {item.title}
                                         </h5>
                                     )}
 
                                     {item.children && (
-                                        <Icons.ArrowRight className="absolute right-2 text-2xl text-dark-100 dark:text-primary" />
+                                        <Icons.ArrowRight className="absolute right-2 text-2xl" />
                                     )}
                                 </MenuItem>
                             );
@@ -134,8 +132,7 @@ const UserActionDropdown = () => {
 
                         <Button
                             className="w-full"
-                            variant={'event'}
-                            size={'medium'}
+                            variant={'secondary'}
                             onClick={handleLogout}
                         >
                             <Icons.LogOut className="mr-2 text-xl" />
