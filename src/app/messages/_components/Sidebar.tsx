@@ -50,7 +50,7 @@ const Sidebar: React.FC<Props> = () => {
 
                 {!loading.friends && friends.length === 0 && (
                     <div className="flex h-full items-center justify-center p-4 text-justify">
-                        <p className="max-w-[200px] ">
+                        <p className="max-w-[200px] md:hidden">
                             Bạn chưa có bạn bè nào, hãy thêm bạn bè để bắt đầu
                             trò chuyện
                         </p>
