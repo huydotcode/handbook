@@ -51,7 +51,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         notification: true,
     });
 
-    const { playing, toggle: togglePlayingSound } = useAudio({
+    const { toggle: togglePlayingSound } = useAudio({
         type: 'message',
     });
 

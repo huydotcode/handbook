@@ -1,12 +1,11 @@
 'use client';
+import { useAudio } from '@/hooks';
 import { fetchMessagesByRoomId } from '@/lib/actions/message.action';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useApp } from '.';
 import { useSocket } from './SocketContext';
-import { useAudio } from '@/hooks';
 
 interface Props {
     children: React.ReactNode;
@@ -108,11 +107,6 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
                             }
                             return [...prev, data];
                         });
-
-                        // Kiểm tra nếu không ở trong phòng thì phát âm thanh
-                        if (currentRoom.id !== roomId) {
-                            toggle();
-                        }
                     });
                     break;
                 case 'READ_MESSAGE':

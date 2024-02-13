@@ -5,6 +5,7 @@ import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import React from 'react';
 
 interface Props {
@@ -36,7 +37,14 @@ const FriendChatItem: React.FC<Props> = ({ data: friend }) => {
                 key={friend._id}
                 href={`/messages/f/${friend._id}`}
             >
-                <Avatar imgSrc={friend.image} userUrl={friend._id} />
+                <Image
+                    className="rounded-full"
+                    priority={true}
+                    src={friend.image}
+                    alt={friend.name}
+                    width={32}
+                    height={32}
+                />
 
                 <span className="absolute right-4 top-2 ml-2 hidden text-xs md:block">
                     <Icons.Circle

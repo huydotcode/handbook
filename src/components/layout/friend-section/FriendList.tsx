@@ -2,6 +2,7 @@
 import { ChatBox } from '@/app/messages/_components';
 import { Items } from '@/components/shared';
 import { Button, Icons } from '@/components/ui';
+import { useApp } from '@/context';
 import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -21,11 +22,8 @@ const FriendList: React.FC<Props> = ({
     const path = usePathname();
     const [showFriendSection, setShowFriendSection] = useState<boolean>(show);
     const handleToggleShow = () => setShowFriendSection((prev) => !prev);
-
     const { rooms } = useChat();
-
-    const isLoading = false;
-    const loadingFriends = false;
+    const { loadingFriends } = useApp();
 
     return (
         <div className={cn('relative h-full w-full', className)}>
@@ -55,14 +53,13 @@ const FriendList: React.FC<Props> = ({
                     </Button>
                 </div>
 
-                {isLoading ||
-                    (loadingFriends && (
-                        <div className="flex h-full items-center justify-center">
-                            <Icons.Loading className="h-8 w-8 animate-spin " />
-                        </div>
-                    ))}
+                {loadingFriends && (
+                    <div className="flex h-full items-center justify-center">
+                        <Icons.Loading className="h-8 w-8 animate-spin " />
+                    </div>
+                )}
 
-                {!isLoading && (
+                {!loadingFriends && (
                     <>
                         {friends &&
                             friends.map((friend) => (

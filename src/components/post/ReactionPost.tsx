@@ -52,8 +52,26 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
         },
     });
 
+    const convertNumberToChar = (number: number) => {
+        if (number >= 1000000000) {
+            return `${(number / 1000000000).toFixed(1)}b`;
+        }
+
+        // Nếu lớn hơn 1 triệu
+        if (number >= 1000000) {
+            return `${(number / 1000000).toFixed(1)}m`;
+        }
+
+        // Nếu lớn hơn 1000
+        if (number >= 1000) {
+            return `${(number / 1000).toFixed(1)}k`;
+        }
+
+        return number;
+    };
+
     return (
-        <div className="like-container flex items-center">
+        <div className="like-container mr-2 flex w-[70px] items-center">
             <div className="con-like">
                 <input
                     className="like"
@@ -67,7 +85,9 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                 </div>
             </div>
 
-            <span className="text-md ml-1 mr-2">{loves.length}</span>
+            <span className="ml-1 mr-2 w-[30px] text-sm">
+                {convertNumberToChar(loves.length)}
+            </span>
         </div>
     );
 };
