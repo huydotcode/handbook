@@ -19,7 +19,7 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
     });
 
     return (
-        <div className={cn('relative h-full w-full', className)}>
+        <div className={cn('relative w-[200px] lg:w-[80px]', className)}>
             <FriendList data={friends} show={show} />
         </div>
     );

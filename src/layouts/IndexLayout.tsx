@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import React from 'react';
 
 interface Props {
@@ -6,21 +7,18 @@ interface Props {
     Right?: React.ReactNode;
 }
 
+const className =
+    'fixed top-[72px] h-[calc(100vh-72px)] w-[20%] transition-all duration-300 dark:border-none md:hidden';
+
 const IndexLayout: React.FC<Props> = ({ Center, Left, Right }) => {
     return (
         <>
-            {Left && (
-                <aside className="fixed left-0 top-[72px] h-[calc(100vh-72px)] w-[200px] justify-start transition-all duration-300 dark:border-none lg:w-[80px] md:hidden">
-                    {Left}
-                </aside>
-            )}
+            {Left && <aside className={cn(className, 'left-0')}>{Left}</aside>}
 
             {Center && <div className="mx-auto w-[600px]">{Center}</div>}
 
             {Right && (
-                <aside className="fixed right-0 top-[72px] h-[calc(100vh-72px)] w-[200px] justify-end transition-all duration-300 dark:border-none lg:w-[80px] md:hidden">
-                    {Right}
-                </aside>
+                <aside className={cn(className, 'right-0')}>{Right}</aside>
             )}
         </>
     );
