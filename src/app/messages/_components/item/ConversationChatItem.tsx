@@ -1,5 +1,5 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { useChat } from '@/context/ChatContext';
 
 import { useSession } from 'next-auth/react';

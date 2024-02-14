@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Button, Icons } from '@/components/ui';
 import { useChat } from '@/context/ChatContext';
 
 import { cn } from '@/lib/utils';
