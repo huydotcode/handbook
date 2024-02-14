@@ -68,7 +68,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         socketIO.on('connect_error', (err) => {
-            toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
+            setIsConnected(false);
         });
 
         return () => {

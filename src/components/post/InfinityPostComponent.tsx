@@ -48,7 +48,6 @@ const InfinityPostComponent: React.FC<Props> = ({
             }
             setPosts((prev) => [...prev, ...posts]);
         } catch (error: any) {
-            console.error('Error', error);
             toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);
@@ -61,7 +60,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     return (
         <>
-            <div>
+            <div className="w-full">
                 {renderCreatePost()}
 
                 <InfinityScrollComponent

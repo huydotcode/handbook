@@ -75,9 +75,6 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         socket.emit('delete-message', msg);
 
         if (res) {
-            toast.success('Xóa thành công!', {
-                id: 'delete-message',
-            });
             setMessages((prev) => prev.filter((cmt) => cmt._id !== msg._id));
         } else {
             toast.error('Xóa thất bại!', {

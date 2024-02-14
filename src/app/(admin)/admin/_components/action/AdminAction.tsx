@@ -38,7 +38,7 @@ const AdminAction: React.FC<Props> = ({ id, path, type }) => {
                     break;
             }
         } catch (error) {
-            toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
+            toast.error('Đã có lỗi xảy ra khi xóa bài viết');
         } finally {
             setIsDeleting(false);
             setShowConfirm(false);

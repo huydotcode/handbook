@@ -1,5 +1,4 @@
 import { FriendSection, Sidebar } from '@/components/layout';
-import { SkeletonPost } from '@/components/post';
 import { IndexLayout } from '@/layouts';
 import dynamic from 'next/dynamic';
 

@@ -61,9 +61,6 @@ module.exports = {
             boxShadow: {
                 md: '0 1px 5px 1px rgba(0, 0, 0, 0.1)',
             },
-            top: {
-                'content-top': 'var(--content-top)',
-            },
         },
         screens: {
             '2xl': { max: '1535px' },

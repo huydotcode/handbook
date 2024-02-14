@@ -54,11 +54,6 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
             return;
         }
 
-        if (!path) {
-            toast.error('Đã có lỗi xảy ra! Vui lòng thử lại sau');
-            return;
-        }
-
         try {
             await changeBioAction({
                 newBio: newBio,
@@ -66,7 +61,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 userId: session.user.id,
             });
         } catch (error) {
-            toast.error('Đã có lỗi xảy ra! Vui lòng thử lại sau');
+            toast.error('Không thể thay đổi tiểu sử! Đã có lỗi xảy ra');
         } finally {
             setShowChangeBio(false);
         }

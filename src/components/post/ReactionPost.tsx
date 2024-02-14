@@ -48,7 +48,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
             }
         },
         onError: () => {
-            toast.error('Đã có lỗi xảy ra!');
+            toast.error('Không thể thực hiện chức năng này!');
         },
     });
 
@@ -71,7 +71,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
     };
 
     return (
-        <div className="like-container mr-2 flex w-[70px] items-center">
+        <div className="like-container mr-2 flex items-center">
             <div className="con-like">
                 <input
                     className="like"
@@ -85,7 +85,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                 </div>
             </div>
 
-            <span className="ml-1 mr-2 w-[30px] text-sm">
+            <span className="ml-1 mr-2 min-w-[10px] text-sm">
                 {convertNumberToChar(loves.length)}
             </span>
         </div>
