@@ -1,5 +1,5 @@
 import { FriendSection } from '@/components/layout';
-import { fetchProfileByUserId } from '@/lib/actions/user.action';
+import { ProfileService } from '@/lib/services';
 import { notFound } from 'next/navigation';
 import { Header } from '../_components';
 
@@ -10,8 +10,10 @@ interface Props {
     children: React.ReactNode;
 }
 
-export default async function ProfileLayout({ params, children }: Props) {
-    const { user, profile } = (await fetchProfileByUserId(params.userId)) as {
+const ProfileLayout = async ({ params, children }: Props) => {
+    const { user, profile } = (await ProfileService.getProfileByUserId({
+        userId: params.userId,
+    })) as {
         user: IUser;
         profile: IProfile;
     };
@@ -23,11 +25,13 @@ export default async function ProfileLayout({ params, children }: Props) {
             <div className="min-h-[100vh-56px] w-full">
                 <div className="w-full">
                     <Header profile={profile} user={user} />
-                    <main>{children}</main>
+                    <main className="mt-4">{children}</main>
                 </div>
             </div>
 
             <FriendSection show={false} />
         </>
     );
-}
+};
+
+export default ProfileLayout;

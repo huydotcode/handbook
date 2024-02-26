@@ -1,6 +1,6 @@
 'use client';
 import { useAudio } from '@/hooks';
-import { fetchMessagesByRoomId } from '@/lib/actions/message.action';
+import { MessageService } from '@/lib/services';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ const ChatProvider: React.FC<Props> = ({ children }) => {
         )
             return;
         const fetchMessages = async () => {
-            const data = await fetchMessagesByRoomId({
+            const data = await MessageService.fetchMessagesByRoomId({
                 roomId: currentRoom.id,
             });
             if (data) {

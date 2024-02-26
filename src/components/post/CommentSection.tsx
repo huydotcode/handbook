@@ -1,9 +1,9 @@
 'use client';
-import { fetchCommentPostId } from '@/lib/actions/post.action';
-import React, { useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui';
-import Comment from './Comment';
 import { usePost } from '@/context';
+import PostService from '@/lib/services/post.service';
+import React, { useEffect, useMemo } from 'react';
+import Comment from './Comment';
 
 const CommentSection: React.FC = ({}) => {
     const [page, setPage] = React.useState<number>(1);
@@ -29,7 +29,7 @@ const CommentSection: React.FC = ({}) => {
 
     useEffect(() => {
         (async () => {
-            const comments = (await fetchCommentPostId({
+            const comments = (await PostService.getCommentsByPostId({
                 page: page,
                 pageSize: pageSize,
                 postId: post._id,

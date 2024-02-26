@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
 import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
@@ -32,6 +32,10 @@ interface NavItem {
 interface UserItem {
     data: IUser;
     handleHideModal: () => void;
+}
+
+interface GroupItem {
+    data: IGroup;
 }
 
 const Items = {
@@ -120,8 +124,14 @@ const Items = {
                 key={friend._id}
                 onClick={() => handleClickFriend(friend)}
             >
-                <div className="flex items-center">
-                    <Avatar imgSrc={friend.image || ''} />
+                <div className="flex items-center lg:h-8 lg:w-8">
+                    <Image
+                        className="rounded-full"
+                        src={friend.image || ''}
+                        alt={friend.name || ''}
+                        width={32}
+                        height={32}
+                    />
 
                     <span className="ml-2 text-xs lg:hidden">
                         {friend.name}
@@ -182,6 +192,32 @@ const Items = {
                     </Link>
                 </li>
             </Tooltip>
+        );
+    },
+    Group: (props: GroupItem) => {
+        const { data: group } = props;
+        return (
+            <Button
+                className="mb-2 w-full justify-start rounded-none"
+                variant={'default'}
+                href={`/groups/${group._id}`}
+            >
+                <div className="relative h-8 w-8">
+                    <Image
+                        className="overflow-hidden rounded-full object-cover"
+                        src={group.image || '/assets/img/group-avatar.jpg'}
+                        alt={group.name || ''}
+                        fill
+                    />
+                </div>
+
+                <Link
+                    className="ml-2 text-sm dark:text-dark-primary-1 lg:hidden"
+                    href={`/groups/${group._id}`}
+                >
+                    {group.name}
+                </Link>
+            </Button>
         );
     },
 };

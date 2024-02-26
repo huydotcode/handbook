@@ -8,6 +8,12 @@ interface IProfile {
     bio?: string;
     createdAt: Date;
     updatedAt: Date;
+    work?: string;
+    education?: string;
+    location?: string;
+    relationship?: string;
+    website?: string;
+    date?: Date;
 }
 
 const ProfileSchema = new Schema<IProfile>(
@@ -24,6 +30,12 @@ const ProfileSchema = new Schema<IProfile>(
         coverPhoto: String,
         profilePicture: String,
         bio: String,
+        work: String,
+        education: String,
+        location: String,
+        relationship: String,
+        website: String,
+        date: Date,
     },
     {
         timestamps: true,

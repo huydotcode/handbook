@@ -13,6 +13,11 @@ interface IPost {
     createdAt: Date;
     updatedAt: Date;
     commentCount: number;
+    group?: {
+        _id: string;
+        name: string;
+        image: string;
+    };
 }
 
 interface ISessionUser {

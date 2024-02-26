@@ -10,7 +10,7 @@ export default async function Home() {
     return (
         <>
             <IndexLayout
-                Center={<InfinityPostComponent />}
+                Center={<InfinityPostComponent type="home" />}
                 Left={<Sidebar />}
                 Right={<FriendSection show />}
             />

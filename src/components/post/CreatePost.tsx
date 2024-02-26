@@ -5,14 +5,16 @@ import Link from 'next/link';
 import React, { FC, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { createPost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { ModalCreatePost } from '.';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
+    groupId?: string;
+    type?: 'home' | 'profile' | 'group';
 }
 
-const CreatePost: FC<Props> = ({ setPosts }) => {
+const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
     const { data: session } = useSession();
 
     const [show, setShow] = useState(false);
@@ -31,6 +33,8 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
         if (formState.isSubmitting) return;
         const { content, option } = data;
 
+        if (!session?.user) return;
+
         setShow(false);
 
         let imagesUpload = [];
@@ -38,7 +42,10 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
             if (photos && photos.length > 0) {
                 const data = await fetch('/api/images', {
                     method: 'POST',
-                    body: JSON.stringify(photos),
+                    body: JSON.stringify({
+                        userId: session.user.id,
+                        images: photos,
+                    }),
                 });
                 imagesUpload = await data.json();
             }
@@ -49,10 +56,11 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
 
             setPhotos([]);
 
-            const newPost = await createPost({
+            const newPost = await PostService.createPost({
                 content: content,
                 option: option,
                 images: imagesUpload,
+                groupId: groupId,
             });
 
             if (newPost) {
@@ -85,7 +93,9 @@ const CreatePost: FC<Props> = ({ setPosts }) => {
                         onClick={handleShow}
                     >
                         <h5 className="text-secondary-1">
-                            Bạn đang nghĩ gì thế?
+                            {type === 'group'
+                                ? `Viết bài trong nhóm`
+                                : `Bạn đang nghĩ gì?`}
                         </h5>
                     </div>
                 </div>

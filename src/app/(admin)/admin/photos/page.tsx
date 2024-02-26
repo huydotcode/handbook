@@ -1,4 +1,4 @@
-import { fetchAllPhotos } from '@/lib/actions/admin/image';
+import { fetchAllPhotos } from '@/lib/actions/admin/image.action';
 import Image from 'next/image';
 import React from 'react';
 

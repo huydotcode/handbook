@@ -37,14 +37,13 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                                             'min-h-[200px]': !isPhotosPage,
                                         }
                                     )}
-                                    key={picture}
+                                    key={index}
                                     onClick={() => {
                                         setShowSlide(true);
                                         setIndexPicture(index);
                                     }}
                                 >
                                     <Image
-                                        key={picture}
                                         className="rounded-md"
                                         src={picture}
                                         alt={picture}

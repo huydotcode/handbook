@@ -70,7 +70,7 @@ const PostItem: React.FC<Props> = ({ data }) => {
             </div>
 
             <SlideShow
-                images={images.map((img) => img.url)}
+                images={images.flatMap((img) => img.url)}
                 setShow={setShowImages}
                 show={showImages}
             />

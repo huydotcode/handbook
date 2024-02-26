@@ -1,46 +1,9 @@
 'use server';
-import { Notification, Profile, User } from '@/models';
+import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import mongoose, { FilterQuery, SortOrder } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
 
-export const fetchProfileByUserId = async (userId: string) => {
-    if (!userId) throw new Error('Invalid id user');
-
-    try {
-        await connectToDB();
-        let profile;
-
-        profile = (await Profile.findOne({
-            username: userId,
-        })) as IProfile;
-
-        if (!profile && mongoose.isValidObjectId(userId)) {
-            profile = (await Profile.findOne({
-                userId: userId,
-            })) as IProfile;
-        }
-
-        let user;
-
-        user = (await User.findOne({
-            username: userId,
-        })) as User;
-
-        if (!user && mongoose.isValidObjectId(userId)) {
-            user = (await User.findOne({
-                _id: userId,
-            })) as IUser;
-        }
-
-        if (!user) throw new Error('User not found');
-
-        return { user, profile };
-    } catch (error) {
-        console.log("Error fetching user's profile:", error);
-    }
-};
-
-export async function fetchUsers({
+export const getUsers = async ({
     userId,
     searchString = '',
     pageNumber = 1,
@@ -52,7 +15,7 @@ export async function fetchUsers({
     pageNumber?: number;
     pageSize?: number;
     sortBy?: SortOrder;
-}) {
+}) => {
     try {
         await connectToDB();
 
@@ -87,9 +50,9 @@ export async function fetchUsers({
         console.error('Error fetching users:', error);
         throw error;
     }
-}
+};
 
-export const fetchFriends = async ({ userId }: { userId: string }) => {
+export const getFriends = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
         const user = await User.findById(userId).exec();
@@ -104,7 +67,7 @@ export const fetchFriends = async ({ userId }: { userId: string }) => {
     }
 };
 
-export const fetchUserByUserId = async ({ userId }: { userId: string }) => {
+export const getUserByUserId = async ({ userId }: { userId: string }) => {
     if (userId.trim().length === 0) return;
 
     try {
@@ -120,7 +83,7 @@ export const fetchUserByUserId = async ({ userId }: { userId: string }) => {
     }
 };
 
-export const fetchNotifications = async ({ userId }: { userId: string }) => {
+export const getNotifications = async ({ userId }: { userId: string }) => {
     if (userId.trim().length === 0) return;
 
     try {

@@ -54,6 +54,12 @@ interface IProfile {
     bio: string;
     createdAt: Date;
     updatedAt: Date;
+    work: string;
+    education: string;
+    location: string;
+    relationship: string;
+    website: string;
+    date: Date;
 }
 
 interface IMessage {
@@ -87,6 +93,9 @@ interface IGroup {
     members: string[];
     owner: string;
     image: string;
+    type: string;
     createdAt: Date;
     updatedAt: Date;
+    coverPhoto: string;
+    introduction: string;
 }

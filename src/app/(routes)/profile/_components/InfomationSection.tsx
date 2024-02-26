@@ -1,8 +1,7 @@
-import React from 'react';
-import { AboutSection, PhotosSection, FriendsSection } from '.';
-import { fetchFriends } from '@/lib/actions/user.action';
-import { getProfilePicturesAction } from '@/lib/actions/profile.action';
+import { ProfileService, UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
+import React from 'react';
+import { AboutSection, FriendsSection, PhotosSection } from '.';
 
 interface Props {
     className?: string;
@@ -10,11 +9,11 @@ interface Props {
 }
 
 const InfomationSection: React.FC<Props> = async ({ className, profile }) => {
-    const friends = await fetchFriends({
+    const friends = await UserService.getFriends({
         userId: profile.userId,
     });
 
-    const photos = await getProfilePicturesAction({
+    const photos = await ProfileService.getProfilePicturesAction({
         userId: profile.userId,
     });
 

@@ -1,4 +1,3 @@
-import { getAuthSession } from '@/lib/auth';
 import { Image } from '@/models';
 import logger from '@/utils/logger';
 import { v2 as cloudinary } from 'cloudinary';
@@ -9,14 +8,11 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-// https://res.cloudinary.com/da4pyhfyy/image/upload/v1692534041/lbcdrwwil4xhesbvctv8.jpg
-
 export async function POST(request: Request) {
     logger('API: UPLOAD IMAGES');
-    const session = await getAuthSession();
-    const images = await request.json();
-
+    const { images, userId } = await request.json();
     const imagesUrl: any[] = [];
+
     try {
         for (const img of images) {
             if (!img) {
@@ -37,7 +33,7 @@ export async function POST(request: Request) {
 
             const image = await new Image({
                 ...result,
-                user_id: session?.user.id,
+                user_id: userId,
             });
             await image.save();
 

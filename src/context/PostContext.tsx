@@ -1,6 +1,5 @@
 'use client';
-import { getCountCommentsParent } from '@/lib/actions/post.action';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 
 const PostContext = React.createContext<IPostContext | null>(null);
 
@@ -21,28 +20,16 @@ export const usePost = () => {
 };
 
 function PostProvider({ post, setPosts, children }: Props) {
-    // setState for comments
+    // State
     const [commentState, setCommentState] = useState<ICommentState>({
         comments: [],
         countAllComments: post.commentCount,
         countAllParentComments: 0,
     });
 
-    // get user
     const user = useMemo(() => {
         return post.creator;
     }, [post.creator]) as IUser;
-
-    // get count comments parent
-    // useEffect(() => {
-    //     (async () => {
-    //         const count = await getCountCommentsParent({ postId: post._id });
-    //         setCommentState((prev) => ({
-    //             ...prev,
-    //             countAllParentComments: count,
-    //         }));
-    //     })();
-    // }, [post._id]);
 
     const values = {
         post,

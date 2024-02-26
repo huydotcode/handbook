@@ -1,6 +1,6 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
-import { changeBioAction } from '@/lib/actions/profile.action';
+import { Button, Icons, Modal } from '@/components/ui';
+import { ProfileService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { TextareaAutosize } from '@mui/material';
 import DOMPurify from 'dompurify';
@@ -33,14 +33,14 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
         return path.includes('about');
     }, [path]);
 
+    const [showModalEditBio, setShowModalEditBio] = useState<boolean>(false);
+
     const { data: session } = useSession();
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<FormValue>();
-
-    const [showChangeBio, setShowChangeBio] = useState<boolean>(false);
 
     const canEdit = useMemo(() => {
         return session?.user.id == profile.userId;
@@ -55,7 +55,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
         }
 
         try {
-            await changeBioAction({
+            await ProfileService.updateBio({
                 newBio: newBio,
                 path: path,
                 userId: session.user.id,
@@ -63,17 +63,23 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
         } catch (error) {
             toast.error('Không thể thay đổi tiểu sử! Đã có lỗi xảy ra');
         } finally {
-            setShowChangeBio(false);
+            setShowModalEditBio(false);
         }
     };
+
+    const handleCloseModal = () => setShowModalEditBio(false);
 
     const editBioComponent = () => {
         if (!canEdit) return <></>;
 
         return (
             <>
-                <form onSubmit={handleSubmit(changeBio)}>
-                    {showChangeBio && (
+                <Modal
+                    title={bio.length > 0 ? 'Sửa tiểu sử' : 'Thêm tiểu sử'}
+                    show={showModalEditBio}
+                    handleClose={handleCloseModal}
+                >
+                    <form onSubmit={handleSubmit(changeBio)}>
                         <TextareaAutosize
                             className=" mt-2 w-full resize-none rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none"
                             spellCheck={false}
@@ -83,13 +89,11 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                                 maxLength: 300,
                             })}
                         />
-                    )}
 
-                    {errors.bio && (
-                        <p className="text-xs">Tiểu sử tối đa 300 kí tự</p>
-                    )}
+                        {errors.bio && (
+                            <p className="text-xs">Tiểu sử tối đa 300 kí tự</p>
+                        )}
 
-                    {showChangeBio && (
                         <Button
                             className={`mt-2 w-full ${!isSubmitting && ''}`}
                             size={'small'}
@@ -98,26 +102,30 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                         >
                             {isSubmitting ? 'Đang thay đổi...' : 'Thay đổi'}
                         </Button>
-                    )}
-                </form>
+                    </form>
+                </Modal>
 
                 {bio.length > 0 ? (
                     <Button
                         className="mt-2 w-full"
                         variant={'secondary'}
                         size={'small'}
-                        onClick={() => setShowChangeBio((prev) => !prev)}
+                        onClick={() => {
+                            setShowModalEditBio((prev) => !prev);
+                        }}
                     >
-                        {showChangeBio ? 'Tắt chỉnh sửa' : 'Sửa tiểu sử'}
+                        Sửa tiểu sử
                     </Button>
                 ) : (
                     <Button
                         className="mt-2 w-full"
                         variant={'secondary'}
                         size={'small'}
-                        onClick={() => setShowChangeBio((prev) => !prev)}
+                        onClick={() => {
+                            setShowModalEditBio((prev) => !prev);
+                        }}
                     >
-                        {showChangeBio ? 'Tắt chỉnh sửa' : 'Thêm tiểu sử'}
+                        Thêm tiểu sử
                     </Button>
                 )}
             </>
@@ -127,7 +135,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
     return (
         <section
             className={cn(
-                'relative my-3 rounded-xl  bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1',
+                'relative rounded-xl bg-secondary-1 px-4 py-2 shadow-md dark:bg-dark-secondary-1',
                 isAboutPage && 'flex'
             )}
         >

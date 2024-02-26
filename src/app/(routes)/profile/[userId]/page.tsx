@@ -1,8 +1,8 @@
+import { InfinityPostComponent } from '@/components/post';
+import { ProfileService } from '@/lib/services';
 import mongoose from 'mongoose';
 import { FC } from 'react';
-import { fetchProfileByUserId } from '@/lib/actions/user.action';
 import { InfomationSection } from '../_components';
-import { InfinityPostComponent } from '@/components/post';
 
 interface ProfilePageProps {
     params: {
@@ -11,7 +11,9 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
-    const { profile } = (await fetchProfileByUserId(params.userId)) as {
+    const { profile } = (await ProfileService.getProfileByUserId({
+        userId: params.userId,
+    })) as {
         profile: IProfile;
     };
 
@@ -26,7 +28,11 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
             <InfomationSection profile={JSON.parse(JSON.stringify(profile))} />
 
             <div className="w-[60%] md:w-full">
-                <InfinityPostComponent className="w-full" {...props} />
+                <InfinityPostComponent
+                    className="w-full"
+                    {...props}
+                    type="profile"
+                />
             </div>
         </div>
     );

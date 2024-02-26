@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui';
 import { usePost } from '@/context';
-import { deletePost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { Fade, Modal } from '@mui/material';
 import React, { FormEventHandler, useState } from 'react';
 
@@ -20,7 +20,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await deletePost({
+            await PostService.deletePost({
                 postId,
             });
             setPosts((prev) => prev.filter((item) => item._id != postId));

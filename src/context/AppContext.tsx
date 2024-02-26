@@ -1,6 +1,6 @@
 'use client';
 import { useAudio } from '@/hooks';
-import { fetchFriends, fetchNotifications } from '@/lib/actions/user.action';
+import { UserService } from '@/lib/services';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './SocketContext';
@@ -58,13 +58,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (session?.user?.id) {
             (async () => {
-                const friends = await fetchFriends({
+                const friends = await UserService.getFriends({
                     userId: session.user.id,
                 });
                 setFriends(friends);
                 setLoading((prev) => ({ ...prev, friend: false }));
 
-                const notifications = await fetchNotifications({
+                const notifications = await UserService.getNotifications({
                     userId: session.user.id,
                 });
                 setNotifications(notifications);

@@ -1,13 +1,12 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
-import { sendMessage } from '@/lib/actions/message.action';
+import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
 interface Props {
     currentRoom: IRoomChat;
     isPopup?: boolean;
@@ -47,7 +46,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, isPopup }) => {
             return;
         }
 
-        const newMsg = await sendMessage({
+        const newMsg = await MessageService.sendMessage({
             roomId: currentRoom.id,
             text,
             userId: session.user.id,

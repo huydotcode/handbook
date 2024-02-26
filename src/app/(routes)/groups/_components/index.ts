@@ -1,1 +1,1 @@
-export { default as CreateGroup } from './CreateGroup';
+export { default as Sidebar } from './Sidebar';

@@ -1,16 +1,22 @@
 'use server';
 import Group from '@/models/Group';
-import { getAuthSession } from '../auth';
-import { Session } from 'next-auth';
 import connectToDB from '@/services/mongoose';
-import { Post } from '@/models';
+import { Session } from 'next-auth';
+import { getAuthSession } from '../auth';
 
+// Tạo nhóm mới
 export const createGroup = async ({
     name,
     description,
+    avatar,
+    type,
+    members,
 }: {
     name: string;
     description: string;
+    avatar: string;
+    type: string;
+    members: string[];
 }) => {
     try {
         await connectToDB();
@@ -28,7 +34,13 @@ export const createGroup = async ({
             description,
             members: [session?.user.id],
             owner: session?.user.id,
+            image: avatar,
+            type,
         });
+
+        for (const memberId of members) {
+            newGroup.members.push(memberId);
+        }
 
         await newGroup.save();
 
@@ -45,7 +57,7 @@ export const createGroup = async ({
     }
 };
 
-export const getGroups = async () => {
+export const getGroups = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -63,11 +75,13 @@ export const getGroups = async () => {
             },
         });
 
-        return {
-            msg: 'Lấy danh sách nhóm thành công!',
-            success: true,
-            data: JSON.parse(JSON.stringify(groups)) as IGroup[],
-        };
+        // return {
+        //     msg: 'Lấy danh sách nhóm thành công!',
+        //     success: true,
+        //     data: JSON.parse(JSON.stringify(groups)) as IGroup[],
+        // };
+
+        return JSON.parse(JSON.stringify(groups));
     } catch (error) {
         return {
             msg: 'Có lỗi xảy ra khi lấy danh sách nhóm, vui lòng thử lại sau!',
@@ -76,7 +90,7 @@ export const getGroups = async () => {
     }
 };
 
-export const getPostsOfGroup = async ({ groupId }: { groupId: string }) => {
+export const getGroup = async ({ groupId }: { groupId: string }) => {
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -88,18 +102,16 @@ export const getPostsOfGroup = async ({ groupId }: { groupId: string }) => {
             };
         }
 
-        const posts = await Post.find({
-            group: groupId,
-        });
+        const group = await Group.findById(groupId);
 
         return {
-            msg: 'Lấy danh sách bài viết thành công!',
+            msg: 'Lấy thông tin nhóm thành công!',
             success: true,
-            data: JSON.parse(JSON.stringify(posts)),
+            data: JSON.parse(JSON.stringify(group)),
         };
     } catch (error) {
         return {
-            msg: 'Có lỗi xảy ra khi lấy danh sách bài viết, vui lòng thử lại sau!',
+            msg: 'Có lỗi xảy ra khi lấy thông tin nhóm, vui lòng thử lại sau!',
             success: false,
         };
     }

@@ -2,7 +2,7 @@
 import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
 import { useChat } from '@/context/ChatContext';
-import { deleteMessage } from '@/lib/actions/message.action';
+import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
@@ -68,7 +68,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
 
         if (!socket) return;
 
-        const res = await deleteMessage({
+        const res = await MessageService.deleteMessage({
             messageId: msg._id,
         });
 

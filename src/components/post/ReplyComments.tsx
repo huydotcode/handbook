@@ -1,9 +1,6 @@
 'use client';
 import { Button } from '@/components/ui';
-import {
-    fetchReplyComments,
-    fetchReplyCommentsCount,
-} from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { useSession } from 'next-auth/react';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Comment } from '.';
@@ -49,7 +46,7 @@ const ReplyComments: FC<CommentPostProps> = ({
 
     useEffect(() => {
         (async () => {
-            const replyComments = await fetchReplyComments({
+            const replyComments = await PostService.getReplyComments({
                 commentId: commentParent._id,
                 commentsHasShow: replyState.data,
             });
@@ -65,7 +62,7 @@ const ReplyComments: FC<CommentPostProps> = ({
 
     useEffect(() => {
         (async () => {
-            const count = await fetchReplyCommentsCount({
+            const count = await PostService.getReplyCommentsCount({
                 commentId: commentParent._id,
             });
 

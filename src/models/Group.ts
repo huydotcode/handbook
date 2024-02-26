@@ -6,8 +6,11 @@ interface IGroup {
     image: string;
     members: Schema.Types.ObjectId[];
     owner: Schema.Types.ObjectId;
+    coverPhoto: string;
     createdAt: Date;
     updatedAt: Date;
+    type: string;
+    introduction: string;
 }
 
 const GroupSchema = new Schema<IGroup>(
@@ -22,6 +25,7 @@ const GroupSchema = new Schema<IGroup>(
         },
         image: {
             type: String,
+            default: '/assets/img/group-avatar.jpg',
         },
         owner: {
             type: Schema.Types.ObjectId,
@@ -30,6 +34,18 @@ const GroupSchema = new Schema<IGroup>(
         members: {
             type: [Schema.Types.ObjectId],
             required: true,
+        },
+        type: {
+            type: String,
+            default: 'public',
+        },
+        coverPhoto: {
+            type: String,
+            default: '/assets/img/cover-page.jpg',
+        },
+        introduction: {
+            type: String,
+            default: '',
         },
     },
     {

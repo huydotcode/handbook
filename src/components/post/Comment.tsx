@@ -2,7 +2,8 @@
 import TimeAgoConverted from '@/utils/timeConvert';
 import { FC, useMemo, useRef, useState } from 'react';
 
-import { deleteComment, sendComment } from '@/lib/actions/post.action';
+import { usePost } from '@/context';
+import PostService from '@/lib/services/post.service';
 import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -11,7 +12,6 @@ import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
 import ReplyComments from './ReplyComments';
-import { usePost } from '@/context';
 
 interface Props {
     data: Comment;
@@ -71,7 +71,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
         )
             return;
 
-        const newCmt = await sendComment({
+        const newCmt = await PostService.sendComment({
             content: content,
             postId: cmt.postId,
             replyTo: cmt._id,
@@ -99,7 +99,7 @@ const Comment: FC<Props> = ({ data: cmt }) => {
 
     const handleDeleteComment = async () => {
         try {
-            await deleteComment({
+            await PostService.deleteComment({
                 commentId: cmt._id,
             });
         } catch (error: any) {

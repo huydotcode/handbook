@@ -3,15 +3,18 @@ import { Comment, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
+import Group from '@/models/Group';
 
 export const createPost = async ({
     content,
     images,
     option,
+    groupId = undefined,
 }: {
     content: string;
     images: any[];
     option: string;
+    groupId?: string | undefined;
 }) => {
     const session = (await getAuthSession()) as Session;
     if (!session) return;
@@ -23,11 +26,12 @@ export const createPost = async ({
             'name image'
         );
 
-        const newPost = await new Post({
+        const newPost = new Post({
             option: option,
             content: content,
             images: images,
             creator: user,
+            group: groupId,
         });
 
         await newPost.save();
@@ -69,18 +73,22 @@ export const editPost = async ({
     }
 };
 
-export const fetchNewFeedPost = async ({
+export const getNewFeedPosts = async ({
     page = 1,
     pageSize = 5,
-    userId = '',
-    username = '',
+    userId,
+    username,
+    groupId,
     isCurrentUser = false,
+    type,
 }: {
-    userId: string | undefined;
-    username: string | undefined;
-    page: number;
-    pageSize: number;
+    userId?: string;
+    username?: string;
+    page?: number;
+    pageSize?: number;
     isCurrentUser?: boolean;
+    groupId?: string;
+    type?: 'home' | 'profile' | 'group';
 }) => {
     let query = {} as any;
 
@@ -106,12 +114,35 @@ export const fetchNewFeedPost = async ({
         query.option = 'public';
     }
 
+    query.group = groupId;
+
+    if (type === 'group' && !groupId) {
+        const session = await getAuthSession();
+
+        const groups = await Group.find({
+            members: {
+                $in: [session?.user.id],
+            },
+        });
+
+        query.group = {
+            $in: groups.map((group) => group._id),
+        };
+    }
+
     try {
         await connectToDB();
         const posts = await Post.find(query)
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 });
+
+        if (posts.length > 0 && type === 'group' && !groupId) {
+            await Group.populate(posts, {
+                path: 'group',
+                select: 'name image',
+            });
+        }
 
         for (const post of posts) {
             post.commentCount = await Comment.countDocuments({
@@ -127,21 +158,7 @@ export const fetchNewFeedPost = async ({
     }
 };
 
-export const getCountCommentsParent = async ({
-    postId,
-}: {
-    postId: string;
-}) => {
-    await connectToDB();
-    const count = await Comment.find({
-        postId: postId,
-        parent_id: null,
-    }).countDocuments();
-
-    return count;
-};
-
-export const fetchCommentPostId = async ({
+export const getCommentsByPostId = async ({
     page,
     pageSize,
     postId,
@@ -166,17 +183,13 @@ export const fetchCommentPostId = async ({
     }
 };
 
-export const fetchReplyComments = async ({
+export const getReplyComments = async ({
     commentId,
     commentsHasShow,
-}: // page,
-{
+}: {
     commentId: string;
     commentsHasShow: Comment[];
-    // page: number;
 }) => {
-    // const pageSize = 5;
-
     if (!commentId) return;
 
     try {
@@ -185,8 +198,6 @@ export const fetchReplyComments = async ({
             parent_id: commentId,
             _id: { $nin: commentsHasShow },
         }).sort({ replies: -1, isDeleted: 1, createdAt: -1 });
-        // .skip((+page - 1) * +pageSize)
-        // .limit(+pageSize)
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
@@ -194,7 +205,7 @@ export const fetchReplyComments = async ({
     }
 };
 
-export const fetchReplyCommentsCount = async ({
+export const getReplyCommentsCount = async ({
     commentId,
 }: {
     commentId: string;

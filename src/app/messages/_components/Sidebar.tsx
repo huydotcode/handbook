@@ -18,7 +18,7 @@ const Sidebar: React.FC<Props> = () => {
         <>
             <div
                 className={cn(
-                    'z-10 flex min-h-[calc(100vh-56px-54px)] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-dark-secondary-2 dark:bg-dark-secondary-1',
+                    'z-10 flex min-h-[calc(100vh-56px-54px)] w-[200px] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-dark-secondary-2 dark:bg-dark-secondary-1 md:w-auto',
                     {
                         'h-[calc(100vh-56px)]': !!!currentRoom.id,
                     }

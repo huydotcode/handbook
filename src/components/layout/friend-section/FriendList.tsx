@@ -26,10 +26,10 @@ const FriendList: React.FC<Props> = ({
     const { loadingFriends } = useApp();
 
     return (
-        <div className={cn('relative h-full w-full', className)}>
+        <>
             <div
                 className={cn(
-                    'absolute bottom-0 right-0 flex h-[calc(100vh-72px)] w-full flex-col border-l-2 pl-2 pt-2 transition-all duration-500 dark:border-none',
+                    'absolute bottom-0 right-0 flex h-[calc(100vh-72px)] w-[200px] flex-col border-l-2 pl-2 pt-2 transition-all duration-500 dark:border-none lg:w-fit',
                     {
                         'mt-4 h-full': showFriendSection,
                         'h-0 overflow-hidden p-0': !showFriendSection,
@@ -96,7 +96,7 @@ const FriendList: React.FC<Props> = ({
                     );
                 })}
             </div>
-        </div>
+        </>
     );
 };
 export default FriendList;

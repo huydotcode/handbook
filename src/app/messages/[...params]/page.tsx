@@ -1,12 +1,12 @@
 'use client';
 import { useSocket } from '@/context';
-import { fetchFriends, fetchUserByUserId } from '@/lib/actions/user.action';
+import { useChat } from '@/context/ChatContext';
+import { UserService } from '@/lib/services';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
-import { ChatBox, Sidebar } from '../_components';
-import { useChat } from '@/context/ChatContext';
+import { ChatBox } from '../_components';
 
 interface Props {
     params: {
@@ -40,7 +40,7 @@ const MessagePage: React.FC<Props> = ({ params }) => {
         (async () => {
             if (!session || !socket) return;
 
-            const friends = (await fetchFriends({
+            const friends = (await UserService.getFriends({
                 userId: session.user.id,
             })) as IFriend[];
 
@@ -72,7 +72,7 @@ const MessagePage: React.FC<Props> = ({ params }) => {
                     break;
                 case 'r':
                     // Nhắn tin với người lạ
-                    const user = await fetchUserByUserId({
+                    const user = await UserService.getUserByUserId({
                         userId: conversation,
                     });
 

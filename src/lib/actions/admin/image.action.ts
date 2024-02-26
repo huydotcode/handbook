@@ -1,5 +1,4 @@
 'use server';
-
 import { Image } from '@/models';
 
 export const fetchAllPhotos = async () => {

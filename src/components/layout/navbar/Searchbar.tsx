@@ -1,14 +1,14 @@
 'use client';
+import Items from '@/components/shared/Items';
 import useDebounce from '@/hooks/useDebounce';
-import { fetchUsers } from '@/lib/actions/user.action';
+import { UserService } from '@/lib/services';
+import { cn } from '@/lib/utils';
 import { Fade, Modal } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Items from '@/components/shared/Items';
 import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
-import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 interface Props {
     className?: string;
 }
@@ -43,7 +43,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
             if (!session?.user.id) return;
 
             try {
-                const { users, isNext } = await fetchUsers({
+                const { users, isNext } = await UserService.getUsers({
                     userId: session?.user.id,
                     pageNumber: page,
                     pageSize: pageSize,

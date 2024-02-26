@@ -56,18 +56,3 @@ export const deleteMessage = async ({ messageId }: { messageId: string }) => {
         throw new Error(error);
     }
 };
-
-// fetch last message
-export const fetchLastMessage = async ({ roomId }: { roomId: string }) => {
-    try {
-        await connectToDB();
-
-        const message = await Message.findOne({
-            roomId: roomId,
-        }).sort({ createdAt: -1 });
-
-        return JSON.parse(JSON.stringify(message));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};

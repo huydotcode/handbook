@@ -5,3 +5,4 @@ export { default as Notification } from './Notification';
 export { default as Post } from './Post';
 export { default as Profile } from './Profile';
 export { default as User } from './User';
+export { default as Group } from './Group';

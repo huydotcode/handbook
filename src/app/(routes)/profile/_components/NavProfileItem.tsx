@@ -1,7 +1,6 @@
 'use client';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
@@ -11,7 +10,7 @@ interface Props {
     name: string;
 }
 
-const NavProfileItem: React.FC<Props> = ({ userId, name, path }) => {
+const NavProfileItem: React.FC<Props> = ({ name, path, userId }) => {
     const pathName = usePathname();
     const isActived = pathName === `/profile/${userId}${path}`;
 
@@ -20,7 +19,7 @@ const NavProfileItem: React.FC<Props> = ({ userId, name, path }) => {
             href={`/profile/${userId}/${path}`}
             className={cn(
                 'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
-                isActived && 'text-primary-2'
+                isActived && 'text-primary-2 dark:text-primary-2'
             )}
         >
             <span className="text-sm font-semibold ">{name}</span>

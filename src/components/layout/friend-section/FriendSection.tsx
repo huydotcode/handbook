@@ -1,7 +1,7 @@
-import React from 'react';
-import { fetchFriends } from '@/lib/actions/user.action';
 import { getAuthSession } from '@/lib/auth';
+import { UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
+import React from 'react';
 import FriendList from './FriendList';
 
 interface Props {
@@ -14,12 +14,12 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
 
     if (!session) return null;
 
-    const friends = await fetchFriends({
+    const friends = await UserService.getFriends({
         userId: session?.user.id || '',
     });
 
     return (
-        <div className={cn('relative w-[200px] lg:w-[80px]', className)}>
+        <div className={cn('relative h-full', className)}>
             <FriendList data={friends} show={show} />
         </div>
     );

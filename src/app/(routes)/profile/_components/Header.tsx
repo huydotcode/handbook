@@ -1,8 +1,8 @@
+import { navProfile } from '@/constants/navLink';
 import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
 import Action from './Action';
-import { navProfile } from '@/constants/navLink';
 import NavProfileItem from './NavProfileItem';
 
 interface Props {
@@ -47,7 +47,7 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                 )}
             </div>
 
-            <div className="flex w-[600px] max-w-[100vw] items-center px-2 pt-2">
+            <div className="max-w-screen flex w-[600px] items-center px-2 pt-2">
                 {navProfile.map((item, index) => (
                     <NavProfileItem
                         key={index}

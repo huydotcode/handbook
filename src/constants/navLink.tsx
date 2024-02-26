@@ -46,6 +46,11 @@ export const navAdmin: NavLink[] = [
         path: '/admin/photos',
         icon: <Icons.Images className="h-8 w-8 " />,
     },
+    {
+        name: 'Nhóm',
+        path: '/admin/groups',
+        icon: <Icons.Group className="h-8 w-8 " />,
+    },
 ];
 
 export const navProfile = [

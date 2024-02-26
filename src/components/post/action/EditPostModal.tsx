@@ -10,6 +10,7 @@ import { Tooltip } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IShowModal } from '../ActionPost';
+import PostService from '@/lib/services/post.service';
 
 interface Props {
     show: boolean;
@@ -42,7 +43,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
             return photos.includes(img.url);
         });
 
-        const postEdited = await editPost({
+        const postEdited = await PostService.editPost({
             ...data,
             images: newImages,
             postId: post._id,

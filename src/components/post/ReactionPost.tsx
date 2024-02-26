@@ -1,9 +1,9 @@
 'use client';
-import { sendReaction } from '@/lib/actions/post.action';
 import { useMutation } from '@tanstack/react-query';
 import { Session } from 'next-auth';
 import React from 'react';
 
+import PostService from '@/lib/services/post.service';
 import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
 
@@ -38,7 +38,7 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                     });
                 }
 
-                await sendReaction({
+                await PostService.sendReaction({
                     postId: post._id,
                     userId: session?.user.id,
                 });
