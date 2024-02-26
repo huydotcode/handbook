@@ -1,4 +1,3 @@
-import { FriendSection } from '@/components/layout';
 import { ProfileService } from '@/lib/services';
 import { notFound } from 'next/navigation';
 import { Header } from '../_components';
@@ -21,16 +20,14 @@ const ProfileLayout = async ({ params, children }: Props) => {
     if (!user || !profile) notFound();
 
     return (
-        <>
+        <div className="relative">
             <div className="min-h-[100vh-56px] w-full">
                 <div className="w-full">
                     <Header profile={profile} user={user} />
                     <main className="mt-4">{children}</main>
                 </div>
             </div>
-
-            <FriendSection show={false} />
-        </>
+        </div>
     );
 };
 
