@@ -18,13 +18,13 @@ const Sidebar: React.FC<Props> = () => {
         <>
             <div
                 className={cn(
-                    'z-10 flex min-h-[calc(100vh-56px-54px)] w-[200px] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-dark-secondary-2 dark:bg-dark-secondary-1 md:w-auto',
+                    'z-10 flex h-[calc(100vh-56px-54px)] w-[200px] flex-col overflow-x-hidden border-r bg-white transition-all duration-500 dark:border-dark-secondary-2 dark:bg-dark-secondary-1 md:w-[80px]',
                     {
                         'h-[calc(100vh-56px)]': !!!currentRoom.id,
                     }
                 )}
             >
-                <span className="border-b p-2 text-center text-xl font-bold dark:border-none">
+                <span className="h-[64px] border-b p-2 text-center text-xl font-bold dark:border-none">
                     Bạn bè
                 </span>
 

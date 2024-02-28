@@ -140,7 +140,7 @@ const Items = {
 
                 <span className="lg:hidden">
                     {isOnline && (
-                        <Icons.Circle className="text-blue-500 text-sm" />
+                        <Icons.Circle className="text-sm text-primary-2" />
                     )}
                 </span>
             </Button>
