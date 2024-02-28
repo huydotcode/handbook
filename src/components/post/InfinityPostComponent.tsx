@@ -51,7 +51,13 @@ const InfinityPostComponent: React.FC<Props> = ({
 
         // Kiểm tra nếu là trang group và là thành viên của nhóm thì render ra CreatePost
         if (isGroupPage && currentUser && groupId) {
-            return <CreatePost setPosts={setPosts} groupId={groupId} />;
+            return (
+                <CreatePost
+                    setPosts={setPosts}
+                    groupId={groupId}
+                    type="group"
+                />
+            );
         }
 
         return null;

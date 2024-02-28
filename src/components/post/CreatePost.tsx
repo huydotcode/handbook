@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import PostService from '@/lib/services/post.service';
 import { ModalCreatePost } from '.';
+import toast from 'react-hot-toast';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -29,16 +30,13 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             },
         });
 
-    const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
-        if (formState.isSubmitting) return;
-        const { content, option } = data;
-
+    const sendPost = async (data: IPostFormData) => {
         if (!session?.user) return;
 
-        setShow(false);
-
-        let imagesUpload = [];
         try {
+            const { content, option } = data;
+            let imagesUpload = [];
+
             if (photos && photos.length > 0) {
                 const data = await fetch('/api/images', {
                     method: 'POST',
@@ -54,6 +52,8 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 content: '',
             });
 
+            console.log('images', imagesUpload);
+
             setPhotos([]);
 
             const newPost = await PostService.createPost({
@@ -66,6 +66,20 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             if (newPost) {
                 setPosts((prev) => [newPost, ...prev]);
             }
+        } catch (error: any) {
+            throw new Error(error);
+        }
+    };
+
+    const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
+        if (formState.isSubmitting) return;
+        setShow(false);
+        try {
+            toast.promise(sendPost(data), {
+                loading: 'Bài viết đang được đăng...!',
+                success: 'Đăng bài thành công!',
+                error: 'Đã có lỗi xảy ra khi đăng bài!',
+            });
         } catch (error: any) {
             throw new Error(error.message);
         }
@@ -94,7 +108,7 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                     >
                         <h5 className="text-secondary-1">
                             {type === 'group'
-                                ? `Viết bài trong nhóm`
+                                ? `Đăng bài lên nhóm này...`
                                 : `Bạn đang nghĩ gì?`}
                         </h5>
                     </div>
