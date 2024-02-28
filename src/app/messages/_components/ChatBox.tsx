@@ -89,8 +89,7 @@ const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
             <div
                 className={cn('w-full overflow-y-auto overflow-x-hidden py-2', {
                     'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
-                    'h-[calc(100%-56px-64px)] md:fixed md:bottom-14 md:left-0 md:right-0 md:pt-16':
-                        !isPopup,
+                    'h-[calc(100%-56px-64px)]': !isPopup,
                 })}
             >
                 <div className="flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden">
