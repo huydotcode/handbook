@@ -14,9 +14,7 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
 
     if (!session) return null;
 
-    const friends = await UserService.getFriends({
-        userId: session?.user.id || '',
-    });
+    const friends = [] as IFriend[];
 
     return (
         <div
