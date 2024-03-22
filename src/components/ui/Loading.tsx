@@ -11,8 +11,8 @@ const Loading: FC<Props> = ({ fullScreen, className }) => {
         <div
             className={cn(
                 'loader-container flex items-center justify-center overflow-hidden',
-                className,
-                fullScreen && 'fixed left-0 top-0 z-50 h-screen w-screen'
+                fullScreen && 'fixed left-0 top-0 z-50 h-screen w-screen',
+                className
             )}
         >
             <div className="loader">

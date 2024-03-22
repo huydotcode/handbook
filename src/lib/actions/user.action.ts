@@ -1,7 +1,17 @@
 'use server';
-import { Notification, User } from '@/models';
+import { User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { FilterQuery, SortOrder } from 'mongoose';
+import { getAuthSession } from '../auth';
+
+/*
+    * Notification Model: 
+    sender: Types.ObjectId;
+    receiver: Types.ObjectId;
+    message: string;
+    isRead: boolean;
+    type: string;
+*/
 
 export const getUsers = async ({
     userId,
@@ -56,10 +66,10 @@ export const getFriends = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
         const user = await User.findById(userId).exec();
-
+        if (!user) throw new Error('Đã có lỗi xảy ra');
         const friends = await User.find({
-            _id: { $in: user?.friends },
-        }).select('_id name image username isOnline lastAccessed');
+            _id: { $in: user.friends },
+        }).select('_id name avatar username isOnline lastAccessed');
 
         return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
@@ -74,7 +84,7 @@ export const getUserByUserId = async ({ userId }: { userId: string }) => {
         await connectToDB();
 
         const friend = await User.findById(userId).select(
-            '_id name image username isOnline lastAccessed'
+            '_id name avatar username isOnline lastAccessed'
         );
 
         return JSON.parse(JSON.stringify(friend));
@@ -83,21 +93,25 @@ export const getUserByUserId = async ({ userId }: { userId: string }) => {
     }
 };
 
-export const getNotifications = async ({ userId }: { userId: string }) => {
-    if (userId.trim().length === 0) return;
-
+export const unfriend = async ({ friendId }: { friendId: string }) => {
     try {
         await connectToDB();
 
-        const notifications = await Notification.find({
-            receive: userId,
-        })
-            .populate('send', 'name image')
-            .sort({ createdAt: 'desc' })
-            .exec();
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
+        const user = await User.findById(session.user.id).exec();
+        if (!user) throw new Error('Đã có lỗi xảy ra');
+        const friend = await User.findById(friendId).exec();
+        if (!friend) throw new Error('Đã có lỗi xảy ra');
+        user.friends = user.friends.filter((id) => id.toString() !== friendId);
+        friend.friends = friend.friends.filter(
+            (id) => id.toString() !== session.user.id
+        );
+        await user.save();
+        await friend.save();
 
-        return JSON.parse(JSON.stringify(notifications));
-    } catch (error) {
+        return true;
+    } catch (error: any) {
         console.log(error);
     }
 };

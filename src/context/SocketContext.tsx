@@ -7,7 +7,6 @@ import {
     useEffect,
     useState,
 } from 'react';
-import toast from 'react-hot-toast';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
 
@@ -17,24 +16,23 @@ type SocketContextType = {
     isLoading: boolean;
 };
 
-const SocketContext = createContext<SocketContextType | null>({
+export const SocketContext = createContext<SocketContextType>({
     socket: null,
     isConnected: false,
     isLoading: false,
 });
 
-export const useSocket = () => {
-    return useContext(SocketContext) as SocketContextType;
-};
+export const useSocket = () => useContext(SocketContext);
 
 const SOCKET_API =
     process.env.NODE_ENV == 'production'
         ? 'https://handbook-server.onrender.com'
         : 'http://localhost:5000';
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-    const [socket, setSocket] = useState<Socket | null>(null);
+function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
+
+    const [socket, setSocket] = useState<Socket | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
@@ -91,9 +89,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         isConnected,
     };
 
+    if (!session) return children;
+
     return (
         <SocketContext.Provider value={values}>
             {children}
         </SocketContext.Provider>
     );
-};
+}
+
+export default SocketProvider;

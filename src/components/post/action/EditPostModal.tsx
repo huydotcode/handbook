@@ -11,6 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { IShowModal } from '../ActionPost';
 import PostService from '@/lib/services/post.service';
+import toast from 'react-hot-toast';
 
 interface Props {
     show: boolean;
@@ -31,7 +32,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
     const { control, register, handleSubmit, formState, reset } =
         useForm<IPostFormData>({
             defaultValues: {
-                content: post.content,
+                content: post.text,
                 option: post.option as 'public' | 'private',
             },
         });
@@ -43,24 +44,22 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
             return photos.includes(img.url);
         });
 
-        const postEdited = await PostService.editPost({
-            ...data,
-            images: newImages,
-            postId: post._id,
-        });
+        try {
+            const postEdited = await PostService.editPost({
+                ...data,
+                images: newImages.map((img) => img._id),
+                postId: post._id,
+            });
 
-        setPosts((prev) =>
-            prev.map((post) => {
-                if (post._id === postEdited._id) {
-                    return postEdited;
-                }
-
-                return post;
-            })
-        );
-
-        reset();
-        handleClose();
+            setPosts((prev) =>
+                prev.map((p) => (p._id === post._id ? postEdited : p))
+            );
+        } catch (error) {
+            toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
+        } finally {
+            reset();
+            handleClose();
+        }
     };
     const submit = handleSubmit(onSubmit);
 

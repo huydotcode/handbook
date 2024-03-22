@@ -1,8 +1,25 @@
 'use server';
-import { Image, Profile, User } from '@/models';
+import { Image, Location, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import mongoose from 'mongoose';
 import { revalidatePath } from 'next/cache';
+
+export const getProfileByUserId = async ({ query }: { query: string }) => {
+    try {
+        await connectToDB();
+
+        const user = await User.findOne({
+            $or: [{ _id: query }, { username: query }],
+        });
+
+        const profile = await Profile.findOne({
+            user: user?._id,
+        }).populate('user');
+
+        return JSON.parse(JSON.stringify(profile));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
 
 export const updateBio = async ({
     newBio,
@@ -31,8 +48,8 @@ export const getProfilePicturesAction = async ({
     try {
         await connectToDB();
 
-        const images = await Image.find({ user_id: userId });
-        const imagesUrls = images.map((img) => img.url);
+        const images = await Image.find({ creator: userId });
+        const imagesUrls = images.map((img) => img.url) as string[];
 
         return JSON.parse(JSON.stringify(imagesUrls));
     } catch (error: any) {
@@ -40,39 +57,45 @@ export const getProfilePicturesAction = async ({
     }
 };
 
-export const getProfileByUserId = async ({ userId }: { userId: string }) => {
-    if (!userId) throw new Error('Invalid id user');
-
+export const updateInfo = async ({
+    profileId,
+    dateOfBirth,
+    education,
+    location,
+    work,
+    path,
+}: {
+    profileId: string;
+    work: string;
+    education: string;
+    location: string;
+    dateOfBirth: Date;
+    path: string;
+}) => {
     try {
         await connectToDB();
-        let profile;
 
-        profile = (await Profile.findOne({
-            username: userId,
-        })) as IProfile;
+        await Profile.findByIdAndUpdate(profileId, {
+            dateOfBirth,
+            education,
+            location,
+            work,
+        });
 
-        if (!profile && mongoose.isValidObjectId(userId)) {
-            profile = (await Profile.findOne({
-                userId: userId,
-            })) as IProfile;
-        }
+        revalidatePath(path);
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
 
-        let user;
+export const getLocations = async () => {
+    try {
+        await connectToDB();
 
-        user = (await User.findOne({
-            username: userId,
-        })) as User;
+        const locations = await Location.find();
 
-        if (!user && mongoose.isValidObjectId(userId)) {
-            user = (await User.findOne({
-                _id: userId,
-            })) as IUser;
-        }
-
-        if (!user) throw new Error('User not found');
-
-        return { user, profile };
-    } catch (error) {
-        console.log("Error fetching user's profile:", error);
+        return JSON.parse(JSON.stringify(locations));
+    } catch (error: any) {
+        throw new Error(error);
     }
 };

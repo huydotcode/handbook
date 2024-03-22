@@ -1,18 +1,36 @@
 import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
+import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
+
 import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
-interface Profile {
+interface OAuthCredentials {
+    iss: string;
+    azp: string;
+    aud: string;
+    sub: string;
     email: string;
+    email_verified: boolean;
+    at_hash: string;
     name: string;
+    picture: string;
     given_name: string;
     family_name: string;
-    picture: string;
     locale: string;
-    username: string;
+    iat: number;
+    exp: number;
+}
+
+interface FormBasedCredentials {
+    email: string;
+    password: string;
+    redirect: string;
+    csrfToken: string;
+    callbackUrl: string;
+    json: string;
 }
 
 function getGoogleCredentials() {
@@ -109,19 +127,24 @@ export const authOptions: NextAuthOptions = {
             const userExists = await User.findOne({ email: token.email });
 
             if (!userExists) {
-                if (user) {
-                    token.id = user!.id;
-                }
-
-                return token;
+                console.log('User not found');
+                return {
+                    id: '',
+                    name: '',
+                    email: '',
+                    picture: '',
+                    role: 'user',
+                    username: '',
+                };
             }
 
             return {
                 id: userExists._id.toString(),
                 name: userExists.name,
                 email: userExists.email,
-                picture: userExists.image,
+                picture: userExists.avatar,
                 role: userExists.role || 'user',
+                username: userExists.username,
             };
         },
         async session({ session, token }) {
@@ -131,81 +154,81 @@ export const authOptions: NextAuthOptions = {
                 session.user.email = token.email;
                 session.user.image = token.picture;
                 session.user.role = token.role;
+                session.user.username = token.username;
             }
 
             return session;
         },
-        async signIn({ profile, credentials }) {
+        async signIn({
+            profile: oAuthCredentials,
+            credentials: passwordcredentials,
+        }) {
             try {
                 await connectToDB();
 
-                let userExists;
-                let profileExists;
+                const isHaveAccount = async ({ email }: { email: string }) => {
+                    if (email.length === 0) return null;
 
-                if (profile) {
-                    userExists = await User.findOne({
-                        email: profile.email,
+                    const userExits = await User.findOne({
+                        email: email,
                     });
 
-                    profileExists = await Profile.findOne({
-                        userId: userExists?._id,
-                    });
-                }
+                    return userExits;
+                };
 
-                if (credentials) {
-                    userExists = await User.findOne({
-                        email: credentials.email,
+                const email =
+                    (oAuthCredentials?.email as string) ||
+                    (passwordcredentials?.email as string) ||
+                    ('' as string);
+
+                const userExists = await isHaveAccount({
+                    email: email || '',
+                });
+
+                if (!userExists && oAuthCredentials) {
+                    const { email, name, picture, family_name, given_name } =
+                        oAuthCredentials as OAuthCredentials;
+
+                    const username = generateUsernameFromEmail({ email });
+
+                    const newUser = new User({
+                        email: email,
+                        name,
+                        avatar: picture,
+                        familyName: family_name,
+                        givenName: given_name,
+                        username,
                     });
 
-                    profileExists = await Profile.findOne({
-                        userId: userExists?._id,
-                    });
-                }
+                    await newUser.save();
 
-                if (!profileExists && userExists) {
-                    const profile = await new Profile({
-                        userId: userExists?._id,
-                        coverPhoto: '/assets/img/cover-page.jpg',
-                        bio: `Xin chào các bạn. Tôi tên ${userExists.name}`,
-                        profilePicture: userExists.image,
-                        username: userExists.username,
+                    console.log('new user created', newUser);
+
+                    const profile = new Profile({
+                        user: newUser._id,
+                        coverPhoto: '',
+                        bio: '',
+                        work: '',
+                        education: '',
+                        location: '',
+                        dateOfBirth: new Date(),
                     });
 
                     await profile.save();
+                    return true;
                 }
 
-                if (!userExists) {
-                    const {
-                        email,
-                        name,
-                        given_name,
-                        family_name,
-                        picture,
-                        locale,
-                        username,
-                    } = profile as Profile;
+                if (userExists && passwordcredentials) {
+                    // Đăng nhập với email và password
+                    const password = passwordcredentials.password as string;
 
-                    const user = await new User({
-                        email: email,
-                        name: name,
-                        image: picture,
-                        given_name: given_name,
-                        family_name: family_name,
-                        locale: locale,
-                        username: username,
-                    });
+                    const isValid = await userExists.comparePassword(password);
 
-                    await user.save();
+                    if (!isValid) {
+                        return false;
+                    }
 
-                    const newProfile = await new Profile({
-                        userId: user?._id,
-                        coverPhoto: '/assets/img/cover-page.jpg',
-                        bio: `Xin chào các bạn. Tôi tên ${user.name}`,
-                        profilePicture: user.image,
-                        username: user.username,
-                    });
-
-                    await newProfile.save();
+                    return true;
                 }
 
                 return true;

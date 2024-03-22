@@ -14,16 +14,18 @@ type FormData = {
     repassword: string;
 };
 
-const SignupForm: React.FC = () => {
+interface Props {
+    setIsLoginForm: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
     const { data: session } = useSession();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm<FormData>();
+    const { register, handleSubmit, formState } = useForm<FormData>();
+
+    const { errors, isSubmitting } = formState;
 
     useEffect(() => {
         if (session) {
@@ -55,7 +57,7 @@ const SignupForm: React.FC = () => {
                 toast.success('Đăng ký thành công', {
                     id: 'signup-success',
                 });
-                router.push('/login');
+                setIsLoginForm(true);
             } else {
                 toast.error(result.msg, {
                     id: 'signup-fail',
@@ -75,6 +77,7 @@ const SignupForm: React.FC = () => {
                     className="focus:ring-blue-600  rounded-md border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="text"
                     id="email"
+                    autoComplete="off"
                     placeholder="Email của bạn"
                     {...register('email', {
                         required: true,
@@ -85,7 +88,9 @@ const SignupForm: React.FC = () => {
                     })}
                 />
                 {errors.email && (
-                    <span className="mt-1 text-sm">{errors.email.message}</span>
+                    <span className="mt-1 text-sm text-red-500">
+                        {errors.email.message}
+                    </span>
                 )}
             </div>
 
@@ -96,6 +101,7 @@ const SignupForm: React.FC = () => {
                     className="focus:ring-blue-600  rounded-md  border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="text"
                     id="username"
+                    autoComplete="off"
                     placeholder="Tên đăng nhập của bạn"
                     {...register('username', {
                         required: true,
@@ -110,7 +116,7 @@ const SignupForm: React.FC = () => {
                     })}
                 />
                 {errors.username && (
-                    <span className="mt-1 text-sm">
+                    <span className="mt-1 text-sm text-red-500">
                         {errors.username.message}
                     </span>
                 )}
@@ -123,6 +129,7 @@ const SignupForm: React.FC = () => {
                     className="focus:ring-blue-600  rounded-md  border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="text"
                     id="name"
+                    autoComplete="off"
                     placeholder="Họ và tên của bạn"
                     {...register('name', {
                         required: true,
@@ -137,7 +144,9 @@ const SignupForm: React.FC = () => {
                     })}
                 />
                 {errors.name && (
-                    <span className="mt-1 text-sm">{errors.name.message}</span>
+                    <span className="mt-1 text-sm text-red-500">
+                        {errors.name.message}
+                    </span>
                 )}
             </div>
 
@@ -150,6 +159,7 @@ const SignupForm: React.FC = () => {
                     className="focus:ring-blue-600  rounded-md  border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="password"
                     id="password"
+                    autoComplete="off"
                     placeholder="Nhập mật khẩu"
                     {...register('password', {
                         required: true,
@@ -164,7 +174,7 @@ const SignupForm: React.FC = () => {
                     })}
                 />
                 {errors.password && (
-                    <span className="mt-1 text-sm">
+                    <span className="mt-1 text-sm text-red-500">
                         {errors.password.message}
                     </span>
                 )}
@@ -179,6 +189,7 @@ const SignupForm: React.FC = () => {
                     className="focus:ring-blue-600 rounded-md  border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="password"
                     id="repassword"
+                    autoComplete="off"
                     placeholder="Nhập lại mật khẩu"
                     {...register('repassword', {
                         required: true,
@@ -193,7 +204,7 @@ const SignupForm: React.FC = () => {
                     })}
                 />
                 {errors.repassword && (
-                    <span className="mt-1 text-sm">
+                    <span className="mt-1 text-sm text-red-500">
                         {errors.repassword.message}
                     </span>
                 )}

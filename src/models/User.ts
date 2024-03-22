@@ -1,39 +1,26 @@
 import { Schema, Types, deleteModel, model, modelNames } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-interface IUser {
+interface IUserModel {
     isModified(arg0: string): unknown;
-    _id: Types.ObjectId;
-    email: string;
-    username: string;
     name: string;
-    password?: string;
-    image: string;
-    given_name?: string;
-    family_name?: string;
-    locale?: string;
-    dateOfBirth?: Date;
+    username: string;
+    email: string;
+    avatar: string;
+    password: string;
+    role: string;
+    givenName: string;
+    familyName: string;
+    locale: string;
+    friends: Types.ObjectId[];
+    followers: Types.ObjectId[];
     isOnline: boolean;
-    friends?: Types.Array<Types.ObjectId>;
-    followers?: Types.Array<Types.ObjectId>;
-    following?: Types.Array<Types.ObjectId>;
-    notifications?: Types.Array<Types.ObjectId>;
-    role?: string;
-    request?: [
-        {
-            to: {
-                _id: Types.ObjectId;
-            };
-            type: string;
-        },
-    ];
-    createdAt: Date;
-    updatedAt: Date;
+    isBlocked: boolean;
     lastAccessed: Date;
     comparePassword(arg0: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema<IUser>(
+const UserSchema = new Schema<IUserModel>(
     {
         email: {
             type: String,
@@ -48,40 +35,29 @@ const UserSchema = new Schema<IUser>(
             type: String,
             required: true,
         },
-        image: {
+        avatar: {
             type: String,
             required: true,
         },
         role: {
             type: String,
+            enum: ['admin', 'user'],
             default: 'user',
         },
         isOnline: {
             type: Boolean,
             default: false,
         },
+        isBlocked: {
+            type: Boolean,
+            default: false,
+        },
         password: String,
-        given_name: String,
-        family_name: String,
+        givenName: String,
+        familyName: String,
         locale: String,
-        dateOfBirth: Date,
         friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
-        request: [
-            {
-                to: {
-                    type: Schema.Types.ObjectId,
-                    required: true,
-                },
-                type: {
-                    type: String,
-                    required: true,
-                    default: 'friend',
-                },
-            },
-        ],
         lastAccessed: {
             type: Date,
             default: Date.now(),
@@ -96,22 +72,19 @@ if (modelNames && modelNames().includes('User')) {
     deleteModel('User');
 }
 
-// Compare password
 UserSchema.methods.comparePassword = async function (password: string) {
-    const user = this as IUser;
-
+    const user = this as IUserModel;
     return bcrypt.compare(password, user.password!);
 };
 
-// Hash password before saving
 UserSchema.pre('save', async function (next) {
-    const user = this as IUser;
+    const user = this as IUserModel;
     if (user.isModified('password')) {
         user.password = user.password;
     }
     next();
 });
 
-const User = model<IUser>('User', UserSchema);
+const User = model<IUserModel>('User', UserSchema);
 
 export default User;

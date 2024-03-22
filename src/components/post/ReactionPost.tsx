@@ -13,7 +13,9 @@ interface Props {
 }
 
 const ReactionPost: React.FC<Props> = ({ session, post }) => {
-    const [loves, setLoves] = React.useState<string[]>(post.loves);
+    const [loves, setLoves] = React.useState<string[]>(
+        post.loves.map((l) => l._id)
+    );
 
     const isReacted = React.useMemo(
         () => loves.find((r) => r === session?.user.id),
@@ -40,7 +42,6 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
 
                 await PostService.sendReaction({
                     postId: post._id,
-                    userId: session?.user.id,
                 });
             } catch (error: any) {
                 console.log('Error: ', error);

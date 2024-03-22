@@ -1,46 +1,34 @@
 import { Schema, Types, model, models } from 'mongoose';
 
-interface IProfile {
-    userId: Types.ObjectId;
-    username?: string;
-    coverPhoto?: string;
-    profilePicture?: string;
-    bio?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    work?: string;
-    education?: string;
-    location?: string;
-    relationship?: string;
-    website?: string;
-    date?: Date;
+interface IProfileModel {
+    user: Types.ObjectId;
+    coverPhoto: string;
+    bio: string;
+    work: string;
+    education: string;
+    location: string;
+    dateOfBirth: Date;
 }
 
-const ProfileSchema = new Schema<IProfile>(
+const ProfileSchema = new Schema<IProfileModel>(
     {
-        username: {
-            type: String,
-            unique: true,
-        },
-        userId: {
+        user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true,
         },
         coverPhoto: String,
-        profilePicture: String,
         bio: String,
         work: String,
         education: String,
         location: String,
-        relationship: String,
-        website: String,
-        date: Date,
+        dateOfBirth: Date,
     },
     {
         timestamps: true,
     }
 );
 
-const Profile = models.Profile || model<IProfile>('Profile', ProfileSchema);
+const Profile =
+    models.Profile || model<IProfileModel>('Profile', ProfileSchema);
 export default Profile;

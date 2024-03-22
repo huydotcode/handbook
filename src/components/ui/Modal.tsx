@@ -25,11 +25,7 @@ const Modal: React.FC<Props> = ({
                 <div className="w-full text-center text-xl font-extrabold">
                     {title}
                 </div>
-                <Button
-                    className="text-2xl"
-                    variant={'custom'}
-                    onClick={handleClose}
-                >
+                <Button className="text-2xl" onClick={handleClose}>
                     <Icons.Close />
                 </Button>
             </div>
@@ -46,7 +42,7 @@ const Modal: React.FC<Props> = ({
             <Fade in={show}>
                 <div
                     className={cn(
-                        'fixed left-1/2 top-1/2 flex min-w-[400px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none',
+                        'fixed left-1/2 top-1/2 flex w-[50vw] max-w-screen translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none   dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none',
                         className
                     )}
                 >

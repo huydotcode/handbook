@@ -9,9 +9,7 @@ interface Props {
 }
 
 const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
-    const { loadingNotifications, notifications } = useApp();
-
-    if (!notifications) return null;
+    const { notifications, loadingNotifications } = useApp();
 
     return (
         <>

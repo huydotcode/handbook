@@ -14,17 +14,3 @@ export const getGroups = async () => {
         console.log(error);
     }
 };
-
-export const updateGroupsCoverPhoto = async () => {
-    try {
-        await connectToDB();
-
-        // add field coverPhoto to Group model
-        await Group.updateMany(
-            {},
-            { coverPhoto: '/assets/img/cover-page.jpg' }
-        );
-    } catch (error) {
-        console.log(error);
-    }
-};

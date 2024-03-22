@@ -1,6 +1,5 @@
 import { getGroups } from '@/lib/actions/admin/group.action';
 import Image from 'next/image';
-import UpdateGroup from '../_components/action/UpdateGroup';
 
 const GroupsPage = async () => {
     const groups = (await getGroups()) as IGroup[];
@@ -32,7 +31,11 @@ const GroupsPage = async () => {
                     ))}
             </ul>
 
-            <UpdateGroup />
+            {groups.length === 0 && (
+                <div className="text-center text-xl font-semibold text-secondary-1 dark:text-dark-primary-1">
+                    Không có nhóm nào
+                </div>
+            )}
         </>
     );
 };

@@ -1,68 +1,51 @@
 import mongoose, { Schema, Types, model, models } from 'mongoose';
 
-interface IComment {
-    content: string;
-    userInfo: {
-        id: string;
-        image: string;
-        name: string;
-    };
-    parent_id: Types.ObjectId;
-    replies: Types.Array<Types.ObjectId>;
-    reactions: Types.Array<{ userId: Types.ObjectId; reactionType: string }>;
-    postId: Types.ObjectId;
+interface ICommentModel {
+    text: string;
+    author: Types.ObjectId;
+    replyComment: Types.ObjectId;
+    loves: Types.ObjectId[];
+    post: Types.ObjectId;
     isDeleted: boolean;
-    createdAt: Date;
-    updatedAt: Date;
 }
 
-export const CommentSchema = new Schema<IComment>({
-    content: {
-        type: String,
-        required: true,
-    },
-    userInfo: {
-        id: String,
-        image: String,
-        name: String,
-    },
-    parent_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment',
-        default: null,
-    },
-    replies: [
-        {
+export const CommentSchema = new Schema<ICommentModel>(
+    {
+        text: {
+            type: String,
+            required: true,
+        },
+        author: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        replyComment: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Comment',
+            default: null,
         },
-    ],
-    reactions: [
-        {
-            userId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-                required: true,
-            },
-            reactionType: {
-                type: String,
-                required: true,
-            },
+        post: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            required: true,
         },
-    ],
-    postId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post',
-        required: true,
+        loves: {
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: 'User',
+            default: [],
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
     },
-    isDeleted: {
-        type: Boolean,
-        required: true,
-    },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-});
+    {
+        timestamps: true,
+    }
+);
 
-const Comment = models.Comment || model<IComment>('Comment', CommentSchema);
+const Comment =
+    models.Comment || model<ICommentModel>('Comment', CommentSchema);
 
 export default Comment;

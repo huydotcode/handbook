@@ -1,7 +1,7 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
+import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
-import { useChat } from '@/context/ChatContext';
 import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import TimeAgoConverted from '@/utils/timeConvert';
@@ -23,7 +23,6 @@ interface Props {
 
 const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const { data: session } = useSession();
-    const { setMessages } = useChat();
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -39,23 +38,23 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const canShowTime = useMemo(() => {
         // Kiểm tra xem tin nhắn trước và sau có phải của cùng 1 người không
         return (
-            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId !==
-                msg.userId &&
-            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId ===
-                msg.userId
+            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.sender._id !==
+                msg.sender._id &&
+            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.sender._id ===
+                msg.sender._id
         );
     }, []);
 
     const topAndBottomMsgIsNotSameUser = useMemo(() => {
         return (
-            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.userId !==
-                msg.userId &&
-            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.userId !==
-                msg.userId
+            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.sender._id !==
+                msg.sender._id &&
+            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.sender._id !==
+                msg.sender._id
         );
     }, []);
 
-    const isOwnMsg = msg.userId === session?.user.id;
+    const isOwnMsg = msg.sender._id === session?.user.id;
 
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
@@ -72,10 +71,16 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
             messageId: msg._id,
         });
 
-        socket.emit('delete-message', msg);
+        // Lấy tin nhắn trước tin nhắn được xóa này
+        const prevMsg = messagesInRoom[messagesInRoom.indexOf(msg) - 1] || null;
+
+        socket.emit(socketEvent.DELETE_MESSAGE, {
+            currentMessage: msg,
+            prevMessage: prevMsg,
+        });
 
         if (res) {
-            setMessages((prev) => prev.filter((cmt) => cmt._id !== msg._id));
+            // setMessages((prev) => prev.filter((cmt) => cmt._id !== msg._id));
         } else {
             toast.error('Xóa thất bại!', {
                 id: 'delete-message',
@@ -194,7 +199,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
 
                 {/* {msg.isRead &&
                     isLastMessage &&
-                    session?.user.id === msg.userId && (
+                    session?.user.id === msg.sender._id && (
                         <Avatar
                             className={'w-4 h-4 ml-2 mt-2'}
                             imgSrc={currentRoom.image || ''}

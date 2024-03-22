@@ -8,7 +8,7 @@ const PostContent = () => {
     const [contentLength, setContentLength] = React.useState<number>(100);
 
     const content = React.useMemo(() => {
-        return post?.content.slice(0, contentLength).replace(/\n/g, '<br/>');
+        return post?.text.slice(0, contentLength).replace(/\n/g, '<br/>');
     }, [post, contentLength]);
 
     return (
@@ -20,20 +20,20 @@ const PostContent = () => {
                 }}
             />
 
-            {post?.content.length > 100 && (
+            {post?.text.length > 100 && (
                 <Button
                     className="mt-1 p-0 text-xs hover:underline"
                     variant={'custom'}
                     onClick={() => {
                         const newLength =
-                            contentLength === 100 ? post.content.length : 100;
+                            contentLength === 100 ? post.text.length : 100;
                         setContentLength(newLength);
                     }}
                 >
-                    {post?.content.length > 100 &&
-                        contentLength != post.content.length &&
+                    {post?.text.length > 100 &&
+                        contentLength != post.text.length &&
                         'Xem thêm'}
-                    {contentLength === post.content.length && 'Ẩn bớt'}
+                    {contentLength === post.text.length && 'Ẩn bớt'}
                 </Button>
             )}
 

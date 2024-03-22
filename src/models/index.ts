@@ -1,8 +1,11 @@
 export { default as Comment } from './Comment';
+export { default as Group } from './Group';
+export { default as GroupConversation } from './GroupConversation';
 export { default as Image } from './Image';
+export { default as Location } from './Location';
 export { default as Message } from './Message';
 export { default as Notification } from './Notification';
 export { default as Post } from './Post';
+export { default as PrivateConversation } from './PrivateConversation';
 export { default as Profile } from './Profile';
 export { default as User } from './User';
-export { default as Group } from './Group';

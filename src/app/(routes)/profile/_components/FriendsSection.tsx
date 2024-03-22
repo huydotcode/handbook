@@ -34,7 +34,7 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
                                 <Avatar
                                     width={42}
                                     height={42}
-                                    imgSrc={friend.image}
+                                    imgSrc={friend.avatar}
                                     userUrl={friend._id}
                                 />
 

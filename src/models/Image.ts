@@ -1,27 +1,34 @@
+// TODO CHANGE MODEL
 import { Schema, model, models } from 'mongoose';
 
-export const ImageSchema = new Schema({
-    asset_id: String,
-    public_id: String,
-    version: Number,
-    version_id: String,
-    signature: String,
-    width: Number,
-    height: Number,
-    format: String,
-    resource_type: String,
-    created_at: String,
-    tags: Array,
-    bytes: Number,
-    type: String,
-    etag: String,
-    placeholder: Boolean,
-    url: String,
-    secure_url: String,
-    folder: String,
-    api_key: String,
-    user_id: String,
-});
+interface IImageModel {
+    publicId: string;
+    width: number;
+    height: number;
+    resourceType: string;
+    type: string;
+    url: string;
+    creator: Schema.Types.ObjectId;
+}
+
+export const ImageSchema = new Schema<IImageModel>(
+    {
+        publicId: String,
+        width: Number,
+        height: Number,
+        resourceType: String,
+        type: String,
+        url: String,
+        creator: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
 
 const Image = models.Image || model('Image', ImageSchema);
 

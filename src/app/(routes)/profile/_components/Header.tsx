@@ -19,16 +19,16 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
             <div
                 className="relative h-[40vh] min-h-[300px] w-full overflow-hidden rounded-b-xl bg-cover bg-center bg-no-repeat"
                 style={{
-                    backgroundImage: `url("${profile.coverPhoto}`,
+                    backgroundImage: `url("${profile.coverPhoto || '/assets/img/cover-page.jpg'}`,
                 }}
             />
 
-            <div className="flex items-center justify-between border-b lg:px-2">
+            <div className="flex items-center justify-between border-b px-2">
                 <div className="flex items-center">
                     <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-dark-secondary-2 md:h-[120px] md:w-[120px]">
                         <Image
                             className="rounded-full"
-                            src={user?.image || ''}
+                            src={user?.avatar || ''}
                             alt={user?.name || ''}
                             fill
                         />
@@ -42,12 +42,10 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                         </span>
                     </div>
                 </div>
-                {notCurrentUser && (
-                    <Action userId={JSON.parse(JSON.stringify(user._id))} />
-                )}
+                {notCurrentUser && <Action userId={user._id} />}
             </div>
 
-            <div className="max-w-screen flex w-[600px] items-center px-2 pt-2">
+            <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">
                 {navProfile.map((item, index) => (
                     <NavProfileItem
                         key={index}

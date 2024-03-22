@@ -5,7 +5,7 @@ import React from 'react';
 interface Props {}
 
 const page: React.FC<Props> = async ({}) => {
-    const photos = (await fetchAllPhotos()) as CloudinaryImage[];
+    const photos = (await fetchAllPhotos()) as IImage[];
 
     return (
         <>
@@ -26,6 +26,12 @@ const page: React.FC<Props> = async ({}) => {
                         </div>
                     );
                 })}
+
+                {photos.length === 0 && (
+                    <div className="col-span-3 text-center text-xl font-semibold text-secondary-1 dark:text-dark-primary-1">
+                        Không có ảnh nào
+                    </div>
+                )}
             </div>
         </>
     );

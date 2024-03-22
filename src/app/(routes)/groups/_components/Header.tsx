@@ -1,7 +1,5 @@
-import { navProfile } from '@/constants/navLink';
 import Image from 'next/image';
 import React from 'react';
-import { NavProfileItem } from '../../profile/_components';
 
 interface Props {
     group: IGroup;
@@ -22,7 +20,7 @@ const Header: React.FC<Props> = ({ group }) => {
                     <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-dark-secondary-2 md:h-[120px] md:w-[120px]">
                         <Image
                             className="rounded-full"
-                            src={group?.image || ''}
+                            src={group?.avatar || ''}
                             alt={group?.name || ''}
                             fill
                         />
@@ -38,21 +36,9 @@ const Header: React.FC<Props> = ({ group }) => {
                         </span>
                     </div>
                 </div>
-                {/* {notCurrentUser && (
-                    <Action userId={JSON.parse(JSON.stringify(user._id))} />
-                )} */}
             </div>
 
-            <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">
-                {/* {navProfile.map((item, index) => (
-                    <NavProfileItem
-                        key={index}
-                        name={item.name}
-                        path={item.path}
-                        userId={JSON.parse(JSON.stringify(user._id))}
-                    />
-                ))} */}
-            </div>
+            <div className="flex w-[600px] max-w-screen items-center px-2 pt-2"></div>
         </header>
     );
 };

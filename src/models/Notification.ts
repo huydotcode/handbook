@@ -1,33 +1,22 @@
-import mongoose, { Schema, Types, model, models } from 'mongoose';
+import { Schema, Types, model, models } from 'mongoose';
 
-interface INotification {
-    type: string;
-    send: Types.ObjectId;
-    receive: Types.ObjectId;
+interface INotificationModel {
+    sender: Types.ObjectId;
+    receiver: Types.ObjectId;
     message: string;
-    createdAt: Date;
-    updatedAt: Date;
     isRead: boolean;
+    type: string;
 }
 
-const NotificationSchema = new Schema<INotification>(
+const NotificationSchema = new Schema<INotificationModel>(
     {
-        type: { type: String, required: true },
-        send: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true,
-        },
-        receive: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true,
-        },
+        type: { type: String, default: 'request-add-friend' },
+        sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         message: {
             type: String,
-            default: 'Bạn có thông báo mới',
+            default: '',
         },
-
         isRead: { type: Boolean, default: false },
     },
     { timestamps: true }
@@ -35,6 +24,6 @@ const NotificationSchema = new Schema<INotification>(
 
 const Notification =
     models.Notification ||
-    model<INotification>('Notification', NotificationSchema);
+    model<INotificationModel>('Notification', NotificationSchema);
 
 export default Notification;

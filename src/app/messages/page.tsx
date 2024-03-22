@@ -1,50 +1,25 @@
-'use client';
-import { Button, Loading } from '@/components/ui';
-import { useSocket } from '@/context';
-import { useRouter } from 'next/navigation';
-import { ChatBox } from './_components';
-import { useChat } from '@/context/ChatContext';
+import { getAuthSession } from '@/lib/auth';
+import { UserService } from '@/lib/services';
+import { redirect } from 'next/navigation';
+import { Sidebar } from './_components';
 
-function MessagesPage() {
-    const { socket, isLoading } = useSocket();
-    const { currentRoom } = useChat();
-    const router = useRouter();
+async function MessagesPage() {
+    const session = await getAuthSession();
 
-    if (isLoading) return <Loading fullScreen />;
+    if (!session) redirect('/');
 
-    if (!socket) {
-        return (
-            <div className="flex h-[calc(100vh-56px)] w-screen flex-col items-center justify-center">
-                <div className=" flex h-[500px] min-w-[500px] max-w-[50vw] flex-col items-center justify-center rounded-xl ">
-                    <h1 className="text-xl uppercase">
-                        Không thể kết nối với Server
-                    </h1>
-                    <Button
-                        className="mt-2 "
-                        size="medium"
-                        onClick={() => {
-                            router.refresh();
-                        }}
-                    >
-                        Kết nối lại
-                    </Button>
-                    <Button
-                        className="mt-2  "
-                        size="medium"
-                        onClick={() => {
-                            router.push('/');
-                        }}
-                    >
-                        Trở về trang chủ
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+    const friends = await UserService.getFriends({
+        userId: session.user.id,
+    });
 
     return (
         <>
-            <ChatBox currentRoom={currentRoom} />
+            <Sidebar friends={friends} />
+            <div className="flex flex-1 items-center justify-center rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
+                <h1 className="text-2xl font-bold text-secondary-1">
+                    Trò chuyện ngayy...
+                </h1>
+            </div>
         </>
     );
 }

@@ -4,6 +4,7 @@ import { BsFacebook, BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
 import {
     FaArrowLeft,
+    FaBirthdayCake,
     FaCircle,
     FaHeart,
     FaImage,
@@ -117,6 +118,7 @@ const Icons = {
     Work: (props: IconProps) => <MdWork {...props} />,
     PersonAdd: (props: IconProps) => <IoPersonAdd {...props} />,
     Reply: (props: IconProps) => <FaReply {...props} />,
+    Birthday: (props: IconProps) => <FaBirthdayCake {...props} />,
 };
 
 export default Icons;

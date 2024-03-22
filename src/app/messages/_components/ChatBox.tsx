@@ -1,123 +1,179 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-import { useSocket } from '@/context';
-import { useChat } from '@/context/ChatContext';
+import socketEvent from '@/constants/socketEvent.constant';
+import { useChat, useSocket } from '@/context';
+import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
-import MesssageList from './MesssageList';
+import Message from './Message';
+import toast from 'react-hot-toast';
 
 interface Props {
-    isPopup?: boolean;
     className?: string;
-    currentRoom: IRoomChat;
+    isPopup?: boolean;
+    initialMessages: IMessage[];
+    conversation: IPrivateConversation;
 }
 
-const ChatBox: React.FC<Props> = ({ isPopup, className, currentRoom }) => {
+const PAGE_SIZE = 20;
+
+const ChatBox: React.FC<Props> = ({
+    className,
+    isPopup,
+    initialMessages,
+    conversation,
+}) => {
     const { socket } = useSocket();
-    const { messages } = useChat();
-    const [scrollDown, setScrollDown] = useState<boolean>(false);
+    const { data: session } = useSession();
+
+    const { setCurrentRoom, setLastMessages } = useChat();
+
+    const [messages, setMessages] = useState<IMessage[]>(initialMessages);
+    const [page, setPage] = useState<number>(2);
+
+    const { ref: topRef, inView } = useInView({
+        threshold: 0,
+        triggerOnce: false,
+    });
+
+    const bottomRef = useRef<HTMLDivElement>(null);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
-    const messagesInRoom = useMemo(() => {
-        return messages.filter((msg) => msg.roomId === currentRoom.id);
-    }, [messages]);
-    const bottomRef = React.useRef<HTMLDivElement>(null);
+    const [isEnd, setIsEnd] = useState<boolean>(false);
+
+    const handleScrollDown = () => {
+        bottomRef.current?.scrollIntoView({
+            behavior: 'smooth',
+        });
+    };
 
     useEffect(() => {
-        if (messages.length && bottomRef.current && currentRoom.id) {
-            bottomRef.current?.scrollIntoView({
-                behavior: 'smooth',
-            });
-        }
-    }, [messages.length, bottomRef, currentRoom.id]);
+        setCurrentRoom(conversation._id);
+    }, [conversation._id]);
 
+    // Lấy tin nhắn
     useEffect(() => {
-        if (!socket || !currentRoom.id) return;
+        (async () => {
+            if (!conversation._id || isEnd) return;
 
-        socket.emit('read-message', { roomId: currentRoom.id });
-    }, [socket, currentRoom.id]);
+            const messages = (await MessageService.getMessages({
+                conversationId: conversation._id,
+                page,
+                pageSize: PAGE_SIZE,
+            })) as IMessage[];
 
+            if (messages.length === 0) {
+                setIsEnd(true);
+                return;
+            }
+
+            setMessages((prev) => [...prev, ...messages]);
+        })();
+    }, [conversation._id, page]);
+
+    // Lắng nghe tin nhắn mới
     useEffect(() => {
-        if (scrollDown && bottomRef.current) {
-            bottomRef.current?.scrollIntoView({
-                behavior: 'smooth',
-            });
+        if (!socket || !conversation._id || !session?.user.id) return;
 
-            setScrollDown(false);
-        }
-    }, [scrollDown]);
+        socket.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
+            setLastMessages((prev) => ({
+                ...prev,
+                [message.conversation]: message,
+            }));
+            if (message.sender._id === session?.user?.id) return;
+            setMessages((prev) => [message, ...prev]);
+        });
+
+        socket.on(
+            socketEvent.DELETE_MESSAGE,
+            ({ prevMsg, msg }: { prevMsg: IMessage; msg: IMessage }) => {
+                setMessages((prev) =>
+                    prev.filter((item) => item._id !== msg._id)
+                );
+            }
+        );
+    }, [socket, conversation._id, session?.user.id]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     useEffect(() => {
-        if (!bottomRef.current || messagesInRoom.length === 0) return;
+        if (!bottomRef.current || messages.length === 0) return;
 
         const observer = new IntersectionObserver((entries) => {
             setShowScrollDown(!entries[0].isIntersecting);
         });
-
         observer.observe(bottomRef.current);
 
         return () => observer.disconnect();
     }, [bottomRef.current]);
 
-    if (!currentRoom || !currentRoom.id) {
-        if (isPopup) return null;
-
-        return (
-            <div className="flex h-[calc(100vh-56px)] flex-1 items-center justify-center">
-                <p className="text-center text-xl text-secondary-1">
-                    Hãy chọn một cuộc trò chuyện
-                </p>
-            </div>
-        );
-    }
+    useEffect(() => {
+        if (inView && !isEnd) {
+            setPage((prev) => prev + 1);
+        }
+    }, [inView]);
 
     return (
-        <div
-            className={cn(
-                `relative flex flex-1 flex-col bg-white dark:bg-dark-secondary-1`,
-                {
-                    'h-full w-full': !isPopup,
-                    'z-50 h-[50vh] w-[280px] rounded-xl  shadow-2xl': isPopup,
-                },
-                { className }
-            )}
-        >
-            <ChatHeader isPopup={isPopup} currentRoom={currentRoom} />
-
+        <>
             <div
-                className={cn('w-full overflow-y-auto overflow-x-hidden py-2', {
-                    'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
-                    'h-[calc(100%-56px-64px)]': !isPopup,
-                })}
+                className={cn(
+                    `relative flex flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none `,
+                    {
+                        'h-full': !isPopup,
+                        'z-50 h-[50vh] w-[280px]': isPopup,
+                    },
+                    className
+                )}
             >
-                <div className="flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden">
-                    <div ref={bottomRef} />
+                <ChatHeader isPopup={isPopup} currentRoom={conversation} />
 
-                    <MesssageList data={messagesInRoom} />
-                </div>
-            </div>
-
-            <InputMessage currentRoom={currentRoom} isPopup={isPopup} />
-
-            {showScrollDown && (
-                <Button
+                <div
                     className={cn(
-                        'z-50 opacity-30 transition-all duration-300 hover:opacity-100',
+                        'relative w-full overflow-y-auto overflow-x-hidden p-2',
                         {
-                            'fixed bottom-[60px] right-4': !isPopup,
-                            'absolute bottom-[60px] right-4 h-8 w-8': isPopup,
+                            'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
+                            'h-[calc(100%-64px)]': !isPopup,
                         }
                     )}
-                    onClick={() => {
-                        setScrollDown(true);
-                    }}
                 >
-                    <Icons.ArrowDown />
-                </Button>
-            )}
-        </div>
+                    {session?.user && (
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden">
+                            <div ref={bottomRef} />
+
+                            {messages.map((msg) => (
+                                <Message
+                                    key={msg._id}
+                                    data={msg}
+                                    messagesInRoom={messages}
+                                />
+                            ))}
+
+                            {!isEnd && <div ref={topRef} />}
+                        </div>
+                    )}
+                </div>
+
+                <InputMessage
+                    currentRoom={conversation}
+                    isPopup={isPopup}
+                    setMessages={setMessages}
+                />
+
+                {showScrollDown && (
+                    <Button
+                        className={cn(
+                            'absolute bottom-0 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100'
+                        )}
+                        onClick={handleScrollDown}
+                    >
+                        <Icons.ArrowDown className="h-4 w-4" />
+                    </Button>
+                )}
+            </div>
+        </>
     );
 };
+
 export default ChatBox;

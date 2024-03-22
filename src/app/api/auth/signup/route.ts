@@ -44,15 +44,17 @@ export const POST = async (req: Request, res: Response) => {
             email: email,
             username: username,
             password: hashPassword,
-            image: request.image || '/assets/img/user-profile.jpg',
+            avatar: request.image || '/assets/img/user-profile.jpg',
         });
 
         const newProfile = await new Profile({
-            userId: newUser._id,
+            user: newUser._id,
             coverPhoto: '/assets/img/cover-page.jpg',
-            bio: `Xin chào các bạn. Tôi tên ${newUser.name}`,
-            profilePicture: newUser.image,
-            username: username,
+            bio: '',
+            work: '',
+            education: '',
+            location: '',
+            dateOfBirth: new Date(),
         });
 
         await newProfile.save();

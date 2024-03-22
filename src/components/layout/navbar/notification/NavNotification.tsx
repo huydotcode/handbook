@@ -1,13 +1,16 @@
 'use client';
-import Icons from '@/components/ui/Icons';
-import { Badge } from '@mui/material';
+import { useApp } from '@/context';
 import { Popover } from 'antd';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
-import { useApp } from '@/context';
+import { Badge } from '@mui/material';
+import { Icons } from '@/components/ui';
 
-const NavNotification = () => {
+interface Props {}
+
+const NavNotification: React.FC<Props> = ({}) => {
     const { notifications } = useApp();
     const [open, setOpen] = useState(false);
 
@@ -21,7 +24,7 @@ const NavNotification = () => {
                 overlayInnerStyle={{ padding: 0 }}
             >
                 <Button
-                    className="hover:bg-hover-2 dark:hover:bg-dark-hover-1 relative h-10 w-10 rounded-xl transition-transform duration-500 hover:rotate-1"
+                    className="relative h-10 w-10 rounded-xl transition-transform duration-500 hover:rotate-1 hover:bg-hover-2 dark:hover:bg-dark-hover-1"
                     variant={'custom'}
                 >
                     {open ? (

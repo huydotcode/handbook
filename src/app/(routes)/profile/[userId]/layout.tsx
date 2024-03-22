@@ -10,20 +10,17 @@ interface Props {
 }
 
 const ProfileLayout = async ({ params, children }: Props) => {
-    const { user, profile } = (await ProfileService.getProfileByUserId({
-        userId: params.userId,
-    })) as {
-        user: IUser;
-        profile: IProfile;
-    };
+    const profile = (await ProfileService.getProfileByUserId({
+        query: params.userId,
+    })) as IProfile;
 
-    if (!user || !profile) notFound();
+    if (!profile) notFound();
 
     return (
         <div className="relative">
             <div className="min-h-[100vh-56px] w-full">
                 <div className="w-full">
-                    <Header profile={profile} user={user} />
+                    <Header profile={profile} user={profile.user} />
                     <main className="mt-4">{children}</main>
                 </div>
             </div>

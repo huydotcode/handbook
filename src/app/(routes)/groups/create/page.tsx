@@ -3,6 +3,7 @@ import { Button, Icons } from '@/components/ui';
 
 import { UserService } from '@/lib/services';
 import GroupService from '@/lib/services/group.service';
+import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -11,6 +12,9 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 interface Props {}
+
+const INPUT_CLASSNAME =
+    'my-1 w-full rounded-md border bg-primary-1 p-2 dark:bg-dark-primary-1';
 
 interface ICreateGroup {
     name: string;
@@ -56,25 +60,24 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
             return;
         }
 
-        // const res = await fetch('/api/images', {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         userId: null,
-        //         images: [photo],
-        //     }),
-        // });
+        const res = await fetch('/api/images', {
+            method: 'POST',
+            body: JSON.stringify({
+                userId: null,
+                images: [photo],
+            }),
+        });
 
-        // const image = await res.json();
+        const image = await res.json();
 
-        // if (!image) {
-        //     toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
-        //     return;
-        // }
+        if (!image) {
+            toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
+            return;
+        }
 
         const { data: newGroup, msg } = await GroupService.createGroup({
             ...data,
-            avatar: 'https://res.cloudinary.com/da4pyhfyy/image/upload/v1708495339/oynzl5ggetllzf6u52k0.jpg',
-            // image[0].url,
+            avatar: image[0],
             members,
         });
 
@@ -99,61 +102,67 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
     return (
         <>
-            <div className="mx-auto w-[500px] max-w-screen">
+            <div className="mx-auto w-[500px] max-w-screen bg-secondary-1 p-4 dark:bg-dark-secondary-2">
                 <h5 className="text-xl font-bold">Tạo nhóm</h5>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="flex flex-col space-y-4"
+                    className="mt-4 flex flex-col"
                     autoComplete="off"
                 >
-                    <label htmlFor="name">
-                        <h2>Tên nhóm</h2>
-                    </label>
-                    <input
-                        id="name"
-                        type="text"
-                        autoComplete="off"
-                        placeholder="Tên nhóm"
-                        className="rounded-md border  p-2"
-                        {...register('name', { required: true })}
-                    />
-                    <label htmlFor="description">Mô tả nhóm</label>
-                    <input
-                        id="description"
-                        type="text"
-                        placeholder="Mô tả"
-                        autoComplete="off"
-                        className="rounded-md border p-2"
-                        {...register('description', { required: true })}
-                    />
-                    <label htmlFor="avatar">Ảnh đại diện</label>
-                    <label className="flex items-center" htmlFor="avatar">
-                        <span className="mr-2">
-                            {photo ? (
-                                <Image
-                                    src={photo}
-                                    alt="avatar"
-                                    width={48}
-                                    height={48}
-                                />
-                            ) : (
-                                <Icons.Images className="h-12 w-12" />
-                            )}
-                        </span>
-                        Chọn ảnh đại diện
-                    </label>
-                    <input
-                        id="avatar"
-                        type="file"
-                        autoComplete="off"
-                        className="hidden rounded-md border p-2"
-                        onChange={handleChangeImage}
-                    />
+                    <div>
+                        <label htmlFor="name">
+                            <h2>Tên nhóm</h2>
+                        </label>
+                        <input
+                            id="name"
+                            type="text"
+                            autoComplete="off"
+                            placeholder="Tên nhóm"
+                            className={INPUT_CLASSNAME}
+                            {...register('name', { required: true })}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="description">Mô tả nhóm</label>
+                        <input
+                            id="description"
+                            type="text"
+                            placeholder="Mô tả"
+                            autoComplete="off"
+                            className={INPUT_CLASSNAME}
+                            {...register('description', { required: true })}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="avatar">Ảnh đại diện</label>
+                        <label className="flex items-center" htmlFor="avatar">
+                            <span className="mr-2 p-2">
+                                {photo ? (
+                                    <Image
+                                        src={photo}
+                                        alt="avatar"
+                                        width={48}
+                                        height={48}
+                                    />
+                                ) : (
+                                    <Icons.Images className="h-8 w-8" />
+                                )}
+                            </span>
+                            Chọn ảnh đại diện
+                        </label>
+                        <input
+                            id="avatar"
+                            type="file"
+                            autoComplete="off"
+                            className="hidden rounded-md border p-2"
+                            onChange={handleChangeImage}
+                        />
+                    </div>
 
                     <label htmlFor="type">Loại nhóm</label>
                     <select
                         id="type"
-                        className="rounded-md border p-2"
+                        className={INPUT_CLASSNAME}
                         {...register('type', { required: true })}
                     >
                         <option value="public">Công khai</option>
@@ -161,9 +170,12 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                     </select>
 
                     <label>Thêm thành viên</label>
-                    <div className="flex flex-col space-y-2 ">
+                    <div className="flex flex-col">
                         <input
-                            className="rounded-md p-2"
+                            className={cn(
+                                INPUT_CLASSNAME,
+                                'rounded-b-none border-b'
+                            )}
                             autoComplete="off"
                             placeholder="Tìm kiếm bạn bè"
                             value={searchFriendValue}
@@ -172,7 +184,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             }
                         />
 
-                        <div className="max-h-[200px] overflow-y-scroll bg-secondary-1 p-2">
+                        <div className="max-h-[200px] overflow-y-scroll bg-primary-1 p-2 dark:bg-dark-primary-1">
                             {friends
                                 .filter((friend) =>
                                     friend.name
@@ -208,7 +220,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                                             }}
                                         />
                                         <Image
-                                            src={friend.image}
+                                            src={friend.avatar}
                                             alt="avatar"
                                             width={32}
                                             height={32}

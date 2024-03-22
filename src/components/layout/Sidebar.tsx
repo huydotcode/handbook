@@ -10,7 +10,7 @@ const Sidebar = () => {
     const user = session?.user;
 
     return (
-        <div className="no-scrollbar h-full w-[200px] overflow-scroll border-r-2 pr-2 dark:border-none lg:w-fit">
+        <div className="no-scrollbar fixed left-0 top-[56px] h-full w-[200px] overflow-scroll border-r-2 pr-2 dark:border-none lg:w-fit md:hidden">
             <div className="p-2">
                 {user && (
                     <Link

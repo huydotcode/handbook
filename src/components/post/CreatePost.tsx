@@ -1,13 +1,13 @@
 'use client';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import React, { FC, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import PostService from '@/lib/services/post.service';
 import { ModalCreatePost } from '.';
-import toast from 'react-hot-toast';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -52,16 +52,14 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 content: '',
             });
 
-            console.log('images', imagesUpload);
-
             setPhotos([]);
 
-            const newPost = await PostService.createPost({
+            const newPost = (await PostService.createPost({
                 content: content,
                 option: option,
                 images: imagesUpload,
                 groupId: groupId,
-            });
+            })) as IPost;
 
             if (newPost) {
                 setPosts((prev) => [newPost, ...prev]);
@@ -115,17 +113,19 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 </div>
             </div>
 
-            <ModalCreatePost
-                show={show}
-                setShow={setShow}
-                handleClose={handleClose}
-                photos={photos}
-                setPhotos={setPhotos}
-                register={register}
-                submit={submit}
-                formState={formState}
-                control={control}
-            />
+            {show && (
+                <ModalCreatePost
+                    show={show}
+                    setShow={setShow}
+                    handleClose={handleClose}
+                    photos={photos}
+                    setPhotos={setPhotos}
+                    register={register}
+                    submit={submit}
+                    formState={formState}
+                    control={control}
+                />
+            )}
         </>
     );
 };

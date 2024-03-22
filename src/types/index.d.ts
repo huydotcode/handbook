@@ -1,51 +1,10 @@
-interface IPost {
-    _id: string;
-    option: string;
-    content: string;
-    creator: {
-        _id: string;
-        name: string;
-        image: string;
-    };
-    shares: number;
-    loves: string[];
-    images: any[];
-    createdAt: Date;
-    updatedAt: Date;
-    commentCount: number;
-    group?: {
-        _id: string;
-        name: string;
-        image: string;
-    };
-}
+type TODO = any;
 
 interface ISessionUser {
     id: string;
     name: string;
     image: string;
     email: string;
-}
-
-interface IUser {
-    _id: string;
-    email: string;
-    name: string;
-    image: string;
-    username: string;
-    password?: string;
-    given_name: string;
-    family_name: string;
-    locale: string;
-    friends?: any[];
-    followers?: any[];
-    following?: any[];
-    notifications?: any[];
-    request?: any[];
-    createdAt: Date;
-    updatedAt: Date;
-    lastAccessed: Date;
-    role: string;
 }
 
 interface IParams {
@@ -58,23 +17,23 @@ interface IParams {
 }
 
 interface ICommentState {
-    comments: Comment[];
+    comments: IComment[];
     countAllComments: number;
     countAllParentComments: number;
 }
 
 interface IPostContext {
     post: IPost;
-    user: IUser;
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
-    commentState: ICommentState;
-    setCommentState: React.Dispatch<React.SetStateAction<ICommentState>>;
+    countAllComments: number;
+    setCountAllComments: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface IFriend {
     _id: string;
     name: string;
-    image: string;
+    username: string;
+    avatar: string;
     isOnline: boolean;
     lastAccessed: Date;
 }

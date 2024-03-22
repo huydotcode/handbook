@@ -10,11 +10,11 @@ interface Props {
 
 const InfomationSection: React.FC<Props> = async ({ className, profile }) => {
     const friends = await UserService.getFriends({
-        userId: profile.userId,
+        userId: profile.user._id,
     });
 
     const photos = await ProfileService.getProfilePicturesAction({
-        userId: profile.userId,
+        userId: profile.user._id,
     });
 
     return (

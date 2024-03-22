@@ -7,10 +7,17 @@ module.exports = {
     ],
     theme: {
         extend: {
+            width: {
+                120: '30rem',
+                135: '33.75rem',
+                140: '35rem',
+                150: '36rem',
+            },
             textColor: {
                 'primary-1': 'var(--dark-primary-1)',
                 'secondary-1': 'var(--secondary-text-1)',
                 'dark-primary-1': 'var(--primary-1)',
+                warning: 'var(--warning)',
             },
             colors: {
                 'primary-1': 'var(--primary-1)',

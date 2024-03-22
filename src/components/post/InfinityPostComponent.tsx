@@ -1,12 +1,11 @@
 'use client';
-import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
-import PostService from '@/lib/services/post.service';
-import { cn } from '@/lib/utils';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
+import { cn } from '@/lib/utils';
 
 interface Props {
     className?: string;
@@ -33,7 +32,8 @@ const InfinityPostComponent: React.FC<Props> = ({
     const [isEnd, setIsEnd] = useState<boolean>(false);
 
     const renderCreatePost = () => {
-        const isCurrentUser = session?.user?.id === userId;
+        const isCurrentUser =
+            session?.user?.id === userId || session?.user.username === username;
         const isGroupPage = type === 'group';
         const isProfilePage = type === 'profile';
 
@@ -67,31 +67,28 @@ const InfinityPostComponent: React.FC<Props> = ({
         setLoading(true);
 
         try {
-            const fetchedPosts = (await PostService.getNewFeedPosts({
-                page,
-                pageSize: PAGE_SIZE,
-                userId,
-                username,
-                groupId,
-                isCurrentUser: session?.user?.id === userId,
-                type,
-            })) as IPost[];
+            const res = await fetch(
+                `/api/posts?page=${page}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}`
+            );
+            const posts = await res.json();
 
-            if (fetchedPosts.length === 0) {
+            if (posts.length === 0) {
                 setIsEnd(true);
+                setLoading(false);
                 return;
             }
-            setPosts((prev) => [...prev, ...fetchedPosts]);
+            setPosts((prev) => [...prev, ...posts]);
 
-            if (fetchedPosts.length < PAGE_SIZE) {
+            if (posts.length < PAGE_SIZE) {
                 setIsEnd(true);
+                setLoading(false);
             }
         } catch (error: any) {
             toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);
         }
-    }, [page, userId, username]);
+    }, [page]);
 
     useEffect(() => {
         fetchPosts();
@@ -99,7 +96,12 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     return (
         <>
-            <div className={cn('w-full', className)}>
+            <div
+                className={cn(
+                    'mx-auto w-135 max-w-full lg:w-120 md:w-full',
+                    className
+                )}
+            >
                 {renderCreatePost()}
 
                 <InfinityScrollComponent

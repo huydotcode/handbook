@@ -1,40 +1,55 @@
 import mongoose, { Schema, Types, model, models } from 'mongoose';
 
-interface IPost {
+interface IPostModel {
     option: string;
-    content: string;
-    images?: Types.Array<Object>;
-    locale?: string;
-    creator: Types.ObjectId;
-    loves: Types.Array<string>;
-    shares?: number;
-    createdAt: Date;
-    updatedAt: Date;
-    commentCount?: number;
-    group?: Types.ObjectId;
+    text: string;
+    images: Types.ObjectId[];
+    author: Types.ObjectId;
+    loves: Types.ObjectId[];
+    shares: Types.ObjectId[];
+    group: Types.ObjectId;
+    comments: Types.ObjectId[];
 }
 
-const PostSchema = new Schema<IPost>({
-    option: {
-        type: String,
-        required: true,
+const PostSchema = new Schema<IPostModel>(
+    {
+        option: {
+            type: String,
+            default: 'public',
+        },
+        text: {
+            type: String,
+            default: '',
+        },
+        images: {
+            type: [Types.ObjectId],
+            default: [],
+        },
+        author: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        loves: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        group: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Group',
+            default: null,
+        },
+        comments: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Comment',
+                default: [],
+            },
+        ],
     },
-    content: String,
-    images: [{ type: Object }],
-    locale: String,
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    loves: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    shares: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-    commentCount: { type: Number, default: 0 },
-    group: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group',
-        default: null,
-    },
-});
+    {
+        timestamps: true,
+    }
+);
 
-const Post = models.Post || model<IPost>('Post', PostSchema);
+const Post = models.Post || model<IPostModel>('Post', PostSchema);
 
 export default Post;

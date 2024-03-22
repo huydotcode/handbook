@@ -1,31 +1,31 @@
+import { usePost } from '@/context';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Avatar from '../ui/Avatar';
 import ActionPost from './ActionPost';
-import { usePost } from '@/context';
 
 const HeaderPost = () => {
     const { data: session } = useSession();
-    const { post, user } = usePost();
+    const { post } = usePost();
 
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center">
                 <Avatar
-                    imgSrc={user.image}
-                    userUrl={user._id}
-                    alt={user.name}
+                    imgSrc={post.author.avatar}
+                    userUrl={post.author._id}
+                    alt={post.author.name}
                     width={40}
                     height={40}
                 />
 
                 <div className="ml-2 flex flex-col items-center ">
                     <Link
-                        href={`/profile/${user?._id}`}
+                        href={`/profile/${post.author._id}`}
                         className="text-base hover:underline dark:text-dark-primary-1"
                     >
-                        {user?.name}
+                        {post.author.name}
                     </Link>
 
                     <TimeAgoConverted
@@ -35,7 +35,7 @@ const HeaderPost = () => {
                 </div>
             </div>
 
-            {session?.user && session.user.id === user._id && (
+            {session?.user && session.user.id === post.author._id && (
                 <ActionPost post={post} />
             )}
         </div>

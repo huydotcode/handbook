@@ -20,6 +20,12 @@ const PostsPage: React.FC<Props> = async ({}) => {
                 {posts.map((post) => {
                     return <PostItem data={post} key={post._id} />;
                 })}
+
+                {posts.length === 0 && (
+                    <div className="col-span-3 text-center text-xl font-semibold text-secondary-1 dark:text-dark-primary-1">
+                        Không có bài viết nào
+                    </div>
+                )}
             </div>
         </div>
     );

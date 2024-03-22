@@ -4,6 +4,18 @@ import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
 
+/*
+    * Group Model: 
+    name: string;
+    description: string;
+    avatar: string;
+    members: Schema.Types.ObjectId[];
+    creator: Schema.Types.ObjectId;
+    coverPhoto: string;
+    type: string;
+    introduction: string;
+*/
+
 // Tạo nhóm mới
 export const createGroup = async ({
     name,
@@ -32,10 +44,10 @@ export const createGroup = async ({
         const newGroup = await new Group({
             name,
             description,
-            members: [session?.user.id],
-            owner: session?.user.id,
-            image: avatar,
+            avatar,
             type,
+            creator: session.user.id,
+            members: [session.user.id],
         });
 
         for (const memberId of members) {

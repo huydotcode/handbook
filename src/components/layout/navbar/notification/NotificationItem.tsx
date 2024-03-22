@@ -1,8 +1,12 @@
 import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
-import { useApp } from '@/context';
-import React from 'react';
+import socketEvent from '@/constants/socketEvent.constant';
+import { useApp, useSocket } from '@/context';
+import { NotificationService } from '@/lib/services';
+import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     data: INotification;
@@ -13,55 +17,117 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
-    const { handleAcceptFriend, handleDeclineFriend } = useApp();
+    const [showRemove, setShowRemove] = useState(false);
+    const { socket } = useSocket();
+    const { setNotifications } = useApp();
+
+    // Chấp nhận lời mời kết bạn
+    const handleAcceptFriend = async () => {
+        try {
+            const notificationAcceptFriend =
+                await NotificationService.acceptFriend({ notification });
+
+            if (socket) {
+                socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
+                    notification: notificationAcceptFriend,
+                });
+            }
+
+            setNotifications((prev) =>
+                prev.filter((item) => item._id !== notification._id)
+            );
+        } catch (error) {
+            toast.error(
+                'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
+            );
+        }
+    };
+
+    // Từ chối lời mời kết bạn
+    const handleDeclineFriend = async () => {
+        try {
+            await NotificationService.declineFriend({ notification });
+
+            setNotifications((prev) =>
+                prev.filter((item) => item._id !== notification._id)
+            );
+        } catch (error) {
+            toast.error('Không thể từ chối lời mời kết bạn. Vui lòng thử lại!');
+        }
+    };
+
+    const removeNotification = async () => {
+        try {
+            await NotificationService.removeNotification({
+                notificationId: notification._id,
+            });
+
+            setNotifications((prev) => {
+                return prev.filter((item) => item._id !== notification._id);
+            });
+        } catch (error) {
+            toast.error('Không thể xóa thông báo. Vui lòng thử lại!');
+        }
+    };
 
     return (
         <>
-            {notification.type == 'friend' && (
-                <div className="flex w-full items-center p-2 ">
-                    <div>
-                        <p className="text-sm">
-                            {notification.send.name}{' '}
-                            {showMessage && 'đã gửi lời mời kết bạn'}
-                        </p>
-                        <div className="mt-2 flex items-center justify-end">
+            <div
+                className="relative flex w-full items-center p-2"
+                onMouseEnter={() => setShowRemove(true)}
+                onMouseLeave={() => setShowRemove(false)}
+            >
+                <div className="mr-4">
+                    <Avatar
+                        width={40}
+                        height={40}
+                        imgSrc={notification.sender.avatar}
+                        userUrl={notification.sender._id}
+                    />
+                </div>
+
+                <div>
+                    <p
+                        className={cn(
+                            'text-sm dark:text-dark-primary-1',
+                            notification.isRead && 'text-secondary-2'
+                        )}
+                    >
+                        <strong>{notification.sender.name}</strong>{' '}
+                        {showMessage && notification.message}
+                    </p>
+                    {notification.type === 'request-add-friend' && (
+                        <div className="mt-2 flex items-center">
                             <Button
                                 className="mr-2"
+                                variant={'primary'}
                                 size={'small'}
-                                onClick={() =>
-                                    handleAcceptFriend({
-                                        notificationId: notification._id,
-                                        senderId: notification.send._id,
-                                    })
-                                }
+                                onClick={handleAcceptFriend}
                             >
                                 {showMessage ? 'Chấp nhận' : <Icons.Tick />}
                             </Button>
                             <Button
                                 className=""
                                 size={'small'}
-                                onClick={() => {
-                                    handleDeclineFriend({
-                                        notificationId: notification._id,
-                                        senderId: notification.send._id,
-                                    });
-                                }}
+                                onClick={handleDeclineFriend}
                             >
                                 {showMessage ? 'Từ chối' : <Icons.Close />}
                             </Button>
                         </div>
-                    </div>
-
-                    <div className="ml-4">
-                        <Avatar
-                            width={40}
-                            height={40}
-                            imgSrc={notification.send.image}
-                            userUrl={notification.send._id}
-                        />
-                    </div>
+                    )}
                 </div>
-            )}
+
+                <Button
+                    className={cn(
+                        'absolute right-0 top-1/2 h-8 w-8 -translate-y-1/2 transition-all duration-200 ease-in-out',
+                        !showRemove && 'opacity-0',
+                        showRemove && 'opacity-100'
+                    )}
+                    onClick={removeNotification}
+                >
+                    <Icons.Close />
+                </Button>
+            </div>
         </>
     );
 };

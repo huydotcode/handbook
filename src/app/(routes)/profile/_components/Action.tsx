@@ -1,9 +1,11 @@
 'use client';
 import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
-import { useApp } from '@/context';
+import socketEvent from '@/constants/socketEvent.constant';
 
-import { useSocket } from '@/context/SocketContext';
+import { useSocial, useSocket } from '@/context';
+import { sendRequestAddFriend } from '@/lib/actions/notification.action';
+import { UserService } from '@/lib/services';
 import React, { FormEventHandler, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -12,8 +14,9 @@ interface Props {
 }
 
 const Action: React.FC<Props> = ({ userId }) => {
-    const { friends } = useApp();
     const { socket } = useSocket();
+
+    const { friends, setFriends } = useSocial();
 
     const isFriend = friends && friends.find((friend) => friend._id === userId);
     const [isRequest, setIsRequest] = useState<boolean>(false);
@@ -23,25 +26,35 @@ const Action: React.FC<Props> = ({ userId }) => {
 
         e.preventDefault();
 
-        if (socket) {
-            await socket.emit('send-request-add-friend', {
+        try {
+            const requestAddFriend = await sendRequestAddFriend({
                 receiverId: userId,
             });
 
-            setIsRequest(true);
-
+            if (socket) {
+                await socket.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {
+                    request: requestAddFriend,
+                });
+            }
             toast.success('Đã gửi lời mời kết bạn');
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra khi gửi lời mời kết bạn!');
+        } finally {
+            setIsRequest(true);
         }
     };
 
     const handleRemoveFriend = async () => {
-        if (socket) {
-            await socket.emit('un-friend', {
-                friendId: userId,
-            });
+        try {
+            await UserService.unfriend({ friendId: userId });
 
-            setIsRequest(false);
+            setFriends((prev) =>
+                prev.filter((friend) => friend._id !== userId)
+            );
+
             toast.success('Đã hủy kết bạn');
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra khi hủy kết bạn!');
         }
     };
 
@@ -58,7 +71,9 @@ const Action: React.FC<Props> = ({ userId }) => {
                 variant={'primary'}
                 size={'medium'}
                 href={
-                    isFriend ? `/messages/f/${userId}` : `/messages/r/${userId}`
+                    isFriend
+                        ? `/messages/friends/${userId}`
+                        : `/messages/r/${userId}`
                 }
             >
                 <span>
@@ -79,7 +94,7 @@ const Action: React.FC<Props> = ({ userId }) => {
                 <p className="ml-2 md:hidden">
                     {isRequest && 'Đã gửi lời mời kết bạn'}
                     {isFriend && 'Hủy kết bạn'}
-                    {!isFriend && 'Kết bạn'}
+                    {!isFriend && !isRequest && 'Kết bạn'}
                 </p>
             </Button>
         </div>

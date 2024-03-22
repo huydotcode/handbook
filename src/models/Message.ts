@@ -1,26 +1,31 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, Types, model, models } from 'mongoose';
 
-interface IMessage {
+interface IMessageModel {
     text: string;
-    roomId: string;
-    userId: Schema.Types.ObjectId;
+    images: Types.ObjectId[];
+    sender: Types.ObjectId;
+    conversation: string;
     isRead: boolean;
-    createdAt: Date;
-    updatedAt: Date;
 }
 
-const MessageSchema = new Schema<IMessage>(
+const MessageSchema = new Schema<IMessageModel>(
     {
-        userId: {
+        sender: {
             type: Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
         },
-        roomId: {
+        conversation: {
             type: String,
+            ref: 'Conversation',
             required: true,
         },
         text: {
             type: String,
+        },
+        images: {
+            type: [Schema.Types.ObjectId],
+            default: [],
         },
         isRead: {
             type: Boolean,
@@ -32,5 +37,6 @@ const MessageSchema = new Schema<IMessage>(
     }
 );
 
-const Message = models.Message || model<IMessage>('Message', MessageSchema);
+const Message =
+    models.Message || model<IMessageModel>('Message', MessageSchema);
 export default Message;

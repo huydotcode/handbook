@@ -1,19 +1,17 @@
 import { Schema, model, models } from 'mongoose';
 
-interface IGroup {
+interface IGroupModel {
     name: string;
     description: string;
-    image: string;
+    avatar: string;
     members: Schema.Types.ObjectId[];
-    owner: Schema.Types.ObjectId;
+    creator: Schema.Types.ObjectId;
     coverPhoto: string;
-    createdAt: Date;
-    updatedAt: Date;
     type: string;
     introduction: string;
 }
 
-const GroupSchema = new Schema<IGroup>(
+const GroupSchema = new Schema<IGroupModel>(
     {
         name: {
             type: String,
@@ -23,11 +21,11 @@ const GroupSchema = new Schema<IGroup>(
             type: String,
             required: true,
         },
-        image: {
+        avatar: {
             type: String,
             default: '/assets/img/group-avatar.jpg',
         },
-        owner: {
+        creator: {
             type: Schema.Types.ObjectId,
             required: true,
         },
@@ -53,5 +51,5 @@ const GroupSchema = new Schema<IGroup>(
     }
 );
 
-const Group = models.Group || model<IGroup>('Group', GroupSchema);
+const Group = models.Group || model<IGroupModel>('Group', GroupSchema);
 export default Group;

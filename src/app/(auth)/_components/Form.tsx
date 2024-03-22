@@ -30,7 +30,11 @@ const Form: React.FC<Props> = ({}) => {
             </h2>
 
             <div className="flex w-full flex-col">
-                {isLoginForm ? <LoginForm /> : <SignupForm />}
+                {isLoginForm ? (
+                    <LoginForm />
+                ) : (
+                    <SignupForm setIsLoginForm={setIsLoginForm} />
+                )}
 
                 <div className="mt-4 flex items-center justify-center">
                     <h5>Bạn {isLoginForm ? 'chưa' : 'đã'} có tài khoản?</h5>

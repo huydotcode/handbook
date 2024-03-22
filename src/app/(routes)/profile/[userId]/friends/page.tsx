@@ -35,7 +35,7 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                                         className="mr-2"
                                         width={42}
                                         height={42}
-                                        imgSrc={friend.image}
+                                        imgSrc={friend.avatar}
                                         userUrl={friend._id}
                                     />
 

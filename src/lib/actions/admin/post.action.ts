@@ -11,7 +11,7 @@ export const fetchAllPosts = async ({
 }) => {
     try {
         const posts = await Post.find()
-            .populate('creator', '_id name image')
+            .populate('creator', '_id name avatar')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit);

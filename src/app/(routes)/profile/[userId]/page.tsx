@@ -11,11 +11,9 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
-    const { profile } = (await ProfileService.getProfileByUserId({
-        userId: params.userId,
-    })) as {
-        profile: IProfile;
-    };
+    const profile = await ProfileService.getProfileByUserId({
+        query: params.userId,
+    });
 
     const props = mongoose.isValidObjectId(params.userId)
         ? {
@@ -25,7 +23,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
 
     return (
         <div className="flex justify-between md:flex-col">
-            <InfomationSection profile={JSON.parse(JSON.stringify(profile))} />
+            <InfomationSection profile={profile} />
 
             <div className="w-[60%] md:w-full">
                 <InfinityPostComponent

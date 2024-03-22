@@ -1,9 +1,9 @@
 'use client';
-import PostProvider from '@/context/PostContext';
-import { HeaderPost, PostContent, FooterPost } from '.';
 import React from 'react';
-import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import { PostProvider } from '@/context';
+import { FooterPost, HeaderPost, PostContent } from '.';
 
 interface Props {
     data: IPost;
@@ -16,14 +16,14 @@ const Post: React.FC<Props> = ({ data: post, setPosts }) => {
 
     const showInPrivate =
         post.option === 'private' &&
-        pathname !== `/profile/${post.creator._id}` &&
-        session?.user?.id !== post.creator._id;
+        pathname !== `/profile/${post.author._id}` &&
+        session?.user?.id !== post.author._id;
 
     if (showInPrivate) return null;
 
     return (
         <PostProvider post={post} setPosts={setPosts}>
-            <div className="relative my-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
+            <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                 <HeaderPost />
                 <PostContent />
                 <FooterPost />

@@ -1,7 +1,7 @@
 'use client';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
-const PostContext = React.createContext<IPostContext | null>(null);
+export const PostContext = React.createContext<IPostContext | null>(null);
 
 interface Props {
     post: IPost;
@@ -9,34 +9,19 @@ interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-interface ICommentState {
-    comments: Comment[];
-    countAllComments: number;
-    countAllParentComments: number;
-}
-
-export const usePost = () => {
-    return useContext(PostContext) as IPostContext;
-};
+export const usePost = () => useContext(PostContext) as IPostContext;
 
 function PostProvider({ post, setPosts, children }: Props) {
-    // State
-    const [commentState, setCommentState] = useState<ICommentState>({
-        comments: [],
-        countAllComments: post.commentCount,
-        countAllParentComments: 0,
-    });
-
-    const user = useMemo(() => {
-        return post.creator;
-    }, [post.creator]) as IUser;
+    const [countAllComments, setCountAllComments] = useState<number>(
+        post.comments.length
+    );
 
     const values = {
         post,
-        user,
-        commentState,
-        setCommentState,
         setPosts,
+
+        countAllComments,
+        setCountAllComments,
     };
 
     return (
