@@ -55,6 +55,7 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                 prev.map((p) => (p._id === post._id ? postEdited : p))
             );
         } catch (error) {
+            console.log('error edit post', error);
             toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
         } finally {
             reset();

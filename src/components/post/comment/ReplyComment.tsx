@@ -56,6 +56,7 @@ const ReplyComment: React.FC<Props> = ({
                 setCountAllComments((prev) => prev + 1);
             }
         } catch (error) {
+            console.log('error send comment', error);
             toast.error('Có lỗi xảy ra khi gửi bình luận');
         } finally {
             reset();
@@ -76,6 +77,7 @@ const ReplyComment: React.FC<Props> = ({
             });
             setIsDeleted(true);
         } catch (error) {
+            console.log('error delete comment', error);
             toast.error('Có lỗi xảy ra khi xóa bình luận');
         }
     };

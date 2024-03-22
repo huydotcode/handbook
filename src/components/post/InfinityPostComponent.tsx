@@ -84,6 +84,7 @@ const InfinityPostComponent: React.FC<Props> = ({
                 setLoading(false);
             }
         } catch (error: any) {
+            console.log('error fetchPosts', error);
             toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);

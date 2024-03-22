@@ -58,6 +58,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                 toast.error(res.error);
             }
         } catch (error: any) {
+            console.log('Error login with crenditals');
             toast.error('Đã có lỗi xảy ra khi đăng nhập', {
                 id: 'error-login',
             });

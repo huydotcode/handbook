@@ -17,6 +17,7 @@ const Form: React.FC<Props> = ({}) => {
             setIsLoading(true);
             await signIn('google');
         } catch (error) {
+            console.log('Error login with google', error);
             toast.error('Đăng nhập thất bại');
         } finally {
             setIsLoading(false);

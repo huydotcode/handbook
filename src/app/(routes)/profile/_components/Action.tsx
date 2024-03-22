@@ -38,6 +38,7 @@ const Action: React.FC<Props> = ({ userId }) => {
             }
             toast.success('Đã gửi lời mời kết bạn');
         } catch (error) {
+            console.log('Error handle add friend', error);
             toast.error('Đã có lỗi xảy ra khi gửi lời mời kết bạn!');
         } finally {
             setIsRequest(true);
@@ -54,6 +55,7 @@ const Action: React.FC<Props> = ({ userId }) => {
 
             toast.success('Đã hủy kết bạn');
         } catch (error) {
+            console.log('Error handle remove friend', error);
             toast.error('Đã có lỗi xảy ra khi hủy kết bạn!');
         }
     };

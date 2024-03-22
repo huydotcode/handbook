@@ -58,6 +58,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
 
             handleClose();
         } catch (error) {
+            console.log('error edit info', error);
             toast.error('Đã có lỗi xảy ra khi cập nhật thông tin!');
         }
     };
@@ -90,7 +91,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                         />
 
                         {errors.work && (
-                            <p className="text-warning text-xs">
+                            <p className="text-xs text-warning">
                                 Trường này tối đa 50 kí tự
                             </p>
                         )}
@@ -115,7 +116,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                         />
 
                         {errors.education && (
-                            <p className="text-warning text-xs">
+                            <p className="text-xs text-warning">
                                 Trường này tối đa 50 kí tự
                             </p>
                         )}
@@ -141,7 +142,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                         </select>
 
                         {errors.location && (
-                            <p className="text-warning text-xs">
+                            <p className="text-xs text-warning">
                                 Trường này tối đa 50 kí tự
                             </p>
                         )}
@@ -166,7 +167,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                         />
 
                         {errors.dateOfBirth && (
-                            <p className="text-warning text-xs">
+                            <p className="text-xs text-warning">
                                 Ngày không hợp lệ
                             </p>
                         )}

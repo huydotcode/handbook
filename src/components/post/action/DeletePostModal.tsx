@@ -26,6 +26,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
             setPosts((prev) => prev.filter((item) => item._id != postId));
         } catch (error: any) {
             handleClose();
+            console.log('error handle delete post', error);
             throw new Error(error);
         } finally {
             handleClose();

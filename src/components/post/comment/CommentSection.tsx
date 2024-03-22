@@ -52,6 +52,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 setCountAllComments((prev) => prev + 1);
             }
         } catch (error: any) {
+            console.log('error send comment', error);
             throw new Error(error);
         } finally {
             formRef.current?.reset();
