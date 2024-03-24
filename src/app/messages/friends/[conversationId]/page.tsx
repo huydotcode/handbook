@@ -44,12 +44,11 @@ const MessagePage: React.FC<Props> = async ({ params: { conversationId } }) => {
     return (
         <>
             <Sidebar currentConversation={conversation} friends={friends} />
-            <div className="w-[80%]">
-                <ChatBox
-                    conversation={conversation}
-                    initialMessages={initialMessages}
-                />
-            </div>
+
+            <ChatBox
+                conversation={conversation}
+                initialMessages={initialMessages}
+            />
         </>
     );
 };

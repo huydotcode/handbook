@@ -81,11 +81,7 @@ const InputMessage: React.FC<Props> = ({
     return (
         <form
             className={cn(
-                'fixed bottom-0 left-0 right-0 z-50 mx-auto flex h-14 items-center justify-center rounded-t-xl bg-transparent',
-                {
-                    'absolute h-12 w-auto': isPopup,
-                    'w-screen': !isPopup,
-                }
+                'z-50 flex h-14 items-center justify-center rounded-t-xl bg-transparent md:fixed md:bottom-2 md:left-0 md:right-0'
             )}
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"

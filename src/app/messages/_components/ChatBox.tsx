@@ -129,26 +129,23 @@ const ChatBox: React.FC<Props> = ({
             >
                 <ChatHeader isPopup={isPopup} currentRoom={conversation} />
 
-                <div
-                    className={cn(
-                        'relative w-full overflow-y-auto overflow-x-hidden p-2',
-                        {
-                            'bottom-12 h-[calc(100%-64px-48px)]': isPopup,
-                            'h-[calc(100%-64px)]': !isPopup,
-                        }
-                    )}
-                >
+                <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden  p-2">
                     {session?.user && (
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b pb-2">
                             <div ref={bottomRef} />
 
-                            {messages.map((msg) => (
-                                <Message
-                                    key={msg._id}
-                                    data={msg}
-                                    messagesInRoom={messages}
-                                />
-                            ))}
+                            {messages
+                                .filter(
+                                    (msg) =>
+                                        msg.conversation === conversation._id
+                                )
+                                .map((msg) => (
+                                    <Message
+                                        key={msg._id}
+                                        data={msg}
+                                        messagesInRoom={messages}
+                                    />
+                                ))}
 
                             {!isEnd && <div ref={topRef} />}
                         </div>

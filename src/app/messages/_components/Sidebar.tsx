@@ -13,7 +13,7 @@ const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
         <>
             <div
                 className={cn(
-                    'mr-2 flex h-full w-[20%] flex-col rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none'
+                    'mr-2 flex h-full max-w-[200px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none'
                 )}
             >
                 <span className="h-[64px] border-b p-4 text-center text-xl font-bold dark:border-none md:hidden">

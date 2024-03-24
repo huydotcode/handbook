@@ -30,7 +30,7 @@ const FriendChatItem: React.FC<Props> = ({ data: friend, isSelect }) => {
         <>
             <Button
                 className={cn(
-                    'relative flex justify-start rounded-none p-4 shadow-none md:justify-center md:p-2',
+                    'relative flex max-w-full justify-between rounded-none p-4 shadow-none md:justify-center md:p-2',
                     isSelect && 'bg-primary-1'
                 )}
                 key={friend._id}
@@ -57,19 +57,19 @@ const FriendChatItem: React.FC<Props> = ({ data: friend, isSelect }) => {
                     </span>
                 </div>
 
-                <div className="flex flex-col md:hidden">
+                <div className="flex flex-1 flex-col md:hidden">
                     <div className="flex items-center justify-between">
                         <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                             {friend.name}
                         </h3>
                     </div>
-                    <p className="ml-2 overflow-ellipsis whitespace-nowrap text-start text-xs">
+                    <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">
                         {lastMsg?.text &&
                         lastMsg?.sender._id == session?.user.id
                             ? 'Bạn: '
                             : `${friendName}: `}
                         {lastMsg?.text ? lastMsg?.text : 'Chưa có tin nhắn'}
-                    </p>
+                    </div>
                 </div>
             </Button>
         </>
