@@ -129,7 +129,7 @@ const ChatBox: React.FC<Props> = ({
             >
                 <ChatHeader isPopup={isPopup} currentRoom={conversation} />
 
-                <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden  p-2">
+                <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
                     {session?.user && (
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b pb-2">
                             <div ref={bottomRef} />

@@ -80,34 +80,30 @@ const InputMessage: React.FC<Props> = ({
 
     return (
         <form
-            className={cn(
-                'z-50 flex h-14 items-center justify-center rounded-t-xl bg-transparent md:fixed md:bottom-2 md:left-0 md:right-0'
-            )}
+            className="relative mx-auto min-w-[50%] max-w-[60vw] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:left-0 md:right-0"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
         >
-            <div className="relative flex w-[80%] max-w-[400px] items-center justify-center overflow-hidden rounded-full border bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
-                <input
-                    {...register('text')}
-                    type="text"
-                    className="w-[calc(100%-64px)] flex-1  px-4 py-2 text-sm outline-none"
-                    placeholder="Nhập tin nhắn..."
-                    spellCheck={false}
-                    autoComplete="off"
-                />
+            <input
+                {...register('text')}
+                className="flex-1 px-4 py-2"
+                type="text"
+                placeholder="Nhập tin nhắn..."
+                spellCheck={false}
+                autoComplete="off"
+            />
 
-                <Button
-                    className="h-full w-12 rounded-r-full border-l text-base"
-                    variant={'event'}
-                    type="submit"
-                >
-                    {isSubmitting ? (
-                        <Icons.Loading className="animate-spin" />
-                    ) : (
-                        <Icons.Send />
-                    )}
-                </Button>
-            </div>
+            <Button
+                className="absolute right-0 top-0 h-full rounded-none border-l px-4 text-base"
+                variant={'event'}
+                type="submit"
+            >
+                {isSubmitting ? (
+                    <Icons.Loading className="animate-spin" />
+                ) : (
+                    <Icons.Send />
+                )}
+            </Button>
         </form>
     );
 };
