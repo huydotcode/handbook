@@ -30,7 +30,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     const formRef = useRef<HTMLFormElement>(null);
 
     // Bình luận
-    const [comments, setComments] = useState<IComment[]>(post.comments);
+    const [comments, setComments] = useState<IComment[]>([]);
     const [page, setPage] = useState<number>(1);
     const [isHasLoadMore, setIsHasLoadMore] = useState<boolean>(
         post.comments.length > 0
@@ -68,6 +68,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             })) as IComment[];
 
             if (comments.length > 0) {
+                console.log('comments', comments);
                 setComments((prev) => [...prev, ...comments]);
             }
 
