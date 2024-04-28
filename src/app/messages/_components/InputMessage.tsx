@@ -80,7 +80,7 @@ const InputMessage: React.FC<Props> = ({
 
     return (
         <form
-            className="relative mx-auto min-w-[50%] max-w-[60vw] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:left-0 md:right-0"
+            className="flex relative mx-auto min-w-[50%] max-w-[60vw] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:left-0 md:right-0"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
         >
@@ -94,7 +94,7 @@ const InputMessage: React.FC<Props> = ({
             />
 
             <Button
-                className="absolute right-0 top-0 h-full rounded-none border-l px-4 text-base"
+                className="h-full rounded-none border-l px-4 text-base"
                 variant={'event'}
                 type="submit"
             >
