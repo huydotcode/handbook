@@ -13,7 +13,7 @@ const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
         <>
             <div
                 className={cn(
-                    'mr-2 flex h-full max-w-[200px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none'
+                    'mr-2 flex h-full w-[200px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-fit'
                 )}
             >
                 <span className="h-[64px] border-b p-4 text-center text-xl font-bold dark:border-none md:hidden">
@@ -21,15 +21,18 @@ const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
                 </span>
 
                 {friends &&
-                    friends.map((friend: IFriend) => (
-                        <FriendChatItem
-                            data={friend}
-                            key={friend._id}
-                            isSelect={
-                                currentConversation?.friend?._id === friend._id
-                            }
-                        />
-                    ))}
+                    friends.map((friend: IFriend) => {
+                        return (
+                            <FriendChatItem
+                                data={friend}
+                                key={friend._id}
+                                isSelect={
+                                    currentConversation?.friend?._id ===
+                                    friend._id
+                                }
+                            />
+                        );
+                    })}
 
                 {friends.length === 0 && (
                     <div className="flex h-full flex-col items-center justify-center">

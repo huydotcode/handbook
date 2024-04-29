@@ -10,7 +10,6 @@ import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
 import Message from './Message';
-import toast from 'react-hot-toast';
 
 interface Props {
     className?: string;

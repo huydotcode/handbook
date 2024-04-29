@@ -23,10 +23,6 @@ const MessagePage: React.FC<Props> = async ({ params: { conversationId } }) => {
         conversationType: 'f',
     })) as IPrivateConversation;
 
-    const friends = await UserService.getFriends({
-        userId: session.user.id,
-    });
-
     const friend = conversation.members.find(
         (member) => member._id != session.user.id
     );
@@ -43,8 +39,6 @@ const MessagePage: React.FC<Props> = async ({ params: { conversationId } }) => {
 
     return (
         <>
-            <Sidebar currentConversation={conversation} friends={friends} />
-
             <ChatBox
                 conversation={conversation}
                 initialMessages={initialMessages}

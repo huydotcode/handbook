@@ -80,6 +80,10 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             });
         } catch (error: any) {
             throw new Error(error.message);
+        } finally {
+            reset({
+                content: '',
+            });
         }
     };
     const submit = handleSubmit(onSubmit);

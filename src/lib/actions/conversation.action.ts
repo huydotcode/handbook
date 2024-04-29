@@ -70,20 +70,8 @@ export const getConversation = async ({
                 _id: newConversation._id,
             }).populate('members', POPULATE_USER);
 
-            const friend = newConversationPopulated.members.find(
-                (m: IUser) => m._id !== session?.user.id
-            );
-
-            newConversation.friend = friend;
-
             return JSON.parse(JSON.stringify(newConversationPopulated));
         }
-
-        const friend = conversation.members.find(
-            (m: IUser) => m._id.toString() !== session?.user.id
-        );
-
-        conversation.toObject().friend = friend;
 
         return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {

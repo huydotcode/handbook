@@ -68,7 +68,6 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             })) as IComment[];
 
             if (comments.length > 0) {
-                console.log('comments', comments);
                 setComments((prev) => [...prev, ...comments]);
             }
 

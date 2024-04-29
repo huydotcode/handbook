@@ -202,7 +202,6 @@ export const authOptions: NextAuthOptions = {
 
                     await newUser.save();
 
-                    console.log('new user created', newUser);
 
                     const profile = new Profile({
                         user: newUser._id,
