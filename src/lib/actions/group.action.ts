@@ -87,12 +87,6 @@ export const getGroups = async ({ userId }: { userId: string }) => {
             },
         });
 
-        // return {
-        //     msg: 'Lấy danh sách nhóm thành công!',
-        //     success: true,
-        //     data: JSON.parse(JSON.stringify(groups)) as IGroup[],
-        // };
-
         return JSON.parse(JSON.stringify(groups));
     } catch (error) {
         return {

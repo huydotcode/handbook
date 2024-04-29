@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Avatar from '../ui/Avatar';
 import ActionPost from './ActionPost';
+import { Icons } from '../ui';
 
 const HeaderPost = () => {
     const { data: session } = useSession();
@@ -21,18 +22,32 @@ const HeaderPost = () => {
                 />
 
                 <div className="ml-2 flex flex-col items-center ">
-                    <Link
-                        href={`/profile/${post.author._id}`}
-                        className="text-base hover:underline dark:text-dark-primary-1"
-                    >
-                        {post.author.name}
-                    </Link>
+                    <div className="flex items-center">
+                        <Link
+                            href={`/profile/${post.author._id}`}
+                            className="text-base hover:underline dark:text-dark-primary-1"
+                        >
+                            {post.author.name}
+                        </Link>
+
+                        {post.group && (
+                            <Link
+                                href={`/groups/${post.group._id}`}
+                                className="ml-1 flex items-center text-sm hover:underline dark:text-dark-primary-1"
+                            >
+                                <Icons.ArrowRight className="mr-1" />
+                                {post.group.name}
+                            </Link>
+                        )}
+                    </div>
 
                     <TimeAgoConverted
                         className="w-full text-xs text-secondary-1"
                         time={post.createdAt}
                     />
                 </div>
+
+                {/* Group */}
             </div>
 
             {session?.user && session.user.id === post.author._id && (

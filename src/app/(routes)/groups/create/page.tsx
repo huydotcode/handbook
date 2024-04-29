@@ -60,24 +60,24 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
             return;
         }
 
-        const res = await fetch('/api/images', {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: null,
-                images: [photo],
-            }),
-        });
+        // const res = await fetch('/api/images', {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         userId: null,
+        //         images: [photo],
+        //     }),
+        // });
 
-        const image = await res.json();
+        // const image = await res.json();
 
-        if (!image) {
-            toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
-            return;
-        }
+        // if (!image) {
+        //     toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
+        //     return;
+        // }
 
         const { data: newGroup, msg } = await GroupService.createGroup({
             ...data,
-            avatar: image[0],
+            avatar: '',
             members,
         });
 

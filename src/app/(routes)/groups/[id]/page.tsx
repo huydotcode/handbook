@@ -17,12 +17,15 @@ const page: React.FC<Props> = async ({ params: { id: groupId } }) => {
 
     return (
         <div className="flex md:flex-col-reverse">
-            <InfinityPostComponent
-                className="mr-2 md:mr-0 md:mt-2"
-                groupId={groupId}
-                type="group"
-            />
             <Infomation group={group} />
+
+            <div className="ml-4 flex flex-1 md:w-full">
+                <InfinityPostComponent
+                    className="w-full"
+                    groupId={groupId}
+                    type="group"
+                />
+            </div>
         </div>
     );
 };

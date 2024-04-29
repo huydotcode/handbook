@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
@@ -31,25 +31,20 @@ const InfinityPostComponent: React.FC<Props> = ({
     const [posts, setPosts] = useState<IPost[]>([]);
     const [isEnd, setIsEnd] = useState<boolean>(false);
 
-    const renderCreatePost = () => {
+    const renderCreatePost = useCallback(() => {
         const isCurrentUser =
             session?.user?.id === userId || session?.user.username === username;
         const isGroupPage = type === 'group';
         const isProfilePage = type === 'profile';
-
         const currentUser = session?.user;
 
-        // Kiểm tra nếu là trang "/" thì render ra CreatePost
-        if (type === 'home' && currentUser) {
+        if (
+            (type === 'home' && currentUser) ||
+            (isProfilePage && isCurrentUser)
+        ) {
             return <CreatePost setPosts={setPosts} />;
         }
 
-        // Kiểm tra nếu là trang profile và là trang của chính mình thì render ra CreatePost
-        if (isProfilePage && isCurrentUser) {
-            return <CreatePost setPosts={setPosts} />;
-        }
-
-        // Kiểm tra nếu là trang group và là thành viên của nhóm thì render ra CreatePost
         if (isGroupPage && currentUser && groupId) {
             return (
                 <CreatePost
@@ -61,35 +56,27 @@ const InfinityPostComponent: React.FC<Props> = ({
         }
 
         return null;
-    };
+    }, [session, userId, username, type, groupId]);
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
-
         try {
             const res = await fetch(
-                `/api/posts?page=${page}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}`
+                `/api/posts?page=${page}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
             );
-            const posts = await res.json();
+            const fetchedPosts = await res.json();
 
-            if (posts.length === 0) {
+            if (fetchedPosts.length === 0) {
                 setIsEnd(true);
-                setLoading(false);
-                return;
             }
-            setPosts((prev) => [...prev, ...posts]);
-
-            if (posts.length < PAGE_SIZE) {
-                setIsEnd(true);
-                setLoading(false);
-            }
+            setPosts((prev) => [...prev, ...fetchedPosts]);
         } catch (error: any) {
             console.log('error fetchPosts', error);
             toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);
         }
-    }, [page]);
+    }, [page, userId, username, groupId]);
 
     useEffect(() => {
         fetchPosts();
