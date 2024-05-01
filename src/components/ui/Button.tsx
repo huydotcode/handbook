@@ -11,18 +11,18 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'rounded-xl shadow-md hover:bg-hover-1 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
+                    'rounded-md shadow-md hover:bg-hover-1 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
                 primary:
-                    'bg-primary-2 rounded-xl text-white hover:bg-hover-blue',
+                    'bg-primary-2 rounded-md text-white hover:bg-hover-blue',
                 contained: '',
                 outlined: 'border hover:border-transparent hover:',
                 text: 'hover:underline',
-                event: 'rounded-xl p-2 hover:bg-hover-2 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
+                event: 'rounded-md p-2 hover:bg-hover-2 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
                 custom: '',
                 warning:
-                    'rounded-xl shadow-md bg-warning text-white hover:bg-hover-warning',
+                    'rounded-md shadow-md bg-warning text-white hover:bg-hover-warning',
                 secondary:
-                    'rounded-xl bg-secondary-2 text-primary-1 hover:bg-hover-secondary dark:bg-dark-secondary-2 dark:hover:bg-hover-secondary-dark',
+                    'rounded-md bg-secondary-2 text-primary-1 hover:bg-hover-secondary dark:bg-dark-secondary-2 dark:hover:bg-hover-secondary-dark',
             },
             size: {
                 default: 'text-sm p-2',
