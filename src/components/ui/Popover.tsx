@@ -43,7 +43,7 @@ const Popover: FC<Props> = ({
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             mt: 1.5,
             borderRadius: 3,
-            padding: 1.5,
+            padding: 1,
             '& .MuiAvatar-root': {
                 width: 32,
                 height: 32,

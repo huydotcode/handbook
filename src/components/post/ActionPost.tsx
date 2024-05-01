@@ -60,9 +60,9 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                 setAnchorEl={setAnchorEl}
                 handleClose={() => setShowDropdown(false)}
             >
-                <div className="relative mx-2 flex min-w-[200px] flex-col overflow-hidden rounded-xl">
+                <div className="relative flex min-w-[200px] flex-col overflow-hidden">
                     <Button
-                        className="w-full justify-start rounded-none shadow-none"
+                        className="w-full justify-start rounded-sm shadow-none"
                         size={'medium'}
                         onClick={() => handleShowModal('editModal')}
                     >
@@ -70,7 +70,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     </Button>
 
                     <Button
-                        className="w-full justify-start rounded-none shadow-none"
+                        className="w-full justify-start rounded-sm shadow-none"
                         size={'medium'}
                         onClick={() => handleShowModal('deleteModal')}
                     >
