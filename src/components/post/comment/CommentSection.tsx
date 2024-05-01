@@ -1,13 +1,13 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
+import { usePost } from '@/context';
 import CommentService from '@/lib/services/comment.service';
+import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import InputComment from './InputComment';
 import Comment from './Comment';
-import { usePost } from '@/context';
-import logger from '@/utils/logger';
+import InputComment from './InputComment';
 
 interface Props {
     postId: string;

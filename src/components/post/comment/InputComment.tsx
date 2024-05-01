@@ -1,5 +1,5 @@
 import { TextareaAutosize } from '@mui/material';
-import { KeyboardEventHandler, useEffect } from 'react';
+import { KeyboardEventHandler } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
 type IFormData = {
