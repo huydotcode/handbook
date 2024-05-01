@@ -7,13 +7,19 @@ interface Props {
     Right?: React.ReactNode;
 }
 
+const ASIDE_WIDTH = 'w-[200px] md:w-fit';
+
 const className =
     'fixed top-[72px] h-screen transition-all duration-300 dark:border-none md:hidden';
 
 const IndexLayout: React.FC<Props> = ({ Center, Left, Right }) => {
     return (
         <div className="mt-2">
-            {Left && <aside className={cn(className, 'left-0')}>{Left}</aside>}
+            {Left && (
+                <aside className={cn(className, ASIDE_WIDTH, 'left-0')}>
+                    {Left}
+                </aside>
+            )}
 
             {Center && <div className="mx-auto">{Center}</div>}
 

@@ -151,7 +151,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                     {/* Birthday */}
                     <div className="mb-2">
                         <label className="text-sm" htmlFor="dateOfBirth">
-                            Nơi bạn ở
+                            Ngày sinh
                         </label>
 
                         <input

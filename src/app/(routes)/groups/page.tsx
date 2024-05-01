@@ -21,9 +21,12 @@ const GroupsPage: React.FC<Props> = async ({}) => {
             Left={<Sidebar groups={groups} />}
             Center={
                 <>
-                    <h5 className="text-xl font-bold">Hoạt động gần đây</h5>
                     {groups.length > 0 ? (
-                        <InfinityPostComponent className="mt-4" type="group" />
+                        <InfinityPostComponent
+                            className="mt-4"
+                            title="Hoạt động gần đây"
+                            type="group"
+                        />
                     ) : (
                         <div className="mt-2 flex items-center justify-center">
                             <p className="mr-2 text-secondary-1">

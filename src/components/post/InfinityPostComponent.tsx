@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
 import { cn } from '@/lib/utils';
+import { title } from 'process';
 
 interface Props {
     className?: string;
@@ -13,6 +14,7 @@ interface Props {
     username?: string;
     groupId?: string;
     type?: 'home' | 'profile' | 'group';
+    title?: string;
 }
 
 const PAGE_SIZE = 3;
@@ -23,6 +25,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     groupId,
     username,
     type = 'home',
+    title,
 }) => {
     const { data: session } = useSession();
     const [page, setPage] = useState<number>(1);
@@ -90,6 +93,8 @@ const InfinityPostComponent: React.FC<Props> = ({
                     className
                 )}
             >
+                {title && <h5 className="mb-2 text-xl font-bold">{title}</h5>}
+
                 {renderCreatePost()}
 
                 <InfinityScrollComponent
