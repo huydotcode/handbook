@@ -1,7 +1,13 @@
+import { Navbar } from '@/components/layout';
 import { Loading } from '@/components/ui';
 
 const LoadingPage = () => {
-    return <Loading fullScreen />;
+    return (
+        <>
+            <Navbar />
+            <Loading fullScreen />
+        </>
+    );
 };
 
 export default LoadingPage;
