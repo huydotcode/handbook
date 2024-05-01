@@ -114,14 +114,16 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
 
             toast.custom(
                 <Button
-                    className="bg-white"
+                    className="p-4"
                     href={`/messages/friends/${message.conversation}`}
+                    variant={'primary'}
                 >
                     Bạn có tin nhắn mới!
                 </Button>,
                 {
                     id: message.conversation,
                     position: 'bottom-left',
+                    duration: 5000,
                 }
             );
         });
