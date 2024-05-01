@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
+import logger from '@/utils/logger';
 interface Props {
     className?: string;
 }
@@ -52,7 +53,10 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                 });
                 setSearchResult(users);
             } catch (error: any) {
-                throw new Error(error);
+                logger({
+                    message: 'Error fetch search data' + error,
+                    type: 'error',
+                });
             } finally {
                 setIsSearching(false);
             }

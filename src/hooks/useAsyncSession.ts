@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,10 @@ export default function useAsyncSession({ fn, setState, agrs }: Args): State {
                     setData(data);
                 }
             } catch (error: any) {
-                throw new Error(error);
+                logger({
+                    message: 'Error useAsyncSession' + error,
+                    type: 'error',
+                });
             } finally {
                 setLoading(false);
             }

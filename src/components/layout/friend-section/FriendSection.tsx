@@ -3,6 +3,7 @@ import { UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import FriendList from './FriendList';
+import { getFriends } from '@/lib/actions/user.action';
 
 interface Props {
     className?: string;
@@ -14,7 +15,9 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
 
     if (!session) return null;
 
-    const friends = [] as IFriend[];
+    const friends = await UserService.getFriends({
+        userId: session.user.id,
+    });
 
     return (
         <div

@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 
 import PostService from '@/lib/services/post.service';
 import { ModalCreatePost } from '.';
+import logger from '@/utils/logger';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -65,7 +66,10 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 setPosts((prev) => [newPost, ...prev]);
             }
         } catch (error: any) {
-            throw new Error(error);
+            logger({
+                message: 'Error send post' + error,
+                type: 'error',
+            });
         }
     };
 
@@ -79,7 +83,10 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 error: 'Đã có lỗi xảy ra khi đăng bài!',
             });
         } catch (error: any) {
-            throw new Error(error.message);
+            logger({
+                message: 'Error submit post' + error,
+                type: 'error',
+            });
         } finally {
             reset({
                 content: '',

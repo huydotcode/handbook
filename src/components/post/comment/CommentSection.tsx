@@ -57,7 +57,6 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 message: 'Error send comment' + error,
                 type: 'error',
             });
-            throw new Error(error);
         } finally {
             formRef.current?.reset();
         }

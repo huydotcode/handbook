@@ -31,7 +31,6 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
                 message: 'Error delete post' + error,
                 type: 'error',
             });
-            throw new Error(error);
         } finally {
             handleClose();
         }

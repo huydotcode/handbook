@@ -20,7 +20,8 @@ const Header: React.FC<Props> = ({ group }) => {
                     <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-dark-secondary-2 md:h-[120px] md:w-[120px]">
                         <Image
                             className="rounded-full"
-                            src={group?.avatar || ''}
+                            // src={group?.avatar || ''}
+                            src={'/assets/img/group-avatar.jpg'}
                             alt={group?.name || ''}
                             fill
                         />
