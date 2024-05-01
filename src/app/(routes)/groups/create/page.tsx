@@ -102,13 +102,14 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
     return (
         <>
-            <div className="mx-auto w-[500px] max-w-screen bg-secondary-1 p-4 dark:bg-dark-secondary-2">
+            <div className="mx-auto mt-6 w-[500px] max-w-screen rounded-xl bg-secondary-1 p-6 dark:bg-dark-secondary-2">
                 <h5 className="text-xl font-bold">Tạo nhóm</h5>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="mt-4 flex flex-col"
                     autoComplete="off"
                 >
+                    {/* Tên nhóm */}
                     <div>
                         <label htmlFor="name">
                             <h2>Tên nhóm</h2>
@@ -122,6 +123,8 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             {...register('name', { required: true })}
                         />
                     </div>
+
+                    {/* Mô tả nhóm */}
                     <div>
                         <label htmlFor="description">Mô tả nhóm</label>
                         <input
@@ -133,6 +136,8 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             {...register('description', { required: true })}
                         />
                     </div>
+
+                    {/* Ảnh đại diện */}
                     <div>
                         <label htmlFor="avatar">Ảnh đại diện</label>
                         <label className="flex items-center" htmlFor="avatar">
@@ -159,6 +164,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                         />
                     </div>
 
+                    {/* Loại nhóm */}
                     <label htmlFor="type">Loại nhóm</label>
                     <select
                         id="type"
@@ -169,6 +175,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                         <option value="private">Riêng tư</option>
                     </select>
 
+                    {/* Thêm thành viên */}
                     <label>Thêm thành viên</label>
                     <div className="flex flex-col">
                         <input
@@ -184,6 +191,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             }
                         />
 
+                        {/* Thêm bạn vào nhóm */}
                         <div className="max-h-[200px] overflow-y-scroll bg-primary-1 p-2 dark:bg-dark-primary-1">
                             {friends
                                 .filter((friend) =>
@@ -235,6 +243,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                     </div>
 
                     <Button
+                        className="mt-2"
                         type="submit"
                         variant="primary"
                         disabled={isSubmitting}
