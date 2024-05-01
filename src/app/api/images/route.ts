@@ -32,7 +32,10 @@ cloudinary.config({
 */
 
 export async function POST(request: Request) {
-    logger('API: UPLOAD IMAGES');
+    logger({
+        message: 'API: UPLOAD IMAGES',
+        type: 'error',
+    });
     const { images, userId } = await request.json();
     const imagesResponse: any[] = [];
 
@@ -83,7 +86,9 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-    logger('API: DELETE IMAGES');
+    logger({
+        message: 'API: DELETE IMAGES',
+    });
     const { images }: { images: IImage[]; postId: string } =
         await request.json();
 

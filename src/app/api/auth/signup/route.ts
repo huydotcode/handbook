@@ -1,5 +1,6 @@
 import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
+import logger from '@/utils/logger';
 import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
@@ -67,7 +68,10 @@ export const POST = async (req: Request, res: Response) => {
             }
         );
     } catch (error) {
-        console.log('Error', error);
+        logger({
+            message: 'Error signup Route' + error,
+            type: 'error',
+        });
         return new Response(
             JSON.stringify({ msg: 'Đăng ký thất bại', success: false, error }),
             {

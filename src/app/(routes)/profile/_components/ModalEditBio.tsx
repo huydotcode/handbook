@@ -1,5 +1,6 @@
 import { Button, Modal } from '@/components/ui';
 import { ProfileService } from '@/lib/services';
+import logger from '@/utils/logger';
 import { TextareaAutosize } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
@@ -42,7 +43,10 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
                 userId: session.user.id,
             });
         } catch (error) {
-            console.log('error change bio', error);
+            logger({
+                message: 'error change bio' + error,
+                type: 'error',
+            });
             toast.error('Không thể thay đổi tiểu sử! Đã có lỗi xảy ra');
         } finally {
             handleClose();

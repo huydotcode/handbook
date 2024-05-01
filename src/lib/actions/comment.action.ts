@@ -3,6 +3,7 @@ import { Comment, Post } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { isValidObjectId } from 'mongoose';
 import { getAuthSession } from '../auth';
+import logger from '@/utils/logger';
 
 /*
     * Comment Model: 
@@ -65,7 +66,10 @@ export const getCommentsByPostId = async ({
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
-        console.log(error);
+        logger({
+            message: 'Erro get comment by post id' + error,
+            type: 'error',
+        });
         throw new Error(error);
     }
 };

@@ -1,5 +1,6 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
+import logger from '@/utils/logger';
 import mongoose from 'mongoose';
 
 const POPULATE_USER = 'name username avatar';
@@ -76,8 +77,6 @@ export const GET = async (request: Request, response: Response) => {
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 });
-
-        console.log('POSTS', posts);
 
         return new Response(JSON.stringify(posts), { status: 200 });
     } catch (error) {

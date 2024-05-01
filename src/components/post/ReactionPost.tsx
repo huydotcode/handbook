@@ -6,6 +6,7 @@ import React from 'react';
 import PostService from '@/lib/services/post.service';
 import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
+import logger from '@/utils/logger';
 
 interface Props {
     session: Session | null;
@@ -44,8 +45,10 @@ const ReactionPost: React.FC<Props> = ({ session, post }) => {
                     postId: post._id,
                 });
             } catch (error: any) {
-                console.log('Error: ', error);
-                throw new Error(error);
+                logger({
+                    message: 'Error reaction post' + error,
+                    type: 'error',
+                });
             }
         },
         onError: () => {

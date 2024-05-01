@@ -1,5 +1,6 @@
 'use server';
 import { Post } from '@/models';
+import logger from '@/utils/logger';
 import { revalidatePath } from 'next/cache';
 
 export const fetchAllPosts = async ({
@@ -18,7 +19,10 @@ export const fetchAllPosts = async ({
 
         return JSON.parse(JSON.stringify(posts));
     } catch (error) {
-        console.log('Error fetching posts:', error);
+        logger({
+            message: 'Error fetch all posts' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -28,7 +32,10 @@ export const fetchPostsCount = async () => {
 
         return JSON.parse(JSON.stringify(postCount));
     } catch (error) {
-        console.log('Error fetching posts count:', error);
+        logger({
+            message: 'Error fetch posts count',
+            type: 'error',
+        });
     }
 };
 
@@ -44,6 +51,9 @@ export const deletePost = async ({
 
         revalidatePath(path);
     } catch (error) {
-        console.log('Error deleting post:', error);
+        logger({
+            message: 'Error delete post' + error,
+            type: 'error',
+        });
     }
 };

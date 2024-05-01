@@ -1,5 +1,6 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
+import logger from '@/utils/logger';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -58,7 +59,10 @@ const LoginForm: React.FC<Props> = ({}) => {
                 toast.error(res.error);
             }
         } catch (error: any) {
-            console.log('Error login with crenditals');
+            logger({
+                message: 'Error login wih crenditals' + error,
+                type: 'error',
+            });
             toast.error('Đã có lỗi xảy ra khi đăng nhập', {
                 id: 'error-login',
             });

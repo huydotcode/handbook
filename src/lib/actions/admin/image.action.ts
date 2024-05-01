@@ -1,5 +1,6 @@
 'use server';
 import { Image } from '@/models';
+import logger from '@/utils/logger';
 
 export const fetchAllPhotos = async () => {
     try {
@@ -7,6 +8,9 @@ export const fetchAllPhotos = async () => {
 
         return JSON.parse(JSON.stringify(images));
     } catch (error) {
-        console.log('Error fetching images:', error);
+        logger({
+            message: 'Error fetch all photos' + error,
+            type: 'error',
+        });
     }
 };

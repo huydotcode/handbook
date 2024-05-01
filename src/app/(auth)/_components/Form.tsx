@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
+import logger from '@/utils/logger';
 
 interface Props {}
 
@@ -17,7 +18,10 @@ const Form: React.FC<Props> = ({}) => {
             setIsLoading(true);
             await signIn('google');
         } catch (error) {
-            console.log('Error login with google', error);
+            logger({
+                message: 'Error login with google' + error,
+                type: 'error',
+            });
             toast.error('Đăng nhập thất bại');
         } finally {
             setIsLoading(false);

@@ -1,11 +1,13 @@
 import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
+import logger from '@/utils/logger';
 
 import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import toast from 'react-hot-toast';
 
 interface OAuthCredentials {
     iss: string;
@@ -127,7 +129,10 @@ export const authOptions: NextAuthOptions = {
             const userExists = await User.findOne({ email: token.email });
 
             if (!userExists) {
-                console.log('User not found');
+                logger({
+                    message: 'Error user exists',
+                    type: 'error',
+                });
                 return {
                     id: '',
                     name: '',
@@ -202,7 +207,6 @@ export const authOptions: NextAuthOptions = {
 
                     await newUser.save();
 
-
                     const profile = new Profile({
                         user: newUser._id,
                         coverPhoto: '',
@@ -232,7 +236,10 @@ export const authOptions: NextAuthOptions = {
 
                 return true;
             } catch (error) {
-                console.log('Error checking if user exists ');
+                logger({
+                    message: 'Error signin auth' + error,
+                    type: 'error',
+                });
                 return false;
             }
         },

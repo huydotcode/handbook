@@ -11,7 +11,10 @@ cloudinary.config({
 });
 
 export const uploadImage = async ({ image }: { image: any }) => {
-    logger('API: UPLOAD IMAGES');
+    logger({
+        message: 'API: UPLOAD IMAGES',
+        type: 'error',
+    });
     const session = await getAuthSession();
 
     try {

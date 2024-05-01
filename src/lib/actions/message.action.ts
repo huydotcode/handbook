@@ -2,6 +2,7 @@
 import { Message } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
+import logger from '@/utils/logger';
 
 /*
     * Message Model: 
@@ -38,7 +39,10 @@ export const getMessagesWithConversationId = async ({
 
         return JSON.parse(JSON.stringify(messages));
     } catch (error) {
-        console.log(error);
+        logger({
+            message: 'Error get messages with conversation id' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -75,7 +79,10 @@ export const sendMessage = async ({
 
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
-        console.log(error);
+        logger({
+            message: 'Error send messsage' + error,
+            type: 'error',
+        });
     }
 };
 

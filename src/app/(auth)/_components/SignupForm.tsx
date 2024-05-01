@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui';
+import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -64,7 +65,11 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                 });
             }
         } catch (error) {
-            console.log(error);
+            logger({
+                message: 'Error signup' + error,
+                type: 'error',
+            });
+            toast.error('Có lỗi xảy ra khi đăng ký');
         }
     };
 

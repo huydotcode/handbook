@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import InputComment from './InputComment';
 import Comment from './Comment';
 import { usePost } from '@/context';
+import logger from '@/utils/logger';
 
 interface Props {
     postId: string;
@@ -52,7 +53,10 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 setCountAllComments((prev) => prev + 1);
             }
         } catch (error: any) {
-            console.log('error send comment', error);
+            logger({
+                message: 'Error send comment' + error,
+                type: 'error',
+            });
             throw new Error(error);
         } finally {
             formRef.current?.reset();

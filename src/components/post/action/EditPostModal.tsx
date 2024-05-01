@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { IShowModal } from '../ActionPost';
 import PostService from '@/lib/services/post.service';
 import toast from 'react-hot-toast';
+import logger from '@/utils/logger';
 
 interface Props {
     show: boolean;
@@ -55,7 +56,10 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                 prev.map((p) => (p._id === post._id ? postEdited : p))
             );
         } catch (error) {
-            console.log('error edit post', error);
+            logger({
+                message: 'Error edit post' + error,
+                type: 'error',
+            });
             toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
         } finally {
             reset();

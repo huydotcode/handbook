@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import Comment from './Comment';
 import InputComment from './InputComment';
 import { usePost } from '@/context';
+import logger from '@/utils/logger';
 
 interface Props {
     parentId: string;
@@ -56,7 +57,10 @@ const ReplyComment: React.FC<Props> = ({
                 setCountAllComments((prev) => prev + 1);
             }
         } catch (error) {
-            console.log('error send comment', error);
+            logger({
+                message: 'Error send reply comments' + error,
+                type: 'error',
+            });
             toast.error('Có lỗi xảy ra khi gửi bình luận');
         } finally {
             reset();
@@ -77,7 +81,10 @@ const ReplyComment: React.FC<Props> = ({
             });
             setIsDeleted(true);
         } catch (error) {
-            console.log('error delete comment', error);
+            logger({
+                message: 'Error delete comment' + error,
+                type: 'error',
+            });
             toast.error('Có lỗi xảy ra khi xóa bình luận');
         }
     };

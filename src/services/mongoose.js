@@ -1,3 +1,4 @@
+import logger from '@/utils/logger';
 import mongoose from 'mongoose';
 
 const uri = process.env.MONGODB_URI;
@@ -5,22 +6,26 @@ const uri = process.env.MONGODB_URI;
 let isConnected = false; // Variable to track the connection status
 
 const connectToDB = async () => {
-    // Set strict query mode for Mongoose to prevent unknown field queries.
     mongoose.set('strictQuery', true);
 
-    if (!uri) return console.log('Missing MongoDB URL');
-
-    // If the connection is already established, return without creating a new connection.
-    if (isConnected) {
+    if (!uri) {
+        logger({
+            message: "Missing URI",
+            type: "error"
+        })
         return;
-    }
+    };
+
+    if (isConnected) return;
 
     try {
         await mongoose.connect(uri);
 
-        isConnected = true; // Set the connection status to true
+        isConnected = true; 
     } catch (error) {
-        console.log('Error: ', error);
+        logger({
+            message: "Error connect to db" + error
+        })
     }
 };
 

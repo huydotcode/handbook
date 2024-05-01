@@ -3,6 +3,7 @@ import { User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { FilterQuery, SortOrder } from 'mongoose';
 import { getAuthSession } from '../auth';
+import logger from '@/utils/logger';
 
 /*
     * Notification Model: 
@@ -73,7 +74,10 @@ export const getFriends = async ({ userId }: { userId: string }) => {
 
         return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
-        console.log(error);
+        logger({
+            message: 'Error get friends' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -89,7 +93,10 @@ export const getUserByUserId = async ({ userId }: { userId: string }) => {
 
         return JSON.parse(JSON.stringify(friend));
     } catch (error: any) {
-        console.log(error);
+        logger({
+            message: 'Error get user by user id' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -112,6 +119,9 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
 
         return true;
     } catch (error: any) {
-        console.log(error);
+        logger({
+            message: 'Error un friend' + error,
+            type: 'error',
+        });
     }
 };

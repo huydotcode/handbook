@@ -1,6 +1,7 @@
 import { Button, Modal } from '@/components/ui';
 import { getLocations } from '@/lib/actions/profile.action';
 import { ProfileService } from '@/lib/services';
+import logger from '@/utils/logger';
 import { TextareaAutosize } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
@@ -58,7 +59,10 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
 
             handleClose();
         } catch (error) {
-            console.log('error edit info', error);
+            logger({
+                message: 'Error edit info' + error,
+                type: 'error',
+            });
             toast.error('Đã có lỗi xảy ra khi cập nhật thông tin!');
         }
     };

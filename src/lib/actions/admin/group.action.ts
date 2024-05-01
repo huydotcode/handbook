@@ -2,6 +2,7 @@
 
 import { Group } from '@/models';
 import connectToDB from '@/services/mongoose';
+import logger from '@/utils/logger';
 
 export const getGroups = async () => {
     try {
@@ -11,6 +12,9 @@ export const getGroups = async () => {
 
         return JSON.parse(JSON.stringify(groups));
     } catch (error) {
-        console.log(error);
+        logger({
+            message: 'Error get groups' + error,
+            type: 'error',
+        });
     }
 };

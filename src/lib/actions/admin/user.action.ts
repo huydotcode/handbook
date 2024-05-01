@@ -1,6 +1,7 @@
 'use server';
 import { Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
+import logger from '@/utils/logger';
 import { revalidatePath } from 'next/cache';
 
 function JSON_parse(obj: any) {
@@ -15,7 +16,10 @@ export const fetchUsersCount = async () => {
 
         return JSON_parse(count);
     } catch (error) {
-        console.log('Error fetching users count:', error);
+        logger({
+            message: 'Error fetch user count' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -26,7 +30,10 @@ export const fetchUsers = async ({ limit = 10 }: { limit?: number }) => {
         const users = await User.find().select('-password').limit(limit);
         return JSON_parse(users);
     } catch (error) {
-        console.log('Error fetching users:', error);
+        logger({
+            message: 'Error fetch users' + error,
+            type: 'error',
+        });
     }
 };
 
@@ -42,6 +49,9 @@ export const deleteUser = async ({
 
         revalidatePath(path);
     } catch (error) {
-        console.log('Error', error);
+        logger({
+            message: 'Error delete user',
+            type: 'error',
+        });
     }
 };

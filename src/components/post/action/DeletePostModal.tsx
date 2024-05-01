@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui';
 import { usePost } from '@/context';
 import PostService from '@/lib/services/post.service';
+import logger from '@/utils/logger';
 import { Fade, Modal } from '@mui/material';
 import React, { FormEventHandler, useState } from 'react';
 
@@ -26,7 +27,10 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
             setPosts((prev) => prev.filter((item) => item._id != postId));
         } catch (error: any) {
             handleClose();
-            console.log('error handle delete post', error);
+            logger({
+                message: 'Error delete post' + error,
+                type: 'error',
+            });
             throw new Error(error);
         } finally {
             handleClose();

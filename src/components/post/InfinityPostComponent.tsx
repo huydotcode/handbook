@@ -7,6 +7,7 @@ import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
 import { cn } from '@/lib/utils';
 import { title } from 'process';
+import logger from '@/utils/logger';
 
 interface Props {
     className?: string;
@@ -74,7 +75,10 @@ const InfinityPostComponent: React.FC<Props> = ({
             }
             setPosts((prev) => [...prev, ...fetchedPosts]);
         } catch (error: any) {
-            console.log('error fetchPosts', error);
+            logger({
+                message: 'Error fetch posts' + error,
+                type: 'error',
+            });
             toast.error('Đã có lỗi xảy ra khi tải các bài đăng!');
         } finally {
             setLoading(false);
