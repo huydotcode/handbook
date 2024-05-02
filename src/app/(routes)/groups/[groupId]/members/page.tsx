@@ -5,11 +5,11 @@ import Infomation from '../../_components/Infomation';
 
 interface Props {
     params: {
-        id: string;
+        groupId: string;
     };
 }
 
-const page: React.FC<Props> = async ({ params: { id: groupId } }) => {
+const page: React.FC<Props> = async ({ params: { groupId } }) => {
     const group = (await GroupService.getGroup({ groupId })).data;
     const members = (await GroupService.getMembers({ groupId })).data;
 

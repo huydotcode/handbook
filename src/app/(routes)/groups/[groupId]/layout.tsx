@@ -5,15 +5,12 @@ import Header from '../_components/Header';
 
 interface Props {
     params: {
-        id: string;
+        groupId: string;
     };
     children: React.ReactNode;
 }
 
-const layout: React.FC<Props> = async ({
-    params: { id: groupId },
-    children,
-}) => {
+const layout: React.FC<Props> = async ({ params: { groupId }, children }) => {
     const { data } = await getGroup({ groupId });
     if (!data) redirect('/groups');
 
