@@ -15,7 +15,7 @@ const MessageLayout: React.FC<Props> = async ({ children }) => {
     return (
         <>
             <Navbar />
-            <div className="relative bottom-[56px] left-1/2 top-[56px] flex h-[calc(100vh-56px)] min-w-[80%] max-w-[1150px] -translate-x-1/2 justify-between rounded-xl bg-transparent p-2 md:min-w-full">
+            <div className="relative left-1/2 flex h-[calc(100vh-56px)] min-w-[80%] max-w-[1150px] -translate-x-1/2 justify-between rounded-xl bg-transparent p-2 md:min-w-full">
                 {children}
             </div>
         </>

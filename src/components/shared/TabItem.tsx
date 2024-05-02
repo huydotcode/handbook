@@ -18,7 +18,7 @@ const TabItem: React.FC<Props> = ({ name, path, id, page }) => {
 
     return (
         <Button
-            href={`/profile/${id}/${path}`}
+            href={pathPage}
             className={cn(
                 'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
                 isActived && 'text-primary-2 dark:text-primary-2'

@@ -3,6 +3,7 @@ import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
+import { User } from '@/models';
 
 /*
     * Group Model: 
@@ -15,6 +16,8 @@ import { getAuthSession } from '../auth';
     type: string;
     introduction: string;
 */
+
+const POPULATE_USER = 'name username avatar';
 
 // Tạo nhóm mới
 export const createGroup = async ({
@@ -120,5 +123,40 @@ export const getGroup = async ({ groupId }: { groupId: string }) => {
             msg: 'Có lỗi xảy ra khi lấy thông tin nhóm, vui lòng thử lại sau!',
             success: false,
         };
+    }
+};
+
+export const getMembers = async ({ groupId }: { groupId: string }) => {
+    try {
+        await connectToDB();
+        const session = (await getAuthSession()) as Session;
+
+        if (!session?.user) {
+            return {
+                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
+                success: false,
+            };
+        }
+
+        // lấy thông tin các thành viên từ field members
+        const group = await Group.findById(groupId);
+        const members = [];
+
+        // trả về thông tin các thành viên
+        for (let i = 0; i < group?.members.length; i++) {
+            const user = await User.findById(group.members[i]).select(
+                POPULATE_USER
+            );
+
+            members.push(user);
+        }
+
+        return {
+            msg: 'Lấy danh sách thành viên nhóm thành công!',
+            success: true,
+            data: JSON.parse(JSON.stringify(members)) as IUser[],
+        };
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
