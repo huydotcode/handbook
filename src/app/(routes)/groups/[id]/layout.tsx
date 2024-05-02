@@ -21,7 +21,7 @@ const layout: React.FC<Props> = async ({
         <div className="min-h-[100vh-56px] w-full">
             <div className="w-full">
                 <Header group={data} />
-                <main className="mt-4">{children}</main>
+                <main className="mt-4 min-h-[150vh]">{children}</main>
             </div>
         </div>
     );

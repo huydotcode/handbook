@@ -71,3 +71,14 @@ export const navProfile = [
         path: '/photos',
     },
 ];
+
+export const navGroup = [
+    {
+        name: 'Bài viết',
+        path: '',
+    },
+    {
+        name: 'Thành viên',
+        path: '/members',
+    },
+];

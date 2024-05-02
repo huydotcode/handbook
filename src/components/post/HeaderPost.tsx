@@ -13,38 +13,58 @@ const HeaderPost = () => {
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center">
-                <Avatar
-                    imgSrc={post.author.avatar}
-                    userUrl={post.author._id}
-                    alt={post.author.name}
-                    width={40}
-                    height={40}
-                />
+                {post.group ? (
+                    <Avatar
+                        imgSrc={post.group.avatar}
+                        href={`groups/${post.group._id}`}
+                        alt={post.group.name}
+                        width={40}
+                        height={40}
+                    />
+                ) : (
+                    <Avatar
+                        imgSrc={post.author.avatar}
+                        userUrl={post.author._id}
+                        alt={post.author.name}
+                        width={40}
+                        height={40}
+                    />
+                )}
 
-                <div className="ml-2 flex flex-col items-center ">
+                <div className="ml-2 flex flex-col items-start">
                     <div className="flex items-center">
-                        <Link
-                            href={`/profile/${post.author._id}`}
-                            className="text-base hover:underline dark:text-dark-primary-1"
-                        >
-                            {post.author.name}
-                        </Link>
-
-                        {post.group && (
+                        {post.group ? (
                             <Link
                                 href={`/groups/${post.group._id}`}
-                                className="ml-1 flex items-center text-sm hover:underline dark:text-dark-primary-1"
+                                className="text-base hover:underline dark:text-dark-primary-1"
                             >
-                                <Icons.ArrowRight className="mr-1" />
                                 {post.group.name}
+                            </Link>
+                        ) : (
+                            <Link
+                                href={`/profile/${post.author._id}`}
+                                className="text-base hover:underline dark:text-dark-primary-1"
+                            >
+                                {post.author.name}
                             </Link>
                         )}
                     </div>
 
-                    <TimeAgoConverted
-                        className="w-full text-xs text-secondary-1"
-                        time={post.createdAt}
-                    />
+                    <div className="-mt-1">
+                        {post.group && (
+                            <Link
+                                href={`/profile/${post.author._id}`}
+                                className="mr-2 text-sm text-secondary-1 hover:underline dark:text-dark-primary-1"
+                            >
+                                {post.author.name}
+                            </Link>
+                        )}
+
+                        <TimeAgoConverted
+                            className="w-full text-xs text-secondary-1"
+                            time={post.createdAt}
+                        />
+                    </div>
                 </div>
 
                 {/* Group */}

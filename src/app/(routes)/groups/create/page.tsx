@@ -77,7 +77,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
         const { data: newGroup, msg } = await GroupService.createGroup({
             ...data,
-            avatar: '',
+            avatar: '/assets/img/group-avatar.jpg',
             members,
         });
 

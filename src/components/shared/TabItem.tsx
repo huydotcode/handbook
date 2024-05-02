@@ -2,21 +2,23 @@
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
-    userId: string;
+    id: string;
     path: string;
     name: string;
+    page: 'profile' | 'groups';
 }
 
-const NavProfileItem: React.FC<Props> = ({ name, path, userId }) => {
+const TabItem: React.FC<Props> = ({ name, path, id, page }) => {
     const pathName = usePathname();
-    const isActived = pathName === `/profile/${userId}${path}`;
+    const pathPage = `/${page}/${id}${path}`;
+    const isActived = pathPage == pathName;
 
     return (
         <Button
-            href={`/profile/${userId}/${path}`}
+            href={`/profile/${id}/${path}`}
             className={cn(
                 'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
                 isActived && 'text-primary-2 dark:text-primary-2'
@@ -29,4 +31,4 @@ const NavProfileItem: React.FC<Props> = ({ name, path, userId }) => {
         </Button>
     );
 };
-export default NavProfileItem;
+export default TabItem;

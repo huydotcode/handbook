@@ -5,6 +5,7 @@ import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
 import generateRoomId from '@/utils/generateRoomId';
 import { Tooltip } from '@mui/material';
+import { Dropdown } from 'antd';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -71,32 +72,47 @@ const Items = {
         const isOnline = friend.isOnline;
 
         return (
-            <Button
-                variant={'custom'}
-                className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:w-auto lg:justify-center"
-                key={friend._id}
-                href={`/profile/${friend._id}`}
+            <Dropdown
+                trigger={['click', 'contextMenu', 'hover']}
+                placement="topCenter"
+                dropdownRender={() => {
+                    return (
+                        <Button
+                            variant={'primary'}
+                            href={`/profile/${friend._id}`}
+                        >
+                            <Icons.Users />
+                            Xem trang cá nhân
+                        </Button>
+                    );
+                }}
             >
-                <div className="flex items-center lg:h-8 lg:w-8">
-                    <Image
-                        className="rounded-full"
-                        src={friend.avatar || ''}
-                        alt={friend.name || ''}
-                        width={32}
-                        height={32}
-                    />
+                <Button
+                    variant={'custom'}
+                    className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:w-auto lg:justify-center"
+                    key={friend._id}
+                >
+                    <div className="flex items-center lg:h-8 lg:w-8">
+                        <Image
+                            className="rounded-full"
+                            src={friend.avatar || ''}
+                            alt={friend.name || ''}
+                            width={32}
+                            height={32}
+                        />
 
-                    <span className="ml-2 text-xs lg:hidden">
-                        {friend.name}
+                        <span className="ml-2 text-xs lg:hidden">
+                            {friend.name}
+                        </span>
+                    </div>
+
+                    <span className="lg:hidden">
+                        {isOnline && (
+                            <Icons.Circle className="text-sm text-primary-2" />
+                        )}
                     </span>
-                </div>
-
-                <span className="lg:hidden">
-                    {isOnline && (
-                        <Icons.Circle className="text-sm text-primary-2" />
-                    )}
-                </span>
-            </Button>
+                </Button>
+            </Dropdown>
         );
     },
     Nav: (props: NavItem) => {
@@ -158,7 +174,7 @@ const Items = {
                 <div className="relative h-8 w-8">
                     <Image
                         className="overflow-hidden rounded-full object-cover"
-                        src={group.avatar || '/assets/img/group-avatar.jpg'}
+                        src={group.avatar || ''}
                         alt={group.name || ''}
                         fill
                     />

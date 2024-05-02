@@ -3,7 +3,7 @@ import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
 import Action from './Action';
-import NavProfileItem from './NavProfileItem';
+import { TabItem } from '@/components/shared';
 
 interface Props {
     profile: IProfile;
@@ -47,11 +47,12 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
 
             <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">
                 {navProfile.map((item, index) => (
-                    <NavProfileItem
+                    <TabItem
                         key={index}
                         name={item.name}
                         path={item.path}
-                        userId={JSON.parse(JSON.stringify(user._id))}
+                        id={JSON.parse(JSON.stringify(user._id))}
+                        page="profile"
                     />
                 ))}
             </div>
