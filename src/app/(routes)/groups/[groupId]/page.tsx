@@ -16,10 +16,10 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
     if (!group) return null;
 
     return (
-        <div className="flex md:flex-col-reverse">
+        <div className="flex justify-between md:flex-col">
             <Infomation group={group} />
 
-            <div className="ml-4 flex flex-1 md:w-full">
+            <div className="ml-4 flex flex-1 md:mt-2 md:w-full">
                 <InfinityPostComponent
                     className="w-full"
                     groupId={groupId}

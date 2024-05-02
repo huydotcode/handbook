@@ -18,7 +18,6 @@ const GroupsPage: React.FC<Props> = async ({}) => {
 
     return (
         <IndexLayout
-            Left={<Sidebar groups={groups} />}
             Center={
                 <>
                     {groups.length > 0 ? (

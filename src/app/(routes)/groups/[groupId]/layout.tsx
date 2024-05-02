@@ -15,7 +15,7 @@ const layout: React.FC<Props> = async ({ params: { groupId }, children }) => {
     if (!data) redirect('/groups');
 
     return (
-        <div className="min-h-[100vh-56px] w-full">
+        <div className="w-full pl-[200px] md:pl-0">
             <div className="w-full">
                 <Header group={data} />
                 <main className="mt-4 min-h-[150vh]">{children}</main>

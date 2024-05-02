@@ -1,15 +1,12 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-import { useSocket } from '@/context';
-import { useChat } from '@/context/ChatContext';
 import { cn } from '@/lib/utils';
-import generateRoomId from '@/utils/generateRoomId';
 import { Tooltip } from '@mui/material';
 import { Dropdown } from 'antd';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import type { MenuProps } from 'antd';
 
 interface Link {
     name: string;
@@ -71,48 +68,51 @@ const Items = {
         const { data: friend } = props;
         const isOnline = friend.isOnline;
 
+        const items: MenuProps['items'] = [
+            {
+                key: '1',
+                label: 'Xem trang cá nhân',
+                icon: <Icons.Users />,
+                onClick: () => {
+                    console.log('Xem trang cá nhân');
+                },
+            },
+            {
+                key: '2',
+                label: 'Nhắn tin',
+                icon: <Icons.Message />,
+                onClick: () => {
+                    console.log('Nhắn tin');
+                },
+            },
+        ];
+
         return (
-            <Dropdown
-                trigger={['click', 'contextMenu', 'hover']}
-                placement="topCenter"
-                dropdownRender={() => {
-                    return (
-                        <Button
-                            variant={'primary'}
-                            href={`/profile/${friend._id}`}
-                        >
-                            <Icons.Users />
-                            Xem trang cá nhân
-                        </Button>
-                    );
-                }}
+            <Button
+                variant={'custom'}
+                className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:w-auto lg:justify-center"
+                key={friend._id}
             >
-                <Button
-                    variant={'custom'}
-                    className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:w-auto lg:justify-center"
-                    key={friend._id}
-                >
-                    <div className="flex items-center lg:h-8 lg:w-8">
-                        <Image
-                            className="rounded-full"
-                            src={friend.avatar || ''}
-                            alt={friend.name || ''}
-                            width={32}
-                            height={32}
-                        />
+                <div className="flex items-center lg:h-8 lg:w-8">
+                    <Image
+                        className="rounded-full"
+                        src={friend.avatar || ''}
+                        alt={friend.name || ''}
+                        width={32}
+                        height={32}
+                    />
 
-                        <span className="ml-2 text-xs lg:hidden">
-                            {friend.name}
-                        </span>
-                    </div>
-
-                    <span className="lg:hidden">
-                        {isOnline && (
-                            <Icons.Circle className="text-sm text-primary-2" />
-                        )}
+                    <span className="ml-2 text-xs lg:hidden">
+                        {friend.name}
                     </span>
-                </Button>
-            </Dropdown>
+                </div>
+
+                <span className="lg:hidden">
+                    {isOnline && (
+                        <Icons.Circle className="text-sm text-primary-2" />
+                    )}
+                </span>
+            </Button>
         );
     },
     Nav: (props: NavItem) => {

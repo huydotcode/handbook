@@ -10,7 +10,7 @@ interface Props {
 const ASIDE_WIDTH = 'w-[200px] md:w-fit';
 
 const className =
-    'fixed top-[72px] h-screen transition-all duration-300 dark:border-none md:hidden';
+    'fixed top-[56px] h-screen transition-all duration-300 dark:border-none md:hidden';
 
 const IndexLayout: React.FC<Props> = ({ Center, Left, Right }) => {
     return (
