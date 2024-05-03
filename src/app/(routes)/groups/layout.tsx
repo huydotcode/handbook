@@ -18,10 +18,10 @@ const GroupLayout: React.FC<Props> = async ({ children }) => {
     });
 
     return (
-        <>
-            <IndexLayout Left={<Sidebar groups={groups} />} />
-            {children}
-        </>
+        <IndexLayout
+            Left={<Sidebar groups={groups} />}
+            Center={<>{children}</>}
+        />
     );
 };
 

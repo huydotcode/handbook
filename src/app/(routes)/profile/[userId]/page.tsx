@@ -26,11 +26,7 @@ const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
             <InfomationSection profile={profile} />
 
             <div className="w-[60%] md:w-full">
-                <InfinityPostComponent
-                    className="w-full"
-                    {...props}
-                    type="profile"
-                />
+                <InfinityPostComponent {...props} type="profile" />
             </div>
         </div>
     );

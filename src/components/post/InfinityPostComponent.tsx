@@ -91,12 +91,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     return (
         <>
-            <div
-                className={cn(
-                    'mx-auto w-135 max-w-full lg:w-120 md:w-full',
-                    className
-                )}
-            >
+            <div className={cn(className, 'w-full')}>
                 {title && <h5 className="mb-2 text-xl font-bold">{title}</h5>}
 
                 {renderCreatePost()}

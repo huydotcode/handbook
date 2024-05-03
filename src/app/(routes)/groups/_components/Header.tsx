@@ -40,7 +40,7 @@ const Header: React.FC<Props> = ({ group }) => {
                 </div>
             </div>
 
-            <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">
+            <div className="flex items-center px-2 pt-2">
                 {navGroup.map((item, index) => {
                     return (
                         <TabItem

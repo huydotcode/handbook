@@ -11,7 +11,7 @@ const Sidebar: React.FC<Props> = ({ groups }) => {
     if (!groups) return null;
 
     return (
-        <div className="no-scrollbar h-full overflow-scroll border-r-2 bg-secondary-1 p-2 dark:border-none dark:bg-dark-secondary-1 lg:w-fit">
+        <div className="no-scrollbar h-full overflow-scroll border-r-2 bg-secondary-1 p-2 dark:border-none dark:bg-dark-secondary-1 lg:w-[200px]">
             <h5 className="lg:hidden">Nhóm bạn đã tham gia</h5>
             <Button
                 className="my-2 w-full"

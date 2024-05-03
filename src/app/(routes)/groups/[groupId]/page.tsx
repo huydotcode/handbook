@@ -18,12 +18,8 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
         <div className="flex justify-between md:flex-col">
             <Infomation group={group} />
 
-            <div className="ml-4 flex flex-1 md:mt-2 md:w-full">
-                <InfinityPostComponent
-                    className="w-full"
-                    groupId={groupId}
-                    type="group"
-                />
+            <div className="ml-4 flex flex-1 md:ml-0 md:mt-2 md:w-full">
+                <InfinityPostComponent groupId={groupId} type="group" />
             </div>
         </div>
     );
