@@ -11,14 +11,15 @@ interface Props {
     children: React.ReactNode;
 }
 
-const layout: React.FC<Props> = async ({ params: { groupId }, children }) => {
+const GroupLayout: React.FC<Props> = async ({
+    params: { groupId },
+    children,
+}) => {
     const group = (await getGroup({ groupId })) as IGroup;
     if (!group) redirect('/groups');
 
     const session = await getAuthSession();
     if (!session?.user) return redirect('/');
-
-    console.log('GROUP MEMBERS', group.members);
 
     // Kiểm tra đã tham gia nhóm chưa
     const isMember = group.members.some(
@@ -35,4 +36,4 @@ const layout: React.FC<Props> = async ({ params: { groupId }, children }) => {
         </div>
     );
 };
-export default layout;
+export default GroupLayout;

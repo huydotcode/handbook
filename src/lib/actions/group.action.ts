@@ -4,6 +4,7 @@ import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
 import { User } from '@/models';
+import mongoose from 'mongoose';
 
 /*
     * Group Model: 
@@ -95,15 +96,44 @@ export const getGroup = async ({ groupId }: { groupId: string }) => {
         const session = (await getAuthSession()) as Session;
 
         if (!session?.user) {
-            return {
-                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
-                success: false,
-            };
+            throw new Error('Bạn cần đăng nhập để thực hiện tính năng này!');
         }
 
-        const group = await Group.findById(groupId);
+        if (groupId == 'undefined' || !groupId) {
+            return null;
+        }
 
-        return JSON.parse(JSON.stringify(group));
+        const group = await Group.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(groupId),
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'members',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'creator',
+                    foreignField: '_id',
+                    as: 'creator',
+                },
+            },
+        ]);
+
+        const group2 = await Group.findById(groupId).populate('members');
+
+        console.log({
+            group: JSON.parse(JSON.stringify(group2)),
+        });
+
+        return JSON.parse(JSON.stringify(group[0]));
     } catch (error: any) {
         throw new Error(error);
     }
