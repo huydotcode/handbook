@@ -14,13 +14,26 @@ const HeaderPost = () => {
         <div className="flex items-center justify-between">
             <div className="flex items-center">
                 {post.group ? (
-                    <Avatar
-                        imgSrc={post.group.avatar}
-                        href={`groups/${post.group._id}`}
-                        alt={post.group.name}
-                        width={40}
-                        height={40}
-                    />
+                    <div className="relative">
+                        <Avatar
+                            imgSrc={post.group.avatar}
+                            href={`groups/${post.group._id}`}
+                            alt={post.group.name}
+                            width={40}
+                            height={40}
+                            rounded="rounded-md"
+                        />
+
+                        {/* Avatar user */}
+                        <Avatar
+                            className="absolute -bottom-1 -right-1 rounded-xl border border-white"
+                            imgSrc={post.author.avatar}
+                            userUrl={post.author._id}
+                            alt={post.author.name}
+                            width={22}
+                            height={22}
+                        />
+                    </div>
                 ) : (
                     <Avatar
                         imgSrc={post.author.avatar}

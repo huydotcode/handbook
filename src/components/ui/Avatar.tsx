@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,6 +14,7 @@ interface Props {
     fill?: boolean;
     alt?: string;
     href?: string;
+    rounded?: string;
 }
 
 const Avatar: React.FC<Props> = ({
@@ -25,6 +27,7 @@ const Avatar: React.FC<Props> = ({
     height = 32,
     fill = false,
     href,
+    rounded = 'rounded-full',
 }) => {
     const isUser = session?.user.id || userUrl;
 
@@ -38,7 +41,7 @@ const Avatar: React.FC<Props> = ({
             }
         >
             <Image
-                className="rounded-full"
+                className={cn(rounded)}
                 src={session?.user.image || imgSrc || ''}
                 alt={session?.user.name || alt || ''}
                 width={width}
