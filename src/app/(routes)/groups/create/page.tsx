@@ -75,17 +75,17 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
         //     return;
         // }
 
-        const { data: newGroup, msg } = await GroupService.createGroup({
+        const newGroup = await GroupService.createGroup({
             ...data,
             avatar: '/assets/img/group-avatar.jpg',
             members,
         });
 
-        if (data) {
-            toast.success(msg);
+        if (newGroup) {
+            toast.success('Tạo nhóm thành công!');
             router.push(`/groups/${newGroup._id}`);
         } else {
-            toast.error(msg);
+            toast.error('Có lỗi xảy ra khi tạo nhóm, vui lòng thử lại!');
         }
     };
 

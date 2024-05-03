@@ -59,16 +59,9 @@ export const createGroup = async ({
 
         await newGroup.save();
 
-        return {
-            msg: 'Tạo nhóm thành công!',
-            success: true,
-            data: JSON.parse(JSON.stringify(newGroup)),
-        };
-    } catch (error) {
-        return {
-            msg: 'Có lỗi xảy ra khi tạo nhóm, vui lòng thử lại sau!',
-            success: false,
-        };
+        return JSON.parse(JSON.stringify(newGroup));
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
@@ -91,11 +84,8 @@ export const getGroups = async ({ userId }: { userId: string }) => {
         });
 
         return JSON.parse(JSON.stringify(groups));
-    } catch (error) {
-        return {
-            msg: 'Có lỗi xảy ra khi lấy danh sách nhóm, vui lòng thử lại sau!',
-            success: false,
-        };
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
@@ -113,16 +103,9 @@ export const getGroup = async ({ groupId }: { groupId: string }) => {
 
         const group = await Group.findById(groupId);
 
-        return {
-            msg: 'Lấy thông tin nhóm thành công!',
-            success: true,
-            data: JSON.parse(JSON.stringify(group)),
-        };
-    } catch (error) {
-        return {
-            msg: 'Có lỗi xảy ra khi lấy thông tin nhóm, vui lòng thử lại sau!',
-            success: false,
-        };
+        return JSON.parse(JSON.stringify(group));
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
@@ -151,11 +134,7 @@ export const getMembers = async ({ groupId }: { groupId: string }) => {
             members.push(user);
         }
 
-        return {
-            msg: 'Lấy danh sách thành viên nhóm thành công!',
-            success: true,
-            data: JSON.parse(JSON.stringify(members)) as IUser[],
-        };
+        return JSON.parse(JSON.stringify(members));
     } catch (error: any) {
         throw new Error(error);
     }

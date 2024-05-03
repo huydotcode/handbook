@@ -10,8 +10,8 @@ interface Props {
 }
 
 const page: React.FC<Props> = async ({ params: { groupId } }) => {
-    const group = (await GroupService.getGroup({ groupId })).data;
-    const members = (await GroupService.getMembers({ groupId })).data;
+    const group = (await GroupService.getGroup({ groupId })) as IGroup;
+    const members = (await GroupService.getMembers({ groupId })) as IUser[];
 
     if (!members || !group) return null;
 
