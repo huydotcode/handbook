@@ -1,11 +1,8 @@
-import { FriendSection } from '@/components/layout';
 import { InfinityPostComponent } from '@/components/post';
 import { Button } from '@/components/ui';
-import { IndexLayout } from '@/layouts';
 import { getAuthSession } from '@/lib/auth';
 import GroupService from '@/lib/services/group.service';
 import React from 'react';
-import { Sidebar } from './_components';
 
 interface Props {}
 
