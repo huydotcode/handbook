@@ -1,16 +1,17 @@
 import { FriendSection, Sidebar } from '@/components/layout';
 import { InfinityPostComponent } from '@/components/post';
-import { IndexLayout } from '@/layouts';
 
 export default async function Home() {
     return (
         <>
-            <div className="mt-2">
-                <IndexLayout
-                    Left={<Sidebar />}
-                    Center={<InfinityPostComponent />}
-                    Right={<FriendSection />}
-                />
+            <div>
+                <Sidebar />
+
+                <div className="mx-auto mt-2 w-[600px] md:w-full">
+                    <InfinityPostComponent />
+                </div>
+
+                <FriendSection />
             </div>
         </>
     );

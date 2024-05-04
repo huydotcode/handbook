@@ -8,6 +8,7 @@ import {
     FaCircle,
     FaHeart,
     FaImage,
+    FaPlus,
     FaRegComment,
     FaReply,
     FaShare,
@@ -119,6 +120,7 @@ const Icons = {
     PersonAdd: (props: IconProps) => <IoPersonAdd {...props} />,
     Reply: (props: IconProps) => <FaReply {...props} />,
     Birthday: (props: IconProps) => <FaBirthdayCake {...props} />,
+    Plus: (props: IconProps) => <FaPlus {...props} />,
 };
 
 export default Icons;

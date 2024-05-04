@@ -127,12 +127,6 @@ export const getGroup = async ({ groupId }: { groupId: string }) => {
             },
         ]);
 
-        const group2 = await Group.findById(groupId).populate('members');
-
-        console.log({
-            group: JSON.parse(JSON.stringify(group2)),
-        });
-
         return JSON.parse(JSON.stringify(group[0]));
     } catch (error: any) {
         throw new Error(error);

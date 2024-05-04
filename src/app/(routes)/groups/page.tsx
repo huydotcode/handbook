@@ -17,30 +17,25 @@ const GroupsPage: React.FC<Props> = async ({}) => {
         })) || ([] as IGroup[]);
 
     return (
-        <IndexLayout
-            Center={
-                <>
-                    {groups.length > 0 ? (
-                        <InfinityPostComponent
-                            className="mt-4"
-                            title="Hoạt động gần đây"
-                            type="group"
-                        />
-                    ) : (
-                        <div className="mt-2 flex items-center justify-center">
-                            <p className="mr-2 text-secondary-1">
-                                Bạn chưa tham gia nhóm nào
-                            </p>
+        <>
+            {groups.length > 0 ? (
+                <InfinityPostComponent
+                    className="mt-4"
+                    title="Hoạt động gần đây"
+                    type="group"
+                />
+            ) : (
+                <div className="mt-2 flex items-center justify-center">
+                    <p className="mr-2 text-secondary-1">
+                        Bạn chưa tham gia nhóm nào
+                    </p>
 
-                            <Button href="groups/explore" variant={'text'}>
-                                Tìm nhóm
-                            </Button>
-                        </div>
-                    )}
-                </>
-            }
-            Right={<FriendSection />}
-        />
+                    <Button href="groups/explore" variant={'text'}>
+                        Tìm nhóm
+                    </Button>
+                </div>
+            )}
+        </>
     );
 };
 export default GroupsPage;

@@ -1,8 +1,7 @@
-import { IndexLayout } from '@/layouts';
+import { getAuthSession } from '@/lib/auth';
+import { GroupService } from '@/lib/services';
 import React from 'react';
 import { Sidebar } from './_components';
-import { GroupService } from '@/lib/services';
-import { getAuthSession } from '@/lib/auth';
 
 interface Props {
     children: React.ReactNode;
@@ -18,10 +17,12 @@ const GroupLayout: React.FC<Props> = async ({ children }) => {
     });
 
     return (
-        <IndexLayout
-            Left={<Sidebar groups={groups} />}
-            Center={<>{children}</>}
-        />
+        <>
+            <Sidebar groups={groups} />
+            <div className="ml-[300px] pl-4 lg:ml-[200px] md:ml-[72px]">
+                {children}
+            </div>
+        </>
     );
 };
 

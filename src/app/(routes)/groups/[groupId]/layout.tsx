@@ -28,9 +28,10 @@ const GroupLayout: React.FC<Props> = async ({
     if (!isMember) return redirect('/groups');
 
     return (
-        <div className="ml-2 w-full pl-[310px] lg:pl-[210px] md:pl-0">
+        <div className="ml-2 w-full">
             <div className="w-full">
                 <Header group={group} />
+
                 <main className="mt-4 min-h-[150vh]">{children}</main>
             </div>
         </div>
