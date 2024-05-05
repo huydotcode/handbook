@@ -16,7 +16,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
     })) as IGroup[];
 
     return (
-        <>
+        <div className="mx-auto max-w-[600px]">
             {groups.length > 0 ? (
                 <InfinityPostComponent
                     className="mt-4"
@@ -34,7 +34,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
                     </Button>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 export default GroupsPage;
