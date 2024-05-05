@@ -15,7 +15,6 @@ export function generateMetadata() {
 
 const GroupLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-
     if (!session) return null;
 
     const groups = await GroupService.getGroups({
@@ -23,12 +22,13 @@ const GroupLayout: React.FC<Props> = async ({ children }) => {
     });
 
     return (
-        <>
+        <div>
             <Sidebar groups={groups} />
+
             <div className="ml-[300px] pl-4 lg:ml-[200px] md:ml-[72px]">
                 {children}
             </div>
-        </>
+        </div>
     );
 };
 

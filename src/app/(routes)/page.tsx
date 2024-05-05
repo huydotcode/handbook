@@ -7,7 +7,7 @@ export default async function Home() {
             <div>
                 <Sidebar />
 
-                <div className="mx-auto mt-2 w-[600px] md:w-full">
+                <div className="mx-auto mt-2 w-[550px] md:w-full">
                     <InfinityPostComponent />
                 </div>
 

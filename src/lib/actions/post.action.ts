@@ -65,6 +65,7 @@ export const createPost = async ({
             option,
             author: session.user.id,
             group: groupId,
+            status: groupId ? 'pending' : 'active',
         });
         await newPost.save();
 
