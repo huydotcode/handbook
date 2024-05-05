@@ -30,7 +30,7 @@ export const getConversation = async ({
     conversationType,
 }: {
     conversationId: string;
-    conversationType: string;
+    conversationType: 'f' | 'r' | 'd' | 'c';
 }) => {
     try {
         await connectToDB();

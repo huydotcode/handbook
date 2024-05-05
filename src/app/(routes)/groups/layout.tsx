@@ -7,6 +7,12 @@ interface Props {
     children: React.ReactNode;
 }
 
+export function generateMetadata() {
+    return {
+        title: 'Nhóm của bạn | Handbook',
+    };
+}
+
 const GroupLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
 

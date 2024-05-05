@@ -3,12 +3,30 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import Header from '../_components/Header';
 import { getAuthSession } from '@/lib/auth';
+import { GroupService } from '@/lib/services';
+import logger from '@/utils/logger';
+import { group } from 'console';
 
 interface Props {
     params: {
         groupId: string;
     };
     children: React.ReactNode;
+}
+
+export async function generateMetadata({ params: { groupId } }: Props) {
+    try {
+        const group = await GroupService.getGroup({ groupId });
+
+        return {
+            title: `${group.name} | Nhóm | Handbook`,
+        };
+    } catch (error) {
+        logger({
+            message: 'Error get group in layout' + error,
+            type: 'error',
+        });
+    }
 }
 
 const GroupLayout: React.FC<Props> = async ({

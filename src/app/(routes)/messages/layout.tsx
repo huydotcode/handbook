@@ -7,6 +7,12 @@ interface Props {
     children: React.ReactNode;
 }
 
+export async function generateMetadata() {
+    return {
+        title: 'Messenger | Handbook',
+    };
+}
+
 const MessageLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
 
