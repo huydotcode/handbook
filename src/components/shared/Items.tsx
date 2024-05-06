@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import type { MenuProps } from 'antd';
 import generateRoomId from '@/utils/generateRoomId';
 import { useSession } from 'next-auth/react';
+import TimeAgoConverted from '@/utils/timeConvert';
 
 interface Link {
     name: string;
@@ -196,9 +197,19 @@ const Items = {
                     />
                 </div>
 
-                <p className="text-sm dark:text-dark-primary-1 lg:hidden">
-                    {group.name}
-                </p>
+                <div className="ml-2 flex flex-1 flex-col">
+                    <p className="text-sm dark:text-dark-primary-1 lg:hidden">
+                        {group.name}
+                    </p>
+
+                    <p className="text-xs text-secondary-1">
+                        Lần hoạt động gần nhất:
+                        <TimeAgoConverted
+                            className=""
+                            time={group.lastActivity}
+                        />
+                    </p>
+                </div>
             </Button>
         );
     },

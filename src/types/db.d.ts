@@ -67,6 +67,7 @@ interface IGroup {
     introduction: string;
     createdAt: Date;
     updatedAt: Date;
+    lastActivity: Date;
 }
 
 interface IProfile {

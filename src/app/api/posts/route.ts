@@ -63,8 +63,6 @@ export const GET = async (request: Request, response: Response) => {
         query.status = 'active';
     }
 
-    console.log(query);
-
     try {
         const posts = await Post.find(query)
             .populate('author', POPULATE_USER)
