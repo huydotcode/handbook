@@ -183,7 +183,7 @@ const Items = {
         const { data: group } = props;
         return (
             <Button
-                className="mb-2 w-full justify-start rounded-xl"
+                className="mb-2 w-full justify-start"
                 variant={'default'}
                 href={`/groups/${group._id}`}
             >
@@ -196,14 +196,9 @@ const Items = {
                     />
                 </div>
 
-                <Link
-                    className="ml-2 max-w-[calc(100%-50px)] overflow-hidden overflow-ellipsis"
-                    href={`/groups/${group._id}`}
-                >
-                    <p className="whitespace-nowrap text-sm dark:text-dark-primary-1 lg:hidden">
-                        {group.name}
-                    </p>
-                </Link>
+                <p className="text-sm dark:text-dark-primary-1 lg:hidden">
+                    {group.name}
+                </p>
             </Button>
         );
     },

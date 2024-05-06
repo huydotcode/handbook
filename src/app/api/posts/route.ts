@@ -43,6 +43,7 @@ export const GET = async (request: Request, response: Response) => {
 
     if (groupId !== 'undefined') {
         query.group = groupId;
+        query.status = 'active';
     }
 
     // Lấy những bài post của user đang tham gia
@@ -58,7 +59,11 @@ export const GET = async (request: Request, response: Response) => {
         query.group = {
             $in: groupsHasJoin,
         };
+
+        query.status = 'active';
     }
+
+    console.log(query);
 
     try {
         const posts = await Post.find(query)

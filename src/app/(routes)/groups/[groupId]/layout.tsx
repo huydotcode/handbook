@@ -40,9 +40,7 @@ const GroupLayout: React.FC<Props> = async ({
     if (!session?.user) return redirect('/');
 
     // Kiểm tra đã tham gia nhóm chưa
-    const isMember = group.members.some(
-        (member) => member._id === session.user.id
-    );
+    const isMember = group.members.some((mem) => mem._id === session.user.id);
     if (!isMember) return redirect('/groups');
 
     return (

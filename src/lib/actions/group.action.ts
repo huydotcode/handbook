@@ -49,9 +49,11 @@ export const createGroup = async ({
             name,
             description,
             avatar,
-            type,
             creator: session.user.id,
+            admin: session.user.id,
+            moderators: [session.user.id],
             members: [session.user.id],
+            type,
         });
 
         for (const memberId of members) {
