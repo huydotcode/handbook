@@ -2,12 +2,10 @@ import { getAuthSession } from '@/lib/auth';
 import { GroupService } from '@/lib/services';
 import React from 'react';
 import { Sidebar } from './_components';
+import { redirect } from 'next/navigation';
 
 interface Props {
     children: React.ReactNode;
-    params: {
-        groupId: string;
-    };
 }
 
 export function generateMetadata() {
@@ -16,28 +14,11 @@ export function generateMetadata() {
     };
 }
 
-const GroupLayout: React.FC<Props> = async ({
-    children,
-    params: { groupId },
-}) => {
+const GroupLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-    if (!session) return null;
+    if (!session) redirect('/');
 
-    console.log('groupId', groupId);
-
-    const groups = await GroupService.getGroups({
-        userId: session?.user.id,
-    });
-
-    return (
-        <div>
-            <Sidebar groups={groups} />
-
-            <div className="ml-[300px] pl-4 lg:ml-[200px] md:ml-[72px]">
-                {children}
-            </div>
-        </div>
-    );
+    return <>{children}</>;
 };
 
 export default GroupLayout;

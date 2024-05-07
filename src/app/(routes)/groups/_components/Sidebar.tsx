@@ -1,13 +1,16 @@
 'use client';
 import { Items } from '@/components/shared';
 import { Button, Icons } from '@/components/ui';
-import React from 'react';
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
 
 interface Props {
     groups: IGroup[];
 }
 
 const Sidebar: React.FC<Props> = ({ groups }) => {
+    const path = usePathname();
+
     if (!groups) return null;
 
     return (

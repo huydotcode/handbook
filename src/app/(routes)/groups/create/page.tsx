@@ -26,7 +26,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
     const {
         handleSubmit,
         register,
-        formState: { isSubmitting },
+        formState: { isSubmitting, errors },
     } = useForm<ICreateGroup>({
         defaultValues: {
             type: 'public',
@@ -120,8 +120,17 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             autoComplete="off"
                             placeholder="Tên nhóm"
                             className={INPUT_CLASSNAME}
-                            {...register('name', { required: true })}
+                            {...register('name', {
+                                required: true,
+                                maxLength: 50,
+                            })}
                         />
+                        {errors.name && (
+                            <span className="text-red-500">
+                                Tên nhóm không được để trống và không quá 50 ký
+                                tự
+                            </span>
+                        )}
                     </div>
 
                     {/* Mô tả nhóm */}
