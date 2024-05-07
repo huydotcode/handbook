@@ -1,14 +1,20 @@
 import { Schema, model, models } from 'mongoose';
 
+interface GroupMember {
+    user: Schema.Types.ObjectId;
+    role: string;
+}
+
 interface IGroupModel {
     name: string;
     description: string;
     avatar: string;
-    members: Schema.Types.ObjectId[];
+    members: GroupMember[];
     creator: Schema.Types.ObjectId;
     coverPhoto: string;
     type: string;
     introduction: string;
+    lastActivity: Date;
 }
 
 const GroupSchema = new Schema<IGroupModel>(
@@ -28,11 +34,21 @@ const GroupSchema = new Schema<IGroupModel>(
         creator: {
             type: Schema.Types.ObjectId,
             required: true,
+            ref: 'User',
         },
-        members: {
-            type: [Schema.Types.ObjectId],
-            required: true,
-        },
+        members: [
+            {
+                user: {
+                    type: Schema.Types.ObjectId,
+                    required: true,
+                    ref: 'User',
+                },
+                role: {
+                    type: String,
+                    default: 'member',
+                },
+            },
+        ],
         type: {
             type: String,
             default: 'public',
@@ -44,6 +60,10 @@ const GroupSchema = new Schema<IGroupModel>(
         introduction: {
             type: String,
             default: '',
+        },
+        lastActivity: {
+            type: Date,
+            default: Date.now,
         },
     },
     {

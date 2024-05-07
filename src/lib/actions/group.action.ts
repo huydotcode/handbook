@@ -50,14 +50,20 @@ export const createGroup = async ({
             description,
             avatar,
             creator: session.user.id,
-            admin: session.user.id,
-            moderators: [session.user.id],
-            members: [session.user.id],
+            members: [
+                {
+                    user: session.user.id,
+                    role: 'admin',
+                },
+            ],
             type,
         });
 
         for (const memberId of members) {
-            newGroup.members.push(memberId);
+            newGroup.members.push({
+                user: memberId,
+                role: 'member',
+            });
         }
 
         await newGroup.save();
@@ -82,7 +88,9 @@ export const getGroups = async ({ userId }: { userId: string }) => {
 
         const groups = await Group.find({
             members: {
-                $in: [session?.user.id],
+                $elemMatch: {
+                    user: userId,
+                },
             },
         });
 
@@ -105,31 +113,11 @@ export const getGroup = async ({ groupId }: { groupId: string }) => {
             return null;
         }
 
-        const group = await Group.aggregate([
-            {
-                $match: {
-                    _id: new mongoose.Types.ObjectId(groupId),
-                },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'members',
-                    foreignField: '_id',
-                    as: 'members',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'creator',
-                    foreignField: '_id',
-                    as: 'creator',
-                },
-            },
-        ]);
+        const group = await Group.findById(groupId)
+            .populate('members.user')
+            .populate('creator');
 
-        return JSON.parse(JSON.stringify(group[0]));
+        return JSON.parse(JSON.stringify(group));
     } catch (error: any) {
         throw new Error(error);
     }

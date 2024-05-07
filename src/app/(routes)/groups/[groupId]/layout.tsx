@@ -1,11 +1,10 @@
 import { getGroup } from '@/lib/actions/group.action';
-import { redirect } from 'next/navigation';
-import React from 'react';
-import Header from '../_components/Header';
 import { getAuthSession } from '@/lib/auth';
 import { GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
-import { group } from 'console';
+import { redirect } from 'next/navigation';
+import React from 'react';
+import Header from '../_components/Header';
 
 interface Props {
     params: {
@@ -40,8 +39,12 @@ const GroupLayout: React.FC<Props> = async ({
     if (!session?.user) return redirect('/');
 
     // Kiểm tra đã tham gia nhóm chưa
-    const isMember = group.members.some((mem) => mem._id === session.user.id);
-    if (!isMember) return redirect('/groups');
+    // const isMember = group.members.some(
+    //     (mem) => mem.user._id === session.user.id
+    // );
+    // if (!isMember) return redirect('/groups');
+
+    return <></>;
 
     return (
         <div className="ml-2 w-full">

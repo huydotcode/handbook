@@ -55,19 +55,36 @@ interface IImage {
     updatedAt: Date;
 }
 
+/*
+name: string;
+    description: string;
+    avatar: string;
+    members: GroupMember[];
+    creator: Schema.Types.ObjectId;
+    coverPhoto: string;
+    type: string;
+    introduction: string;
+    lastActivity: Date;
+*/
+
+interface IGroupMember {
+    user: IUser;
+    role: string;
+}
+
 interface IGroup {
     _id: string;
     name: string;
     description: string;
     avatar: string;
-    members: IUser[];
+    members: IGroupMember[];
     creator: IUser;
     coverPhoto: string;
     type: string;
     introduction: string;
+    lastActivity: Date;
     createdAt: Date;
     updatedAt: Date;
-    lastActivity: Date;
 }
 
 interface IProfile {

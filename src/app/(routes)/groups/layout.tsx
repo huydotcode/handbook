@@ -5,6 +5,9 @@ import { Sidebar } from './_components';
 
 interface Props {
     children: React.ReactNode;
+    params: {
+        groupId: string;
+    };
 }
 
 export function generateMetadata() {
@@ -13,9 +16,14 @@ export function generateMetadata() {
     };
 }
 
-const GroupLayout: React.FC<Props> = async ({ children }) => {
+const GroupLayout: React.FC<Props> = async ({
+    children,
+    params: { groupId },
+}) => {
     const session = await getAuthSession();
     if (!session) return null;
+
+    console.log('groupId', groupId);
 
     const groups = await GroupService.getGroups({
         userId: session?.user.id,

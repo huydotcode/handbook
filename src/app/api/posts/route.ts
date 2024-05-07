@@ -1,7 +1,5 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
-import logger from '@/utils/logger';
-import mongoose from 'mongoose';
 
 const POPULATE_USER = 'name username avatar';
 const POPULATE_GROUP = 'name avatar';
@@ -41,16 +39,16 @@ export const GET = async (request: Request, response: Response) => {
         }
     }
 
-    if (groupId !== 'undefined') {
-        query.group = groupId;
-        query.status = 'active';
-    }
-
     // Lấy những bài post của user đang tham gia
     if (type == 'group' && groupId == 'undefined') {
+        // Lấy những group mà user đang tham gia
         let groupsHasJoin = await Group.find({
             members: {
-                $in: [session?.user.id],
+                $in: {
+                    $elemMatch: {
+                        $eq: session?.user.id,
+                    },
+                },
             },
         });
 
@@ -59,8 +57,12 @@ export const GET = async (request: Request, response: Response) => {
         query.group = {
             $in: groupsHasJoin,
         };
-
         query.status = 'active';
+    } else {
+        if (groupId !== 'undefined') {
+            query.group = groupId;
+            query.status = 'active';
+        }
     }
 
     try {

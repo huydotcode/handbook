@@ -1,13 +1,12 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { cn } from '@/lib/utils';
+import logger from '@/utils/logger';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
-import { cn } from '@/lib/utils';
-import { title } from 'process';
-import logger from '@/utils/logger';
 
 interface Props {
     className?: string;
