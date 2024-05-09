@@ -1,18 +1,12 @@
 'use client';
 import { Items } from '@/components/shared';
 import { Button, Icons } from '@/components/ui';
-import { usePathname } from 'next/navigation';
-import React, { useEffect, useMemo } from 'react';
-
+import React from 'react';
 interface Props {
     groups: IGroup[];
 }
 
 const Sidebar: React.FC<Props> = ({ groups }) => {
-    const path = usePathname();
-
-    if (!groups) return null;
-
     return (
         <div className="no-scrollbar fixed left-0 top-[56px] h-full w-[300px] overflow-scroll border-r-2 bg-secondary-1 p-2 dark:border-none dark:bg-dark-secondary-1 lg:w-[200px] md:w-[72px]">
             <h5 className="lg:hidden">Nhóm bạn đã tham gia</h5>

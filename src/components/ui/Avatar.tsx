@@ -27,7 +27,7 @@ const Avatar: React.FC<Props> = ({
     height = 32,
     fill = false,
     href,
-    rounded = 'rounded-full',
+    rounded = 'full',
 }) => {
     const isUser = session?.user.id || userUrl;
 
@@ -41,7 +41,7 @@ const Avatar: React.FC<Props> = ({
             }
         >
             <Image
-                className={cn(rounded)}
+                className={cn(`rounded-${rounded}`, className)}
                 src={session?.user.image || imgSrc || ''}
                 alt={session?.user.name || alt || ''}
                 width={width}

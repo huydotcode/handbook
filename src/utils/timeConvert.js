@@ -6,7 +6,7 @@ export const TimeAgoConverted = ({
     time,
     textBefore = '',
     textAfter = '',
-    className,
+    className = '',
 }) => {
     const customVietnameseString = {
         prefixAgo: null,

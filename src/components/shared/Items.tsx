@@ -198,11 +198,11 @@ const Items = {
                 </div>
 
                 <div className="ml-2 flex flex-1 flex-col">
-                    <p className="text-sm dark:text-dark-primary-1 lg:hidden">
+                    <p className="text-sm dark:text-dark-primary-1 md:hidden">
                         {group.name}
                     </p>
 
-                    <p className="text-xs text-secondary-1">
+                    <p className="text-xs text-secondary-1 lg:hidden">
                         Lần hoạt động gần nhất:
                         <TimeAgoConverted
                             className=""

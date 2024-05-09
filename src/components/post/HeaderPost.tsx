@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Avatar from '../ui/Avatar';
 import ActionPost from './ActionPost';
-import { Icons } from '../ui';
 
 const HeaderPost = () => {
     const { data: session } = useSession();
@@ -21,7 +20,7 @@ const HeaderPost = () => {
                             alt={post.group.name}
                             width={40}
                             height={40}
-                            rounded="rounded-md"
+                            rounded="md"
                         />
 
                         {/* Avatar user */}

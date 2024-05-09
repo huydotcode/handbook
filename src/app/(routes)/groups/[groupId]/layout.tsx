@@ -1,10 +1,10 @@
-import { getGroup } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
 import { GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import Header from '../_components/Header';
+import Sidebar from '../_components/admin/Sidebar';
 
 interface Props {
     params: {
@@ -32,7 +32,7 @@ const GroupLayout: React.FC<Props> = async ({
     params: { groupId },
     children,
 }) => {
-    const group = (await getGroup({ groupId })) as IGroup;
+    const group = (await GroupService.getGroup({ groupId })) as IGroup;
     if (!group) redirect('/groups');
 
     const session = await getAuthSession();
@@ -45,11 +45,15 @@ const GroupLayout: React.FC<Props> = async ({
     if (!isMember) return redirect('/groups');
 
     return (
-        <div className="ml-2 w-full">
-            <div className="w-full">
-                <Header group={group} />
+        <div>
+            <Sidebar group={group} />
 
-                <main className="mt-4 min-h-[150vh]">{children}</main>
+            <div className="first-letter: ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
+                <div className="w-full">
+                    <Header group={group} />
+
+                    <main className="mt-4 min-h-[150vh]">{children}</main>
+                </div>
             </div>
         </div>
     );
