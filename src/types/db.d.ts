@@ -32,12 +32,10 @@ interface IGroupConversation {
     _id: string;
     name: string;
     avatar: string;
-    desc: string;
-    members: IUser[];
-    status: string;
-    unreadMessages: number;
-    lastActivityAt: Date;
-    background: string;
+    description: string;
+    creator: Types.ObjectId;
+    members: IGroupMember[];
+    group: IGroup;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -180,4 +178,10 @@ interface IUser {
     lastAccessed: Date;
     createdAt: Date;
     updatedAt: Date;
+}
+
+interface IMemberGroup {
+    _id: string;
+    user: IUser;
+    role: string;
 }

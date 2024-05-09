@@ -1,10 +1,9 @@
 'use server';
+import { GroupConversation } from '@/models';
 import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
-import { User } from '@/models';
-import mongoose from 'mongoose';
 
 /*
     * Group Model: 
@@ -136,19 +135,92 @@ export const getMembers = async ({ groupId }: { groupId: string }) => {
         }
 
         // lấy thông tin các thành viên từ field members
-        const group = await Group.findById(groupId);
-        const members = [];
+        const group = await Group.findById(groupId).populate('members.user');
 
-        // trả về thông tin các thành viên
-        for (let i = 0; i < group?.members.length; i++) {
-            const user = await User.findById(group.members[i]).select(
-                POPULATE_USER
-            );
+        return JSON.parse(JSON.stringify(group.members));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
 
-            members.push(user);
+export const createGroupConversation = async ({
+    groupId,
+    name,
+    avatar,
+    desc,
+    members,
+}: {
+    groupId: string;
+    name: string;
+    avatar: string;
+    desc: string;
+    members: string[];
+}) => {
+    try {
+        await connectToDB();
+        const session = (await getAuthSession()) as Session;
+
+        console.log({
+            name,
+            avatar,
+            desc,
+            members,
+        });
+
+        if (!session?.user) {
+            return {
+                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
+                success: false,
+            };
         }
 
-        return JSON.parse(JSON.stringify(members));
+        const newGroup = await new GroupConversation({
+            name,
+            avatar,
+            description: desc,
+            members: [
+                {
+                    user: session.user.id,
+                    role: 'admin',
+                },
+            ],
+            creator: session.user.id,
+            group: groupId,
+        });
+
+        for (const memberId of members) {
+            if (memberId === session.user.id) continue;
+
+            newGroup.members.push({
+                user: memberId,
+                role: 'member',
+            });
+        }
+
+        await newGroup.save();
+
+        return JSON.parse(JSON.stringify(newGroup));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getGroupConversations = async ({
+    groupId,
+}: {
+    groupId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const groupConversations = await GroupConversation.find({
+            group: groupId,
+        })
+            .populate('members.user')
+            .populate('creator')
+            .populate('group');
+
+        return JSON.parse(JSON.stringify(groupConversations));
     } catch (error: any) {
         throw new Error(error);
     }

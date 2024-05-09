@@ -1,34 +1,29 @@
 import { Schema, Types, model, models } from 'mongoose';
 
 interface IGroupConversationModel {
-    _id: string;
     name: string;
     avatar: string;
-    desc: string;
-    members: Types.ObjectId[];
-    status: string;
-    admins: Types.ObjectId[];
-    unreadMessages: number;
-    lastActivityAt: Date;
-    background: string;
+    description: string;
+    creator: Types.ObjectId;
+    group: Types.ObjectId;
+    members: IGroupMember[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const GroupConversationModel = new Schema<IGroupConversationModel>(
     {
-        _id: { type: String, required: true },
-        name: { type: String, default: null },
-        avatar: { type: String, default: null },
-        desc: { type: String, default: null },
-        admins: [{ type: Types.ObjectId, ref: 'User' }],
-        background: { type: String, default: null },
-        members: [{ type: Types.ObjectId, ref: 'User' }],
-        unreadMessages: { type: Number, default: 0 },
-        lastActivityAt: { type: Date, default: Date.now },
-        status: {
-            enum: ['active', 'archived', 'blocked'],
-            type: String,
-            default: 'active',
-        },
+        name: { type: String, required: true },
+        avatar: { type: String, required: true },
+        description: { type: String, required: true },
+        creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        group: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+        members: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User' },
+                role: { type: String, default: 'member' },
+            },
+        ],
     },
     { timestamps: true }
 );

@@ -33,6 +33,10 @@ const GroupLayout: React.FC<Props> = async ({
     children,
 }) => {
     const group = (await GroupService.getGroup({ groupId })) as IGroup;
+    const conversations = (await GroupService.getGroupConversations({
+        groupId: group._id,
+    })) as IGroupConversation[];
+
     if (!group) redirect('/groups');
 
     const session = await getAuthSession();
@@ -46,7 +50,7 @@ const GroupLayout: React.FC<Props> = async ({
 
     return (
         <div>
-            <Sidebar group={group} />
+            <Sidebar group={group} conversations={conversations} />
 
             <div className="first-letter: ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
                 <div className="w-full">
