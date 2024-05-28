@@ -1,8 +1,6 @@
 import { getAuthSession } from '@/lib/auth';
-import { GroupService } from '@/lib/services';
-import React from 'react';
-import { Sidebar } from './_components';
 import { redirect } from 'next/navigation';
+import React from 'react';
 
 interface Props {
     children: React.ReactNode;
@@ -16,7 +14,7 @@ export function generateMetadata() {
 
 const GroupLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-    if (!session) redirect('/');
+    if (!session) redirect('/auth');
 
     return <>{children}</>;
 };

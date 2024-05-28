@@ -1,14 +1,24 @@
 'use client';
 import { cn } from '@/lib/utils';
+import generateRoomId from '@/utils/generateRoomId';
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 import { FriendChatItem } from '.';
 
 interface Props {
     friends: IFriend[];
-    currentConversation?: IPrivateConversation;
+    conversations: IGroupConversation[];
 }
 
-const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
+const Sidebar: React.FC<Props> = ({ conversations, friends }) => {
+    const { data: session } = useSession();
+    const path = usePathname();
+
+    if (!session) return null;
+
+    const pathConversationId = path.split('/')[3];
+
     return (
         <>
             <div
@@ -27,8 +37,8 @@ const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
                                 data={friend}
                                 key={friend._id}
                                 isSelect={
-                                    currentConversation?.friend?._id ===
-                                    friend._id
+                                    pathConversationId ===
+                                    generateRoomId(session.user.id, friend._id)
                                 }
                             />
                         );
@@ -39,6 +49,15 @@ const Sidebar: React.FC<Props> = ({ currentConversation, friends }) => {
                         <h5 className="mb-2 text-secondary-1">Chưa có bạn</h5>
                     </div>
                 )}
+
+                <span className="h-[64px] border-b p-4 text-center text-xl font-bold dark:border-none md:hidden">
+                    Cuộc trò chuyện nhóm
+                </span>
+
+                {conversations &&
+                    conversations.map((conversation: IGroupConversation) => {
+                        return <div>{conversation.name}</div>;
+                    })}
             </div>
         </>
     );

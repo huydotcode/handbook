@@ -13,14 +13,11 @@ async function MessagesPage() {
     });
 
     return (
-        <>
-            <Sidebar friends={friends} />
-            <div className="flex flex-1 items-center justify-center rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
-                <h1 className="text-2xl font-bold text-secondary-1">
-                    Trò chuyện ngayy...
-                </h1>
-            </div>
-        </>
+        <div className="flex flex-1 items-center justify-center rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
+            <h1 className="text-2xl font-bold text-secondary-1">
+                Trò chuyện ngayy...
+            </h1>
+        </div>
     );
 }
 

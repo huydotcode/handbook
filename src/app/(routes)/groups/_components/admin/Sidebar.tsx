@@ -3,7 +3,8 @@ import { Avatar, Button, Icons, Modal } from '@/components/ui';
 import { GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import TimeAgoConverted from '@/utils/timeConvert';
-import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -26,6 +27,15 @@ const Sidebar: React.FC<Props> = ({
 
     const [conversations, setConversations] =
         useState<IGroupConversation[]>(initConversations);
+
+    const { data: session } = useSession();
+
+    const canCreateConversation = useMemo(() => {
+        return currentGroup.members.some(
+            (member) =>
+                member.user._id === session?.user?.id && member.role === 'admin'
+        );
+    }, [currentGroup, session]);
 
     const {
         register,
@@ -115,20 +125,24 @@ const Sidebar: React.FC<Props> = ({
                         </div>
                     </div>
 
-                    <div>
-                        <Button
-                            variant={'primary'}
-                            className="w-full"
-                            onClick={() => setShowModalCreateConversation(true)}
-                        >
-                            <span className="md:hidden">
-                                Tạo cuộc hội thoại
-                            </span>
-                            <span className="hidden md:block">
-                                <Icons.Plus className="h-4 w-4" />
-                            </span>
-                        </Button>
-                    </div>
+                    {canCreateConversation && (
+                        <div>
+                            <Button
+                                variant={'primary'}
+                                className="w-full"
+                                onClick={() =>
+                                    setShowModalCreateConversation(true)
+                                }
+                            >
+                                <span className="md:hidden">
+                                    Tạo cuộc hội thoại
+                                </span>
+                                <span className="hidden md:block">
+                                    <Icons.Plus className="h-4 w-4" />
+                                </span>
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
 

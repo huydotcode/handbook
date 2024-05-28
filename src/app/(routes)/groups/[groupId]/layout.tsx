@@ -33,7 +33,7 @@ const GroupLayout: React.FC<Props> = async ({
     children,
 }) => {
     const group = (await GroupService.getGroup({ groupId })) as IGroup;
-    const conversations = (await GroupService.getGroupConversations({
+    const conversations = (await GroupService.getGroupConversationsByGroupId({
         groupId: group._id,
     })) as IGroupConversation[];
 

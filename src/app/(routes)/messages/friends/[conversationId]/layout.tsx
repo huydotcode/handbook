@@ -55,21 +55,7 @@ const MessageLayout = async ({
     // Nếu không thì redirect về trang messages
     if (!conversationId.includes(session.user.id)) redirect('/messages');
 
-    // Lấy ra bạn từ conversation
-    if (conversation && conversation.members.length > 0) {
-        const friend = conversation.members.filter(
-            (member) => member._id != session.user.id
-        )[0] as IUser;
-
-        conversation.friend = friend;
-    }
-
-    return (
-        <>
-            <Sidebar currentConversation={conversation} friends={friends} />
-            {children}
-        </>
-    );
+    return <>{children}</>;
 };
 
 export default MessageLayout;

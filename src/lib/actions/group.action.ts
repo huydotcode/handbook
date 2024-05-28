@@ -10,14 +10,13 @@ import { getAuthSession } from '../auth';
     name: string;
     description: string;
     avatar: string;
-    members: Schema.Types.ObjectId[];
+    members: GroupMember[];
     creator: Schema.Types.ObjectId;
     coverPhoto: string;
     type: string;
     introduction: string;
+    lastActivity: Date;
 */
-
-const POPULATE_USER = 'name username avatar';
 
 // Tạo nhóm mới
 export const createGroup = async ({
@@ -37,12 +36,8 @@ export const createGroup = async ({
         await connectToDB();
         const session = (await getAuthSession()) as Session;
 
-        if (!session?.user) {
-            return {
-                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
-                success: false,
-            };
-        }
+        if (!session)
+            throw new Error('Bạn cần đăng nhập để thực hiện tính năng này!');
 
         const newGroup = await new Group({
             name,
@@ -205,7 +200,7 @@ export const createGroupConversation = async ({
     }
 };
 
-export const getGroupConversations = async ({
+export const getGroupConversationsByGroupId = async ({
     groupId,
 }: {
     groupId: string;
@@ -221,6 +216,52 @@ export const getGroupConversations = async ({
             .populate('group');
 
         return JSON.parse(JSON.stringify(groupConversations));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getGroupConversationsByUserId = async ({
+    userId,
+}: {
+    userId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const groupConversations = await GroupConversation.find({
+            members: {
+                $elemMatch: {
+                    user: userId,
+                },
+            },
+        })
+            .populate('members.user')
+            .populate('creator')
+            .populate('group');
+
+        return JSON.parse(JSON.stringify(groupConversations));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getGroupConversationById = async ({
+    conversationId,
+}: {
+    conversationId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const conversation = await GroupConversation.findById(conversationId)
+            .populate('members.user')
+            .populate('creator')
+            .populate('group');
+
+        console.log(conversation);
+
+        return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
         throw new Error(error);
     }
