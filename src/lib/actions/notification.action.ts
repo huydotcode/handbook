@@ -1,8 +1,8 @@
 'use server';
 import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { Types } from 'mongoose';
 import { getAuthSession } from '../auth';
+import { ConversationService } from '../services';
 
 /*
     * Notification Model: 
@@ -107,10 +107,10 @@ export const acceptFriend = async ({
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
-        const user = await User.findById(session.user.id).exec();
+        const user = await User.findById(session.user.id);
         if (!user) throw new Error('Đã có lỗi xảy ra');
 
-        const friend = await User.findById(notification.sender._id).exec();
+        const friend = await User.findById(notification.sender._id);
         if (!friend) throw new Error('Đã có lỗi xảy ra');
 
         await Notification.deleteOne({ _id: notification._id });
@@ -134,8 +134,17 @@ export const acceptFriend = async ({
             notificationId: notificationAcceptFriend._id,
         });
 
+        console.log('Tạo conversation');
+        const conversation = await ConversationService.createConversation({
+            creator: session.user.id,
+            participantsUserId: [user._id.toString(), friend._id.toString()],
+        });
+
+        console.log('Tạo conversation xong', conversation);
+
         return JSON.parse(JSON.stringify(notificaiton));
     } catch (error: any) {
+        console.log('Error', error);
         throw new Error(error);
     }
 };

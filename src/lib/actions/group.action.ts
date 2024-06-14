@@ -155,13 +155,6 @@ export const createGroupConversation = async ({
         await connectToDB();
         const session = (await getAuthSession()) as Session;
 
-        console.log({
-            name,
-            avatar,
-            desc,
-            members,
-        });
-
         if (!session?.user) {
             return {
                 msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
@@ -258,8 +251,6 @@ export const getGroupConversationById = async ({
             .populate('members.user')
             .populate('creator')
             .populate('group');
-
-        console.log(conversation);
 
         return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {

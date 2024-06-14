@@ -185,3 +185,24 @@ interface IMemberGroup {
     user: IUser;
     role: string;
 }
+
+interface IConversation {
+    _id: string;
+    title: string;
+    creator: string;
+    participants: IParticipant[];
+    group?: IGroup;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface IParticipant {
+    _id: string;
+    conversation: IConversation;
+    user: IUser;
+    role: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

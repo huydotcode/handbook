@@ -2,7 +2,8 @@ import { getAuthSession } from '@/lib/auth';
 import { ConversationService, MessageService } from '@/lib/services';
 import { Session } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { ChatBox } from '../../_components';
+import React from 'react';
+import { ChatBox } from '../_components';
 
 interface Props {
     params: {
@@ -10,20 +11,15 @@ interface Props {
     };
 }
 
-const MessagePage: React.FC<Props> = async ({ params: { conversationId } }) => {
+const ConversationPage: React.FC<Props> = async ({
+    params: { conversationId },
+}) => {
     const session = (await getAuthSession()) as Session;
     if (!session) redirect('/');
 
-    const conversation = (await ConversationService.getConversation({
+    const conversation = (await ConversationService.getConversationById({
         conversationId,
-        conversationType: 'f',
-    })) as IPrivateConversation;
-
-    const friend = conversation.members.find(
-        (member) => member._id != session.user.id
-    );
-
-    conversation.friend = friend as IUser;
+    })) as IConversation;
 
     if (!conversation) redirect('/messages');
 
@@ -42,4 +38,5 @@ const MessagePage: React.FC<Props> = async ({ params: { conversationId } }) => {
         </>
     );
 };
-export default MessagePage;
+
+export default ConversationPage;

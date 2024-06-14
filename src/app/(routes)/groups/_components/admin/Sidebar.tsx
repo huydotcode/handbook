@@ -1,6 +1,6 @@
 'use client';
 import { Avatar, Button, Icons, Modal } from '@/components/ui';
-import { GroupService } from '@/lib/services';
+import { ConversationService, GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
@@ -44,14 +44,18 @@ const Sidebar: React.FC<Props> = ({
     } = useForm<FormData>();
 
     const createGroupConversation = async (data: FormData) => {
+        if (!session) return toast.error('Chưa đăng nhập');
+
         try {
-            const newConversation = await GroupService.createGroupConversation({
-                groupId: currentGroup._id,
-                name: data.name,
-                avatar: currentGroup.avatar,
-                desc: data.desc,
-                members: currentGroup.members.map((member) => member.user._id),
-            });
+            const newConversation =
+                await ConversationService.createConversation({
+                    creator: session.user.id,
+                    participantsUserId: currentGroup.members.map(
+                        (mem) => mem.user._id
+                    ),
+                    title: data.name,
+                    groupId: currentGroup._id,
+                });
 
             if (newConversation) {
                 toast.success('Tạo cuộc hội thoại thành công!');

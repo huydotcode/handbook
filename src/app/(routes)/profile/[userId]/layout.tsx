@@ -21,7 +21,7 @@ export async function generateMetadata({
     })) as IProfile;
 
     return {
-        title: 'Trang cá nhân - ' + profile.user.name,
+        title: profile.user.name,
     };
 }
 

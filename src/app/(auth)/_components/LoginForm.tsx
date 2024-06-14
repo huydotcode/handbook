@@ -39,6 +39,7 @@ const LoginForm: React.FC<Props> = ({}) => {
     }, [searchParams, error]);
 
     const loginWithCrenditals: SubmitHandler<IFormData> = async (formData) => {
+        setIsLoading(true);
         const { email, password } = formData;
 
         try {
@@ -66,6 +67,8 @@ const LoginForm: React.FC<Props> = ({}) => {
             toast.error('Đã có lỗi xảy ra khi đăng nhập', {
                 id: 'error-login',
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 

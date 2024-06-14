@@ -5,18 +5,15 @@ interface IPrivateConversationModel {
     members: Types.ObjectId[];
     status: string;
     background: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const PrivateConversationModel = new Schema<IPrivateConversationModel>(
     {
         _id: { type: String, required: true },
-        background: { type: String, default: null },
         members: [{ type: Types.ObjectId, ref: 'User' }],
-        status: {
-            enum: ['active', 'archived', 'blocked'],
-            type: String,
-            default: 'active',
-        },
+        status: { type: String, default: 'active' },
     },
     { timestamps: true }
 );

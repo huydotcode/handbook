@@ -5,7 +5,7 @@ import socketEvent from '@/constants/socketEvent.constant';
 
 import { useSocial, useSocket } from '@/context';
 import { sendRequestAddFriend } from '@/lib/actions/notification.action';
-import { UserService } from '@/lib/services';
+import { NotificationService, UserService } from '@/lib/services';
 import logger from '@/utils/logger';
 import React, { FormEventHandler, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -28,9 +28,10 @@ const Action: React.FC<Props> = ({ userId }) => {
         e.preventDefault();
 
         try {
-            const requestAddFriend = await sendRequestAddFriend({
-                receiverId: userId,
-            });
+            const requestAddFriend =
+                await NotificationService.sendRequestAddFriend({
+                    receiverId: userId,
+                });
 
             if (socket) {
                 await socket.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {

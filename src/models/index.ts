@@ -9,3 +9,5 @@ export { default as Post } from './Post';
 export { default as PrivateConversation } from './PrivateConversation';
 export { default as Profile } from './Profile';
 export { default as User } from './User';
+export { default as Conversation } from './Conversation';
+export { default as Participant } from './Participant';

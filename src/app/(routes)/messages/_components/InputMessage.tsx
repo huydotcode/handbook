@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 interface Props {
-    currentRoom: IPrivateConversation;
+    currentRoom: IConversation;
     isPopup?: boolean;
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }

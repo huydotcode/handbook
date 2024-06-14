@@ -17,8 +17,6 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
         groupId,
     })) as IMemberGroup[];
 
-    console.log('members', members);
-
     if (!members || !group) return null;
 
     return (

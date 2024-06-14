@@ -15,7 +15,7 @@ interface Props {
     className?: string;
     isPopup?: boolean;
     initialMessages: IMessage[];
-    conversation: IPrivateConversation;
+    conversation: IConversation;
 }
 
 const PAGE_SIZE = 20;

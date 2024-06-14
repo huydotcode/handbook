@@ -1,6 +1,6 @@
 import { Loading } from '@/components/ui';
 
-const loading = ({}) => {
+const LoadingPage = ({}) => {
     return <Loading fullScreen />;
 };
-export default loading;
+export default LoadingPage;

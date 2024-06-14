@@ -1,7 +1,7 @@
 import { Loading } from '@/components/ui';
 import React from 'react';
 
-const loading = () => {
+const LoadingPage = () => {
     return <Loading fullScreen />;
 };
-export default loading;
+export default LoadingPage;

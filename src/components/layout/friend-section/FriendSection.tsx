@@ -1,9 +1,8 @@
+import React from 'react';
 import { getAuthSession } from '@/lib/auth';
 import { UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
-import React from 'react';
 import FriendList from './FriendList';
-import { getFriends } from '@/lib/actions/user.action';
 
 interface Props {
     className?: string;
@@ -12,7 +11,6 @@ interface Props {
 
 const FriendSection: React.FC<Props> = async ({ className, show }) => {
     const session = await getAuthSession();
-
     if (!session) return null;
 
     const friends = await UserService.getFriends({

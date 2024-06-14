@@ -1,7 +1,12 @@
 'use server';
-import { getAuthSession } from '../auth';
+import {
+    Conversation,
+    GroupConversation,
+    Participant,
+    PrivateConversation,
+} from '@/models';
 import connectToDB from '@/services/mongoose';
-import { GroupConversation, PrivateConversation } from '@/models';
+import { getAuthSession } from '../auth';
 
 // f: Trang nhắn với bạn bè
 // r: Trang nhắn với người lạ
@@ -22,6 +27,31 @@ export const getType = (conversationType: string) => {
             return 'page';
         default:
             return 'friend';
+    }
+};
+
+export const getConversationById = async ({
+    conversationId,
+}: {
+    conversationId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const conversation = await Conversation.findOne({
+            _id: conversationId,
+        })
+            .populate('participants')
+            .populate('creator')
+            .populate('group');
+
+        await Participant.populate(conversation, {
+            path: 'participants.user',
+        });
+
+        return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
@@ -92,9 +122,7 @@ export const getConversations = async () => {
             },
         }).populate('members', POPULATE_USER);
 
-        return JSON.parse(
-            JSON.stringify(conversations)
-        ) as IPrivateConversation[];
+        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -124,6 +152,83 @@ export const getGroupConversation = async ({
         }
 
         return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const createConversation = async ({
+    creator,
+    participantsUserId,
+    status = 'active',
+    title = 'Cuộc hội thoại mới',
+    groupId = null,
+}: {
+    participantsUserId: string[];
+    creator: string;
+    title?: string;
+    status?: string;
+    groupId?: string | null;
+}) => {
+    try {
+        await connectToDB();
+
+        const newConversation = new Conversation({
+            title,
+            creator,
+            participants: [],
+            status,
+            group: groupId,
+        });
+
+        await newConversation.save();
+
+        for (const userId of participantsUserId) {
+            // Tạo participant
+            const newParticipant = new Participant({
+                conversation: newConversation._id,
+                user: userId,
+            });
+
+            await newParticipant.save();
+
+            newConversation.participants.push(newParticipant._id);
+        }
+
+        await newConversation.save();
+
+        return JSON.parse(JSON.stringify(newConversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getConversationsByUserId = async ({
+    userId,
+}: {
+    userId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const participants = await Participant.find({
+            user: userId,
+        }).populate('conversation', POPULATE_USER);
+
+        const conversations = await Conversation.find({
+            participants: {
+                $in: participants.map((participant) => participant._id),
+            },
+        })
+            .populate('participants')
+            .populate('creator')
+            .populate('group');
+
+        await Participant.populate(conversations, {
+            path: 'participants.user',
+        });
+
+        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }
