@@ -1,15 +1,16 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
+import { ConversationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
+import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { MenuProps } from 'antd';
-import generateRoomId from '@/utils/generateRoomId';
-import { useSession } from 'next-auth/react';
-import TimeAgoConverted from '@/utils/timeConvert';
 
 interface Link {
     name: string;
@@ -72,24 +73,32 @@ const Items = {
         const { data: session } = useSession();
         const isOnline = friend.isOnline;
 
+        const { data: conversation } = useQuery(
+            ['conversation', friend._id, session?.user.id],
+            () =>
+                ConversationService.getConversationByParticipants({
+                    otherUserId: friend._id || '',
+                    userId: session?.user.id || '',
+                }),
+            {
+                enabled: !!friend._id && !!session?.user.id,
+            }
+        );
+
         if (!session) return null;
 
         const items: MenuProps['items'] = [
             {
                 key: '1',
                 label: (
-                    <Link href={`profile/${friend._id}`}>
-                        Xem trang cá nhân
-                    </Link>
+                    <Link href={`/profile/${friend._id}`}>Trang cá nhân</Link>
                 ),
                 icon: <Icons.Users />,
             },
             {
                 key: '2',
                 label: (
-                    <Link
-                        href={`messages/friends/${generateRoomId(session?.user.id, friend._id)}`}
-                    >
+                    <Link href={`/messages/${conversation?._id}`}>
                         Nhắn tin
                     </Link>
                 ),

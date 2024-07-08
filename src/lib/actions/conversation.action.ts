@@ -233,3 +233,37 @@ export const getConversationsByUserId = async ({
         throw new Error(error);
     }
 };
+
+export const getConversationByParticipants = async ({
+    userId,
+    otherUserId,
+}: {
+    userId: string;
+    otherUserId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const participant = await Participant.findOne({
+            user: userId,
+        });
+
+        const otherParticipant = await Participant.findOne({
+            user: otherUserId,
+        });
+
+        const conversation = await Conversation.findOne({
+            participants: {
+                $all: [participant?._id, otherParticipant?._id],
+            },
+        });
+
+        if (!conversation) {
+            return null;
+        }
+
+        return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

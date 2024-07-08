@@ -1,6 +1,6 @@
 import React from 'react';
 import { getAuthSession } from '@/lib/auth';
-import { UserService } from '@/lib/services';
+import { ConversationService, UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import FriendList from './FriendList';
 

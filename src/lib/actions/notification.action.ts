@@ -102,6 +102,7 @@ export const acceptFriend = async ({
 }: {
     notification: INotification;
 }) => {
+    console.log('Accept friend');
     try {
         await connectToDB();
         const session = await getAuthSession();

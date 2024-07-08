@@ -24,14 +24,14 @@ const NotificationItem: React.FC<Props> = ({
     // Chấp nhận lời mời kết bạn
     const handleAcceptFriend = async () => {
         try {
-            const notificationAcceptFriend =
-                await NotificationService.acceptFriend({ notification });
+            // const notificationAcceptFriend =
+            //     await NotificationService.acceptFriend({ notification });
 
-            if (socket) {
-                socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
-                    notification: notificationAcceptFriend,
-                });
-            }
+            // if (socket) {
+            //     socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
+            //         notification: notificationAcceptFriend,
+            //     });
+            // }
 
             setNotifications((prev) =>
                 prev.filter((item) => item._id !== notification._id)

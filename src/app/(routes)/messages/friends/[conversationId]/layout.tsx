@@ -42,19 +42,6 @@ const MessageLayout = async ({
     const session = await getAuthSession();
     if (!session) redirect('/');
 
-    const friends = await UserService.getFriends({
-        userId: session.user.id,
-    });
-
-    const conversation = (await ConversationService.getConversation({
-        conversationId,
-        conversationType: 'f',
-    })) as IPrivateConversation;
-
-    // Kiểm tra conversationId có tồn tại chuỗi sesion.user.id không ( conversationId gồm id người bạn và id của mình)
-    // Nếu không thì redirect về trang messages
-    if (!conversationId.includes(session.user.id)) redirect('/messages');
-
     return <>{children}</>;
 };
 

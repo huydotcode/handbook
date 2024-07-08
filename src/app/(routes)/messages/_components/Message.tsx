@@ -26,6 +26,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const { socket } = useSocket();
     const [showTime, setShowTime] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLFormElement>(null);
 
     const newDate = new Date(msg.createdAt).toLocaleTimeString('en-US', {
         hour12: true,
@@ -33,67 +34,39 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         minute: '2-digit',
     });
 
-    const menuRef = useRef<HTMLFormElement>(null);
+    const index = messagesInRoom.indexOf(msg);
+    const prevMsgSender = messagesInRoom[index - 1]?.sender._id;
+    const nextMsgSender = messagesInRoom[index + 1]?.sender._id;
 
-    const canShowTime = useMemo(() => {
-        // Kiểm tra xem tin nhắn trước và sau có phải của cùng 1 người không
-        return (
-            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.sender._id !==
-                msg.sender._id &&
-            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.sender._id ===
-                msg.sender._id
-        );
-    }, []);
-
-    const topAndBottomMsgIsNotSameUser = useMemo(() => {
-        return (
-            messagesInRoom[messagesInRoom.indexOf(msg) - 1]?.sender._id !==
-                msg.sender._id &&
-            messagesInRoom[messagesInRoom.indexOf(msg) + 1]?.sender._id !==
-                msg.sender._id
-        );
-    }, []);
+    const canShowTime = useMemo(() => prevMsgSender !== msg.sender._id && nextMsgSender === msg.sender._id, [prevMsgSender, nextMsgSender, msg.sender._id]);
+    const topAndBottomMsgIsNotSameUser = useMemo(() => prevMsgSender !== msg.sender._id && nextMsgSender !== msg.sender._id, [prevMsgSender, nextMsgSender, msg.sender._id]);
 
     const isOwnMsg = msg.sender._id === session?.user.id;
 
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
     const handleClickContent = () => {
-        setShowTime((prev) => !prev);
+        setShowTime(prev => !prev);
         handleShowMenu();
     };
+
     const handleDeleteMsg: FormEventHandler = async (e) => {
         e.preventDefault();
-
         if (!socket) return;
 
-        const res = await MessageService.deleteMessage({
-            messageId: msg._id,
-        });
+        const res = await MessageService.deleteMessage({ messageId: msg._id });
+        const prevMsg = messagesInRoom[index - 1] || null;
 
-        // Lấy tin nhắn trước tin nhắn được xóa này
-        const prevMsg = messagesInRoom[messagesInRoom.indexOf(msg) - 1] || null;
+        socket.emit(socketEvent.DELETE_MESSAGE, { currentMessage: msg, prevMessage: prevMsg });
 
-        socket.emit(socketEvent.DELETE_MESSAGE, {
-            currentMessage: msg,
-            prevMessage: prevMsg,
-        });
-
-        if (res) {
-            // setMessages((prev) => prev.filter((cmt) => cmt._id !== msg._id));
-        } else {
-            toast.error('Xóa thất bại!', {
-                id: 'delete-message',
-            });
+        if (!res) {
+            toast.error('Xóa thất bại!', { id: 'delete-message' });
         }
     };
 
     useEffect(() => {
         if (showTime) {
-            const timer = setTimeout(() => {
-                setShowTime(false);
-            }, 2000);
-
+            const timer = setTimeout(() => setShowTime(false), 2000);
             return () => clearTimeout(timer);
         }
     }, [showTime]);
@@ -105,20 +78,15 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                     setShowMenu(false);
                 }
             };
-
             document.addEventListener('mousedown', handleClickOutside);
-
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
+            return () => document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [menuRef.current]);
+    }, []);
 
     useEffect(() => {
         if (showMenu) {
-            setTimeout(() => {
-                handleHideMenu();
-            }, 2000);
+            const timer = setTimeout(() => handleHideMenu(), 2000);
+            return () => clearTimeout(timer);
         }
     }, [showMenu]);
 
@@ -133,22 +101,19 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 }
             )}
         >
-            {canShowTime ||
-                (topAndBottomMsgIsNotSameUser && !isOwnMsg && (
-                    <div className="ml-2 text-[10px]">{newDate}</div>
-                ))}
+            {(canShowTime || (topAndBottomMsgIsNotSameUser && !isOwnMsg)) && (
+                <div className="ml-2 text-[10px]">{newDate}</div>
+            )}
 
             <div
                 className={cn(
-                    `flex items-center justify-${
-                        isOwnMsg ? 'end mr-1' : 'start ml-1'
-                    } w-full`
+                    `flex items-center justify-${isOwnMsg ? 'end mr-1' : 'start ml-1'} w-full`
                 )}
             >
                 <Tooltip
                     title={
                         <TimeAgoConverted
-                            className={'text-xs  '}
+                            className={'text-xs'}
                             time={msg.createdAt}
                             textBefore="Đã gửi"
                             textAfter="trước"
@@ -159,12 +124,10 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 >
                     <div
                         className={cn(
-                            `relative flex w-fit max-w-[70%] items-center  px-4 py-2 `,
+                            'relative flex w-fit max-w-[70%] items-center px-4 py-2',
                             {
-                                'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
-                                    isOwnMsg,
-                                ' rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
-                                    !isOwnMsg,
+                                'items-end rounded-xl rounded-r-md bg-primary-2 text-white': isOwnMsg,
+                                'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2': !isOwnMsg,
                             }
                         )}
                         onClick={handleClickContent}
@@ -172,21 +135,14 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                         {showMenu && isOwnMsg && (
                             <form
                                 ref={menuRef}
-                                className={
-                                    ' absolute right-[120%] top-0 flex items-center rounded-xl'
-                                }
+                                className="absolute right-[120%] top-0 flex items-center rounded-xl"
                                 onSubmit={handleDeleteMsg}
                             >
-                                <Button
-                                    variant={'text'}
-                                    size={'small'}
-                                    type="submit"
-                                >
+                                <Button variant="text" size="small" type="submit">
                                     <Icons.Delete />
                                 </Button>
                             </form>
                         )}
-
                         <p
                             className={cn('text-xs', {
                                 'text-justify': msg.text.length > 100,
@@ -196,15 +152,6 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                         </p>
                     </div>
                 </Tooltip>
-
-                {/* {msg.isRead &&
-                    isLastMessage &&
-                    session?.user.id === msg.sender._id && (
-                        <Avatar
-                            className={'w-4 h-4 ml-2 mt-2'}
-                            imgSrc={currentRoom.image || ''}
-                        />
-                    )} */}
             </div>
         </div>
     );

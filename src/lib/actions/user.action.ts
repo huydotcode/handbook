@@ -1,5 +1,5 @@
 'use server';
-import { User } from '@/models';
+import { Conversation, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { FilterQuery, SortOrder } from 'mongoose';
 import { getAuthSession } from '../auth';
