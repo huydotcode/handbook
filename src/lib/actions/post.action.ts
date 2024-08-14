@@ -1,7 +1,7 @@
 'use server';
-import { Comment, Post } from '@/models';
-import { getAuthSession } from '../auth';
+import { Comment, Group, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
+import { getAuthSession } from '../auth';
 
 /*
     * POST MODEL
@@ -15,8 +15,108 @@ import connectToDB from '@/services/mongoose';
     comments: Types.ObjectId[];
 */
 
-const POPULATE_USER = 'name username avatar';
+const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = 'name avatar';
+
+export const getNewFeedPosts = async ({
+    groupId,
+    page,
+    pageSize,
+    path,
+    type,
+    userId,
+    username,
+}: {
+    page: string;
+    pageSize: string;
+    groupId: string;
+    userId: string;
+    username: string;
+    type: string;
+    path: string;
+}) => {
+    const session = await getAuthSession();
+    const query = {} as any;
+
+    if (userId !== 'undefined' || username !== 'undefined') {
+        // Kiểm tra xem có phải là user đang đăng nhập không
+        if (userId == session?.user.id || username == session?.user.username) {
+            query.author = session?.user.id;
+            query.option = {
+                $in: ['public', 'private'],
+            };
+        } else {
+            query.option = 'public';
+
+            if (userId !== 'undefined' && userId) {
+                query.author = userId;
+            } else {
+                const user = await User.findOne({ username });
+                if (user) {
+                    query.author = user.id;
+                }
+            }
+        }
+    }
+
+    // Lấy những bài post trong group của user đang tham gia
+    if (type == 'group' && groupId == 'undefined') {
+        // Lấy những group mà user đang tham gia
+        let groupsHasJoin = await Group.find({
+            members: {
+                $elemMatch: {
+                    user: {
+                        $eq: session?.user.id,
+                    },
+                },
+            },
+        });
+
+        groupsHasJoin = groupsHasJoin.flatMap((group) => group._id);
+
+        query.group = {
+            $in: groupsHasJoin,
+        };
+    } else {
+        if (groupId !== 'undefined') {
+            query.group = groupId;
+        }
+    }
+
+    try {
+        let posts = await Post.find(query)
+            .populate('author', POPULATE_USER)
+            .populate('images')
+            .populate('group', POPULATE_GROUP)
+            .populate('loves', POPULATE_USER)
+            .populate('shares', POPULATE_USER)
+            .populate({
+                path: 'comments',
+                populate: {
+                    path: 'author',
+                    select: POPULATE_USER,
+                },
+            })
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ createdAt: -1 });
+
+        // Nếu là chế độ chỉ bạn bè thì kiểm tra xem có phải là bạn bè không
+        posts = posts.filter((post) => {
+            if (post.option == 'friends') {
+                if (post.author.friends.includes(session?.user.id)) {
+                    return post;
+                }
+            }
+
+            return post;
+        });
+
+        return JSON.parse(JSON.stringify(posts));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
 
 export const getPost = async ({ postId }: { postId: string }) => {
     try {

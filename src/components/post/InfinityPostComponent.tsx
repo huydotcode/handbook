@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
+import { PostService } from '@/lib/services';
+import { usePathname } from 'next/navigation';
 
 interface Props {
     className?: string;
@@ -33,6 +35,8 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     const [posts, setPosts] = useState<IPost[]>([]);
     const [isEnd, setIsEnd] = useState<boolean>(false);
+
+    const path = usePathname();
 
     const renderCreatePost = useCallback(() => {
         const isCurrentUser =
@@ -64,10 +68,15 @@ const InfinityPostComponent: React.FC<Props> = ({
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch(
-                `/api/posts?page=${page}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
-            );
-            const fetchedPosts = await res.json();
+            const fetchedPosts = await PostService.getNewFeedPosts({
+                page: page + '',
+                pageSize: PAGE_SIZE + '',
+                groupId: groupId || 'undefined',
+                userId: userId || 'undefined',
+                username: username || 'undefined',
+                type,
+                path,
+            });
 
             if (fetchedPosts.length === 0) {
                 setIsEnd(true);
