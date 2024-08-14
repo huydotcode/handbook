@@ -1,9 +1,7 @@
 'use client';
 import { Button } from '@/components/ui';
 import logger from '@/utils/logger';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -20,19 +18,9 @@ interface Props {
 }
 
 const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const router = useRouter();
-    const { data: session } = useSession();
-
     const { register, handleSubmit, formState } = useForm<FormData>();
 
     const { errors, isSubmitting } = formState;
-
-    useEffect(() => {
-        if (session) {
-            router.push('/');
-        }
-    }, [session, router]);
 
     const signUp: SubmitHandler<FormData> = async (data) => {
         if (isSubmitting) return;
@@ -218,7 +206,6 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
             <Button
                 className="mt-6 h-10 w-full"
                 variant={'primary'}
-                disabled={isLoading}
                 type="submit"
             >
                 <h5 className="text-lg">

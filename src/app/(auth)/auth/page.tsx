@@ -1,15 +1,21 @@
+'use client';
 import { DarkmodeButton } from '@/components/ui';
-import { getAuthSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import React from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 import Form from '../_components/Form';
 
 interface Props {}
 
-const page: React.FC<Props> = async () => {
-    const session = await getAuthSession();
+const AuthPage: React.FC<Props> = async () => {
+    const { data: session } = useSession();
+    const router = useRouter();
 
-    if (session) redirect('/');
+    useEffect(() => {
+        if (session) {
+            router.push('/');
+        }
+    }, [session]);
 
     return (
         <div className="flex h-screen items-center justify-center px-8 py-12 lg:px-8 sm:px-6">
@@ -18,4 +24,4 @@ const page: React.FC<Props> = async () => {
         </div>
     );
 };
-export default page;
+export default AuthPage;

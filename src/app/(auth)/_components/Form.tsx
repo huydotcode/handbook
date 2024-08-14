@@ -1,11 +1,11 @@
 'use client';
 import { Button } from '@/components/ui';
+import logger from '@/utils/logger';
 import { signIn } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
-import logger from '@/utils/logger';
 
 interface Props {}
 

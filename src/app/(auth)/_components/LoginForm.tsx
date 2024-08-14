@@ -17,7 +17,6 @@ const LoginForm: React.FC<Props> = ({}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { data: session } = useSession();
 
     const {
         handleSubmit,
@@ -25,12 +24,6 @@ const LoginForm: React.FC<Props> = ({}) => {
         formState: { errors, isSubmitting },
     } = useForm<IFormData>();
     const error = searchParams?.get('error') || '';
-
-    useEffect(() => {
-        if (session) {
-            router.push('/');
-        }
-    }, [session, router]);
 
     useEffect(() => {
         if (error.length > 0) {
