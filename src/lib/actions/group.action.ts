@@ -1,5 +1,4 @@
 'use server';
-import { GroupConversation } from '@/models';
 import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
@@ -162,32 +161,7 @@ export const createGroupConversation = async ({
             };
         }
 
-        const newGroup = await new GroupConversation({
-            name,
-            avatar,
-            description: desc,
-            members: [
-                {
-                    user: session.user.id,
-                    role: 'admin',
-                },
-            ],
-            creator: session.user.id,
-            group: groupId,
-        });
-
-        for (const memberId of members) {
-            if (memberId === session.user.id) continue;
-
-            newGroup.members.push({
-                user: memberId,
-                role: 'member',
-            });
-        }
-
-        await newGroup.save();
-
-        return JSON.parse(JSON.stringify(newGroup));
+        return null;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -201,14 +175,7 @@ export const getGroupConversationsByGroupId = async ({
     try {
         await connectToDB();
 
-        const groupConversations = await GroupConversation.find({
-            group: groupId,
-        })
-            .populate('members.user')
-            .populate('creator')
-            .populate('group');
-
-        return JSON.parse(JSON.stringify(groupConversations));
+        return null;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -220,20 +187,7 @@ export const getGroupConversationsByUserId = async ({
     userId: string;
 }) => {
     try {
-        await connectToDB();
-
-        const groupConversations = await GroupConversation.find({
-            members: {
-                $elemMatch: {
-                    user: userId,
-                },
-            },
-        })
-            .populate('members.user')
-            .populate('creator')
-            .populate('group');
-
-        return JSON.parse(JSON.stringify(groupConversations));
+        return null;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -247,12 +201,7 @@ export const getGroupConversationById = async ({
     try {
         await connectToDB();
 
-        const conversation = await GroupConversation.findById(conversationId)
-            .populate('members.user')
-            .populate('creator')
-            .populate('group');
-
-        return JSON.parse(JSON.stringify(conversation));
+        return null;
     } catch (error: any) {
         throw new Error(error);
     }

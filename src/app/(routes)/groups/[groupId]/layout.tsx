@@ -1,5 +1,5 @@
 import { getAuthSession } from '@/lib/auth';
-import { GroupService } from '@/lib/services';
+import { ConversationService, GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -33,9 +33,9 @@ const GroupLayout: React.FC<Props> = async ({
     children,
 }) => {
     const group = (await GroupService.getGroup({ groupId })) as IGroup;
-    const conversations = (await GroupService.getGroupConversationsByGroupId({
-        groupId: group._id,
-    })) as IGroupConversation[];
+    const conversations = (await ConversationService.getConversationsByGroupId({
+        groupId: groupId,
+    })) as IConversation[];
 
     if (!group) redirect('/groups');
 

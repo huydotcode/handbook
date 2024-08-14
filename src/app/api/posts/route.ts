@@ -1,7 +1,7 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
 
-const POPULATE_USER = 'name username avatar';
+const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = 'name avatar';
 
 export const GET = async (request: Request, response: Response) => {
@@ -39,13 +39,13 @@ export const GET = async (request: Request, response: Response) => {
         }
     }
 
-    // Lấy những bài post của user đang tham gia
+    // Lấy những bài post trong group của user đang tham gia
     if (type == 'group' && groupId == 'undefined') {
         // Lấy những group mà user đang tham gia
         let groupsHasJoin = await Group.find({
             members: {
-                $in: {
-                    $elemMatch: {
+                $elemMatch: {
+                    user: {
                         $eq: session?.user.id,
                     },
                 },
@@ -57,16 +57,14 @@ export const GET = async (request: Request, response: Response) => {
         query.group = {
             $in: groupsHasJoin,
         };
-        query.status = 'active';
     } else {
         if (groupId !== 'undefined') {
             query.group = groupId;
-            query.status = 'active';
         }
     }
 
     try {
-        const posts = await Post.find(query)
+        let posts = await Post.find(query)
             .populate('author', POPULATE_USER)
             .populate('images')
             .populate('group', POPULATE_GROUP)
@@ -82,6 +80,17 @@ export const GET = async (request: Request, response: Response) => {
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 });
+
+        // Nếu là chế độ chỉ bạn bè thì kiểm tra xem có phải là bạn bè không
+        posts = posts.filter((post) => {
+            if (post.option == 'friends') {
+                if (post.author.friends.includes(session?.user.id)) {
+                    return post;
+                }
+            } else {
+                return post;
+            }
+        });
 
         return new Response(JSON.stringify(posts), { status: 200 });
     } catch (error) {

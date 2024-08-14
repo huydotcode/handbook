@@ -30,12 +30,10 @@ const ConversationPage: React.FC<Props> = async ({
     })) as IMessage[];
 
     return (
-        <>
-            <ChatBox
-                conversation={conversation}
-                initialMessages={initialMessages}
-            />
-        </>
+        <ChatBox
+            conversation={conversation}
+            initialMessages={initialMessages}
+        />
     );
 };
 

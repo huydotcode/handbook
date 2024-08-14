@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 interface Props {
     group: IGroup;
-    conversations: IGroupConversation[];
+    conversations: IConversation[];
 }
 
 interface FormData {
@@ -26,7 +26,7 @@ const Sidebar: React.FC<Props> = ({
         useState<boolean>(false);
 
     const [conversations, setConversations] =
-        useState<IGroupConversation[]>(initConversations);
+        useState<IConversation[]>(initConversations);
 
     const { data: session } = useSession();
 
@@ -108,20 +108,9 @@ const Sidebar: React.FC<Props> = ({
                                     key={conversation._id}
                                     className="flex items-center rounded-md bg-secondary-1 dark:bg-dark-secondary-2"
                                 >
-                                    <div className="relative h-8 w-8">
-                                        <Avatar
-                                            imgSrc={conversation.avatar}
-                                            rounded="sm"
-                                        />
-                                    </div>
-
                                     <div className="ml-2 flex flex-1 flex-col md:hidden">
                                         <p className="text-sm dark:text-dark-primary-1">
-                                            {conversation.name}
-                                        </p>
-
-                                        <p className="text-xs text-secondary-1">
-                                            {conversation.description}
+                                            {conversation.title}
                                         </p>
                                     </div>
                                 </Button>

@@ -145,7 +145,9 @@ const Items = {
         const { index, link, className, direction, handleClose, onlyIcon } =
             props;
         const path = usePathname();
-        const isActived = link.path === path;
+        const isActived =
+            path === link.path ||
+            (path.includes(link.path) && link.path !== '/');
         const Icon = () => {
             return link.icon;
         };

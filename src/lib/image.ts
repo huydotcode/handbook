@@ -18,18 +18,18 @@ export const uploadImage = async ({ image }: { image: any }) => {
     const session = await getAuthSession();
 
     try {
-        // const options = {
-        //     use_filename: true,
-        //     unique_filename: false,
-        //     overwrite: true,
-        // };
-        // const result = await cloudinary.uploader.upload(image, options);
-        // const newImage = await new Image({
-        //     ...result,
-        //     user_id: session?.user.id,
-        // });
-        // await newImage.save();
-        // return JSON.parse(JSON.stringify(newImage));
+        const options = {
+            use_filename: true,
+            unique_filename: false,
+            overwrite: true,
+        };
+        const result = await cloudinary.uploader.upload(image, options);
+        const newImage = await new Image({
+            ...result,
+            user_id: session?.user.id,
+        });
+        await newImage.save();
+        return JSON.parse(JSON.stringify(newImage));
     } catch (error) {
         return new Response('Failed to upload image on Cloudinary');
     }

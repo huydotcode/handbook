@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react';
 import TextEditor from '../ui/TextEditor';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
+import postAudience from '@/constants/postAudience.constant';
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -120,18 +121,15 @@ const ModalCreatePost: React.FC<Props> = ({
                                         className="h-6 cursor-pointer border py-1 text-[10px]"
                                         {...register('option')}
                                     >
-                                        <option
-                                            className="text-xs"
-                                            value="public"
-                                        >
-                                            Công khai
-                                        </option>
-                                        <option
-                                            className="text-xs"
-                                            value="private"
-                                        >
-                                            Chỉ mình tôi
-                                        </option>
+                                        {postAudience.map((audience) => (
+                                            <option
+                                                key={audience.value}
+                                                value={audience.value}
+                                                className="text-xs"
+                                            >
+                                                {audience.label}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

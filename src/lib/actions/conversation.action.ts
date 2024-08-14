@@ -1,10 +1,5 @@
 'use server';
-import {
-    Conversation,
-    GroupConversation,
-    Participant,
-    PrivateConversation,
-} from '@/models';
+import { Conversation, Participant } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 
@@ -75,35 +70,7 @@ export const getConversation = async ({
             return null;
         }
 
-        const conversation = await PrivateConversation.findOne({
-            _id: conversationId,
-            members: {
-                $in: [session?.user.id],
-            },
-        }).populate(
-            'members',
-            '_id name avatar username isOnline lastAccessed'
-        );
-
-        if (!conversation) {
-            const otherMember = conversationId.replace(session?.user.id, '');
-
-            // Tạo mới
-            const newConversation = new PrivateConversation({
-                _id: conversationId,
-                members: [session?.user.id, otherMember],
-            });
-
-            await newConversation.save();
-
-            const newConversationPopulated = await PrivateConversation.findOne({
-                _id: newConversation._id,
-            }).populate('members', POPULATE_USER);
-
-            return JSON.parse(JSON.stringify(newConversationPopulated));
-        }
-
-        return JSON.parse(JSON.stringify(conversation));
+        return null;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -116,42 +83,34 @@ export const getConversations = async () => {
         const session = await getAuthSession();
         if (!session) throw new Error('Chưa đăng nhập');
 
-        const conversations = await PrivateConversation.find({
-            members: {
-                $in: [session?.user.id],
-            },
-        }).populate('members', POPULATE_USER);
-
-        return JSON.parse(JSON.stringify(conversations));
+        return [];
     } catch (error: any) {
         throw new Error(error);
     }
 };
 
-export const getGroupConversation = async ({
-    conversationId,
+export const getConversationsByGroupId = async ({
+    groupId,
 }: {
-    conversationId: string;
+    groupId: string;
 }) => {
     try {
         await connectToDB();
 
-        const session = await getAuthSession();
+        const conversations = await Conversation.find({
+            group: groupId,
+        })
+            .populate('participants')
+            .populate('creator')
+            .populate('group');
 
-        if (!session) throw new Error('Chưa đăng nhập');
-
-        const conversation = await GroupConversation.findOne({
-            _id: conversationId,
-            members: {
-                $in: [session?.user.id],
-            },
-        }).populate('members.user', POPULATE_USER);
-
-        if (!conversation) {
-            return null;
+        for (const conversation of conversations) {
+            await Participant.populate(conversation, {
+                path: 'participants.user',
+            });
         }
 
-        return JSON.parse(JSON.stringify(conversation));
+        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }

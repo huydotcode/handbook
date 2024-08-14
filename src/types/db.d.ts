@@ -53,29 +53,15 @@ interface IImage {
     updatedAt: Date;
 }
 
-/*
-name: string;
-    description: string;
-    avatar: string;
-    members: GroupMember[];
-    creator: Schema.Types.ObjectId;
-    coverPhoto: string;
-    type: string;
-    introduction: string;
-    lastActivity: Date;
-*/
-
-interface IGroupMember {
-    user: IUser;
-    role: string;
-}
-
 interface IGroup {
     _id: string;
     name: string;
     description: string;
     avatar: string;
-    members: IGroupMember[];
+    members: {
+        user: IUser;
+        role: string;
+    }[];
     creator: IUser;
     coverPhoto: string;
     type: string;
@@ -122,27 +108,6 @@ interface INotification {
     createdAt: Date;
     updatedAt: Date;
 }
-
-/*
-{
-  _id: '65f791f23610b5dc36bbb0ad',
-  option: 'public',
-  text: 'Test',
-  images: [],
-  author: {
-    _id: '65ed7f93eb5730906fe4fe69',
-    username: 'ngonhuthuy1234',
-    name: 'Huy Ngô',
-    avatar: 'https://lh3.googleusercontent.com/a/ACg8ocKyBjwFh6fg9kfMEJ6-25Wui-_0cyFMCjvDiChzmRa4ng8S=s96-c'
-  },
-  loves: [],
-  shares: [],
-  group: null,
-  createdAt: '2024-03-18T00:59:30.578Z',
-  updatedAt: '2024-03-18T00:59:30.578Z',
-  __v: 0
-}
-*/
 
 interface IPost {
     _id: string;

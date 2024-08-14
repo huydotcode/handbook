@@ -4,15 +4,15 @@ import React, { FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
+import postAudience from '@/constants/postAudience.constant';
 import { usePost } from '@/context';
-import { editPost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
+import logger from '@/utils/logger';
 import { Tooltip } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IShowModal } from '../ActionPost';
-import PostService from '@/lib/services/post.service';
 import toast from 'react-hot-toast';
-import logger from '@/utils/logger';
+import { IShowModal } from '../ActionPost';
 
 interface Props {
     show: boolean;
@@ -98,12 +98,14 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                                 post.option as 'public' | 'option' | 'private'
                             }
                         >
-                            <option className="text-xs" value="public">
-                                Công khai
-                            </option>
-                            <option className="text-xs" value="private">
-                                Chỉ mình tôi
-                            </option>
+                            {postAudience.map((audience) => (
+                                <option
+                                    key={audience.value}
+                                    value={audience.value}
+                                >
+                                    {audience.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

@@ -28,25 +28,18 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLFormElement>(null);
 
-    const newDate = new Date(msg.createdAt).toLocaleTimeString('en-US', {
-        hour12: true,
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    const newDate = useMemo(
+        () => new Date(msg.createdAt).toLocaleString(),
+        [msg.createdAt]
+    );
 
     const index = messagesInRoom.indexOf(msg);
-    const prevMsgSender = messagesInRoom[index - 1]?.sender._id;
-    const nextMsgSender = messagesInRoom[index + 1]?.sender._id;
-
-    const canShowTime = useMemo(() => prevMsgSender !== msg.sender._id && nextMsgSender === msg.sender._id, [prevMsgSender, nextMsgSender, msg.sender._id]);
-    const topAndBottomMsgIsNotSameUser = useMemo(() => prevMsgSender !== msg.sender._id && nextMsgSender !== msg.sender._id, [prevMsgSender, nextMsgSender, msg.sender._id]);
-
     const isOwnMsg = msg.sender._id === session?.user.id;
 
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
     const handleClickContent = () => {
-        setShowTime(prev => !prev);
+        setShowTime((prev) => !prev);
         handleShowMenu();
     };
 
@@ -57,7 +50,10 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         const res = await MessageService.deleteMessage({ messageId: msg._id });
         const prevMsg = messagesInRoom[index - 1] || null;
 
-        socket.emit(socketEvent.DELETE_MESSAGE, { currentMessage: msg, prevMessage: prevMsg });
+        socket.emit(socketEvent.DELETE_MESSAGE, {
+            currentMessage: msg,
+            prevMessage: prevMsg,
+        });
 
         if (!res) {
             toast.error('Xóa thất bại!', { id: 'delete-message' });
@@ -79,7 +75,8 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 }
             };
             document.addEventListener('mousedown', handleClickOutside);
-            return () => document.removeEventListener('mousedown', handleClickOutside);
+            return () =>
+                document.removeEventListener('mousedown', handleClickOutside);
         }
     }, []);
 
@@ -93,18 +90,11 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     return (
         <div
             key={msg._id}
-            className={cn(
-                'relative mb-[2px] flex w-full flex-col items-center',
-                {
-                    'justify-end': isOwnMsg,
-                    'justify-start': !isOwnMsg,
-                }
-            )}
+            className={cn('relative mb-[2px] flex w-full flex-col ', {
+                'justify-end': isOwnMsg,
+                'justify-start': !isOwnMsg,
+            })}
         >
-            {(canShowTime || (topAndBottomMsgIsNotSameUser && !isOwnMsg)) && (
-                <div className="ml-2 text-[10px]">{newDate}</div>
-            )}
-
             <div
                 className={cn(
                     `flex items-center justify-${isOwnMsg ? 'end mr-1' : 'start ml-1'} w-full`
@@ -122,37 +112,56 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                     arrow
                     enterDelay={1000}
                 >
-                    <div
-                        className={cn(
-                            'relative flex w-fit max-w-[70%] items-center px-4 py-2',
-                            {
-                                'items-end rounded-xl rounded-r-md bg-primary-2 text-white': isOwnMsg,
-                                'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2': !isOwnMsg,
-                            }
-                        )}
-                        onClick={handleClickContent}
-                    >
-                        {showMenu && isOwnMsg && (
-                            <form
-                                ref={menuRef}
-                                className="absolute right-[120%] top-0 flex items-center rounded-xl"
-                                onSubmit={handleDeleteMsg}
-                            >
-                                <Button variant="text" size="small" type="submit">
-                                    <Icons.Delete />
-                                </Button>
-                            </form>
-                        )}
-                        <p
-                            className={cn('text-xs', {
-                                'text-justify': msg.text.length > 100,
-                            })}
+                    <>
+                        <div
+                            className={cn(
+                                'relative flex w-fit max-w-[70%] items-center px-4 py-2',
+                                {
+                                    'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
+                                        isOwnMsg,
+                                    'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
+                                        !isOwnMsg,
+                                }
+                            )}
+                            onClick={handleClickContent}
                         >
-                            {msg.text}
-                        </p>
-                    </div>
+                            {showMenu && isOwnMsg && (
+                                <form
+                                    ref={menuRef}
+                                    className="absolute right-[120%] top-0 flex items-center rounded-xl"
+                                    onSubmit={handleDeleteMsg}
+                                >
+                                    <Button
+                                        variant="text"
+                                        size="small"
+                                        type="submit"
+                                    >
+                                        <Icons.Delete />
+                                    </Button>
+                                </form>
+                            )}
+                            <p
+                                className={cn('text-xs', {
+                                    'text-justify': msg.text.length > 100,
+                                })}
+                            >
+                                {msg.text}
+                            </p>
+                        </div>
+                    </>
                 </Tooltip>
             </div>
+
+            {showTime && (
+                <p
+                    className={cn('text-[10px]', {
+                        'mr-1 text-end': isOwnMsg,
+                        'ml-2 text-start': !isOwnMsg,
+                    })}
+                >
+                    Đã gửi lúc {newDate}
+                </p>
+            )}
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import { Avatar, Button } from '@/components/ui';
 import GroupService from '@/lib/services/group.service';
 import React from 'react';
-import Infomation from '../../_components/Infomation';
 
 interface Props {
     params: {
@@ -20,19 +19,18 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
     if (!members || !group) return null;
 
     return (
-        <div className="grid flex-1 grid-cols-2 gap-2 lg:grid-cols-1">
-            <Infomation group={group} />
-
-            <div className="relative w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
-                <h1 className="text-2xl font-bold">Danh sách quản lý</h1>
-                <div className="mt-2 grid grid-cols-2 md:grid-cols-1">
+        <div className="rounded-xl bg-secondary-1 p-2 dark:bg-dark-secondary-1">
+            <div>
+                <h1 className="text-sm font-bold">Quản trị viên</h1>
+                <div className="mt-2">
                     {members
                         .filter((m) => m.role == 'admin')
                         .map((member) => (
                             <Button
                                 href={`/profile/${member.user._id}`}
-                                className="justify-start border"
+                                className="justify-start"
                                 key={member._id}
+                                variant={'text'}
                             >
                                 <Avatar
                                     className="mr-2"
@@ -48,17 +46,18 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
                 </div>
             </div>
 
-            <div className="relative w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
-                <h1 className="text-2xl font-bold">Danh sách thành viên</h1>
-                <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-1">
+            <div className="mt-2">
+                <h1 className="text-sm font-bold">Thành viên</h1>
+                <div className="mt-2">
                     {members
                         .filter((m) => m.role == 'member')
                         .slice(0, MAX_MEMBERS)
                         .map((member) => (
                             <Button
                                 href={`/profile/${member.user._id}`}
-                                className="justify-start border"
+                                className="justify-start"
                                 key={member._id}
+                                variant={'text'}
                             >
                                 <Avatar
                                     className="mr-2"
