@@ -104,7 +104,7 @@ const Sidebar: React.FC<Props> = ({
                         <div className="flex flex-col space-y-2">
                             {conversations.map((conversation) => (
                                 <Button
-                                    href={`/messages/groups/${conversation._id}`}
+                                    href={`/messages/${conversation._id}`}
                                     key={conversation._id}
                                     className="flex items-center rounded-md bg-secondary-1 dark:bg-dark-secondary-2"
                                 >

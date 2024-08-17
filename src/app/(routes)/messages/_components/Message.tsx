@@ -1,5 +1,5 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Avatar, Button, Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
@@ -90,66 +90,106 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     return (
         <div
             key={msg._id}
-            className={cn('relative mb-[2px] flex w-full flex-col ', {
+            className={cn('relative mb-[2px] flex w-full ', {
                 'justify-end': isOwnMsg,
                 'justify-start': !isOwnMsg,
             })}
         >
             <div
                 className={cn(
-                    `flex items-center justify-${isOwnMsg ? 'end mr-1' : 'start ml-1'} w-full`
+                    // `flex items-center justify-${isOwnMsg ? 'end mr-1' : 'start ml-1'} w-full`
+                    'flex',
+                    {
+                        'flex-row-reverse': isOwnMsg,
+                        '': !isOwnMsg,
+                        'w-full items-center': !msg.conversation.group,
+                    }
                 )}
             >
-                <Tooltip
-                    title={
-                        <TimeAgoConverted
-                            className={'text-xs'}
-                            time={msg.createdAt}
-                            textBefore="Đã gửi"
-                            textAfter="trước"
+                {/* Avatar */}
+                {msg.conversation.group && (
+                    <div
+                        className={cn('flex h-full items-center py-2 ', {
+                            'pr-2': !isOwnMsg,
+                            'pl-2': isOwnMsg,
+                        })}
+                    >
+                        <Avatar
+                            imgSrc={msg.sender.avatar}
+                            width={40}
+                            height={40}
                         />
-                    }
-                    arrow
-                    enterDelay={1000}
+                    </div>
+                )}
+
+                <div
+                    className={cn('flex w-full flex-col', {
+                        'items-end': isOwnMsg,
+                        'items-start': !isOwnMsg,
+                    })}
                 >
-                    <>
+                    {msg.conversation.group && (
                         <div
-                            className={cn(
-                                'relative flex w-fit max-w-[70%] items-center px-4 py-2',
-                                {
-                                    'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
-                                        isOwnMsg,
-                                    'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
-                                        !isOwnMsg,
-                                }
-                            )}
-                            onClick={handleClickContent}
+                            className={cn('text-xs', {
+                                'ml-1': !isOwnMsg,
+                                'mr-1': isOwnMsg,
+                            })}
                         >
-                            {showMenu && isOwnMsg && (
-                                <form
-                                    ref={menuRef}
-                                    className="absolute right-[120%] top-0 flex items-center rounded-xl"
-                                    onSubmit={handleDeleteMsg}
-                                >
-                                    <Button
-                                        variant="text"
-                                        size="small"
-                                        type="submit"
-                                    >
-                                        <Icons.Delete />
-                                    </Button>
-                                </form>
-                            )}
-                            <p
-                                className={cn('text-xs', {
-                                    'text-justify': msg.text.length > 100,
-                                })}
-                            >
-                                {msg.text}
-                            </p>
+                            {msg.sender.name}
                         </div>
-                    </>
-                </Tooltip>
+                    )}
+
+                    <Tooltip
+                        title={
+                            <TimeAgoConverted
+                                className={'text-xs'}
+                                time={msg.createdAt}
+                                textBefore="Đã gửi"
+                                textAfter="trước"
+                            />
+                        }
+                        arrow
+                        enterDelay={1000}
+                    >
+                        <>
+                            <div
+                                className={cn(
+                                    'relative flex max-w-[70%] items-center px-4 py-2',
+                                    {
+                                        'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
+                                            isOwnMsg,
+                                        'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
+                                            !isOwnMsg,
+                                    }
+                                )}
+                                onClick={handleClickContent}
+                            >
+                                {showMenu && isOwnMsg && (
+                                    <form
+                                        ref={menuRef}
+                                        className="absolute right-[120%] top-0 flex items-center rounded-xl"
+                                        onSubmit={handleDeleteMsg}
+                                    >
+                                        <Button
+                                            variant="text"
+                                            size="small"
+                                            type="submit"
+                                        >
+                                            <Icons.Delete />
+                                        </Button>
+                                    </form>
+                                )}
+                                <p
+                                    className={cn('text-xs', {
+                                        'text-justify': msg.text.length > 100,
+                                    })}
+                                >
+                                    {msg.text}
+                                </p>
+                            </div>
+                        </>
+                    </Tooltip>
+                </div>
             </div>
 
             {showTime && (

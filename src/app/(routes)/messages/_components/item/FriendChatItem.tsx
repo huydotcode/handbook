@@ -34,11 +34,6 @@ const FriendChatItem: React.FC<Props> = ({ data: friend, isSelect }) => {
                     isSelect && 'bg-primary-1'
                 )}
                 key={friend._id}
-                onClick={() =>
-                    router.push(
-                        `/messages/friends/${generateRoomId(session?.user.id || '', friend._id)}`
-                    )
-                }
             >
                 <div className="relative h-8 w-8">
                     <div className="h-8 w-8">

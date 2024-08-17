@@ -80,11 +80,6 @@ const Action: React.FC<Props> = ({ userId }) => {
                 className={`mr-2 h-12 min-w-[48px]`}
                 variant={'primary'}
                 size={'medium'}
-                href={
-                    isFriend
-                        ? `/messages/friends/${userId}`
-                        : `/messages/r/${userId}`
-                }
             >
                 <span>
                     <Icons.Message />

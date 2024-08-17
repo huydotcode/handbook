@@ -83,7 +83,22 @@ export const getConversations = async () => {
         const session = await getAuthSession();
         if (!session) throw new Error('Chưa đăng nhập');
 
-        return [];
+        const participants = await Participant.find({
+            user: session.user.id,
+        })
+            .populate('conversation')
+            .populate('user');
+
+        const conversations = await Conversation.find({
+            participants: {
+                $in: participants.map((participant) => participant._id),
+            },
+        })
+            .populate('participants')
+            .populate('creator')
+            .populate('group');
+
+        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }

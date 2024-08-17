@@ -29,6 +29,12 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         return path.includes(conversation._id);
     }, [path, conversation._id]);
 
+    const title = useMemo(() => {
+        if (conversation.title) return conversation.title;
+        if (conversation.group) return conversation.group.name;
+        return otherParticipant?.user.name;
+    }, [conversation, otherParticipant]);
+
     return (
         <Button
             className={cn(
@@ -64,9 +70,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
             <div className="flex flex-1 flex-col md:hidden">
                 <div className="flex items-center justify-between">
                     <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
-                        {conversation.group
-                            ? conversation.group.name
-                            : otherParticipant?.user.name}
+                        {title}
                     </h3>
                 </div>
                 <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">

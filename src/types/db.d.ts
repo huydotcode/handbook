@@ -90,7 +90,7 @@ interface IMessage {
     text: string;
     images: string[];
     sender: IUser;
-    conversation: string;
+    conversation: IConversation;
     isRead: boolean;
     createdAt: Date;
     updatedAt: Date;

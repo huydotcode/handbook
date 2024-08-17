@@ -72,10 +72,9 @@ export const sendMessage = async ({
 
         await msg.save();
 
-        const message = await Message.findById(msg._id).populate(
-            'sender',
-            POPULATE_USER
-        );
+        const message = await Message.findById(msg._id)
+            .populate('sender', POPULATE_USER)
+            .populate('conversation');
 
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
@@ -116,6 +115,7 @@ export const getMessages = async ({
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .populate('sender', POPULATE_USER)
+            .populate('conversation')
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(messages));

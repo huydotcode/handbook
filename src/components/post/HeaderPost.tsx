@@ -66,7 +66,7 @@ const HeaderPost = () => {
                         {post.group && (
                             <Link
                                 href={`/profile/${post.author._id}`}
-                                className="mr-2 text-sm text-secondary-1 hover:underline dark:text-dark-primary-1"
+                                className="mr-2 text-xs text-secondary-1 hover:underline dark:text-dark-primary-1"
                             >
                                 {post.author.name}
                             </Link>

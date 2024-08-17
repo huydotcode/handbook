@@ -58,9 +58,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
     const [messages, setMessages] = useState<IMessageState>({});
 
     const [lastMessages, setLastMessages] = useState<ILastMessageState>({});
-    const [conversationHaveJoined, setConversationHaveJoined] = useState<
-        string[]
-    >([]);
 
     const getLastMessage = async (conversationId: string) => {
         const lastMessage = await MessageService.getLastMessage({
@@ -80,9 +77,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
         if (!socket) return;
 
         conversations.forEach((conversation) => {
-            if (conversationHaveJoined.includes(conversation._id)) return;
-
-            // Gán key cho tin nhắn
             setMessages((prev) => ({
                 ...prev,
                 [conversation._id]: [],
@@ -91,8 +85,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
             socket.emit(socketEvent.JOIN_ROOM, {
                 roomId: conversation._id,
             });
-
-            setConversationHaveJoined((prev) => [...prev, conversation._id]);
         });
     }, [socket, conversations]);
 
@@ -108,24 +100,36 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
         if (!socket) return;
 
         socket.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
-            if (currentRoom === message.conversation) return;
+            console.log('RECEIVE_MESSAGE', message);
+            if (currentRoom === message.conversation._id) return;
             if (message.sender._id === session?.user?.id) return;
-            if (message.conversation == currentRoom) return;
+            if (message.conversation._id == currentRoom) return;
 
-            toast.custom(
-                <Button
-                    className="p-4"
-                    href={`/messages/friends/${message.conversation}`}
-                    variant={'primary'}
-                >
-                    Bạn có tin nhắn mới!
-                </Button>,
-                {
-                    id: message.conversation,
-                    position: 'bottom-left',
-                    duration: 5000,
-                }
-            );
+            if (currentRoom !== message.conversation._id) {
+                toast.custom(
+                    <Button className="p-4" variant={'primary'}>
+                        Bạn có tin nhắn mới!
+                    </Button>,
+                    {
+                        id: message.conversation._id,
+                        position: 'bottom-left',
+                        duration: 5000,
+                    }
+                );
+            }
+
+            setLastMessages((prev) => ({
+                ...prev,
+                [message.conversation._id]: message,
+            }));
+
+            setMessages((prev) => ({
+                ...prev,
+                [message.conversation._id]: [
+                    message,
+                    ...(prev[message.conversation._id] || []),
+                ],
+            }));
         });
     }, [socket, session?.user.id]);
 

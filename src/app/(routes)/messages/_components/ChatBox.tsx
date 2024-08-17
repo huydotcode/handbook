@@ -80,7 +80,7 @@ const ChatBox: React.FC<Props> = ({
         socket.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
             setLastMessages((prev) => ({
                 ...prev,
-                [message.conversation]: message,
+                [message.conversation._id]: message,
             }));
             if (message.sender._id === session?.user?.id) return;
             setMessages((prev) => [message, ...prev]);
@@ -130,13 +130,14 @@ const ChatBox: React.FC<Props> = ({
 
                 <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
                     {session?.user && (
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b pb-2">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2">
                             <div ref={bottomRef} />
 
                             {messages
                                 .filter(
                                     (msg) =>
-                                        msg.conversation === conversation._id
+                                        msg.conversation._id ===
+                                        conversation._id
                                 )
                                 .map((msg) => (
                                     <Message
