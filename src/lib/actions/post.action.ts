@@ -107,6 +107,14 @@ export const getNewFeedPosts = async ({
                 if (post.author.friends.includes(session?.user.id)) {
                     return post;
                 }
+            } else if (post.group) {
+                if (
+                    post.group.members.find(
+                        (member: any) => member.user == session?.user.id
+                    )
+                ) {
+                    return post;
+                }
             }
 
             return post;

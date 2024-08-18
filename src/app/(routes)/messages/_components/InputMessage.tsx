@@ -3,7 +3,6 @@ import { Button, Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
-import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,7 +10,6 @@ import toast from 'react-hot-toast';
 
 interface Props {
     currentRoom: IConversation;
-    isPopup?: boolean;
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }
 
@@ -19,11 +17,7 @@ interface IFormData {
     text: string;
 }
 
-const InputMessage: React.FC<Props> = ({
-    currentRoom,
-    isPopup,
-    setMessages,
-}) => {
+const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
 
@@ -80,7 +74,7 @@ const InputMessage: React.FC<Props> = ({
 
     return (
         <form
-            className="relative mx-auto flex min-w-[50%] max-w-[60vw] overflow-hidden rounded-xl border bg-transparent shadow-xl md:mx-4 md:w-full md:max-w-none"
+            className="relative mx-4 flex overflow-hidden rounded-xl border bg-transparent shadow-xl"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
         >

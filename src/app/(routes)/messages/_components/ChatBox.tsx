@@ -13,7 +13,6 @@ import Message from './Message';
 
 interface Props {
     className?: string;
-    isPopup?: boolean;
     initialMessages: IMessage[];
     conversation: IConversation;
 }
@@ -22,7 +21,6 @@ const PAGE_SIZE = 20;
 
 const ChatBox: React.FC<Props> = ({
     className,
-    isPopup,
     initialMessages,
     conversation,
 }) => {
@@ -118,15 +116,11 @@ const ChatBox: React.FC<Props> = ({
         <>
             <div
                 className={cn(
-                    `relative flex flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none `,
-                    {
-                        'h-full': !isPopup,
-                        'z-50 h-[50vh] w-[280px]': isPopup,
-                    },
+                    'relative flex h-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                     className
                 )}
             >
-                <ChatHeader isPopup={isPopup} currentRoom={conversation} />
+                <ChatHeader currentRoom={conversation} />
 
                 <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
                     {session?.user && (
@@ -154,7 +148,6 @@ const ChatBox: React.FC<Props> = ({
 
                 <InputMessage
                     currentRoom={conversation}
-                    isPopup={isPopup}
                     setMessages={setMessages}
                 />
 

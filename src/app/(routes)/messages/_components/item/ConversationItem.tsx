@@ -1,10 +1,10 @@
 'use client';
-import { useMemo } from 'react';
-import { useSession } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
 import { Avatar, Button, Icons } from '@/components/ui';
 import { useChat } from '@/context';
 import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 
 interface Props {
     data: IConversation;
@@ -17,12 +17,12 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
 
     const lastMsg = lastMessages[conversation._id];
 
-    const otherParticipant = useMemo(() => {
+    const partner = useMemo(() => {
         return conversation.group
             ? null
             : conversation.participants.find(
                   (participant) => participant.user._id !== session?.user.id
-              );
+              )?.user;
     }, [conversation, session]);
 
     const isSelect = useMemo(() => {
@@ -30,10 +30,10 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     }, [path, conversation._id]);
 
     const title = useMemo(() => {
+        if (partner) return partner.name;
         if (conversation.title) return conversation.title;
         if (conversation.group) return conversation.group.name;
-        return otherParticipant?.user.name;
-    }, [conversation, otherParticipant]);
+    }, [conversation, partner]);
 
     return (
         <Button
@@ -52,16 +52,13 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                             alt={conversation.group.name}
                         />
                     ) : (
-                        <Avatar
-                            imgSrc={otherParticipant?.user.avatar}
-                            alt={otherParticipant?.user.name}
-                        />
+                        <Avatar imgSrc={partner?.avatar} alt={partner?.name} />
                     )}
                 </div>
-                {otherParticipant?.user && (
+                {partner && (
                     <span className="absolute right-[-2] top-0 ml-2 text-xs md:right-4">
                         <Icons.Circle
-                            className={`${otherParticipant?.user.isOnline ? 'text-primary-2' : 'text-secondary-1'}`}
+                            className={`${partner?.isOnline ? 'text-primary-2' : 'text-secondary-1'}`}
                         />
                     </span>
                 )}
@@ -83,7 +80,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                             <span
                                 className={cn(
                                     lastMsg?.sender._id == session?.user.id
-                                        ? 'text-primary-2'
+                                        ? 'text-primary-1'
                                         : 'text-secondary-1'
                                 )}
                             >

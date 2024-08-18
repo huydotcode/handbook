@@ -1,73 +1,73 @@
 'use client';
-import React from 'react';
-import { Avatar, Button, Icons } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { Avatar } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
+import { useSession } from 'next-auth/react';
+import React, { useMemo } from 'react';
 
 interface Props {
     currentRoom: IConversation;
-    isPopup?: boolean;
 }
 
-const ChatHeader: React.FC<Props> = ({ isPopup, currentRoom }) => {
+const ChatHeader: React.FC<Props> = ({ currentRoom }) => {
+    const { data: session } = useSession();
+
+    const partner = useMemo(() => {
+        if (currentRoom.group) {
+            return null;
+        } else {
+            if (currentRoom.participants[0].user._id === session?.user?.id) {
+                return currentRoom.participants[1].user;
+            } else {
+                return currentRoom.participants[0].user;
+            }
+        }
+    }, [currentRoom]);
+
+    const title = useMemo(() => {
+        if (currentRoom.group) {
+            return currentRoom.group.name;
+        } else {
+            return partner?.name;
+        }
+    }, [currentRoom]);
+
+    const avatar = useMemo(() => {
+        if (currentRoom.group) {
+            return currentRoom.group.avatar;
+        } else {
+            return partner?.avatar;
+        }
+    }, [currentRoom]);
+
     return (
         <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
             <div className="flex items-center">
                 {currentRoom.group ? (
-                    <Avatar
-                        imgSrc={currentRoom.group.avatar}
-                        alt={currentRoom.group.name}
-                        className="h-10 w-10"
-                    />
+                    <Avatar imgSrc={avatar} alt={title} className="h-10 w-10" />
                 ) : (
-                    <Avatar
-                        imgSrc={currentRoom.participants[0].user.avatar}
-                        alt={currentRoom.participants[0].user.name}
-                        className="h-10 w-10"
-                    />
+                    <Avatar imgSrc={avatar} alt={title} className="h-10 w-10" />
                 )}
 
                 <div className="flex flex-col">
-                    <h3
-                        className={cn('text-md ml-2 font-bold', {
-                            'text-sm': isPopup,
-                        })}
-                    >
-                        {currentRoom.group
-                            ? currentRoom.group.name
-                            : currentRoom.participants[0].user.name}
-                    </h3>
+                    <h3 className="text-md ml-2 font-bold">{title}</h3>
 
-                    <span className="ml-2 text-xs ">
-                        {!currentRoom.group && (
-                            <>
-                                {currentRoom.participants[0].user.isOnline ? (
+                    {partner && (
+                        <>
+                            <span className="ml-2 text-xs ">
+                                {partner.isOnline ? (
                                     'Đang hoạt động'
                                 ) : (
                                     <TimeAgoConverted
-                                        time={
-                                            currentRoom.participants[0].user
-                                                .lastAccessed
-                                        }
+                                        time={partner.lastAccessed}
                                         className="text-xs"
                                         textBefore="Hoạt động"
                                         textAfter=" trước"
                                     />
                                 )}
-                            </>
-                        )}
-                    </span>
+                            </span>
+                        </>
+                    )}
                 </div>
-
-                {isPopup && (
-                    <Button
-                        className="absolute right-2 top-2"
-                        size={'medium'}
-                        onClick={() => {}}
-                    >
-                        <Icons.Close />
-                    </Button>
-                )}
             </div>
         </div>
     );
