@@ -30,6 +30,12 @@ const Avatar: React.FC<Props> = ({
     rounded = 'full',
 }) => {
     const isUser = session?.user.id || userUrl;
+    const sizeProps = fill
+        ? { fill: true }
+        : {
+              width: width,
+              height: height,
+          };
 
     return (
         <Link
@@ -44,10 +50,8 @@ const Avatar: React.FC<Props> = ({
                 className={cn(`rounded-${rounded}`, className)}
                 src={session?.user.image || imgSrc || ''}
                 alt={session?.user.name || alt || ''}
-                width={width}
-                height={height}
-                fill={fill}
                 priority={true}
+                {...sizeProps}
             />
         </Link>
     );

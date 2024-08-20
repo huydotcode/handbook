@@ -16,7 +16,7 @@ import { getAuthSession } from '../auth';
 */
 
 const POPULATE_USER = 'name username avatar friends';
-const POPULATE_GROUP = 'name avatar';
+const POPULATE_GROUP = 'name avatar members';
 
 export const getNewFeedPosts = async ({
     groupId,
@@ -37,6 +37,16 @@ export const getNewFeedPosts = async ({
 }) => {
     const session = await getAuthSession();
     const query = {} as any;
+
+    console.log({
+        groupId,
+        page,
+        pageSize,
+        path,
+        type,
+        userId,
+        username,
+    });
 
     if (userId !== 'undefined' || username !== 'undefined') {
         // Kiểm tra xem có phải là user đang đăng nhập không

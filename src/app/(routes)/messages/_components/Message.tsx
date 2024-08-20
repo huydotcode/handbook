@@ -109,21 +109,20 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                 {/* Avatar */}
                 {msg.conversation.group && (
                     <div
-                        className={cn('flex h-full items-center py-2 ', {
-                            'pr-2': !isOwnMsg,
-                            'pl-2': isOwnMsg,
-                        })}
+                        className={cn(
+                            'relative flex h-8 w-8 items-center p-2',
+                            {
+                                'mr-2 pr-4': !isOwnMsg,
+                                'ml-2 pl-4': isOwnMsg,
+                            }
+                        )}
                     >
-                        <Avatar
-                            imgSrc={msg.sender.avatar}
-                            width={40}
-                            height={40}
-                        />
+                        <Avatar imgSrc={msg.sender.avatar} fill />
                     </div>
                 )}
 
                 <div
-                    className={cn('flex w-full flex-col', {
+                    className={cn('flex w-full flex-1 flex-col', {
                         'items-end': isOwnMsg,
                         'items-start': !isOwnMsg,
                     })}
