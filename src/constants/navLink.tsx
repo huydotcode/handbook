@@ -19,6 +19,11 @@ export const navLink: NavLink[] = [
         icon: <Icons.Message className="h-8 w-8 " />,
     },
     {
+        name: 'Chợ',
+        path: '/market',
+        icon: <Icons.Shop className="h-8 w-8" />,
+    },
+    {
         name: 'Nhóm',
         path: '/groups',
         icon: <Icons.Group className="h-8 w-8 " />,
@@ -50,6 +55,11 @@ export const navAdmin: NavLink[] = [
         name: 'Nhóm',
         path: '/admin/groups',
         icon: <Icons.Group className="h-8 w-8 " />,
+    },
+    {
+        name: 'Chợ',
+        path: '/admin/market',
+        icon: <Icons.Shop className="h-8 w-8 " />,
     },
 ];
 

@@ -2,6 +2,8 @@ import { navGroup } from '@/constants/navLink';
 import Image from 'next/image';
 import React from 'react';
 import { TabItem } from '@/components/shared';
+import { Button } from '@/components/ui';
+import Action from './Action';
 
 interface Props {
     group: IGroup;
@@ -37,6 +39,10 @@ const Header: React.FC<Props> = ({ group }) => {
                             - {group?.members.length} thành viên
                         </span>
                     </div>
+                </div>
+
+                <div className="mr-2">
+                    <Action groupId={group._id} />
                 </div>
             </div>
 

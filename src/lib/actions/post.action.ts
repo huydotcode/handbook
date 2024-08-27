@@ -38,16 +38,6 @@ export const getNewFeedPosts = async ({
     const session = await getAuthSession();
     const query = {} as any;
 
-    console.log({
-        groupId,
-        page,
-        pageSize,
-        path,
-        type,
-        userId,
-        username,
-    });
-
     if (userId !== 'undefined' || username !== 'undefined') {
         // Kiểm tra xem có phải là user đang đăng nhập không
         if (userId == session?.user.id || username == session?.user.username) {
@@ -113,11 +103,7 @@ export const getNewFeedPosts = async ({
 
         // Nếu là chế độ chỉ bạn bè thì kiểm tra xem có phải là bạn bè không
         posts = posts.filter((post) => {
-            if (post.option == 'friends') {
-                if (post.author.friends.includes(session?.user.id)) {
-                    return post;
-                }
-            } else if (post.group) {
+            if (post.group) {
                 if (
                     post.group.members.find(
                         (member: any) => member.user == session?.user.id
@@ -125,9 +111,97 @@ export const getNewFeedPosts = async ({
                 ) {
                     return post;
                 }
+            } else if (post.option == 'friends') {
+                if (
+                    post.author.friends.includes(session?.user.id) ||
+                    post.author._id == session?.user.id
+                ) {
+                    return post;
+                }
             }
 
-            return post;
+            return null;
+        });
+
+        return JSON.parse(JSON.stringify(posts));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getNewFeedPosts2 = async ({
+    groupId,
+    page,
+    pageSize,
+    path,
+    type,
+    userId,
+    username,
+}: {
+    page: string;
+    pageSize: string;
+    groupId: string;
+    userId: string;
+    username: string;
+    type: string;
+    path: string;
+}) => {
+    const session = await getAuthSession();
+    const query: any = {};
+
+    const isCurrentUser =
+        userId === session?.user.id || username === session?.user.username;
+
+    if (userId !== 'undefined' && userId) {
+        query.author = isCurrentUser ? session?.user.id : userId;
+    } else if (username !== 'undefined') {
+        const user = await User.findOne({ username });
+        if (user) {
+            query.author = user.id;
+        }
+    }
+
+    query.option = isCurrentUser ? { $in: ['public', 'private'] } : 'public';
+
+    if (type === 'group') {
+        if (groupId !== 'undefined') {
+            query.group = groupId;
+        } else {
+            const groupsHasJoin = await Group.find({
+                members: { $elemMatch: { user: session?.user.id } },
+            }).distinct('_id');
+            query.group = { $in: groupsHasJoin };
+        }
+    }
+
+    try {
+        let posts = await Post.find(query)
+            .populate('author', POPULATE_USER)
+            .populate('images')
+            .populate('group', POPULATE_GROUP)
+            .populate('loves', POPULATE_USER)
+            .populate('shares', POPULATE_USER)
+            .populate({
+                path: 'comments',
+                populate: { path: 'author', select: POPULATE_USER },
+            })
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ createdAt: -1 });
+
+        // Filter posts by privacy settings
+        posts = posts.filter((post) => {
+            if (post.group) {
+                return post.group.members.some(
+                    (member: any) => member.user === session?.user.id
+                );
+            } else if (post.option === 'friends') {
+                return (
+                    post.author.friends.includes(session?.user.id) ||
+                    post.author._id.equals(session?.user.id)
+                );
+            }
+            return true;
         });
 
         return JSON.parse(JSON.stringify(posts));

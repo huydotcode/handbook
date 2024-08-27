@@ -1,4 +1,4 @@
-import { AiOutlineLoading, AiOutlineMenu } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
 import { BsFacebook, BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
@@ -121,6 +121,7 @@ const Icons = {
     Reply: (props: IconProps) => <FaReply {...props} />,
     Birthday: (props: IconProps) => <FaBirthdayCake {...props} />,
     Plus: (props: IconProps) => <FaPlus {...props} />,
+    Shop: (props: IconProps) => <AiOutlineShop {...props} />,
 };
 
 export default Icons;

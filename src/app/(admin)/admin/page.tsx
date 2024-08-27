@@ -1,11 +1,7 @@
-import { Sidebar } from '../_components';
-
 export default async function Home() {
     return (
         <>
-            <div>
-                <Sidebar />
-            </div>
+            <h1>Hello Admin</h1>
         </>
     );
 }
