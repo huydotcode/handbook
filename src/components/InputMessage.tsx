@@ -68,35 +68,37 @@ const InputMessage: React.FC<Props> = ({ setMessages }) => {
 
     return (
         <form
-            className="relative mx-4 flex overflow-hidden rounded-xl border bg-transparent shadow-xl"
+            className="relative overflow-hidden rounded-xl border bg-transparent shadow-xl"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
         >
-            <input
-                {...register('text', {
-                    required: {
-                        message: 'Vui lòng nhập bình luận',
-                        value: true,
-                    },
-                })}
-                className="flex-1 px-4 py-2"
-                type="text"
-                placeholder="Nhập tin nhắn..."
-                spellCheck={false}
-                autoComplete="off"
-            />
+            <div className="flex w-full">
+                <input
+                    {...register('text', {
+                        required: {
+                            message: 'Vui lòng nhập bình luận',
+                            value: true,
+                        },
+                    })}
+                    className="flex-1 px-4 py-2"
+                    type="text"
+                    placeholder="Nhập tin nhắn..."
+                    spellCheck={false}
+                    autoComplete="off"
+                />
 
-            <Button
-                className="h-full rounded-none border-l px-4 text-base"
-                variant={'event'}
-                type="submit"
-            >
-                {isSubmitting ? (
-                    <Icons.Loading className="animate-spin" />
-                ) : (
-                    <Icons.Send />
-                )}
-            </Button>
+                <Button
+                    className="rounded-none border-l text-base"
+                    variant={'event'}
+                    type="submit"
+                >
+                    {isSubmitting ? (
+                        <Icons.Loading className="animate-spin" />
+                    ) : (
+                        <Icons.Send />
+                    )}
+                </Button>
+            </div>
         </form>
     );
 };

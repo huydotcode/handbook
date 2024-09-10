@@ -20,7 +20,7 @@ interface Props {
 }
 
 const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
-    const { register, handleSubmit, formState } = useForm<FormData>({
+    const { register, handleSubmit, formState, setError } = useForm<FormData>({
         resolver: zodResolver(signUpValidation),
     });
 
@@ -30,9 +30,11 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
         if (isSubmitting) return;
 
         if (data.password !== data.repassword) {
-            toast.error('Mật khẩu không khớp', {
-                id: 'password-not-match',
+            setError('repassword', {
+                type: 'manual',
+                message: 'Mật khẩu không khớp',
             });
+
             return;
         }
 
@@ -50,7 +52,11 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                 toast.success('Đăng ký thành công', {
                     id: 'signup-success',
                 });
-                setIsLoginForm(true);
+
+                // Sleep 1000ms to show success toast
+                setTimeout(() => {
+                    setIsLoginForm(true);
+                }, 1000);
             } else {
                 toast.error(result.msg, {
                     id: 'signup-fail',

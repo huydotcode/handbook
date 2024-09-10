@@ -35,7 +35,7 @@ const ChatWithGemini = () => {
             )}
 
             {openChat && (
-                <div className="relative flex h-full w-[30vw] flex-1 flex-col rounded-xl bg-white p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
+                <div className="relative flex h-full w-[30vw] min-w-[300px] flex-1 flex-col rounded-xl bg-white p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
                     <ChatHeader setOpenChat={setOpenChat} />
 
                     <div className="relative h-[30vh] w-full overflow-y-auto overflow-x-hidden p-2">
