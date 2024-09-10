@@ -4,20 +4,18 @@ import { useApp } from '@/context';
 import { NotificationService } from '@/lib/services';
 import toast from 'react-hot-toast';
 import NotificationList from './NotificationList';
+import { useQueryClient } from '@tanstack/react-query';
 
 function NotificationPopover() {
-    const { setNotifications } = useApp();
+    const queryClient = useQueryClient();
 
     const handleMarkAllAsRead = async () => {
         try {
             await NotificationService.markAllAsRead();
 
-            setNotifications((prev) =>
-                prev.map((notification) => ({
-                    ...notification,
-                    isRead: true,
-                }))
-            );
+            queryClient.invalidateQueries({
+                queryKey: ['notifications'],
+            });
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
         }

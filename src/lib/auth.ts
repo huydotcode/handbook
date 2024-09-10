@@ -83,11 +83,7 @@ export const authOptions: NextAuthOptions = {
                     // Check email is valid?
                     const isEmail = emailRegex.test(email);
                     if (!isEmail) {
-                        return {
-                            then(onfulfilled, onrejected) {
-                                throw new Error('Email không hợp lệ ');
-                            },
-                        };
+                        throw new Error('1Email không hợp lệ');
                     }
 
                     const user = (await User.findOne({
@@ -95,20 +91,12 @@ export const authOptions: NextAuthOptions = {
                     })) as User;
 
                     if (!user) {
-                        return {
-                            then(onfulfilled, onrejected) {
-                                throw new Error('Người dùng không tồn tại');
-                            },
-                        };
+                        throw new Error('2Người dùng không tồn tại');
                     }
 
                     const isValid = await user.comparePassword(password);
                     if (!isValid) {
-                        return {
-                            then(onfulfilled, onrejected) {
-                                throw new Error('Mật khẩu không đúng');
-                            },
-                        };
+                        throw new Error('3Mật khẩu không đúng');
                     }
 
                     return user;

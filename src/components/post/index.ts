@@ -1,5 +1,5 @@
 export { default as ActionPost } from './ActionPost';
-export { default as Comment } from './comment/Comment';
+export { default as Comment } from './comment/CommentItem';
 export { default as CommentSection } from './comment/CommentSection';
 export { default as CreatePost } from './CreatePost';
 export { default as FooterPost } from './FooterPost';

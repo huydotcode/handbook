@@ -7,7 +7,7 @@ interface Props {
     data: IComment;
 }
 
-const Comment: React.FC<Props> = ({ data: comment }) => {
+const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const [isDeleted, setIsDeleted] = useState<boolean>(false);
     if (isDeleted) return null;
 
@@ -40,4 +40,4 @@ const Comment: React.FC<Props> = ({ data: comment }) => {
         </div>
     );
 };
-export default Comment;
+export default CommentItem;

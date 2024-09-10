@@ -13,16 +13,15 @@ const NotificationList: React.FC<Props> = ({ showMessage = true }) => {
 
     return (
         <>
-            {!loadingNotifications &&
-                notifications.map((notification) => {
-                    return (
-                        <NotificationItem
-                            key={notification._id}
-                            data={notification}
-                            showMessage={showMessage}
-                        />
-                    );
-                })}
+            {notifications.map((notification) => {
+                return (
+                    <NotificationItem
+                        key={notification._id}
+                        data={notification}
+                        showMessage={showMessage}
+                    />
+                );
+            })}
 
             {showMessage &&
                 !loadingNotifications &&

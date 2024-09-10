@@ -1,6 +1,7 @@
+import Image from 'next/image';
 import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
-import { BsFacebook, BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
+import { BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
 import {
     FaArrowLeft,
@@ -44,7 +45,17 @@ interface IconProps extends React.SVGAttributes<SVGElement> {
 }
 
 const Icons = {
-    Logo: (props: IconProps) => <BsFacebook {...props} />,
+    Logo: (props: IconProps) => {
+        return (
+            <Image
+                src="/assets/img/logo.webp"
+                alt="Logo"
+                width={32}
+                height={32}
+            />
+        );
+    },
+
     Menu: (props: IconProps) => <AiOutlineMenu {...props} />,
     Home: (props: IconProps) => <HiHome {...props} />,
     Message: (props: IconProps) => <IoChatbubbleEllipses {...props} />,

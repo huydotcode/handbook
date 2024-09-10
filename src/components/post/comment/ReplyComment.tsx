@@ -4,12 +4,12 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons } from '@/components/ui';
 import CommentService from '@/lib/services/comment.service';
+import logger from '@/utils/logger';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
-import Comment from './Comment';
+import Comment from './CommentItem';
 import InputComment from './InputComment';
-import { usePost } from '@/context';
-import logger from '@/utils/logger';
 
 interface Props {
     parentId: string;
@@ -31,7 +31,7 @@ const ReplyComment: React.FC<Props> = ({
     authorId,
 }) => {
     const { data: session } = useSession();
-    const { setCountAllComments } = usePost();
+    const queryClient = useQueryClient();
 
     // Bình luận trả lời
     const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
@@ -54,7 +54,6 @@ const ReplyComment: React.FC<Props> = ({
 
             if (newReplyComment) {
                 setReplyComments((prev) => [newReplyComment, ...prev]);
-                setCountAllComments((prev) => prev + 1);
             }
         } catch (error) {
             logger({
@@ -74,11 +73,6 @@ const ReplyComment: React.FC<Props> = ({
     const handleDeleteComment = async () => {
         try {
             await CommentService.deleteComment({ commentId: parentId });
-
-            setCountAllComments((prev) => {
-                if (prev > 0) return prev - 1;
-                return prev;
-            });
             setIsDeleted(true);
         } catch (error) {
             logger({

@@ -3,12 +3,12 @@ import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { PostService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
+import { usePathname } from 'next/navigation';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { InfinityScrollComponent } from '../shared';
-import { PostService } from '@/lib/services';
-import { usePathname } from 'next/navigation';
 
 interface Props {
     className?: string;

@@ -14,6 +14,8 @@ const NavNotification: React.FC<Props> = ({}) => {
     const { notifications } = useApp();
     const [open, setOpen] = useState(false);
 
+    if (!notifications) return null;
+
     return (
         <>
             <Popover

@@ -7,13 +7,17 @@ import PostService from '@/lib/services/post.service';
 import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
 import logger from '@/utils/logger';
+import { useSession } from 'next-auth/react';
 
 interface Props {
-    session: Session | null;
     post: IPost;
 }
 
-const ReactionPost: React.FC<Props> = ({ session, post }) => {
+const ReactionPost: React.FC<Props> = ({ post }) => {
+    const { data: session } = useSession();
+
+    if (!session) return null;
+
     const [loves, setLoves] = React.useState<string[]>(
         post.loves.map((l) => l._id)
     );

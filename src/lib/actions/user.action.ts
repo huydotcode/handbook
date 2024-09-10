@@ -1,5 +1,5 @@
 'use server';
-import { Conversation, User } from '@/models';
+import { Conversation, Participant, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { FilterQuery, SortOrder } from 'mongoose';
 import { getAuthSession } from '../auth';
@@ -116,6 +116,15 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
         );
         await user.save();
         await friend.save();
+
+        // Xóa conversation
+        const paticipants = await Participant.find({
+            userId: { $in: [session.user.id, friendId] },
+        }).select('_id');
+
+        await Conversation.deleteMany({
+            participants: { $all: paticipants.map((p) => p._id) },
+        });
 
         return true;
     } catch (error: any) {

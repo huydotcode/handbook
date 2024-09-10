@@ -4,6 +4,8 @@ import logger from '@/utils/logger';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpValidation } from '@/lib/validation';
 
 type FormData = {
     email: string;
@@ -18,7 +20,9 @@ interface Props {
 }
 
 const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
-    const { register, handleSubmit, formState } = useForm<FormData>();
+    const { register, handleSubmit, formState } = useForm<FormData>({
+        resolver: zodResolver(signUpValidation),
+    });
 
     const { errors, isSubmitting } = formState;
 
@@ -72,13 +76,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                     id="email"
                     autoComplete="off"
                     placeholder="Email của bạn"
-                    {...register('email', {
-                        required: true,
-                        pattern: {
-                            value: /\S+@\S+\.\S+/,
-                            message: 'Email không hợp lệ',
-                        },
-                    })}
+                    {...register('email')}
                 />
                 {errors.email && (
                     <span className="mt-1 text-sm text-red-500">
@@ -96,17 +94,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                     id="username"
                     autoComplete="off"
                     placeholder="Tên đăng nhập của bạn"
-                    {...register('username', {
-                        required: true,
-                        minLength: {
-                            value: 3,
-                            message: 'Tên đăng nhập phải có ít nhất 3 kí tự',
-                        },
-                        maxLength: {
-                            value: 20,
-                            message: 'Tên đăng nhập không được quá 20 kí tự',
-                        },
-                    })}
+                    {...register('username')}
                 />
                 {errors.username && (
                     <span className="mt-1 text-sm text-red-500">
@@ -124,17 +112,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                     id="name"
                     autoComplete="off"
                     placeholder="Họ và tên của bạn"
-                    {...register('name', {
-                        required: true,
-                        minLength: {
-                            value: 3,
-                            message: 'Họ và tên phải có ít nhất 3 kí tự',
-                        },
-                        maxLength: {
-                            value: 50,
-                            message: 'Họ và tên không được quá 50 kí tự',
-                        },
-                    })}
+                    {...register('name')}
                 />
                 {errors.name && (
                     <span className="mt-1 text-sm text-red-500">
@@ -154,17 +132,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                     id="password"
                     autoComplete="off"
                     placeholder="Nhập mật khẩu"
-                    {...register('password', {
-                        required: true,
-                        minLength: {
-                            value: 6,
-                            message: 'Mật khẩu phải có ít nhất 6 kí tự',
-                        },
-                        maxLength: {
-                            value: 50,
-                            message: 'Mật khẩu không được quá 50 kí tự',
-                        },
-                    })}
+                    {...register('password')}
                 />
                 {errors.password && (
                     <span className="mt-1 text-sm text-red-500">
@@ -184,17 +152,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                     id="repassword"
                     autoComplete="off"
                     placeholder="Nhập lại mật khẩu"
-                    {...register('repassword', {
-                        required: true,
-                        minLength: {
-                            value: 6,
-                            message: 'Mật khẩu phải có ít nhất 6 kí tự',
-                        },
-                        maxLength: {
-                            value: 50,
-                            message: 'Mật khẩu không được quá 50 kí tự',
-                        },
-                    })}
+                    {...register('repassword')}
                 />
                 {errors.repassword && (
                     <span className="mt-1 text-sm text-red-500">

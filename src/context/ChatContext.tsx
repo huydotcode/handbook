@@ -100,7 +100,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
         if (!socket) return;
 
         socket.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
-            console.log('RECEIVE_MESSAGE', message);
             if (currentRoom === message.conversation._id) return;
             if (message.sender._id === session?.user?.id) return;
             if (message.conversation._id == currentRoom) return;

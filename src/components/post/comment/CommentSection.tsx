@@ -1,12 +1,14 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import { usePost } from '@/context';
+import { useSubmitCommentMutation } from '@/lib/mutations';
 import CommentService from '@/lib/services/comment.service';
 import logger from '@/utils/logger';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import Comment from './Comment';
+import toast from 'react-hot-toast';
+import Comment from './CommentItem';
 import InputComment from './InputComment';
 
 interface Props {
@@ -21,7 +23,6 @@ const PAGE_SIZE = 5;
 
 const CommentSection: React.FC<Props> = ({ postId }) => {
     const { data: session } = useSession();
-    const { post, setCountAllComments } = usePost();
 
     const {
         handleSubmit,
@@ -30,28 +31,47 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    // Bình luận
-    const [comments, setComments] = useState<IComment[]>([]);
-    const [page, setPage] = useState<number>(1);
-    const [isHasLoadMore, setIsHasLoadMore] = useState<boolean>(
-        post.comments.length > 0
-    );
+    const {
+        data: comments,
+        fetchNextPage,
+        hasNextPage,
+    } = useInfiniteQuery({
+        queryKey: ['comments', postId],
+        queryFn: async ({ pageParam = 1 }) => {
+            try {
+                const comments = await CommentService.getCommentsByPostId({
+                    page: pageParam,
+                    pageSize: PAGE_SIZE,
+                    postId,
+                });
+
+                return comments;
+            } catch (error: any) {
+                toast.error('Không thể tải bình luận');
+            }
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, pages) => {
+            if (lastPage.length < PAGE_SIZE) return undefined;
+
+            return pages.length + 1;
+        },
+    });
+
+    const mutation = useSubmitCommentMutation({
+        postId,
+    });
 
     // Gửi bình luận
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
 
         try {
-            const newComment = await CommentService.sendComment({
+            mutation.mutate({
                 content: data.text,
                 replyTo: null,
                 postId: postId,
             });
-
-            if (newComment) {
-                setComments((prev) => [newComment, ...prev]);
-                setCountAllComments((prev) => prev + 1);
-            }
         } catch (error: any) {
             logger({
                 message: 'Error send comment' + error,
@@ -61,24 +81,6 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             formRef.current?.reset();
         }
     };
-
-    useEffect(() => {
-        (async () => {
-            const comments = (await CommentService.getCommentsByPostId({
-                page,
-                pageSize: PAGE_SIZE,
-                postId,
-            })) as IComment[];
-
-            if (comments.length > 0) {
-                setComments((prev) => [...prev, ...comments]);
-            }
-
-            if (comments.length < PAGE_SIZE) {
-                setIsHasLoadMore(false);
-            }
-        })();
-    }, [page, postId]);
 
     return (
         <>
@@ -124,7 +126,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             )}
 
             {/* Không có bình luận nào */}
-            {comments.length === 0 && (
+            {!comments && (
                 <div className="text-center text-xs text-secondary-1">
                     Không có bình luận nào
                 </div>
@@ -132,17 +134,20 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
 
             {/* Comments */}
             <div className="mt-3 grid gap-2">
-                {comments.map((comment) => (
-                    <Comment data={comment} key={comment._id} />
-                ))}
+                {comments &&
+                    comments.pages.map((page) => {
+                        return page.map((cmt: IComment) => (
+                            <Comment data={cmt} key={cmt._id} />
+                        ));
+                    })}
             </div>
 
             {/* Tải thêm */}
-            {isHasLoadMore && (
+            {hasNextPage && (
                 <Button
                     className="my-2 justify-start p-0 text-xs text-secondary-1"
                     variant={'text'}
-                    onClick={() => setPage((prev) => prev + 1)}
+                    onClick={() => fetchNextPage()}
                 >
                     Xem thêm bình luận
                 </Button>

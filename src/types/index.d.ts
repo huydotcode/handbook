@@ -62,3 +62,9 @@ interface IPostFormData {
     option: 'public' | 'friend' | 'private';
     content: string;
 }
+
+interface GemimiChatMessage {
+    text: string;
+    isGemini: boolean;
+    createAt: Date;
+}

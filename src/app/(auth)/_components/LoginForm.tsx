@@ -1,7 +1,7 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import logger from '@/utils/logger';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ interface IFormData {
 
 const LoginForm: React.FC<Props> = ({}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -22,14 +23,15 @@ const LoginForm: React.FC<Props> = ({}) => {
         handleSubmit,
         register,
         formState: { errors, isSubmitting },
+        setError,
     } = useForm<IFormData>();
-    const error = searchParams?.get('error') || '';
+    const errorParams = searchParams?.get('error') || '';
 
     useEffect(() => {
-        if (error.length > 0) {
-            toast.error(error);
+        if (errorParams.length > 0) {
+            toast.error(errorParams);
         }
-    }, [searchParams, error]);
+    }, [searchParams, errorParams]);
 
     const loginWithCrenditals: SubmitHandler<IFormData> = async (formData) => {
         setIsLoading(true);
@@ -50,7 +52,26 @@ const LoginForm: React.FC<Props> = ({}) => {
             }
 
             if (res?.error) {
-                toast.error(res.error);
+                switch (res.error[0]) {
+                    case '1':
+                        setError('email', {
+                            message: 'Email không hợp lệ',
+                        });
+                        break;
+                    case '2':
+                        setError('root', {
+                            message: 'Người dùng không tồn tại',
+                        });
+                        break;
+                    case '3':
+                        setError('password', {
+                            message: 'Mật khẩu không đúng',
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            } else {
             }
         } catch (error: any) {
             logger({
@@ -81,7 +102,9 @@ const LoginForm: React.FC<Props> = ({}) => {
                         required: 'Hãy nhập email',
                     })}
                 />
-                {errors.email && <p className="">{errors.email.message}</p>}
+                {errors.email && (
+                    <p className="text-red-500">{errors.email.message}</p>
+                )}
             </div>
 
             <div className="flex flex-col space-y-1">
@@ -99,7 +122,7 @@ const LoginForm: React.FC<Props> = ({}) => {
                     })}
                 />
                 {errors.password && (
-                    <p className="">{errors.password.message}</p>
+                    <p className="text-red-500">{errors.password.message}</p>
                 )}
             </div>
 

@@ -1,9 +1,9 @@
 'use server';
 import { Comment, Post } from '@/models';
 import connectToDB from '@/services/mongoose';
+import logger from '@/utils/logger';
 import { isValidObjectId } from 'mongoose';
 import { getAuthSession } from '../auth';
-import logger from '@/utils/logger';
 
 /*
     * Comment Model: 
@@ -99,6 +99,24 @@ export const getReplyComments = async ({
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(comments));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getCommentsCountByPostId = async ({
+    postId,
+}: {
+    postId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const count = await Comment.countDocuments({
+            post: postId,
+        });
+
+        return count;
     } catch (error: any) {
         throw new Error(error);
     }

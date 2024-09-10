@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
@@ -5,7 +6,8 @@ import socketEvent from '@/constants/socketEvent.constant';
 import { useApp, useSocket } from '@/context';
 import { NotificationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
-import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -19,38 +21,40 @@ const NotificationItem: React.FC<Props> = ({
 }) => {
     const [showRemove, setShowRemove] = useState(false);
     const { socket } = useSocket();
-    const { setNotifications } = useApp();
+    const queryClient = useQueryClient();
 
     // Chấp nhận lời mời kết bạn
-    const handleAcceptFriend = async () => {
+    const handleAcceptFriend = useCallback(async () => {
+        if (!notification) return;
+
         try {
-            // const notificationAcceptFriend =
-            //     await NotificationService.acceptFriend({ notification });
+            const notificationAcceptFriend =
+                await NotificationService.acceptFriend({ notification });
 
-            // if (socket) {
-            //     socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
-            //         notification: notificationAcceptFriend,
-            //     });
-            // }
+            if (socket) {
+                socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
+                    notification: notificationAcceptFriend,
+                });
+            }
 
-            setNotifications((prev) =>
-                prev.filter((item) => item._id !== notification._id)
-            );
+            queryClient.invalidateQueries({
+                queryKey: ['notifications'],
+            });
         } catch (error) {
             toast.error(
                 'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
             );
         }
-    };
+    }, [notification, socket]);
 
     // Từ chối lời mời kết bạn
     const handleDeclineFriend = async () => {
         try {
             await NotificationService.declineFriend({ notification });
 
-            setNotifications((prev) =>
-                prev.filter((item) => item._id !== notification._id)
-            );
+            queryClient.invalidateQueries({
+                queryKey: ['notifications'],
+            });
         } catch (error) {
             toast.error('Không thể từ chối lời mời kết bạn. Vui lòng thử lại!');
         }
@@ -62,8 +66,8 @@ const NotificationItem: React.FC<Props> = ({
                 notificationId: notification._id,
             });
 
-            setNotifications((prev) => {
-                return prev.filter((item) => item._id !== notification._id);
+            queryClient.invalidateQueries({
+                queryKey: ['notifications'],
             });
         } catch (error) {
             toast.error('Không thể xóa thông báo. Vui lòng thử lại!');

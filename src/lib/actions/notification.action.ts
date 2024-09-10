@@ -33,15 +33,15 @@ export const getNotification = async ({
     }
 };
 
-export const getNotifications = async () => {
+export const getNotificationByUserId = async ({
+    userId,
+}: {
+    userId: string;
+}) => {
     try {
         await connectToDB();
-        const session = await getAuthSession();
-        if (!session?.user) return;
 
-        const notifications = await Notification.find({
-            receiver: session.user.id,
-        })
+        const notifications = await Notification.find()
             .populate('sender', POPULATE_SENDER)
             .sort({ createdAt: -1 });
 
@@ -97,58 +97,53 @@ export const sendRequestAddFriend = async ({
     }
 };
 
-// export const acceptFriend = async ({
-//     notification,
-// }: {
-//     notification: INotification;
-// }) => {
-//     console.log('Accept friend');
-//     try {
-//         await connectToDB();
-//         const session = await getAuthSession();
-//         if (!session) throw new Error('Đã có lỗi xảy ra');
+export const acceptFriend = async ({
+    notification,
+}: {
+    notification: INotification;
+}) => {
+    try {
+        await connectToDB();
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
 
-//         const user = await User.findById(session.user.id);
-//         if (!user) throw new Error('Đã có lỗi xảy ra');
+        const user = await User.findById(session.user.id);
+        if (!user) throw new Error('Đã có lỗi xảy ra');
 
-//         const friend = await User.findById(notification.sender._id);
-//         if (!friend) throw new Error('Đã có lỗi xảy ra');
+        const friend = await User.findById(notification.sender._id);
+        if (!friend) throw new Error('Đã có lỗi xảy ra');
 
-//         await Notification.deleteOne({ _id: notification._id });
+        await Notification.deleteOne({ _id: notification._id });
 
-//         user.friends.push(friend._id);
-//         friend.friends.push(user._id);
+        user.friends.push(friend._id);
+        friend.friends.push(user._id);
 
-//         await user.save();
-//         await friend.save();
+        await user.save();
+        await friend.save();
 
-//         const notificationAcceptFriend = await new Notification({
-//             sender: session.user.id,
-//             receiver: notification.sender._id,
-//             message: 'Đã chấp nhận lời mời kết bạn',
-//             type: 'accept-friend',
-//         });
+        const notificationAcceptFriend = await new Notification({
+            sender: session.user.id,
+            receiver: notification.sender._id,
+            message: 'Đã chấp nhận lời mời kết bạn',
+            type: 'accept-friend',
+        });
 
-//         await notificationAcceptFriend.save();
+        await notificationAcceptFriend.save();
 
-//         const notificaiton = await getNotification({
-//             notificationId: notificationAcceptFriend._id,
-//         });
+        const notificaiton = await getNotification({
+            notificationId: notificationAcceptFriend._id,
+        });
 
-//         console.log('Tạo conversation');
-//         const conversation = await ConversationService.createConversation({
-//             creator: session.user.id,
-//             participantsUserId: [user._id.toString(), friend._id.toString()],
-//         });
+        const conversation = await ConversationService.createConversation({
+            creator: session.user.id,
+            participantsUserId: [user._id.toString(), friend._id.toString()],
+        });
 
-//         console.log('Tạo conversation xong', conversation);
-
-//         return JSON.parse(JSON.stringify(notificaiton));
-//     } catch (error: any) {
-//         console.log('Error', error);
-//         throw new Error(error);
-//     }
-// };
+        return JSON.parse(JSON.stringify(notificaiton));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
 
 export const declineFriend = async ({
     notification,

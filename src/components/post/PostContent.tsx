@@ -1,15 +1,15 @@
-import { usePost } from '@/context';
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import Button from '../ui/Button';
 import PhotoGrid from './PhotoGrid';
 
-const PostContent = () => {
-    const { post } = usePost();
-    const [contentLength, setContentLength] = React.useState<number>(100);
+interface Props {
+    post: IPost;
+}
 
-    const content = React.useMemo(() => {
-        return post?.text.slice(0, contentLength).replace(/\n/g, '<br/>');
-    }, [post, contentLength]);
+const PostContent: React.FC<Props> = ({ post }) => {
+    const [contentLength, setContentLength] = useState<number>(100);
+    const content = post?.text.slice(0, contentLength).replace(/\n/g, '<br/>');
 
     return (
         <main className="mb-2 mt-4 ">

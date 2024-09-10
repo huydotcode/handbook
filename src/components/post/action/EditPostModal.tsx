@@ -5,7 +5,6 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
 import postAudience from '@/constants/postAudience.constant';
-import { usePost } from '@/context';
 import PostService from '@/lib/services/post.service';
 import logger from '@/utils/logger';
 import { Tooltip } from 'antd';
@@ -22,7 +21,7 @@ interface Props {
 
 const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
     const { data: session } = useSession();
-    const { post, setPosts } = usePost();
+    const post = {} as IPost;
 
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)
@@ -52,9 +51,9 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                 postId: post._id,
             });
 
-            setPosts((prev) =>
-                prev.map((p) => (p._id === post._id ? postEdited : p))
-            );
+            // setPosts((prev) =>
+            //     prev.map((p) => (p._id === post._id ? postEdited : p))
+            // );
         } catch (error) {
             logger({
                 message: 'Error edit post' + error,
