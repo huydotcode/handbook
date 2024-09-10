@@ -1,25 +1,26 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
-interface Props {
-    setMessages: React.Dispatch<React.SetStateAction<GemimiChatMessage[]>>;
-}
 
 interface IFormData {
     text: string;
 }
 
-const InputMessage: React.FC<Props> = ({ setMessages }) => {
+interface Props {
+    form: UseFormReturn<IFormData, any, undefined>;
+    setMessages: React.Dispatch<React.SetStateAction<GemimiChatMessage[]>>;
+}
+
+const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
     const {
         handleSubmit,
         register,
         reset,
         resetField,
         formState: { isSubmitting, isLoading, errors },
-    } = useForm<IFormData>();
+    } = form;
 
     const onSubmit = async (data: IFormData) => {
         if (isSubmitting || isLoading) return;

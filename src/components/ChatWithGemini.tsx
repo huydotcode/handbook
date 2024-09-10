@@ -3,14 +3,21 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
-import { Button } from './ui';
+import { Button, Icons } from './ui';
 import { cn } from '@/lib/utils';
 import DOMPurify from 'dompurify';
+import { useForm } from 'react-hook-form';
+
+interface IFormData {
+    text: string;
+}
 
 const ChatWithGemini = () => {
     const [openChat, setOpenChat] = useState(false);
     const [messages, setMessages] = useState<GemimiChatMessage[]>([]);
     const bottomRef = useRef<HTMLDivElement>(null);
+
+    const form = useForm<IFormData>();
 
     useEffect(() => {
         if (bottomRef.current) {
@@ -75,7 +82,7 @@ const ChatWithGemini = () => {
                         <div ref={bottomRef}></div>
                     </div>
 
-                    <InputMessage setMessages={setMessages} />
+                    <InputMessage form={form} setMessages={setMessages} />
 
                     {/* {showScrollDown && (
                         <Button
