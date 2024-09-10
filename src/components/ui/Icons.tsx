@@ -164,6 +164,16 @@ const Icons = {
             <path d="M1 1h22v22H1z" fill="none" />
         </svg>
     ),
+    Gemini: (props: IconProps) => {
+        return (
+            <Image
+                src={'/assets/img/Google_Gemini_logo.svg.png'}
+                alt="Gemini"
+                width={64}
+                height={64}
+            />
+        );
+    },
 };
 
 export default Icons;

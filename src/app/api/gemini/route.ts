@@ -22,10 +22,7 @@ export async function POST(request: Request) {
         });
 
         const result = await chat.sendMessage(message);
-
-        console.log(result);
         const response = result.response.text();
-        console.log('response', response);
 
         return new Response(JSON.stringify({ response }));
     } catch (error) {
