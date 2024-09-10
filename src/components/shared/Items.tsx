@@ -73,17 +73,18 @@ const Items = {
         const { data: session } = useSession();
         const isOnline = friend.isOnline;
 
-        const { data: conversation } = useQuery(
-            ['conversation', friend._id, session?.user.id],
-            () =>
-                ConversationService.getConversationByParticipants({
-                    otherUserId: friend._id || '',
-                    userId: session?.user.id || '',
-                }),
-            {
-                enabled: !!friend._id && !!session?.user.id,
-            }
-        );
+        const { data: conversation } = useQuery({
+            queryKey: ['conversation', friend._id, session?.user.id],
+            queryFn: ({ queryKey }) => {
+                const [, friendId, userId] = queryKey as string[];
+
+                return ConversationService.getConversationByParticipants({
+                    otherUserId: friendId,
+                    userId,
+                });
+            },
+            enabled: !!friend._id && !!session?.user.id,
+        });
 
         if (!session) return null;
 
