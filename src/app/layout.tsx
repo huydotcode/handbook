@@ -23,7 +23,7 @@ export default function RootLayout(props: Props) {
             <head>
                 <link
                     rel="icon"
-                    href="/assets/svg/logo.svg"
+                    href="/assets/img/logo.webp"
                     type="image/svg"
                     sizes="svg"
                 />
