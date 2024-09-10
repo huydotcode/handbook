@@ -58,7 +58,7 @@ const ChatWithGemini = () => {
                             >
                                 <div
                                     className={cn(
-                                        'flex items-center rounded-xl px-2 py-1',
+                                        'flex max-w-[70%] items-center rounded-xl px-2 py-1',
                                         {
                                             'bg-primary-1 dark:bg-dark-secondary-2':
                                                 msg.isGemini,
