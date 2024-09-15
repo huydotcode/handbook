@@ -29,7 +29,6 @@ const ProfileLayout = async ({ params, children }: Props) => {
     const profile = (await ProfileService.getProfileByUserId({
         query: params.userId,
     })) as IProfile;
-
     if (!profile) notFound();
 
     return (

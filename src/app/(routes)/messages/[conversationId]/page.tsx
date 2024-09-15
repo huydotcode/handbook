@@ -17,6 +17,8 @@ const ConversationPage: React.FC<Props> = async ({
     const session = (await getAuthSession()) as Session;
     if (!session) redirect('/');
 
+    if (conversationId == 'undefined') redirect('/messages');
+
     const conversation = (await ConversationService.getConversationById({
         conversationId,
     })) as IConversation;

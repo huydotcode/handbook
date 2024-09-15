@@ -1,14 +1,16 @@
+import React from 'react';
 import ChatWithGemini from '@/components/ChatWithGemini';
 import { Navbar } from '@/components/layout';
 import { getAuthSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import React from 'react';
 
 interface Props {
     children: React.ReactNode;
 }
 
 const HomeLayout: React.FC<Props> = async ({ children }) => {
+    const session = await getAuthSession();
+    if (!session) return null;
+
     return (
         <div className="relative">
             <Navbar />

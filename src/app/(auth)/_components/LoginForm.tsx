@@ -47,7 +47,9 @@ const LoginForm: React.FC<Props> = ({}) => {
             if (res?.ok) {
                 toast.success('Đăng nhập thành công', {
                     id: 'success-login',
+                    duration: 3000,
                 });
+
                 router.push('/');
             }
 
@@ -71,7 +73,6 @@ const LoginForm: React.FC<Props> = ({}) => {
                     default:
                         break;
                 }
-            } else {
             }
         } catch (error: any) {
             logger({
