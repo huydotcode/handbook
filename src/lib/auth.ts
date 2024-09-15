@@ -56,7 +56,6 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: '/auth',
-        error: '/auth',
     },
     secret: process.env.JWT_SECRET,
     providers: [

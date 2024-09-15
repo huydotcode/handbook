@@ -17,7 +17,7 @@ export async function generateMetadata() {
 
 const MessageLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-    if (!session) redirect('/auth');
+    if (!session) return null;
 
     const conversations = await ConversationService.getConversationsByUserId({
         userId: session.user.id,

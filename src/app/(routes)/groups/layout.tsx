@@ -13,9 +13,6 @@ export function generateMetadata() {
 }
 
 const GroupLayout: React.FC<Props> = async ({ children }) => {
-    const session = await getAuthSession();
-    if (!session) redirect('/auth');
-
     return <>{children}</>;
 };
 
