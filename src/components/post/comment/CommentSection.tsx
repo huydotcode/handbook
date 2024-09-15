@@ -1,13 +1,10 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import { useSubmitCommentMutation } from '@/lib/mutations';
 import CommentService from '@/lib/services/comment.service';
 import logger from '@/utils/logger';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import Comment from './CommentItem';
 import InputComment from './InputComment';
 
@@ -31,46 +28,48 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-        queryKey: ['comments', postId],
-        queryFn: async ({ pageParam = 1 }) => {
-            try {
-                const { comments, hasNextPage } =
-                    await CommentService.getCommentsByPostId({
-                        page: pageParam,
-                        pageSize: PAGE_SIZE,
-                        postId,
-                    });
+    const [comments, setComments] = useState<IComment[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [hasNextPage, setHasNextPage] = useState<boolean>(true);
 
-                return { comments, hasNextPage };
-            } catch (error: any) {
-                toast.error('Không thể tải bình luận');
+    useEffect(() => {
+        (async () => {
+            const comments = await CommentService.getCommentsByPostId({
+                page,
+                pageSize: PAGE_SIZE,
+                postId,
+            });
+
+            if (comments.length === 0) {
+                setHasNextPage(false);
+                return;
             }
 
-            return { comments: [], hasNextPage: false };
-        },
-        initialPageParam: 1,
-        getNextPageParam: (lastPage, pages) => {
-            if (!lastPage) return undefined;
-            return lastPage?.hasNextPage ? pages.length + 1 : undefined;
-        },
-    });
+            if (comments.length < PAGE_SIZE) {
+                setHasNextPage(false);
+            } else {
+                setHasNextPage(true);
+            }
 
-    const comments = data?.pages.flatMap((page) => page?.comments ?? []);
-
-    const mutation = useSubmitCommentMutation({
-        postId,
-    });
+            setComments((prev) => {
+                return [...prev, ...comments];
+            });
+        })();
+    }, [postId, page]);
 
     // Gửi bình luận
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
         if (!session?.user.id || isSubmitting) return;
 
         try {
-            mutation.mutate({
+            const newComment = await CommentService.sendComment({
                 content: data.text,
+                postId,
                 replyTo: null,
-                postId: postId,
+            });
+
+            setComments((prev) => {
+                return [newComment, ...prev];
             });
         } catch (error: any) {
             logger({
@@ -126,7 +125,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             )}
 
             {/* Không có bình luận nào */}
-            {!comments && (
+            {comments.length === 0 && (
                 <div className="text-center text-xs text-secondary-1">
                     Không có bình luận nào
                 </div>
@@ -134,18 +133,17 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
 
             {/* Comments */}
             <div className="mt-3 grid gap-2">
-                {comments &&
-                    comments.map((cmt) => {
-                        return <Comment data={cmt} key={cmt._id} />;
-                    })}
+                {comments.map((cmt) => {
+                    return <Comment data={cmt} key={cmt._id} />;
+                })}
             </div>
 
             {/* Tải thêm */}
+
             {hasNextPage && (
                 <Button
                     className="my-2 justify-start p-0 text-xs text-secondary-1"
                     variant={'text'}
-                    onClick={() => fetchNextPage()}
                 >
                     Xem thêm bình luận
                 </Button>

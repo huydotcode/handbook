@@ -64,12 +64,7 @@ export const getCommentsByPostId = async ({
             .skip((page - 1) * pageSize)
             .limit(pageSize);
 
-        return JSON.parse(
-            JSON.stringify({
-                comments,
-                hasNextPage: comments.length === pageSize,
-            })
-        );
+        return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
         logger({
             message: 'Erro get comment by post id' + error,

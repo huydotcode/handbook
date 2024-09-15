@@ -23,7 +23,7 @@ const LoginForm: React.FC<Props> = ({}) => {
     const {
         handleSubmit,
         register,
-        formState: { errors, isSubmitting, isSubmitSuccessful },
+        formState: { errors, isSubmitting },
         setError,
     } = useForm<IFormData>();
     const errorParams = searchParams?.get('error') || '';
@@ -54,8 +54,8 @@ const LoginForm: React.FC<Props> = ({}) => {
                 const type = validUser.error.type;
 
                 if (type == 'email') {
-                    toast.error('Người dùng không tồn tại', {
-                        id: 'error-login',
+                    setError('root', {
+                        message: 'Người dùng không tồn tại',
                     });
                 }
 
@@ -74,8 +74,6 @@ const LoginForm: React.FC<Props> = ({}) => {
                 redirect: false,
             });
 
-            console.log('res', res);
-
             if (res?.ok) {
                 toast.success('Đăng nhập thành công', {
                     id: 'success-login',
@@ -83,29 +81,6 @@ const LoginForm: React.FC<Props> = ({}) => {
                 });
 
                 router.push('/');
-            }
-
-            if (res?.error) {
-                switch (res.error[0]) {
-                    case '1':
-                        console.log('Email không hợp lệ');
-                        setError('email', {
-                            message: 'Email không hợp lệ',
-                        });
-                        break;
-                    case '2':
-                        toast.error('Người dùng không tồn tại', {
-                            id: 'error-login',
-                        });
-                        break;
-                    case '3':
-                        setError('password', {
-                            message: 'Mật khẩu không đúng',
-                        });
-                        break;
-                    default:
-                        break;
-                }
             }
         } catch (error: any) {
             logger({
@@ -119,10 +94,6 @@ const LoginForm: React.FC<Props> = ({}) => {
             setIsLoading(false);
         }
     };
-
-    useEffect(() => {
-        console.log('errors', errors);
-    }, [errors]);
 
     return (
         <form onSubmit={handleSubmit(loginWithCrenditals)}>
@@ -163,6 +134,10 @@ const LoginForm: React.FC<Props> = ({}) => {
                     <p className="text-red-500">{errors.password.message}</p>
                 )}
             </div>
+
+            {errors.root && (
+                <p className="pt-2 text-red-500">{errors.root.message}</p>
+            )}
 
             <Button
                 className="mt-6 h-10 w-full"

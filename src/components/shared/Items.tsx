@@ -75,13 +75,16 @@ const Items = {
 
         const { data: conversation } = useQuery({
             queryKey: ['conversation', friend._id, session?.user.id],
-            queryFn: ({ queryKey }) => {
+            queryFn: async ({ queryKey }) => {
                 const [, friendId, userId] = queryKey as string[];
 
-                return ConversationService.getConversationByParticipants({
-                    otherUserId: friendId,
-                    userId,
-                });
+                const conversations =
+                    await ConversationService.getConversationByParticipants({
+                        otherUserId: friendId,
+                        userId,
+                    });
+
+                return conversations;
             },
             enabled: !!friend._id && !!session?.user.id,
         });
