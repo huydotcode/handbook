@@ -8,26 +8,40 @@ export const useSubmitCommentMutation = ({ postId }: { postId: string }) => {
     const mutation = useMutation({
         mutationFn: CommentService.sendComment,
         onSuccess: async (newComment: IComment) => {
-            const queryKey: QueryKey = ['comments', postId];
+            try {
+                console.log('onSuccess', newComment);
+                const queryKey: QueryKey = ['comments', postId];
 
-            await queryClient.cancelQueries({ queryKey });
+                await queryClient.cancelQueries({ queryKey });
 
-            queryClient.setQueryData(queryKey, (oldData: any) => {
-                return {
-                    pageParams: oldData.pageParams,
-                    pages: [
-                        [newComment, ...oldData.pages[0]],
-                        ...oldData.pages.slice(1),
-                    ],
-                };
-            });
+                queryClient.setQueryData(queryKey, (oldData: any) => {
+                    const firstPage = oldData.pages[0];
+                    const firstComments = firstPage.comments;
 
-            queryClient.invalidateQueries({
-                queryKey,
-                predicate(query) {
-                    return !query.state.data;
-                },
-            });
+                    const newPages = oldData.pages.slice(0, -1);
+                    const newComments = [...firstComments, newComment];
+                    const newHasNextPage = oldData.hasNextPage;
+
+                    return {
+                        pages: [
+                            ...newPages,
+                            {
+                                comments: newComments,
+                                hasNextPage: newHasNextPage,
+                            },
+                        ],
+                    };
+                });
+
+                queryClient.invalidateQueries({
+                    queryKey,
+                    predicate(query) {
+                        return !query.state.data;
+                    },
+                });
+            } catch (error: any) {
+                throw new Error(error);
+            }
         },
     });
 

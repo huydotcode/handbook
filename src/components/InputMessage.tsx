@@ -35,12 +35,12 @@ const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
         }
 
         setMessages((prev) => [
-            ...prev,
             {
                 text,
                 isGemini: false,
                 createAt: new Date(),
             },
+            ...prev,
         ]);
 
         resetField('text');
@@ -53,15 +53,20 @@ const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
             body: JSON.stringify({ message: text }),
         });
 
-        const { response } = await textFromGemini.json();
+        const { response, result } = await textFromGemini.json();
+
+        const textGemini = result.response.candidates[0].content.parts[0]
+            .text as string;
+
+        console.log(textGemini);
 
         setMessages((prev) => [
-            ...prev,
             {
-                text: response,
+                text: textGemini,
                 isGemini: true,
                 createAt: new Date(),
             },
+            ...prev,
         ]);
 
         reset();
@@ -81,7 +86,7 @@ const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
                             value: true,
                         },
                     })}
-                    className="flex-1 px-4 py-2"
+                    className="flex-1 px-4 py-2 text-sm"
                     type="text"
                     placeholder="Nhập tin nhắn..."
                     spellCheck={false}
@@ -93,7 +98,7 @@ const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
                     variant={'event'}
                     type="submit"
                 >
-                    {isSubmitting ? (
+                    {isLoading ? (
                         <Icons.Loading className="animate-spin" />
                     ) : (
                         <Icons.Send />

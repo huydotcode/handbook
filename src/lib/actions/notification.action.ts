@@ -115,8 +115,10 @@ export const acceptFriend = async ({
 
         await Notification.deleteOne({ _id: notification._id });
 
-        user.friends.push(friend._id);
+        if (user.friends.includes(friend._id)) return;
+
         friend.friends.push(user._id);
+        user.friends.push(friend._id);
 
         await user.save();
         await friend.save();

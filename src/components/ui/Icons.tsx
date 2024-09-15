@@ -49,6 +49,7 @@ const Icons = {
     Logo: (props: IconProps) => {
         return (
             <Image
+                className="rounded-full"
                 src="/assets/img/logo.webp"
                 alt="Logo"
                 width={32}

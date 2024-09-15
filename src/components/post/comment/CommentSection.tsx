@@ -3,7 +3,7 @@ import { Avatar, Button, Icons } from '@/components/ui';
 import { useSubmitCommentMutation } from '@/lib/mutations';
 import CommentService from '@/lib/services/comment.service';
 import logger from '@/utils/logger';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -31,32 +31,32 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const {
-        data: comments,
-        fetchNextPage,
-        hasNextPage,
-    } = useInfiniteQuery({
+    const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
         queryKey: ['comments', postId],
         queryFn: async ({ pageParam = 1 }) => {
             try {
-                const comments = await CommentService.getCommentsByPostId({
-                    page: pageParam,
-                    pageSize: PAGE_SIZE,
-                    postId,
-                });
+                const { comments, hasNextPage } =
+                    await CommentService.getCommentsByPostId({
+                        page: pageParam,
+                        pageSize: PAGE_SIZE,
+                        postId,
+                    });
 
-                return comments;
+                return { comments, hasNextPage };
             } catch (error: any) {
                 toast.error('Không thể tải bình luận');
             }
+
+            return { comments: [], hasNextPage: false };
         },
         initialPageParam: 1,
         getNextPageParam: (lastPage, pages) => {
-            if (lastPage.length < PAGE_SIZE) return undefined;
-
-            return pages.length + 1;
+            if (!lastPage) return undefined;
+            return lastPage?.hasNextPage ? pages.length + 1 : undefined;
         },
     });
+
+    const comments = data?.pages.flatMap((page) => page?.comments ?? []);
 
     const mutation = useSubmitCommentMutation({
         postId,
@@ -135,10 +135,8 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             {/* Comments */}
             <div className="mt-3 grid gap-2">
                 {comments &&
-                    comments.pages.map((page) => {
-                        return page.map((cmt: IComment) => (
-                            <Comment data={cmt} key={cmt._id} />
-                        ));
+                    comments.map((cmt) => {
+                        return <Comment data={cmt} key={cmt._id} />;
                     })}
             </div>
 

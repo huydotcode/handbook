@@ -27,9 +27,10 @@ export async function POST(request: Request) {
         });
 
         const result = await chat.sendMessage(message);
+
         const response = result.response.text();
 
-        return new Response(JSON.stringify({ response }));
+        return new Response(JSON.stringify({ response, result }));
     } catch (error) {
         return new Response(JSON.stringify({ error }), { status: 500 });
     }

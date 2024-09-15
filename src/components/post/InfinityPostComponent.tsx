@@ -68,7 +68,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const fetchedPosts = await PostService.getNewFeedPosts2({
+            const fetchedPosts = await PostService.getNewFeedPosts({
                 page: page + '',
                 pageSize: PAGE_SIZE + '',
                 groupId: groupId || 'undefined',

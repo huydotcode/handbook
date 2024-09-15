@@ -35,147 +35,40 @@ export const getNewFeedPosts = async ({
     type: string;
     path: string;
 }) => {
-    const session = await getAuthSession();
-    const query = {} as any;
+    try {
+        await connectToDB();
 
-    if (userId !== 'undefined' || username !== 'undefined') {
-        // Kiểm tra xem có phải là user đang đăng nhập không
-        if (userId == session?.user.id || username == session?.user.username) {
-            query.author = session?.user.id;
-            query.option = {
-                $in: ['public', 'private'],
-            };
-        } else {
-            query.option = 'public';
+        const session = await getAuthSession();
+        const query: any = {};
 
-            if (userId !== 'undefined' && userId) {
-                query.author = userId;
+        const isCurrentUser =
+            userId === session?.user.id || username === session?.user.username;
+
+        if (userId !== 'undefined' && userId) {
+            query.author = isCurrentUser ? session?.user.id : userId;
+        } else if (username !== 'undefined') {
+            const user = await User.findOne({ username });
+            if (user) {
+                query.author = user.id;
+            }
+        }
+
+        query.option = isCurrentUser
+            ? { $in: ['public', 'private'] }
+            : 'public';
+
+        if (type === 'group') {
+            if (groupId !== 'undefined') {
+                query.group = groupId;
             } else {
-                const user = await User.findOne({ username });
-                if (user) {
-                    query.author = user.id;
-                }
+                const groupsHasJoin = await Group.find({
+                    members: { $elemMatch: { user: session?.user.id } },
+                }).distinct('_id');
+                query.group = { $in: groupsHasJoin };
             }
         }
-    }
 
-    // Lấy những bài post trong group của user đang tham gia
-    if (type == 'group' && groupId == 'undefined') {
-        // Lấy những group mà user đang tham gia
-        let groupsHasJoin = await Group.find({
-            members: {
-                $elemMatch: {
-                    user: {
-                        $eq: session?.user.id,
-                    },
-                },
-            },
-        });
-
-        groupsHasJoin = groupsHasJoin.flatMap((group) => group._id);
-
-        query.group = {
-            $in: groupsHasJoin,
-        };
-    } else {
-        if (groupId !== 'undefined') {
-            query.group = groupId;
-        }
-    }
-
-    try {
-        let posts = await Post.find(query)
-            .populate('author', POPULATE_USER)
-            .populate('images')
-            .populate('group', POPULATE_GROUP)
-            .populate('loves', POPULATE_USER)
-            .populate('shares', POPULATE_USER)
-            .populate({
-                path: 'comments',
-                populate: {
-                    path: 'author',
-                    select: POPULATE_USER,
-                },
-            })
-            .skip((+page - 1) * +pageSize)
-            .limit(+pageSize)
-            .sort({ createdAt: -1 });
-
-        // Nếu là chế độ chỉ bạn bè thì kiểm tra xem có phải là bạn bè không
-        posts = posts.filter((post) => {
-            if (post.group) {
-                if (
-                    post.group.members.find(
-                        (member: any) => member.user == session?.user.id
-                    )
-                ) {
-                    return post;
-                }
-            } else if (post.option == 'friends') {
-                if (
-                    post.author.friends.includes(session?.user.id) ||
-                    post.author._id == session?.user.id
-                ) {
-                    return post;
-                }
-            }
-
-            return null;
-        });
-
-        return JSON.parse(JSON.stringify(posts));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const getNewFeedPosts2 = async ({
-    groupId,
-    page,
-    pageSize,
-    path,
-    type,
-    userId,
-    username,
-}: {
-    page: string;
-    pageSize: string;
-    groupId: string;
-    userId: string;
-    username: string;
-    type: string;
-    path: string;
-}) => {
-    const session = await getAuthSession();
-    const query: any = {};
-
-    const isCurrentUser =
-        userId === session?.user.id || username === session?.user.username;
-
-    if (userId !== 'undefined' && userId) {
-        query.author = isCurrentUser ? session?.user.id : userId;
-    } else if (username !== 'undefined') {
-        const user = await User.findOne({ username });
-        if (user) {
-            query.author = user.id;
-        }
-    }
-
-    query.option = isCurrentUser ? { $in: ['public', 'private'] } : 'public';
-
-    if (type === 'group') {
-        if (groupId !== 'undefined') {
-            query.group = groupId;
-        } else {
-            const groupsHasJoin = await Group.find({
-                members: { $elemMatch: { user: session?.user.id } },
-            }).distinct('_id');
-            query.group = { $in: groupsHasJoin };
-        }
-    }
-
-    try {
-        let posts = await Post.find(query)
+        let posts = await Post.find()
             .populate('author', POPULATE_USER)
             .populate('images')
             .populate('group', POPULATE_GROUP)
@@ -283,6 +176,8 @@ export const editPost = async ({
     try {
         const session = await getAuthSession();
         if (!session) return;
+
+        await connectToDB();
 
         await Post.findByIdAndUpdate(postId, {
             text: content,

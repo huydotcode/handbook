@@ -1,8 +1,6 @@
 'use client';
 import { CommentSection, ReactionPost } from '@/components/post';
 import { Icons } from '@/components/ui';
-import { useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 
 interface Props {
     post: IPost;

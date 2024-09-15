@@ -8,7 +8,7 @@ interface Props {
 
 const ChatHeader: React.FC<Props> = ({ setOpenChat }) => {
     return (
-        <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
+        <div className="flex h-14 items-center justify-between border-b p-2 dark:border-dark-secondary-2">
             <div className="flex items-center">
                 <Avatar
                     imgSrc={'/assets/img/Google_Gemini_logo.svg.png'}
@@ -17,9 +17,7 @@ const ChatHeader: React.FC<Props> = ({ setOpenChat }) => {
                 />
 
                 <div className="flex flex-col">
-                    <h3 className="text-md ml-2 font-bold">
-                        Trò chuyện cùng Gemini
-                    </h3>
+                    <h3 className="ml-2 text-sm">Trò chuyện cùng Gemini</h3>
                 </div>
             </div>
 
