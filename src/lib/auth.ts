@@ -58,6 +58,10 @@ export const authOptions: NextAuthOptions = {
         signIn: '/auth',
     },
     secret: process.env.JWT_SECRET,
+    jwt: {
+        secret: process.env.JWT_SECRET,
+    },
+
     providers: [
         GoogleProvider({
             clientId: getGoogleCredentials().clientId,
@@ -69,39 +73,21 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             async authorize(credentials: any) {
-                if (credentials) {
+                try {
                     const { email, password } = credentials;
 
                     await connectToDB();
-
-                    // Regex email
-                    const emailRegex = new RegExp(
-                        /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
-                    );
-
-                    // Check email is valid?
-                    const isEmail = emailRegex.test(email);
-                    if (!isEmail) {
-                        throw new Error('1Email không hợp lệ');
-                    }
 
                     const user = (await User.findOne({
                         email: email,
                     })) as User;
 
-                    if (!user) {
-                        throw new Error('2Người dùng không tồn tại');
-                    }
-
-                    const isValid = await user.comparePassword(password);
-                    if (!isValid) {
-                        throw new Error('3Mật khẩu không đúng');
-                    }
-
                     return user;
-                } else {
-                    return null;
+                } catch (error) {
+                    console.log('error', error);
                 }
+
+                return null;
             },
         }),
     ],

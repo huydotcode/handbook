@@ -134,3 +134,44 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
         });
     }
 };
+
+export const checkAuth = async ({
+    email,
+    password,
+}: {
+    email: string;
+    password: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const user = (await User.findOne({
+            email: email,
+        })) as User;
+
+        if (!user) {
+            return {
+                error: {
+                    type: 'email',
+                    message: 'Người dùng không tồn tại',
+                },
+            };
+        }
+
+        const isValid = await user.comparePassword(password);
+
+        console.log('isValid', isValid);
+        if (!isValid) {
+            return {
+                error: {
+                    type: 'password',
+                    message: 'Mật khẩu không đúng',
+                },
+            };
+        }
+    } catch (error) {
+        console.log('error', error);
+    }
+
+    return null;
+};

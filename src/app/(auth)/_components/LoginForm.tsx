@@ -1,5 +1,6 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
+import { UserService } from '@/lib/services';
 import logger from '@/utils/logger';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -22,13 +23,14 @@ const LoginForm: React.FC<Props> = ({}) => {
     const {
         handleSubmit,
         register,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, isSubmitSuccessful },
         setError,
     } = useForm<IFormData>();
     const errorParams = searchParams?.get('error') || '';
 
     useEffect(() => {
         if (errorParams.length > 0) {
+            console.log('errorParams', errorParams);
             toast.error(errorParams);
         }
     }, [searchParams, errorParams]);
@@ -38,11 +40,41 @@ const LoginForm: React.FC<Props> = ({}) => {
         const { email, password } = formData;
 
         try {
+            const validUser = (await UserService.checkAuth({
+                email,
+                password,
+            })) as {
+                error: {
+                    type: string;
+                    message: string;
+                };
+            } | null;
+
+            if (validUser?.error) {
+                const type = validUser.error.type;
+
+                if (type == 'email') {
+                    toast.error('Người dùng không tồn tại', {
+                        id: 'error-login',
+                    });
+                }
+
+                if (type == 'password') {
+                    setError('password', {
+                        message: 'Mật khẩu không đúng',
+                    });
+                }
+
+                return;
+            }
+
             const res = await signIn('credentials', {
                 email,
                 password,
                 redirect: false,
             });
+
+            console.log('res', res);
 
             if (res?.ok) {
                 toast.success('Đăng nhập thành công', {
@@ -56,13 +88,14 @@ const LoginForm: React.FC<Props> = ({}) => {
             if (res?.error) {
                 switch (res.error[0]) {
                     case '1':
+                        console.log('Email không hợp lệ');
                         setError('email', {
                             message: 'Email không hợp lệ',
                         });
                         break;
                     case '2':
-                        setError('root', {
-                            message: 'Người dùng không tồn tại',
+                        toast.error('Người dùng không tồn tại', {
+                            id: 'error-login',
                         });
                         break;
                     case '3':
@@ -86,6 +119,10 @@ const LoginForm: React.FC<Props> = ({}) => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        console.log('errors', errors);
+    }, [errors]);
 
     return (
         <form onSubmit={handleSubmit(loginWithCrenditals)}>
