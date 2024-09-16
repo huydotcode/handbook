@@ -1,4 +1,8 @@
-const socketEvent = {
+interface SocketEvent {
+    [key: string]: string;
+}
+
+const socketEvent: SocketEvent = {
     // FRIEND REQUEST
     SEND_REQUEST_ADD_FRIEND: 'send-request-add-friend',
     ACCEPT_FRIEND: 'accept-friend',

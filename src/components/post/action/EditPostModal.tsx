@@ -1,6 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import React, { FC, useState } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
@@ -13,6 +13,8 @@ import toast from 'react-hot-toast';
 import { IShowModal } from '../ActionPost';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { editPostValidation } from '@/lib/validation';
+import AddToPost from '../AddToPost';
+import Photos from '../Photos';
 
 interface Props {
     post: IPost;
@@ -63,6 +65,11 @@ const EditPostModal: FC<Props> = ({
             setPosts((prev) =>
                 prev.map((p) => (p._id === post._id ? postEdited : p))
             );
+
+            toast.success('Chỉnh sửa bài viết thành công', {
+                id: 'success-edit-post',
+                duration: 3000,
+            });
         } catch (error) {
             logger({
                 message: 'Error edit post' + error,
@@ -74,7 +81,38 @@ const EditPostModal: FC<Props> = ({
             handleClose();
         }
     };
+
     const submit = handleSubmit(onSubmit);
+
+    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+        const fileList = e.target.files;
+        if (fileList) {
+            const files: File[] = Array.from(fileList);
+            files.forEach((file) => {
+                if (!file) {
+                    toast.error('Có lỗi trong quá trình đăng tải ảnh!');
+                    return;
+                }
+
+                if (!file.type.includes('image')) {
+                    toast.error('Sai định dạng! Vui lòng upload ảnh');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const result = reader.result as string;
+
+                    setPhotos((prev) => [...prev, result]);
+                };
+            });
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setPhotos((prev) => prev.filter((_, i) => i !== index));
+    };
 
     return (
         <>
@@ -136,41 +174,7 @@ const EditPostModal: FC<Props> = ({
                         control={control}
                     />
 
-                    {photos && photos.length > 0 && (
-                        <div className="flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
-                            {photos.map((img: string, index: number) => {
-                                return (
-                                    <div
-                                        className="relative w-[50%] overflow-hidden px-1"
-                                        key={index}
-                                    >
-                                        <span
-                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full"
-                                            onClick={() =>
-                                                setPhotos((prev) =>
-                                                    prev.filter(
-                                                        (photo) => photo !== img
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            <Icons.Close className="h-5 w-5" />
-                                        </span>
-                                        <div className="relative min-h-[500px] w-full object-cover">
-                                            <Image
-                                                className="mt-2 align-middle "
-                                                quality={100}
-                                                src={img || ''}
-                                                alt=""
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                    <Photos onClickPhoto={handleRemoveImage} photos={photos} />
 
                     {formState.errors.content && (
                         <p className="mt-2 text-sm text-red-500">
@@ -178,45 +182,15 @@ const EditPostModal: FC<Props> = ({
                         </p>
                     )}
 
-                    <div>
-                        <div className="relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2  shadow-md dark:shadow-none">
-                            <h5 className="text-base font-bold ">
-                                Thêm vào bài viết của bạn
-                            </h5>
+                    <AddToPost handleChangeImage={handleChangeImage} />
 
-                            <div className="flex items-center">
-                                <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
-                                    <label
-                                        className="flex h-10 w-10 cursor-pointer items-center  justify-center rounded-xl hover:cursor-pointer "
-                                        htmlFor="input-file"
-                                    >
-                                        <Image
-                                            src={'/assets/img/images.png'}
-                                            alt=""
-                                            width={24}
-                                            height={24}
-                                        />
-                                    </label>
-                                    <input
-                                        id="input-file"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        // onChange={handleChangeImage}
-                                        style={{ display: 'none' }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="mt-3 h-10 w-full"
-                            variant={'primary'}
-                        >
-                            Chỉnh sửa
-                        </Button>
-                    </div>
+                    <Button
+                        type="submit"
+                        className="mt-3 h-10 w-full"
+                        variant={'primary'}
+                    >
+                        Chỉnh sửa
+                    </Button>
                 </form>
             </Modal>
         </>

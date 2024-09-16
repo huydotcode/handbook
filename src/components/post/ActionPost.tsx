@@ -94,6 +94,7 @@ const ActionPost: React.FC<Props> = ({ post, setPosts }) => {
                     show={showModal.deleteModal}
                     postId={post._id}
                     handleClose={() => handleCloseModal('deleteModal')}
+                    setPosts={setPosts}
                 />
             )}
         </>

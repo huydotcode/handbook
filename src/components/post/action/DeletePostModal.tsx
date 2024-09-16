@@ -9,11 +9,15 @@ interface Props {
     show: boolean;
     postId: string;
     handleClose: () => void;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
-    // const { setPosts } = usePost();
-
+const DeletePostModal: React.FC<Props> = ({
+    postId,
+    show,
+    handleClose,
+    setPosts,
+}) => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>();
 
     const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -23,7 +27,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
             await PostService.deletePost({
                 postId,
             });
-            // setPosts((prev) => prev.filter((item) => item._id != postId));
+            setPosts((prev) => prev.filter((item) => item._id != postId));
         } catch (error: any) {
             handleClose();
             logger({

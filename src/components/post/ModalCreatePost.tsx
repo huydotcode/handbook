@@ -9,14 +9,16 @@ import {
     UseFormRegister,
 } from 'react-hook-form';
 
-import { Fade, Modal, Tooltip } from '@mui/material';
+import { Fade, Modal } from '@mui/material';
 import { toast } from 'react-hot-toast';
 
+import postAudience from '@/constants/postAudience.constant';
 import { useSession } from 'next-auth/react';
-import TextEditor from '../ui/TextEditor';
 import Button from '../ui/Button';
 import Icons from '../ui/Icons';
-import postAudience from '@/constants/postAudience.constant';
+import TextEditor from '../ui/TextEditor';
+import AddToPost from './AddToPost';
+import Photos from './Photos';
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -155,42 +157,10 @@ const ModalCreatePost: React.FC<Props> = ({
                                     control={control}
                                 />
 
-                                {/* Images */}
-                                {photos && photos.length > 0 && (
-                                    <div className=" flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
-                                        {photos.map(
-                                            (img: string, index: number) => {
-                                                return (
-                                                    <div
-                                                        className="relative w-[50%] overflow-hidden px-1"
-                                                        key={index}
-                                                    >
-                                                        <span
-                                                            className="absolute left-2 top-2 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full"
-                                                            onClick={() =>
-                                                                handleRemoveImage(
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            <Icons.Close className="h-5 w-5" />
-                                                        </span>
-                                                        <div className="relative min-h-[500px] w-full object-cover">
-                                                            <Image
-                                                                className="mt-2 align-middle "
-                                                                quality={100}
-                                                                src={img || ''}
-                                                                alt=""
-                                                                fill
-                                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }
-                                        )}
-                                    </div>
-                                )}
+                                <Photos
+                                    photos={photos}
+                                    onClickPhoto={handleRemoveImage}
+                                />
 
                                 {formState.errors.content && (
                                     <p className="text-sm text-red-500">
@@ -198,47 +168,17 @@ const ModalCreatePost: React.FC<Props> = ({
                                     </p>
                                 )}
 
-                                <div>
-                                    <div className=" relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md  dark:border-none dark:shadow-none">
-                                        <h5 className="text-base font-bold ">
-                                            Thêm vào bài viết của bạn
-                                        </h5>
+                                <AddToPost
+                                    handleChangeImage={handleChangeImage}
+                                />
 
-                                        <div className="flex items-center">
-                                            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">
-                                                <label
-                                                    className="flex h-10 w-10 cursor-pointer items-center  justify-center rounded-xl hover:cursor-pointer "
-                                                    htmlFor="input-file"
-                                                >
-                                                    <Image
-                                                        src={
-                                                            '/assets/img/images.png'
-                                                        }
-                                                        alt=""
-                                                        width={24}
-                                                        height={24}
-                                                    />
-                                                </label>
-                                                <input
-                                                    id="input-file"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    multiple
-                                                    onChange={handleChangeImage}
-                                                    style={{ display: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        className="mt-3 h-10 w-full disabled:cursor-not-allowed"
-                                        variant={'primary'}
-                                    >
-                                        Đăng
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="submit"
+                                    className="mt-3 h-10 w-full disabled:cursor-not-allowed"
+                                    variant={'primary'}
+                                >
+                                    Đăng
+                                </Button>
                             </form>
                         </div>
                     </div>
