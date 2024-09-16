@@ -103,7 +103,7 @@ export const getNewFeedPosts = async ({
     }
 };
 
-export const getPost = async ({ postId }: { postId: string }) => {
+export const getPostByPostId = async ({ postId }: { postId: string }) => {
     try {
         await connectToDB();
 
@@ -154,7 +154,7 @@ export const createPost = async ({
         });
         await newPost.save();
 
-        const post = await getPost({ postId: newPost._id });
+        const post = await getPostByPostId({ postId: newPost._id });
 
         return JSON.parse(JSON.stringify(post));
     } catch (error: any) {
@@ -185,7 +185,7 @@ export const editPost = async ({
             option,
         });
 
-        const post = await getPost({ postId });
+        const post = await getPostByPostId({ postId });
 
         return JSON.parse(JSON.stringify(post));
     } catch (error: any) {

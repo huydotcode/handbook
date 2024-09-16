@@ -23,14 +23,23 @@ function AppProvider({ children }: { children: React.ReactNode }) {
     const queryClient = useQueryClient();
 
     const { data: notifications, isLoading } = useQuery({
-        queryKey: ['notifications'],
-        queryFn: () =>
-            NotificationService.getNotificationByUserId({
-                userId: session?.user.id as string,
-            }),
+        queryKey: ['notifications', session?.user],
+        queryFn: async () => {
+            const notifications =
+                await NotificationService.getNotificationByUserId({
+                    userId: session?.user.id as string,
+                });
+
+            return notifications;
+        },
         initialData: [],
-        staleTime: 1000 * 60 * 5,
     });
+
+    useEffect(() => {
+        console.log({
+            notifications,
+        });
+    }, [notifications]);
 
     const { socket } = useSocket();
 

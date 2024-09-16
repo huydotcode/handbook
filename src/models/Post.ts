@@ -25,6 +25,7 @@ const PostSchema = new Schema<IPostModel>(
         images: {
             type: [Types.ObjectId],
             default: [],
+            ref: 'Image',
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,

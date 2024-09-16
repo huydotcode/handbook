@@ -24,7 +24,7 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
             <>
                 <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-between overflow-hidden">
                     <Button
-                        className="absolute left-[50%] top-2 z-50 translate-x-[-50%] rounded-md p-2  "
+                        className="absolute right-2 top-2 z-50 translate-x-[-50%] rounded-md bg-secondary-1 p-2 dark:bg-dark-secondary-1"
                         variant={'custom'}
                         size={'medium'}
                         onClick={() => setShow(false)}

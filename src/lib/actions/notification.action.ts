@@ -3,6 +3,7 @@ import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import { ConversationService } from '../services';
+import mongoose from 'mongoose';
 
 /*
     * Notification Model: 
@@ -41,9 +42,17 @@ export const getNotificationByUserId = async ({
     try {
         await connectToDB();
 
-        const notifications = await Notification.find()
+        console.log({ userId });
+
+        const notifications = await Notification.find({
+            receiver: userId,
+        })
             .populate('sender', POPULATE_SENDER)
             .sort({ createdAt: -1 });
+
+        console.log('getNotification By User Id', {
+            notifications,
+        });
 
         return JSON.parse(JSON.stringify(notifications));
     } catch (error: any) {

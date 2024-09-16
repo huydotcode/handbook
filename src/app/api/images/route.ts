@@ -74,7 +74,7 @@ export async function POST(request: Request) {
                 resourceType: result.resource_type,
                 type: result.type,
                 url: result.url,
-                creatorId: session.user.id,
+                creator: session.user.id,
             });
             await image.save();
 
@@ -82,8 +82,10 @@ export async function POST(request: Request) {
         }
 
         return new Response(JSON.stringify(imagesResponse));
-    } catch (error) {
-        return new Response('Failed to upload image on Cloudinary');
+    } catch (error: any) {
+        return new Response(JSON.stringify({ message: error.message }), {
+            status: 500,
+        });
     }
 }
 

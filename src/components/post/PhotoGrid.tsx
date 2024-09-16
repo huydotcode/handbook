@@ -1,14 +1,18 @@
 'use client';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import SlideShow from '../ui/SlideShow';
 import Image from 'next/image';
 
 interface Props {
-    images: any;
+    images: IImage[];
 }
 
 const PhotoGrid: FC<Props> = ({ images }) => {
     const [showSlide, setShowSlide] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log({ images });
+    }, [images]);
 
     return (
         <>
@@ -28,7 +32,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                 <div className="relative h-[80px] w-[80px]">
                                     <Image
                                         className=" object-cover"
-                                        src={images[1].url || ''}
+                                        src={images[0].url || ''}
                                         alt=""
                                         quality={100}
                                         fill
