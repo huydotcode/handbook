@@ -160,7 +160,6 @@ export const checkAuth = async ({
 
         const isValid = await user.comparePassword(password);
 
-        console.log('isValid', isValid);
         if (!isValid) {
             return {
                 error: {
@@ -169,9 +168,7 @@ export const checkAuth = async ({
                 },
             };
         }
-    } catch (error) {
-        console.log('error', error);
-    }
+    } catch (error) {}
 
     return null;
 };

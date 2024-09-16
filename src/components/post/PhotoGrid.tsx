@@ -10,10 +10,6 @@ interface Props {
 const PhotoGrid: FC<Props> = ({ images }) => {
     const [showSlide, setShowSlide] = useState<boolean>(false);
 
-    useEffect(() => {
-        console.log({ images });
-    }, [images]);
-
     return (
         <>
             <div className="relative mt-3 h-[300px]">

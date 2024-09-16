@@ -30,7 +30,6 @@ const LoginForm: React.FC<Props> = ({}) => {
 
     useEffect(() => {
         if (errorParams.length > 0) {
-            console.log('errorParams', errorParams);
             toast.error(errorParams);
         }
     }, [searchParams, errorParams]);

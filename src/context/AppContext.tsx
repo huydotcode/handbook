@@ -35,12 +35,6 @@ function AppProvider({ children }: { children: React.ReactNode }) {
         initialData: [],
     });
 
-    useEffect(() => {
-        console.log({
-            notifications,
-        });
-    }, [notifications]);
-
     const { socket } = useSocket();
 
     // Lắng nghe thông báo mới

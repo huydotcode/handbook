@@ -42,17 +42,11 @@ export const getNotificationByUserId = async ({
     try {
         await connectToDB();
 
-        console.log({ userId });
-
         const notifications = await Notification.find({
             receiver: userId,
         })
             .populate('sender', POPULATE_SENDER)
             .sort({ createdAt: -1 });
-
-        console.log('getNotification By User Id', {
-            notifications,
-        });
 
         return JSON.parse(JSON.stringify(notifications));
     } catch (error: any) {

@@ -83,9 +83,7 @@ export const authOptions: NextAuthOptions = {
                     })) as User;
 
                     return user;
-                } catch (error) {
-                    console.log('error', error);
-                }
+                } catch (error) {}
 
                 return null;
             },

@@ -58,8 +58,6 @@ const InputMessage: React.FC<Props> = ({ form, setMessages }) => {
         const textGemini = result.response.candidates[0].content.parts[0]
             .text as string;
 
-        console.log(textGemini);
-
         setMessages((prev) => [
             {
                 text: textGemini,

@@ -65,8 +65,6 @@ export async function POST(request: Request) {
             };
             const result = await cloudinary.uploader.upload(img, options);
 
-            console.log('RESULT UPLOADE IMAGE', { result });
-
             const image = await new Image({
                 publicId: result.public_id,
                 width: result.width,
