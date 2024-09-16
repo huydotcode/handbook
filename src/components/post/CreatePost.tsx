@@ -9,6 +9,8 @@ import toast from 'react-hot-toast';
 import PostService from '@/lib/services/post.service';
 import { ModalCreatePost } from '.';
 import logger from '@/utils/logger';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createPostValidation } from '@/lib/validation';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -29,6 +31,7 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             defaultValues: {
                 option: 'public',
             },
+            resolver: zodResolver(createPostValidation),
         });
 
     const sendPost = async (data: IPostFormData) => {

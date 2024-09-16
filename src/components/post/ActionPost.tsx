@@ -9,7 +9,7 @@ import EditPostModal from './action/EditPostModal';
 
 interface Props {
     post: IPost;
-    setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
 export type IShowModal = {
@@ -17,7 +17,7 @@ export type IShowModal = {
     deleteModal: boolean;
 };
 
-const ActionPost: React.FC<Props> = ({ post }) => {
+const ActionPost: React.FC<Props> = ({ post, setPosts }) => {
     const { anchorEl, setAnchorEl } = usePopover();
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -81,9 +81,11 @@ const ActionPost: React.FC<Props> = ({ post }) => {
 
             {showModal.editModal && (
                 <EditPostModal
+                    post={post}
                     show={showModal.editModal}
                     setShow={setShowModal}
                     handleClose={() => handleCloseModal('editModal')}
+                    setPosts={setPosts}
                 />
             )}
 

@@ -101,7 +101,7 @@ const Post: React.FC<Props> = ({ data: post, setPosts }) => {
                 </div>
 
                 {session?.user && session.user.id === post.author._id && (
-                    <ActionPost post={post} />
+                    <ActionPost post={post} setPosts={setPosts} />
                 )}
             </div>
 

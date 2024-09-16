@@ -153,14 +153,6 @@ const ModalCreatePost: React.FC<Props> = ({
                                     )}
                                     name="content"
                                     control={control}
-                                    defaultValue=""
-                                    rules={{
-                                        validate: {
-                                            required: (v) =>
-                                                (v && v.trim().length > 0) ||
-                                                'Vui lòng nhập nội dung trước khi hoàn tất',
-                                        },
-                                    }}
                                 />
 
                                 {/* Images */}
@@ -200,6 +192,12 @@ const ModalCreatePost: React.FC<Props> = ({
                                     </div>
                                 )}
 
+                                {formState.errors.content && (
+                                    <p className="text-sm text-red-500">
+                                        {formState.errors.content.message}
+                                    </p>
+                                )}
+
                                 <div>
                                     <div className=" relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md  dark:border-none dark:shadow-none">
                                         <h5 className="text-base font-bold ">
@@ -233,24 +231,13 @@ const ModalCreatePost: React.FC<Props> = ({
                                         </div>
                                     </div>
 
-                                    <Tooltip
-                                        title={
-                                            formState.errors.content?.message
-                                        }
+                                    <Button
+                                        type="submit"
+                                        className="mt-3 h-10 w-full disabled:cursor-not-allowed"
+                                        variant={'primary'}
                                     >
-                                        <Button
-                                            type="submit"
-                                            className="mt-3 h-10 w-full disabled:cursor-not-allowed"
-                                            variant={'primary'}
-                                            disabled={
-                                                formState.errors.content
-                                                    ? true
-                                                    : false
-                                            }
-                                        >
-                                            Đăng
-                                        </Button>
-                                    </Tooltip>
+                                        Đăng
+                                    </Button>
                                 </div>
                             </form>
                         </div>

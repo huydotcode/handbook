@@ -7,21 +7,31 @@ import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
 import postAudience from '@/constants/postAudience.constant';
 import PostService from '@/lib/services/post.service';
 import logger from '@/utils/logger';
-import { Tooltip } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { IShowModal } from '../ActionPost';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { editPostValidation } from '@/lib/validation';
 
 interface Props {
+    post: IPost;
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<IShowModal>>;
     handleClose: () => void;
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
+const EditPostModal: FC<Props> = ({
+    post,
+    setShow,
+    show,
+    handleClose,
+    setPosts,
+}) => {
     const { data: session } = useSession();
-    const post = {} as IPost;
+
+    if (!post) return null;
 
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)
@@ -35,11 +45,10 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                 content: post.text,
                 option: post.option as 'public' | 'private',
             },
+            resolver: zodResolver(editPostValidation),
         });
 
     const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
-        if (formState.isSubmitting) return;
-
         const newImages = post.images.filter((img) => {
             return photos.includes(img.url);
         });
@@ -51,9 +60,9 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                 postId: post._id,
             });
 
-            // setPosts((prev) =>
-            //     prev.map((p) => (p._id === post._id ? postEdited : p))
-            // );
+            setPosts((prev) =>
+                prev.map((p) => (p._id === post._id ? postEdited : p))
+            );
         } catch (error) {
             logger({
                 message: 'Error edit post' + error,
@@ -125,14 +134,6 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         )}
                         name="content"
                         control={control}
-                        defaultValue=""
-                        rules={{
-                            validate: {
-                                required: (v) =>
-                                    (v && v.trim().length > 0) ||
-                                    'Vui lòng nhập nội dung trước khi hoàn tất',
-                            },
-                        }}
                     />
 
                     {photos && photos.length > 0 && (
@@ -171,6 +172,12 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                         </div>
                     )}
 
+                    {formState.errors.content && (
+                        <p className="mt-2 text-sm text-red-500">
+                            {formState.errors.content.message}
+                        </p>
+                    )}
+
                     <div>
                         <div className="relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2  shadow-md dark:shadow-none">
                             <h5 className="text-base font-bold ">
@@ -202,20 +209,13 @@ const EditPostModal: FC<Props> = ({ setShow, show, handleClose }) => {
                             </div>
                         </div>
 
-                        <Tooltip title={formState.errors.content?.message}>
-                            <Button
-                                type="submit"
-                                className="mt-3 h-10 w-full"
-                                variant={'primary'}
-                                disabled={
-                                    formState.errors.content
-                                        ? true
-                                        : false || formState.isSubmitting
-                                }
-                            >
-                                Chỉnh sửa
-                            </Button>
-                        </Tooltip>
+                        <Button
+                            type="submit"
+                            className="mt-3 h-10 w-full"
+                            variant={'primary'}
+                        >
+                            Chỉnh sửa
+                        </Button>
                     </div>
                 </form>
             </Modal>
