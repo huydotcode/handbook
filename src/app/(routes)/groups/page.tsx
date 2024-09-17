@@ -9,7 +9,6 @@ interface Props {}
 
 const GroupsPage: React.FC<Props> = async ({}) => {
     const session = await getAuthSession();
-
     if (!session) return null;
 
     const groups = (await GroupService.getGroups({
