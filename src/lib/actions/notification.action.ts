@@ -187,3 +187,36 @@ export const removeNotification = async ({
         throw new Error(error);
     }
 };
+
+export const canRequestAddFriend = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+        const session = await getAuthSession();
+
+        const notification = await Notification.findOne({
+            sender: session?.user.id,
+            receiver: userId,
+        });
+
+        if (notification) {
+            console.log({
+                msg: 'Đã gửi lời mời kết bạn',
+            });
+
+            return false;
+        }
+
+        const currentUser = await User.findById(session?.user.id);
+
+        if (
+            currentUser?.friends.includes(new mongoose.Types.ObjectId(userId))
+        ) {
+            console.log('Đã là bạn bè với', userId);
+            return false;
+        }
+    } catch (error: any) {
+        throw new Error(error);
+    }
+
+    return true;
+};

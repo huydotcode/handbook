@@ -44,8 +44,11 @@ function AppProvider({ children }: { children: React.ReactNode }) {
                 socketEvent.RECEIVE_NOTIFICATION,
                 ({ notification }: { notification: INotification }) => {
                     queryClient.setQueryData(
-                        ['notifications'],
-                        (prev: INotification[]) => [notification, ...prev]
+                        ['notifications', session?.user.id],
+                        (oldNotifications: INotification[]) => {
+                            if (!oldNotifications) return [notification];
+                            return [notification, ...oldNotifications];
+                        }
                     );
                 }
             );
