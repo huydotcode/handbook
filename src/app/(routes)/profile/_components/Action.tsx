@@ -37,14 +37,13 @@ const Action: React.FC<Props> = ({ userId }) => {
     const addFriend = async () => {
         if (isRequest) return;
 
-        const canRequest = await checkCanRequestAddFriend();
-        if (!canRequest) return;
-
         try {
             const requestAddFriend =
                 await NotificationService.sendRequestAddFriend({
                     receiverId: userId,
                 });
+
+            setIsRequest(true);
 
             if (socket) {
                 socket.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {
@@ -59,8 +58,7 @@ const Action: React.FC<Props> = ({ userId }) => {
                 type: 'error',
             });
             toast.error('Đã có lỗi xảy ra khi gửi lời mời kết bạn!');
-        } finally {
-            setIsRequest(true);
+            setIsRequest(false);
         }
     };
 
@@ -105,6 +103,12 @@ const Action: React.FC<Props> = ({ userId }) => {
             addFriend();
         }
     };
+
+    useEffect(() => {
+        console.log({
+            isFriend,
+        });
+    }, [isFriend]);
 
     useEffect(() => {
         checkCanRequestAddFriend();

@@ -16,11 +16,11 @@ import mongoose from 'mongoose';
 
 const POPULATE_SENDER = 'name avatar username isOnline';
 
-export const getNotification = async ({
+export async function getNotification({
     notificationId,
 }: {
     notificationId: string;
-}) => {
+}) {
     try {
         await connectToDB();
 
@@ -32,13 +32,9 @@ export const getNotification = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const getNotificationByUserId = async ({
-    userId,
-}: {
-    userId: string;
-}) => {
+export async function getNotificationByUserId({ userId }: { userId: string }) {
     try {
         await connectToDB();
 
@@ -52,9 +48,9 @@ export const getNotificationByUserId = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const markAllAsRead = async () => {
+export async function markAllAsRead() {
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -69,17 +65,16 @@ export const markAllAsRead = async () => {
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const sendRequestAddFriend = async ({
+export async function sendRequestAddFriend({
     receiverId,
 }: {
     receiverId: string;
-}) => {
-    const session = await getAuthSession();
-
+}) {
     try {
         await connectToDB();
+        const session = await getAuthSession();
 
         const newNotification = await new Notification({
             sender: session?.user.id,
@@ -98,13 +93,13 @@ export const sendRequestAddFriend = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const acceptFriend = async ({
+export async function acceptFriend({
     notification,
 }: {
     notification: INotification;
-}) => {
+}) {
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -148,13 +143,13 @@ export const acceptFriend = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const declineFriend = async ({
+export async function declineFriend({
     notification,
 }: {
     notification: INotification;
-}) => {
+}) {
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -172,13 +167,13 @@ export const declineFriend = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const removeNotification = async ({
+export async function removeNotification({
     notificationId,
 }: {
     notificationId: string;
-}) => {
+}) {
     try {
         await connectToDB();
         await Notification.deleteOne({ _id: notificationId });
@@ -186,9 +181,9 @@ export const removeNotification = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-};
+}
 
-export const canRequestAddFriend = async ({ userId }: { userId: string }) => {
+export async function canRequestAddFriend({ userId }: { userId: string }) {
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -219,4 +214,4 @@ export const canRequestAddFriend = async ({ userId }: { userId: string }) => {
     }
 
     return true;
-};
+}

@@ -3,39 +3,28 @@ import socketEvent from '@/constants/socketEvent.constant';
 import NotificationService from '@/lib/services/notification.service';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { createContext, useContext, useEffect } from 'react';
-import { useSocket } from '.';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useSocial, useSocket } from '.';
 
 type AppContextType = {
     notifications: INotification[];
+    setNotifications: React.Dispatch<React.SetStateAction<INotification[]>>;
     loadingNotifications: boolean;
 };
 
 export const AppContext = createContext<AppContextType>({
     notifications: [],
+    setNotifications: () => {},
     loadingNotifications: true,
 });
 
 export const useApp = () => useContext(AppContext);
 
 function AppProvider({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession();
-    const queryClient = useQueryClient();
-
-    const { data: notifications, isLoading } = useQuery({
-        queryKey: ['notifications', session?.user],
-        queryFn: async () => {
-            const notifications =
-                await NotificationService.getNotificationByUserId({
-                    userId: session?.user.id as string,
-                });
-
-            return notifications;
-        },
-        initialData: [],
-    });
+    const [notifications, setNotifications] = useState<INotification[]>([]);
 
     const { socket } = useSocket();
+    const { setFriends } = useSocial();
 
     // Lắng nghe thông báo mới
     useEffect(() => {
@@ -43,13 +32,11 @@ function AppProvider({ children }: { children: React.ReactNode }) {
             socket.on(
                 socketEvent.RECEIVE_NOTIFICATION,
                 ({ notification }: { notification: INotification }) => {
-                    queryClient.setQueryData(
-                        ['notifications', session?.user.id],
-                        (oldNotifications: INotification[]) => {
-                            if (!oldNotifications) return [notification];
-                            return [notification, ...oldNotifications];
-                        }
-                    );
+                    if (notification.type === 'accept-friend') {
+                        setFriends((prev) => [notification.sender, ...prev]);
+                    }
+
+                    setNotifications((prev) => [notification, ...prev]);
                 }
             );
         }
@@ -57,7 +44,8 @@ function AppProvider({ children }: { children: React.ReactNode }) {
 
     const values = {
         notifications,
-        loadingNotifications: isLoading,
+        setNotifications,
+        loadingNotifications: false,
     };
 
     return <AppContext.Provider value={values}>{children}</AppContext.Provider>;

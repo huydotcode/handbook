@@ -1,9 +1,9 @@
 'use server';
 import { Conversation, Participant, User } from '@/models';
 import connectToDB from '@/services/mongoose';
+import logger from '@/utils/logger';
 import { FilterQuery, SortOrder } from 'mongoose';
 import { getAuthSession } from '../auth';
-import logger from '@/utils/logger';
 
 /*
     * Notification Model: 
@@ -110,10 +110,12 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
         if (!user) throw new Error('Đã có lỗi xảy ra');
         const friend = await User.findById(friendId).exec();
         if (!friend) throw new Error('Đã có lỗi xảy ra');
+
         user.friends = user.friends.filter((id) => id.toString() !== friendId);
         friend.friends = friend.friends.filter(
             (id) => id.toString() !== session.user.id
         );
+
         await user.save();
         await friend.save();
 
@@ -124,6 +126,10 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
 
         await Conversation.deleteMany({
             participants: { $all: paticipants.map((p) => p._id) },
+        });
+
+        await Participant.deleteMany({
+            userId: { $in: [session.user.id, friendId] },
         });
 
         return true;

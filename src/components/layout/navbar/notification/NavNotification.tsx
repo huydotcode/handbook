@@ -2,17 +2,31 @@
 import { useApp } from '@/context';
 import { Popover } from 'antd';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
 import { Badge } from '@mui/material';
 import { Icons } from '@/components/ui';
+import { NotificationService } from '@/lib/services';
 
 interface Props {}
 
 const NavNotification: React.FC<Props> = ({}) => {
-    const { notifications } = useApp();
+    const { data: session } = useSession();
+    const { notifications, setNotifications } = useApp();
     const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        if (session) {
+            (async () => {
+                const notifications =
+                    await NotificationService.getNotificationByUserId({
+                        userId: session.user.id,
+                    });
+                setNotifications(notifications);
+            })();
+        }
+    }, [session]);
 
     if (!notifications) return null;
 

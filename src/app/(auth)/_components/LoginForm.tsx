@@ -76,7 +76,7 @@ const LoginForm: React.FC<Props> = ({}) => {
             if (res?.ok) {
                 toast.success('Đăng nhập thành công', {
                     id: 'success-login',
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 router.push('/');
@@ -104,7 +104,6 @@ const LoginForm: React.FC<Props> = ({}) => {
                     className="focus:ring-blue-600 rounded-md border p-2 shadow-md focus:outline-none focus:ring-2"
                     type="text"
                     id="username"
-                    autoComplete="off"
                     placeholder="Nhập email của bạn"
                     {...register('email', {
                         required: 'Hãy nhập email',
@@ -123,7 +122,6 @@ const LoginForm: React.FC<Props> = ({}) => {
                     className="focus:ring-blue-600 rounded-md border p-2  shadow-md focus:outline-none focus:ring-2"
                     type="password"
                     id="password"
-                    autoComplete="off"
                     placeholder="Nhập mật khẩu"
                     {...register('password', {
                         required: 'Hãy nhập mật khẩu',

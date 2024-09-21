@@ -22,8 +22,8 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
         <SessionProvider>
             <SocketProvider>
                 <QueryClientProvider client={queryClient}>
-                    <AppProvider>
-                        <SocialProvider>
+                    <SocialProvider>
+                        <AppProvider>
                             <ChatProvider>
                                 <ThemeProvider
                                     attribute="class"
@@ -38,8 +38,8 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
                                     {children}
                                 </ThemeProvider>
                             </ChatProvider>
-                        </SocialProvider>
-                    </AppProvider>
+                        </AppProvider>
+                    </SocialProvider>
                 </QueryClientProvider>
             </SocketProvider>
         </SessionProvider>

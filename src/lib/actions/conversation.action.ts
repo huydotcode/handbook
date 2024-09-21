@@ -241,3 +241,25 @@ export const getConversationByParticipants = async ({
         throw new Error(error);
     }
 };
+
+export const removeNotification = async ({
+    conversationId,
+}: {
+    conversationId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            throw new Error('Không tìm thấy cuộc trò chuyện');
+        }
+
+        await conversation.remove();
+
+        return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

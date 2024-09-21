@@ -63,6 +63,12 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
         })();
     }, [session?.user.id]);
 
+    useEffect(() => {
+        console.log({
+            friends,
+        });
+    }, [friends]);
+
     const values = {
         conversations,
         friends,
