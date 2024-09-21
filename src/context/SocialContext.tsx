@@ -6,11 +6,9 @@ import toast from 'react-hot-toast';
 
 type SocialContextType = {
     friends: IFriend[];
-    conversations: IPrivateConversation[];
+    conversations: IConversation[];
     setFriends: React.Dispatch<React.SetStateAction<IFriend[]>>;
-    setConversations: React.Dispatch<
-        React.SetStateAction<IPrivateConversation[]>
-    >;
+    setConversations: React.Dispatch<React.SetStateAction<IConversation[]>>;
 };
 
 export const SocialContext = createContext<SocialContextType>({
@@ -26,9 +24,7 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
 
     const [friends, setFriends] = useState<IFriend[]>([]);
-    const [conversations, setConversations] = useState<IPrivateConversation[]>(
-        []
-    );
+    const [conversations, setConversations] = useState<IConversation[]>([]);
 
     // Lấy danh sách conversation
     const getConversations = async () => {

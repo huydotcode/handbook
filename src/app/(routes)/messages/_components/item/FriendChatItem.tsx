@@ -18,13 +18,18 @@ const FriendChatItem: React.FC<Props> = ({ data: friend, isSelect }) => {
     const { data: session } = useSession();
 
     const { lastMessages } = useChat();
-    const router = useRouter();
 
     const isOnline = friend.isOnline;
     const roomId = generateRoomId(session?.user.id || '', friend._id);
     const friendName =
         friend.name.split(' ')[friend.name.split(' ').length - 2];
     const lastMsg = lastMessages[roomId];
+
+    useEffect(() => {
+        console.log({
+            lastMsg,
+        });
+    }, [lastMsg]);
 
     return (
         <>

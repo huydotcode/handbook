@@ -104,19 +104,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
             if (message.sender._id === session?.user?.id) return;
             if (message.conversation._id == currentRoom) return;
 
-            if (currentRoom !== message.conversation._id) {
-                toast.custom(
-                    <Button className="p-4" variant={'primary'}>
-                        Bạn có tin nhắn mới!
-                    </Button>,
-                    {
-                        id: message.conversation._id,
-                        position: 'bottom-left',
-                        duration: 5000,
-                    }
-                );
-            }
-
             setLastMessages((prev) => ({
                 ...prev,
                 [message.conversation._id]: message,
@@ -131,6 +118,12 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
             }));
         });
     }, [socket, session?.user.id]);
+
+    useEffect(() => {
+        console.log({
+            conversations,
+        });
+    }, [conversations]);
 
     const values = {
         messages,

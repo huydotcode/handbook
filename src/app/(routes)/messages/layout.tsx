@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/layout';
 import { getAuthSession } from '@/lib/auth';
 import { ConversationService } from '@/lib/services';
-import { redirect } from 'next/navigation';
 import React from 'react';
 import { Sidebar } from './_components';
 

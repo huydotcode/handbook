@@ -8,7 +8,7 @@ const MarketAdminPage = async () => {
     return (
         <div>
             {categories.map((cate: any) => (
-                <div>{cate.name}</div>
+                <div key={cate}>{cate.name}</div>
             ))}
 
             <CreateCategory />

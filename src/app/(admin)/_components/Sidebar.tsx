@@ -10,7 +10,12 @@ const Sidebar: React.FC<Props> = () => {
     return (
         <aside className="fixed left-0 top-[56px] h-screen w-[300px] bg-secondary-1">
             {navAdmin.map((item, index) => (
-                <Items.Nav className="p-2" index={index} link={item} />
+                <Items.Nav
+                    className="p-2"
+                    index={index}
+                    link={item}
+                    key={index}
+                />
             ))}
         </aside>
     );

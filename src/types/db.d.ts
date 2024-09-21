@@ -18,28 +18,6 @@ interface IComment {
     updatedAt: Date;
 }
 
-interface IPrivateConversation {
-    _id: string;
-    members: IUser[];
-    friend: IUser;
-    status: string;
-    background: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-interface IGroupConversation {
-    _id: string;
-    name: string;
-    avatar: string;
-    description: string;
-    creator: Types.ObjectId;
-    members: IGroupMember[];
-    group: IGroup;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
 interface IImage {
     _id: string;
     publicId: string;

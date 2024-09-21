@@ -1,16 +1,13 @@
 'use client';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { Button, Icons } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import generateRoomId from '@/utils/generateRoomId';
-import { useChat } from '@/context';
 
 interface Props {
-    data: IGroupConversation;
+    data: IConversation;
     isSelect: boolean;
 }
 
@@ -18,9 +15,6 @@ const FriendChatItem: React.FC<Props> = ({
     data: groupConversation,
     isSelect,
 }) => {
-    const { data: session } = useSession();
-
-    const { lastMessages } = useChat();
     const router = useRouter();
 
     return (
@@ -40,8 +34,8 @@ const FriendChatItem: React.FC<Props> = ({
                         <Image
                             className="rounded-full"
                             priority={true}
-                            src={groupConversation.avatar}
-                            alt={groupConversation.name}
+                            src={groupConversation.group?.coverPhoto || ''}
+                            alt={groupConversation.group?.name || ''}
                             fill
                         />
                     </div>
@@ -50,7 +44,7 @@ const FriendChatItem: React.FC<Props> = ({
                 <div className="flex flex-1 flex-col md:hidden">
                     <div className="flex items-center justify-between">
                         <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
-                            {groupConversation.name}
+                            {groupConversation.group?.name}
                         </h3>
                     </div>
                     <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">
