@@ -1,7 +1,7 @@
-import React from 'react';
 import { getAuthSession } from '@/lib/auth';
-import { ConversationService, UserService } from '@/lib/services';
+import { UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
+import React from 'react';
 import FriendList from './FriendList';
 
 interface Props {

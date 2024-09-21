@@ -19,7 +19,6 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
-    const { data: session } = useSession();
     const { socket } = useSocket();
     const { notifications, setNotifications } = useApp();
     const [showRemove, setShowRemove] = useState(false);
@@ -66,6 +65,10 @@ const NotificationItem: React.FC<Props> = ({
             await NotificationService.removeNotification({
                 notificationId: notification._id,
             });
+
+            setNotifications((prev) =>
+                prev.filter((item) => item._id !== notification._id)
+            );
         } catch (error) {
             toast.error('Không thể xóa thông báo. Vui lòng thử lại!');
         }
