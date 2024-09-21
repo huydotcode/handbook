@@ -12,7 +12,7 @@ const Sidebar: React.FC<Props> = ({ conversations }) => {
         <>
             <div
                 className={cn(
-                    'mr-2 flex h-full w-[300px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-fit'
+                    'mr-2 flex h-full w-[300px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-[80px]'
                 )}
             >
                 {conversations.map((conversation: IConversation) => {

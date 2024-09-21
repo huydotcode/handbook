@@ -45,7 +45,12 @@ const ChatHeader: React.FC<Props> = ({ currentRoom }) => {
                 {currentRoom.group ? (
                     <Avatar imgSrc={avatar} alt={title} className="h-10 w-10" />
                 ) : (
-                    <Avatar imgSrc={avatar} alt={title} className="h-10 w-10" />
+                    <Avatar
+                        imgSrc={avatar}
+                        alt={title}
+                        className="h-10 w-10"
+                        userUrl={partner?._id}
+                    />
                 )}
 
                 <div className="flex flex-col">

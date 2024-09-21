@@ -23,8 +23,6 @@ const MessageLayout: React.FC<Props> = async ({ children }) => {
         userId: session.user.id,
     });
 
-    if (!conversations) return null;
-
     return (
         <div>
             <Navbar />
