@@ -20,6 +20,7 @@ interface Link {
 
 interface FriendItem {
     data: IFriend;
+    conversation: IConversation;
 }
 
 interface NavItem {
@@ -69,25 +70,9 @@ const Items = {
         );
     },
     Friend: (props: FriendItem) => {
-        const { data: friend } = props;
+        const { data: friend, conversation } = props;
         const { data: session } = useSession();
         const isOnline = friend.isOnline;
-
-        const { data: conversation } = useQuery({
-            queryKey: ['conversation', friend._id, session?.user.id],
-            queryFn: async ({ queryKey }) => {
-                const [, friendId, userId] = queryKey as string[];
-
-                const conversations =
-                    await ConversationService.getConversationByParticipants({
-                        otherUserId: friendId,
-                        userId,
-                    });
-
-                return conversations;
-            },
-            enabled: !!friend._id && !!session?.user.id,
-        });
 
         if (!session) return null;
 

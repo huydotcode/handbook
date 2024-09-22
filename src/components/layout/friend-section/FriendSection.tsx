@@ -1,5 +1,5 @@
 import { getAuthSession } from '@/lib/auth';
-import { UserService } from '@/lib/services';
+import { ConversationService, UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import FriendList from './FriendList';
@@ -17,6 +17,10 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
         userId: session.user.id,
     });
 
+    const conversations = await ConversationService.getConversationsByUserId({
+        userId: session?.user.id || '',
+    });
+
     return (
         <div
             className={cn(
@@ -25,7 +29,7 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
             )}
         >
             <div className="relative h-full w-full">
-                <FriendList data={friends} />
+                <FriendList friends={friends} conversations={conversations} />
             </div>
         </div>
     );

@@ -2,16 +2,20 @@
 import { Items } from '@/components/shared';
 import { Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
 interface Props {
     className?: string;
-    data: IFriend[];
+    friends: IFriend[];
+    conversations: IConversation[];
 }
 
-const FriendList: React.FC<Props> = ({ data: friends, className }) => {
+const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
     const path = usePathname();
+
+    const { data: session } = useSession();
 
     return (
         <>
@@ -36,9 +40,30 @@ const FriendList: React.FC<Props> = ({ data: friends, className }) => {
 
                 <div className="mt-2">
                     {friends &&
-                        friends.map((friend) => (
-                            <Items.Friend key={friend._id} data={friend} />
-                        ))}
+                        friends.map((friend) => {
+                            const conversation =
+                                conversations &&
+                                conversations.find((conversation) => {
+                                    const friendId = friend._id;
+                                    const userId = session?.user.id;
+
+                                    return conversation.participants.some(
+                                        (participant) =>
+                                            participant.user._id === friendId ||
+                                            participant.user._id === userId
+                                    );
+                                });
+
+                            if (!conversation) return null;
+
+                            return (
+                                <Items.Friend
+                                    key={friend._id}
+                                    data={friend}
+                                    conversation={conversation}
+                                />
+                            );
+                        })}
                 </div>
             </div>
         </>
