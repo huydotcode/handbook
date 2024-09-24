@@ -14,7 +14,6 @@ const socketEvent: SocketEvent = {
     JOIN_ROOM: 'join-room',
     READ_MESSAGE: 'read-message',
     SEND_MESSAGE: 'send-message',
-    GET_LAST_MESSAGE: 'get-last-message',
     RECEIVE_MESSAGE: 'receive-message',
     DELETE_MESSAGE: 'delete-message',
 };

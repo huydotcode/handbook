@@ -74,11 +74,6 @@ const LoginForm: React.FC<Props> = ({}) => {
             });
 
             if (res?.ok) {
-                toast.success('Đăng nhập thành công', {
-                    id: 'success-login',
-                    duration: 10000,
-                });
-
                 router.push('/');
             }
         } catch (error: any) {

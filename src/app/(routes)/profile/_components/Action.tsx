@@ -105,12 +105,6 @@ const Action: React.FC<Props> = ({ userId }) => {
     };
 
     useEffect(() => {
-        console.log({
-            isFriend,
-        });
-    }, [isFriend]);
-
-    useEffect(() => {
         checkCanRequestAddFriend();
     }, []);
 

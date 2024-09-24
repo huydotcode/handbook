@@ -4,7 +4,7 @@ import { useChat } from '@/context';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface Props {
     data: IConversation;
@@ -86,9 +86,14 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                             >
                                 {lastMsg?.sender._id == session?.user.id
                                     ? 'Bạn: '
-                                    : `${name}: `}
+                                    : `${partner?.name.split(' ')[0]}: `}
                             </span>
-                            <span className="text-secondary-1">
+                            <span
+                                className={cn('', {
+                                    'font-bold': !lastMsg?.isRead,
+                                    'text-secondary-1': lastMsg?.isRead,
+                                })}
+                            >
                                 {lastMsg?.text}
                             </span>
                         </>

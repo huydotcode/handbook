@@ -59,7 +59,11 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
 
     const [lastMessages, setLastMessages] = useState<ILastMessageState>({});
 
-    const getLastMessage = async (conversationId: string) => {
+    const getLastMessage = async ({
+        conversationId,
+    }: {
+        conversationId: string;
+    }) => {
         const lastMessage = await MessageService.getLastMessage({
             conversationId: conversationId,
         });
@@ -92,7 +96,9 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         conversations.forEach((conversation) => {
             if (lastMessages[conversation._id]) return;
-            getLastMessage(conversation._id);
+            getLastMessage({
+                conversationId: conversation._id,
+            });
         });
     }, [conversations]);
 
@@ -118,12 +124,6 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
             }));
         });
     }, [socket, session?.user.id]);
-
-    useEffect(() => {
-        console.log({
-            conversations,
-        });
-    }, [conversations]);
 
     const values = {
         messages,

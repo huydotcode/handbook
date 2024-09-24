@@ -25,12 +25,6 @@ const FriendChatItem: React.FC<Props> = ({ data: friend, isSelect }) => {
         friend.name.split(' ')[friend.name.split(' ').length - 2];
     const lastMsg = lastMessages[roomId];
 
-    useEffect(() => {
-        console.log({
-            lastMsg,
-        });
-    }, [lastMsg]);
-
     return (
         <>
             <Button

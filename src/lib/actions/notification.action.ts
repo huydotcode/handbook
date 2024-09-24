@@ -193,20 +193,13 @@ export async function canRequestAddFriend({ userId }: { userId: string }) {
             receiver: userId,
         });
 
-        if (notification) {
-            console.log({
-                msg: 'Đã gửi lời mời kết bạn',
-            });
-
-            return false;
-        }
+        if (notification) return false;
 
         const currentUser = await User.findById(session?.user.id);
 
         if (
             currentUser?.friends.includes(new mongoose.Types.ObjectId(userId))
         ) {
-            console.log('Đã là bạn bè với', userId);
             return false;
         }
     } catch (error: any) {
