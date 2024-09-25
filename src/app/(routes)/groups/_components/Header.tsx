@@ -42,7 +42,7 @@ const Header: React.FC<Props> = ({ group }) => {
                 </div>
 
                 <div className="mr-2">
-                    <Action groupId={group._id} />
+                    <Action group={group} />
                 </div>
             </div>
 

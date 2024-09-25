@@ -242,7 +242,7 @@ export const getConversationByParticipants = async ({
     }
 };
 
-export const removeNotification = async ({
+export const deleteConversation = async ({
     conversationId,
 }: {
     conversationId: string;
@@ -256,10 +256,18 @@ export const removeNotification = async ({
             throw new Error('Không tìm thấy cuộc trò chuyện');
         }
 
-        await conversation.remove();
+        // Xóa participant
+        await Participant.deleteMany({
+            conversation: conversation._id,
+        });
 
-        return JSON.parse(JSON.stringify(conversation));
+        // Xóa cuộc trò chuyện
+        await Conversation.deleteOne({ _id: conversationId });
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }
+
+    return false;
 };

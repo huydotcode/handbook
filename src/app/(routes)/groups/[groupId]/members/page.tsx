@@ -11,7 +11,7 @@ interface Props {
 const MAX_MEMBERS = 6;
 
 const page: React.FC<Props> = async ({ params: { groupId } }) => {
-    const group = (await GroupService.getGroup({ groupId })) as IGroup;
+    const group = (await GroupService.getGroupByGroupId({ groupId })) as IGroup;
     const members = (await GroupService.getMembers({
         groupId,
     })) as IMemberGroup[];

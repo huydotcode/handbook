@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Sign up validation
 export const signUpValidation = z.object({
     email: z.string().email('Email không hợp lệ'),
     username: z
@@ -26,6 +27,7 @@ export const signUpValidation = z.object({
 
 export type SignUpValidation = z.infer<typeof signUpValidation>;
 
+// Login validation
 export const loginValidation = z.object({
     email: z.string().email('Email không hợp lệ'),
     password: z.string().min(6, 'Mật khẩu từ 6-50 kí tự'),
@@ -33,6 +35,7 @@ export const loginValidation = z.object({
 
 export type LoginValidation = z.infer<typeof loginValidation>;
 
+// Create post validation
 export const createPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
     option: z.string().optional(),
@@ -40,9 +43,19 @@ export const createPostValidation = z.object({
 
 export type CreatePostValidation = z.infer<typeof createPostValidation>;
 
+// Edit post validation
 export const editPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
     option: z.string().optional(),
 });
 
 export type EditPostValidation = z.infer<typeof editPostValidation>;
+
+// Create group validation
+export const createGroupValidation = z.object({
+    name: z.string().min(1, 'Tên nhóm không được để trống'),
+    description: z.string().min(1, 'Mô tả không được để trống'),
+    type: z.string().optional(),
+});
+
+export type CreateGroupValidation = z.infer<typeof createGroupValidation>;

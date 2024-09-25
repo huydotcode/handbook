@@ -1,19 +1,31 @@
 'use client';
-import { Button } from '@/components/ui';
+import { Button, ConfirmModal } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
 
-import { UserService } from '@/lib/services';
+import { GroupService, UserService } from '@/lib/services';
 import logger from '@/utils/logger';
-import React, { FormEventHandler, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
-    groupId: string;
+    group: IGroup;
 }
 
-const Action: React.FC<Props> = ({ groupId }) => {
+const Action: React.FC<Props> = ({ group }) => {
     const [isRequest, setIsRequest] = useState<boolean>(false);
     const isJoinGroup = true;
+
+    const { data: session } = useSession();
+    const router = useRouter();
+    const groupId = group._id;
+
+    const isCreator = useMemo(() => {
+        return group.creator._id == session?.user?.id;
+    }, [group.creator._id, session?.user?.id]);
+
+    const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
     const handleJoinGroup: FormEventHandler = async (e) => {
         if (isRequest) return;
@@ -34,7 +46,11 @@ const Action: React.FC<Props> = ({ groupId }) => {
 
     const handleOutGroup = async () => {
         try {
-            await UserService.unfriend({ friendId: groupId });
+            await GroupService.leaveGroup({
+                groupId: groupId,
+                userId: session?.user?.id as string,
+            });
+            router.push('/groups');
 
             toast.success('Đã hủy kết bạn');
         } catch (error) {
@@ -46,24 +62,65 @@ const Action: React.FC<Props> = ({ groupId }) => {
         }
     };
 
+    const handleDeleteGroup = async () => {
+        try {
+            await GroupService.deleteGroup({ groupId });
+
+            router.push('/groups');
+        } catch (error) {
+            console.log({
+                error,
+            });
+            toast.error('Có lỗi xảy ra khi xóa nhóm');
+        }
+    };
+
     return (
         <div className="flex items-center">
-            <Button
-                className={'h-12 min-w-[48px]'}
-                variant={'secondary'}
-                size={'medium'}
-                onClick={isJoinGroup ? handleOutGroup : handleJoinGroup}
-            >
-                <span>
-                    {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
-                </span>
+            {!isCreator && (
+                <Button
+                    className={'h-12 min-w-[48px]'}
+                    variant={'secondary'}
+                    size={'medium'}
+                    onClick={isJoinGroup ? handleOutGroup : handleJoinGroup}
+                >
+                    <span>
+                        {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
+                    </span>
 
-                <p className="ml-2 md:hidden">
-                    {isRequest && 'Đã gửi lời tham gia nhóm'}
-                    {isJoinGroup && 'Rời nhóm'}
-                    {!isJoinGroup && !isRequest && 'Tham gia nhóm'}
-                </p>
-            </Button>
+                    <p className="ml-2 md:hidden">
+                        {isRequest && 'Đã gửi lời tham gia nhóm'}
+                        {isJoinGroup && 'Rời nhóm'}
+                        {!isJoinGroup && !isRequest && 'Tham gia nhóm'}
+                    </p>
+                </Button>
+            )}
+
+            {isCreator && (
+                <Button
+                    className={'ml-2 h-12 min-w-[48px]'}
+                    variant={'warning'}
+                    size={'medium'}
+                    onClick={() => setOpenModalDelete(true)}
+                >
+                    <span>
+                        <Icons.Delete />
+                    </span>
+                </Button>
+            )}
+
+            {openModalDelete && (
+                <ConfirmModal
+                    cancelText="Hủy"
+                    confirmText="Xóa"
+                    message="Bạn có chắc chắn muốn xóa nhóm này không?"
+                    onClose={() => setOpenModalDelete(false)}
+                    onConfirm={handleDeleteGroup}
+                    open={openModalDelete}
+                    setShow={setOpenModalDelete}
+                    title="Xóa nhóm"
+                />
+            )}
         </div>
     );
 };

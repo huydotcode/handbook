@@ -1,5 +1,7 @@
 'use client';
 import { Avatar, Button, Icons, Modal } from '@/components/ui';
+import socketEvent from '@/constants/socketEvent.constant';
+import { useSocket } from '@/context';
 import { ConversationService, GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import TimeAgoConverted from '@/utils/timeConvert';
@@ -29,6 +31,7 @@ const Sidebar: React.FC<Props> = ({
         useState<IConversation[]>(initConversations);
 
     const { data: session } = useSession();
+    const { socket } = useSocket();
 
     const canCreateConversation = useMemo(() => {
         return currentGroup.members.some(
@@ -61,6 +64,10 @@ const Sidebar: React.FC<Props> = ({
                 toast.success('Tạo cuộc hội thoại thành công!');
                 setShowModalCreateConversation(false);
                 setConversations([...conversations, newConversation]);
+
+                socket?.emit(socketEvent.JOIN_ROOM, {
+                    conversationId: newConversation._id,
+                });
             }
         } catch (error) {
             logger({

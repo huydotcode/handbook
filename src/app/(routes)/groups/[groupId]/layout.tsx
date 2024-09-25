@@ -15,7 +15,7 @@ interface Props {
 
 export async function generateMetadata({ params: { groupId } }: Props) {
     try {
-        const group = await GroupService.getGroup({ groupId });
+        const group = await GroupService.getGroupByGroupId({ groupId });
 
         return {
             title: `${group.name} | Nhóm | Handbook`,
@@ -32,7 +32,7 @@ const GroupLayout: React.FC<Props> = async ({
     params: { groupId },
     children,
 }) => {
-    const group = (await GroupService.getGroup({ groupId })) as IGroup;
+    const group = (await GroupService.getGroupByGroupId({ groupId })) as IGroup;
     const conversations = (await ConversationService.getConversationsByGroupId({
         groupId: groupId,
     })) as IConversation[];

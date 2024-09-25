@@ -3,6 +3,7 @@ import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
+import { ConversationService } from '../services';
 
 /*
     * Group Model: 
@@ -93,7 +94,7 @@ export const getGroups = async ({ userId }: { userId: string }) => {
     }
 };
 
-export const getGroup = async ({ groupId }: { groupId: string }) => {
+export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -137,71 +138,63 @@ export const getMembers = async ({ groupId }: { groupId: string }) => {
     }
 };
 
-export const createGroupConversation = async ({
+export const leaveGroup = async ({
     groupId,
-    name,
-    avatar,
-    desc,
-    members,
+    userId,
 }: {
     groupId: string;
-    name: string;
-    avatar: string;
-    desc: string;
-    members: string[];
+    userId: string;
 }) => {
+    try {
+        await Group.findByIdAndUpdate(groupId, {
+            $pull: {
+                members: {
+                    user: userId,
+                },
+            },
+        });
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+
+    return false;
+};
+
+export const deleteGroup = async ({ groupId }: { groupId: string }) => {
+    // Xóa nhóm, hội thoại nhóm, participant trong nhóm
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
 
         if (!session?.user) {
-            return {
-                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
-                success: false,
-            };
+            throw new Error('Bạn cần đăng nhập để thực hiện tính năng này!');
         }
 
-        return null;
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
+        const group = await Group.findById(groupId);
 
-export const getGroupConversationsByGroupId = async ({
-    groupId,
-}: {
-    groupId: string;
-}) => {
-    try {
-        await connectToDB();
+        // Kiểm tra quyền của người xóa
+        if (group?.creator != session.user.id) {
+            throw new Error('Bạn không có quyền xóa nhóm này!');
+        }
 
-        return null;
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
+        const conversatios =
+            await ConversationService.getConversationsByGroupId({
+                groupId,
+            });
 
-export const getGroupConversationsByUserId = async ({
-    userId,
-}: {
-    userId: string;
-}) => {
-    try {
-        return null;
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
+        for (const conversation of conversatios) {
+            await ConversationService.deleteConversation({
+                conversationId: conversation._id,
+            });
+        }
 
-export const getGroupConversationById = async ({
-    conversationId,
-}: {
-    conversationId: string;
-}) => {
-    try {
-        await connectToDB();
+        await Group.deleteOne({
+            _id: groupId,
+        });
 
-        return null;
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

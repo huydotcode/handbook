@@ -86,7 +86,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                             >
                                 {lastMsg?.sender._id == session?.user.id
                                     ? 'Bạn: '
-                                    : `${partner?.name.split(' ')[0]}: `}
+                                    : `${lastMsg?.sender.name}: `}
                             </span>
                             <span
                                 className={cn('', {

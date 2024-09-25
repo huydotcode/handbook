@@ -4,6 +4,9 @@ import { Button, Icons } from '@/components/ui';
 import { UserService } from '@/lib/services';
 import GroupService from '@/lib/services/group.service';
 import { cn } from '@/lib/utils';
+import { createGroupValidation } from '@/lib/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { error } from 'console';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -31,6 +34,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
         defaultValues: {
             type: 'public',
         },
+        resolver: zodResolver(createGroupValidation),
     });
     const [photo, setPhoto] = useState<string>('');
     const [members, setMembers] = useState<string[]>([]);
@@ -54,37 +58,37 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
     const onSubmit = async (data: ICreateGroup) => {
         if (isSubmitting) return;
 
-        // Kiểm tra xem người dùng đã chọn ảnh đại diện cho nhóm chưa
-        if (!photo) {
-            toast.error('Vui lòng chọn ảnh đại diện cho nhóm!');
-            return;
-        }
+        try {
+            // Kiểm tra xem người dùng đã chọn ảnh đại diện cho nhóm chưa
+            if (!photo) {
+                toast.error('Vui lòng chọn ảnh đại diện cho nhóm!');
+                return;
+            }
 
-        // const res = await fetch('/api/images', {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         userId: null,
-        //         images: [photo],
-        //     }),
-        // });
+            // const res = await fetch('/api/images', {
+            //     method: 'POST',
+            //     body: JSON.stringify({
+            //         userId: null,
+            //         images: [photo],
+            //     }),
+            // });
 
-        // const image = await res.json();
+            // const image = await res.json();
 
-        // if (!image) {
-        //     toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
-        //     return;
-        // }
+            // if (!image) {
+            //     toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
+            //     return;
+            // }
 
-        const newGroup = await GroupService.createGroup({
-            ...data,
-            avatar: '/assets/img/group-avatar.jpg',
-            members,
-        });
+            const newGroup = await GroupService.createGroup({
+                ...data,
+                avatar: '/assets/img/group-avatar.jpg',
+                members,
+            });
 
-        if (newGroup) {
             toast.success('Tạo nhóm thành công!');
             router.push(`/groups/${newGroup._id}`);
-        } else {
+        } catch (error) {
             toast.error('Có lỗi xảy ra khi tạo nhóm, vui lòng thử lại!');
         }
     };
@@ -107,7 +111,6 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="mt-4 flex flex-col"
-                    autoComplete="off"
                 >
                     {/* Tên nhóm */}
                     <div>
@@ -117,13 +120,9 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                         <input
                             id="name"
                             type="text"
-                            autoComplete="off"
                             placeholder="Tên nhóm"
                             className={INPUT_CLASSNAME}
-                            {...register('name', {
-                                required: true,
-                                maxLength: 50,
-                            })}
+                            {...register('name')}
                         />
                         {errors.name && (
                             <span className="text-red-500">
@@ -140,10 +139,15 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                             id="description"
                             type="text"
                             placeholder="Mô tả"
-                            autoComplete="off"
                             className={INPUT_CLASSNAME}
-                            {...register('description', { required: true })}
+                            {...register('description')}
                         />
+
+                        {errors.description && (
+                            <span className="text-red-500">
+                                {errors.description.message}
+                            </span>
+                        )}
                     </div>
 
                     {/* Ảnh đại diện */}
@@ -167,7 +171,6 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                         <input
                             id="avatar"
                             type="file"
-                            autoComplete="off"
                             className="hidden rounded-md border p-2"
                             onChange={handleChangeImage}
                         />
@@ -178,7 +181,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                     <select
                         id="type"
                         className={INPUT_CLASSNAME}
-                        {...register('type', { required: true })}
+                        {...register('type')}
                     >
                         <option value="public">Công khai</option>
                         <option value="private">Riêng tư</option>
@@ -192,7 +195,6 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                                 INPUT_CLASSNAME,
                                 'rounded-b-none border-b'
                             )}
-                            autoComplete="off"
                             placeholder="Tìm kiếm bạn bè"
                             value={searchFriendValue}
                             onChange={(e) =>

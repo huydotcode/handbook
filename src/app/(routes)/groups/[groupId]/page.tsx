@@ -10,7 +10,7 @@ interface Props {
 }
 
 const page: React.FC<Props> = async ({ params: { groupId } }) => {
-    const group = await GroupService.getGroup({ groupId });
+    const group = await GroupService.getGroupByGroupId({ groupId });
 
     if (!group) return null;
 
