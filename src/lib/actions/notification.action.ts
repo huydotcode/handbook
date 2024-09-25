@@ -204,7 +204,7 @@ export async function canRequestAddFriend({ userId }: { userId: string }) {
         }
     } catch (error: any) {
         throw new Error(error);
+    } finally {
+        return true;
     }
-
-    return true;
 }

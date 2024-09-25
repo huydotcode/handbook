@@ -79,8 +79,8 @@ const Action: React.FC<Props> = ({ userId }) => {
     };
 
     const getButtonText = () => {
-        if (isRequest) return 'Đã gửi lời mời kết bạn';
         if (isFriend) return 'Hủy kết bạn';
+        if (isRequest) return 'Đã gửi lời mời kết bạn';
         return 'Kết bạn';
     };
 
