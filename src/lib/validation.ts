@@ -35,12 +35,14 @@ export type LoginValidation = z.infer<typeof loginValidation>;
 
 export const createPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
+    option: z.string().optional(),
 });
 
 export type CreatePostValidation = z.infer<typeof createPostValidation>;
 
 export const editPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
+    option: z.string().optional(),
 });
 
 export type EditPostValidation = z.infer<typeof editPostValidation>;

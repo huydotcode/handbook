@@ -29,31 +29,39 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     const formRef = useRef<HTMLFormElement>(null);
 
     const [comments, setComments] = useState<IComment[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
     const [hasNextPage, setHasNextPage] = useState<boolean>(true);
 
     useEffect(() => {
         (async () => {
-            const comments = await CommentService.getCommentsByPostId({
-                page,
-                pageSize: PAGE_SIZE,
-                postId,
-            });
+            try {
+                setLoading(true);
 
-            if (comments.length === 0) {
-                setHasNextPage(false);
-                return;
+                const comments = await CommentService.getCommentsByPostId({
+                    page,
+                    pageSize: PAGE_SIZE,
+                    postId,
+                });
+
+                if (comments.length === 0) {
+                    setHasNextPage(false);
+                    return;
+                }
+
+                if (comments.length < PAGE_SIZE) {
+                    setHasNextPage(false);
+                } else {
+                    setHasNextPage(true);
+                }
+
+                setComments((prev) => {
+                    return [...prev, ...comments];
+                });
+            } catch (error) {
+            } finally {
+                setLoading(false);
             }
-
-            if (comments.length < PAGE_SIZE) {
-                setHasNextPage(false);
-            } else {
-                setHasNextPage(true);
-            }
-
-            setComments((prev) => {
-                return [...prev, ...comments];
-            });
         })();
     }, [postId, page]);
 
@@ -122,6 +130,12 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 >
                     Bạn cần đăng nhập để viết bình luận
                 </Button>
+            )}
+
+            {loading && (
+                <div className="text-center text-xs text-secondary-1">
+                    Đang tải bình luận
+                </div>
             )}
 
             {/* Không có bình luận nào */}

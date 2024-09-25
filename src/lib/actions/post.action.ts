@@ -41,9 +41,11 @@ export const getNewFeedPosts = async ({
         const session = await getAuthSession();
         const query: any = {};
 
+        // Kiểm tra xem có phải là user hiện tại không
         const isCurrentUser =
             userId === session?.user.id || username === session?.user.username;
 
+        // Kiểm tra xem có phải là user hiện tại không
         if (userId !== 'undefined' && userId) {
             query.author = isCurrentUser ? session?.user.id : userId;
         } else if (username !== 'undefined') {
@@ -68,7 +70,7 @@ export const getNewFeedPosts = async ({
             }
         }
 
-        let posts = await Post.find()
+        let posts = await Post.find(query)
             .populate('author', POPULATE_USER)
             .populate('images')
             .populate('group', POPULATE_GROUP)

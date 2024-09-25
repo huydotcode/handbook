@@ -51,13 +51,18 @@ const EditPostModal: FC<Props> = ({
         });
 
     const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
+        console.log({
+            data,
+        });
+
         const newImages = post.images.filter((img) => {
             return photos.includes(img.url);
         });
 
         try {
             const postEdited = await PostService.editPost({
-                ...data,
+                content: data.content,
+                option: data.option,
                 images: newImages.map((img) => img._id),
                 postId: post._id,
             });
@@ -121,76 +126,74 @@ const EditPostModal: FC<Props> = ({
                 show={show}
                 handleClose={handleClose}
             >
-                <div className="flex items-center">
-                    <Avatar
-                        userUrl={session?.user.id}
-                        imgSrc={session?.user.image || ''}
-                    />
+                <form onSubmit={submit} encType="multipart/form-data">
+                    <div className="flex items-center">
+                        <Avatar
+                            userUrl={session?.user.id}
+                            imgSrc={session?.user.image || ''}
+                        />
 
-                    <div className="ml-2 flex h-12 flex-col">
-                        <Link
-                            className="h-6"
-                            href={`/profile/${session?.user.id}`}
-                        >
-                            <span className="text-base dark:text-dark-primary-1">
-                                {session?.user.name}
-                            </span>
-                        </Link>
+                        <div className="ml-2 flex h-12 flex-col">
+                            <Link
+                                className="h-6"
+                                href={`/profile/${session?.user.id}`}
+                            >
+                                <span className="text-base dark:text-dark-primary-1">
+                                    {session?.user.name}
+                                </span>
+                            </Link>
 
-                        <select
-                            className="h-6 cursor-pointer border py-1 text-[10px]"
-                            {...register('option')}
-                            defaultValue={
-                                post.option as 'public' | 'option' | 'private'
-                            }
-                        >
-                            {postAudience.map((audience) => (
-                                <option
-                                    key={audience.value}
-                                    value={audience.value}
-                                >
-                                    {audience.label}
-                                </option>
-                            ))}
-                        </select>
+                            <select
+                                className="h-6 cursor-pointer border py-1 text-[10px]"
+                                {...register('option')}
+                            >
+                                {postAudience.map((audience) => (
+                                    <option
+                                        key={audience.value}
+                                        value={audience.value}
+                                    >
+                                        {audience.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <form
-                    className="flex flex-1 flex-col justify-between pt-3"
-                    onSubmit={submit}
-                    encType="multipart/form-data"
-                >
-                    <Controller
-                        render={({ field }) => (
-                            <>
-                                <TextEditor
-                                    className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base "
-                                    handleSubmit={submit}
-                                    field={field}
-                                />
-                            </>
+                    <div className="flex flex-1 flex-col justify-between pt-3">
+                        <Controller
+                            render={({ field }) => (
+                                <>
+                                    <TextEditor
+                                        className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base "
+                                        handleSubmit={submit}
+                                        field={field}
+                                    />
+                                </>
+                            )}
+                            name="content"
+                            control={control}
+                        />
+
+                        <Photos
+                            onClickPhoto={handleRemoveImage}
+                            photos={photos}
+                        />
+
+                        {formState.errors.content && (
+                            <p className="mt-2 text-sm text-red-500">
+                                {formState.errors.content.message}
+                            </p>
                         )}
-                        name="content"
-                        control={control}
-                    />
 
-                    <Photos onClickPhoto={handleRemoveImage} photos={photos} />
+                        <AddToPost handleChangeImage={handleChangeImage} />
 
-                    {formState.errors.content && (
-                        <p className="mt-2 text-sm text-red-500">
-                            {formState.errors.content.message}
-                        </p>
-                    )}
-
-                    <AddToPost handleChangeImage={handleChangeImage} />
-
-                    <Button
-                        type="submit"
-                        className="mt-3 h-10 w-full"
-                        variant={'primary'}
-                    >
-                        Chỉnh sửa
-                    </Button>
+                        <Button
+                            type="submit"
+                            className="mt-3 h-10 w-full"
+                            variant={'primary'}
+                        >
+                            Chỉnh sửa
+                        </Button>
+                    </div>
                 </form>
             </Modal>
         </>
