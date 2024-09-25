@@ -94,34 +94,45 @@ export async function sendRequestAddFriend({
         throw new Error(error);
     }
 }
-
 export async function acceptFriend({
     notification,
 }: {
     notification: INotification;
 }) {
+    const ERROR_MESSAGE = 'Đã có lỗi xảy ra';
+
     try {
         await connectToDB();
         const session = await getAuthSession();
-        if (!session) throw new Error('Đã có lỗi xảy ra');
+        if (!session) throw new Error(ERROR_MESSAGE);
 
-        const user = await User.findById(session.user.id);
-        if (!user) throw new Error('Đã có lỗi xảy ra');
+        // Hàm tiện ích để tìm kiếm người dùng theo ID
+        const findUserById = async (id: string) => {
+            const user = await User.findById(id);
+            if (!user) throw new Error(ERROR_MESSAGE);
+            return user;
+        };
 
-        const friend = await User.findById(notification.sender._id);
-        if (!friend) throw new Error('Đã có lỗi xảy ra');
+        // Tìm kiếm user và friend đồng thời
+        const [user, friend] = await Promise.all([
+            findUserById(session.user.id),
+            findUserById(notification.sender._id),
+        ]);
 
         await Notification.deleteOne({ _id: notification._id });
 
+        // Kiểm tra nếu đã là bạn bè, kết thúc sớm
         if (user.friends.includes(friend._id)) return;
 
-        friend.friends.push(user._id);
+        // Thêm bạn bè cho cả hai người dùng
         user.friends.push(friend._id);
+        friend.friends.push(user._id);
 
-        await user.save();
-        await friend.save();
+        // Lưu cả hai người dùng đồng thời
+        await Promise.all([user.save(), friend.save()]);
 
-        const notificationAcceptFriend = await new Notification({
+        // Tạo thông báo chấp nhận kết bạn và lưu
+        const notificationAcceptFriend = new Notification({
             sender: session.user.id,
             receiver: notification.sender._id,
             message: 'Đã chấp nhận lời mời kết bạn',
@@ -130,18 +141,21 @@ export async function acceptFriend({
 
         await notificationAcceptFriend.save();
 
-        const notificaiton = await getNotification({
-            notificationId: notificationAcceptFriend._id,
-        });
-
-        const conversation = await ConversationService.createConversation({
-            creator: session.user.id,
-            participantsUserId: [user._id.toString(), friend._id.toString()],
-        });
+        // Lấy thông báo mới tạo và tạo cuộc hội thoại đồng thời
+        const [notificaiton, conversation] = await Promise.all([
+            getNotification({ notificationId: notificationAcceptFriend._id }),
+            ConversationService.createConversation({
+                creator: session.user.id,
+                participantsUserId: [
+                    user._id.toString(),
+                    friend._id.toString(),
+                ],
+            }),
+        ]);
 
         return JSON.parse(JSON.stringify(notificaiton));
     } catch (error: any) {
-        throw new Error(error);
+        throw new Error(error.message || ERROR_MESSAGE);
     }
 }
 
