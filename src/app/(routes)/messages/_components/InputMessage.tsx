@@ -74,7 +74,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
 
     return (
         <form
-            className="relative mx-4 flex overflow-hidden rounded-xl border bg-transparent shadow-xl"
+            className="relative mx-4 flex min-w-[500px] max-w-full overflow-hidden rounded-xl border bg-transparent shadow-xl"
             onSubmit={handleSubmit(onSubmit)}
             autoComplete="off"
         >

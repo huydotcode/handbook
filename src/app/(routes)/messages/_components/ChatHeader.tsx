@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Icons } from '@/components/ui';
+import { Avatar, Button, Icons } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
@@ -77,11 +77,13 @@ const ChatHeader: React.FC<Props> = ({ currentRoom, setOpenInfo }) => {
             </div>
 
             <div>
-                <Icons.More
+                <Button
+                    className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                    variant={'custom'}
                     onClick={() => setOpenInfo((prev) => !prev)}
-                    className="rounded-xl p-2 hover:bg-primary-1"
-                    size={48}
-                />
+                >
+                    <Icons.More size={32} />
+                </Button>
             </div>
         </div>
     );

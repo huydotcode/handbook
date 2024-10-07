@@ -1,4 +1,6 @@
-import { Avatar } from '@/components/ui';
+import { Avatar, Button, Icons } from '@/components/ui';
+import { Collapse, Tooltip } from '@mui/material';
+import { CollapseProps } from 'antd';
 import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
 
@@ -37,11 +39,63 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
         }
     }, [conversation]);
 
+    const items: CollapseProps['items'] = [
+        {
+            key: '1',
+            label: 'Thành viên',
+            children: (
+                <div>
+                    {conversation.participants.slice(0, 5).map((part) => (
+                        <Button
+                            className="flex items-center"
+                            key={part._id}
+                            href={`/profile/${part.user._id}`}
+                        >
+                            <Avatar
+                                imgSrc={part.user.avatar}
+                                width={24}
+                                height={24}
+                            />
+                            <p className="ml-2 text-xs">{part.user.name}</p>
+                        </Button>
+                    ))}
+                </div>
+            ),
+        },
+    ];
+
     return (
-        <div className="relative ml-2 flex h-full flex-col rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
+        <div className="relative ml-2 flex h-full min-w-[220px] flex-col rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
             <div className="flex flex-col items-center">
                 <Avatar imgSrc={avatar} width={64} height={64} />
-                <h1>{title}</h1>
+                <h1 className="mt-2">{title}</h1>
+                {partner && (
+                    <div>
+                        <p className="text-center">
+                            {partner.isOnline ? 'Online' : 'Offline'}
+                        </p>
+
+                        <div className="flex gap-2 pt-2">
+                            <Tooltip title="Trang cá nhân">
+                                <Button
+                                    className="flex flex-col rounded-full"
+                                    href={`/profile/${partner._id}`}
+                                >
+                                    <Icons.Profile size={24} />
+                                </Button>
+                            </Tooltip>
+
+                            <Tooltip title="Tìm kiếm trong cuộc trò chuyện">
+                                <Button
+                                    className="flex flex-col rounded-full"
+                                    href={`/profile/${partner._id}`}
+                                >
+                                    <Icons.Search size={24} />
+                                </Button>
+                            </Tooltip>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

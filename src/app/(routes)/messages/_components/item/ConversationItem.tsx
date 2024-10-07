@@ -38,7 +38,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     return (
         <Button
             className={cn(
-                'relative flex max-w-full justify-between rounded-none p-4 shadow-none md:justify-center md:p-2',
+                'relative mx-4 flex justify-between rounded-xl px-4 py-2 shadow-none md:justify-center',
                 isSelect && 'bg-primary-1'
             )}
             href={`/messages/${conversation._id}`}

@@ -1,9 +1,7 @@
+import React, { useEffect, useState } from 'react';
 import { Icons } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { Conversation } from '@/models';
 import { Input } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 interface Props {
     initConversations: IConversation[];
@@ -39,9 +37,10 @@ const SearchConversation: React.FC<Props> = ({
         <>
             <div className="px-4 py-2">
                 <h1 className="text-2xl font-bold">Trò chuyện</h1>
-                <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1">
+                <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1">
                     <Icons.Search />
                     <Input
+                        className="dark:placeholder:text-dark-primary-1"
                         value={searchValue}
                         bordered={false}
                         placeholder="Tìm cuộc trò chuyện"

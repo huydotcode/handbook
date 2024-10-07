@@ -152,10 +152,12 @@ const ChatBox: React.FC<Props> = ({
                     )}
                 </div>
 
-                <InputMessage
-                    currentRoom={conversation}
-                    setMessages={setMessages}
-                />
+                <div className="flex w-full justify-center">
+                    <InputMessage
+                        currentRoom={conversation}
+                        setMessages={setMessages}
+                    />
+                </div>
 
                 {showScrollDown && (
                     <Button
