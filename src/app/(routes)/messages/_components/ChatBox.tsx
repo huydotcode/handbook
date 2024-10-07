@@ -125,6 +125,8 @@ const ChatBox: React.FC<Props> = ({
             >
                 <ChatHeader
                     currentRoom={conversation}
+                    messages={messages}
+                    setMessages={setMessages}
                     setOpenInfo={setOpenInfo}
                 />
 

@@ -84,15 +84,6 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
                                     <Icons.Profile size={24} />
                                 </Button>
                             </Tooltip>
-
-                            <Tooltip title="Tìm kiếm trong cuộc trò chuyện">
-                                <Button
-                                    className="flex flex-col rounded-full"
-                                    href={`/profile/${partner._id}`}
-                                >
-                                    <Icons.Search size={24} />
-                                </Button>
-                            </Tooltip>
                         </div>
                     </div>
                 )}

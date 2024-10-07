@@ -1,16 +1,27 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
+import { Input } from 'antd';
 import { useSession } from 'next-auth/react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import SearchMessage from './SearchMessage';
 
 interface Props {
     currentRoom: IConversation;
     setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
+    messages: IMessage[];
+    setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }
 
-const ChatHeader: React.FC<Props> = ({ currentRoom, setOpenInfo }) => {
+const ChatHeader: React.FC<Props> = ({
+    currentRoom,
+    messages,
+    setOpenInfo,
+    setMessages,
+}) => {
     const { data: session } = useSession();
+    const [openSearchMessage, setOpenSearchMessage] = useState<boolean>(false);
+    const [initMessages, setInitMessages] = useState<IMessage[]>(messages);
 
     const partner = useMemo(() => {
         if (currentRoom.group) {
@@ -41,51 +52,72 @@ const ChatHeader: React.FC<Props> = ({ currentRoom, setOpenInfo }) => {
     }, [currentRoom]);
 
     return (
-        <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
-            <div className="flex items-center">
-                {currentRoom.group ? (
-                    <Avatar imgSrc={avatar} alt={title} className="h-10 w-10" />
-                ) : (
-                    <Avatar
-                        imgSrc={avatar}
-                        alt={title}
-                        className="h-10 w-10"
-                        userUrl={partner?._id}
-                    />
-                )}
-
-                <div className="flex flex-col">
-                    <h3 className="text-md ml-2 font-bold">{title}</h3>
-
-                    {partner && (
-                        <>
-                            <span className="ml-2 text-xs ">
-                                {partner.isOnline ? (
-                                    'Đang hoạt động'
-                                ) : (
-                                    <TimeAgoConverted
-                                        time={partner.lastAccessed}
-                                        className="text-xs"
-                                        textBefore="Hoạt động"
-                                        textAfter=" trước"
-                                    />
-                                )}
-                            </span>
-                        </>
+        <>
+            <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
+                <div className="flex items-center">
+                    {currentRoom.group ? (
+                        <Avatar
+                            imgSrc={avatar}
+                            alt={title}
+                            className="h-10 w-10"
+                        />
+                    ) : (
+                        <Avatar
+                            imgSrc={avatar}
+                            alt={title}
+                            className="h-10 w-10"
+                            userUrl={partner?._id}
+                        />
                     )}
+
+                    <div className="flex flex-col">
+                        <h3 className="text-md ml-2 font-bold">{title}</h3>
+
+                        {partner && (
+                            <>
+                                <span className="ml-2 text-xs ">
+                                    {partner.isOnline ? (
+                                        'Đang hoạt động'
+                                    ) : (
+                                        <TimeAgoConverted
+                                            time={partner.lastAccessed}
+                                            className="text-xs"
+                                            textBefore="Hoạt động"
+                                            textAfter=" trước"
+                                        />
+                                    )}
+                                </span>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center">
+                    <Button
+                        className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                        variant={'custom'}
+                        onClick={() => setOpenSearchMessage((prev) => !prev)}
+                    >
+                        <Icons.Search size={24} />
+                    </Button>
+
+                    <Button
+                        className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                        variant={'custom'}
+                        onClick={() => setOpenInfo((prev) => !prev)}
+                    >
+                        <Icons.More size={24} />
+                    </Button>
                 </div>
             </div>
 
-            <div>
-                <Button
-                    className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
-                    variant={'custom'}
-                    onClick={() => setOpenInfo((prev) => !prev)}
-                >
-                    <Icons.More size={32} />
-                </Button>
-            </div>
-        </div>
+            {openSearchMessage && (
+                <SearchMessage
+                    initMessages={initMessages}
+                    setMessages={setMessages}
+                />
+            )}
+        </>
     );
 };
 export default ChatHeader;
