@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
 import { BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
-import { CgClose } from 'react-icons/cg';
+import { CgClose, CgProfile } from 'react-icons/cg';
 import {
     FaArrowLeft,
     FaBirthdayCake,
@@ -175,6 +175,7 @@ const Icons = {
             />
         );
     },
+    Profile: (props: IconProps) => <CgProfile {...props} />,
 };
 
 export default Icons;
