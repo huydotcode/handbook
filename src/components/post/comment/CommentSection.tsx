@@ -139,7 +139,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             )}
 
             {/* Không có bình luận nào */}
-            {comments.length === 0 && (
+            {comments.length === 0 && !loading && (
                 <div className="text-center text-xs text-secondary-1">
                     Không có bình luận nào
                 </div>

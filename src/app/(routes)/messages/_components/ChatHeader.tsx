@@ -1,14 +1,15 @@
 'use client';
-import { Avatar } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
 
 interface Props {
     currentRoom: IConversation;
+    setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatHeader: React.FC<Props> = ({ currentRoom }) => {
+const ChatHeader: React.FC<Props> = ({ currentRoom, setOpenInfo }) => {
     const { data: session } = useSession();
 
     const partner = useMemo(() => {
@@ -73,6 +74,14 @@ const ChatHeader: React.FC<Props> = ({ currentRoom }) => {
                         </>
                     )}
                 </div>
+            </div>
+
+            <div>
+                <Icons.More
+                    onClick={() => setOpenInfo((prev) => !prev)}
+                    className="rounded-xl p-2 hover:bg-primary-1"
+                    size={48}
+                />
             </div>
         </div>
     );

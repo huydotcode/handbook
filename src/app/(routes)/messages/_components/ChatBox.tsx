@@ -10,6 +10,7 @@ import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
 import Message from './Message';
+import InfomationConversation from './InfomationConversation';
 
 interface Props {
     className?: string;
@@ -31,6 +32,8 @@ const ChatBox: React.FC<Props> = ({
 
     const [messages, setMessages] = useState<IMessage[]>(initialMessages);
     const [page, setPage] = useState<number>(2);
+
+    const [openInfo, setOpenInfo] = useState<boolean>(false);
 
     const { ref: topRef, inView } = useInView({
         threshold: 0,
@@ -120,7 +123,10 @@ const ChatBox: React.FC<Props> = ({
                     className
                 )}
             >
-                <ChatHeader currentRoom={conversation} />
+                <ChatHeader
+                    currentRoom={conversation}
+                    setOpenInfo={setOpenInfo}
+                />
 
                 <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
                     {session?.user && (
@@ -162,6 +168,8 @@ const ChatBox: React.FC<Props> = ({
                     </Button>
                 )}
             </div>
+
+            {openInfo && <InfomationConversation conversation={conversation} />}
         </>
     );
 };

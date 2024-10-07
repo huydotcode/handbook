@@ -61,7 +61,6 @@ export const authOptions: NextAuthOptions = {
     jwt: {
         secret: process.env.JWT_SECRET,
     },
-
     providers: [
         GoogleProvider({
             clientId: getGoogleCredentials().clientId,
@@ -213,6 +212,9 @@ export const authOptions: NextAuthOptions = {
                 });
                 return false;
             }
+        },
+        redirect({ baseUrl, url }) {
+            return baseUrl;
         },
     },
 };
