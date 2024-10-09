@@ -1,5 +1,4 @@
 'use server';
-
 import { Category } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
@@ -7,10 +6,12 @@ import { revalidatePath } from 'next/cache';
 const createCategory = async ({
     name,
     description,
+    slug,
     path,
 }: {
     name: string;
     description: string;
+    slug: string;
     path: string;
 }) => {
     try {
@@ -19,6 +20,7 @@ const createCategory = async ({
         const newCategory = await new Category({
             name,
             description,
+            slug,
         });
 
         await newCategory.save();

@@ -1,6 +1,4 @@
-import { getAuthSession } from '@/lib/auth';
 import { ConversationService, MessageService } from '@/lib/services';
-import { Session } from 'next-auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { ChatBox } from '../_components';
@@ -18,13 +16,13 @@ const ConversationPage: React.FC<Props> = async ({
         conversationId,
     })) as IConversation;
 
-    if (!conversation) redirect('/messages');
-
     const initialMessages = (await MessageService.getMessages({
         conversationId,
         page: 1,
         pageSize: 20,
     })) as IMessage[];
+
+    if (!conversation) redirect('/messages');
 
     return (
         <ChatBox

@@ -11,6 +11,7 @@ interface Props {}
 interface FormData {
     name: string;
     description: string;
+    slug: string;
 }
 
 const CreateCategory: React.FC<Props> = () => {
@@ -18,12 +19,13 @@ const CreateCategory: React.FC<Props> = () => {
     const path = usePathname();
 
     const onSubmit = async (data: FormData) => {
-        const { name, description } = data;
+        const { name, description, slug } = data;
 
         try {
             const newCategory = await CategoryService.createCategory({
                 description,
                 name,
+                slug,
                 path,
             });
         } catch (error) {
@@ -40,6 +42,7 @@ const CreateCategory: React.FC<Props> = () => {
                 className="my-2 flex-1 px-4 py-2"
                 {...register('description')}
             />
+            <input className="my-2 flex-1 px-4 py-2" {...register('slug')} />
             <Button type="submit">Submit</Button>
         </form>
     );

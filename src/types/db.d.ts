@@ -149,3 +149,12 @@ interface IParticipant {
     createdAt: Date;
     updatedAt: Date;
 }
+
+interface ICategory {
+    _id: string;
+    name: string;
+    description: string;
+    slug: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

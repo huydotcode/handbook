@@ -12,6 +12,8 @@ const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
     const [conversations, setConversations] =
         useState<IConversation[]>(initConversations);
 
+    if (!conversations) return null;
+
     return (
         <>
             <div
@@ -19,10 +21,14 @@ const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
                     'mr-2 flex h-full w-[300px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-[80px]'
                 )}
             >
-                <SearchConversation
-                    initConversations={initConversations}
-                    setConversations={setConversations}
-                />
+                <div className="px-4 py-2">
+                    <h1 className="text-2xl font-bold">Trò chuyện</h1>
+
+                    <SearchConversation
+                        initConversations={initConversations}
+                        setConversations={setConversations}
+                    />
+                </div>
 
                 {conversations.map((conversation: IConversation) => {
                     return (

@@ -3,35 +3,14 @@ import { Icons } from '@/components/ui';
 import { useDebounce } from '@/hooks';
 import { Input } from 'antd';
 
-interface Props {
-    initConversations: IConversation[];
-    setConversations: React.Dispatch<React.SetStateAction<IConversation[]>>;
-}
+interface Props {}
 
-const SearchConversation: React.FC<Props> = ({
-    initConversations,
-    setConversations,
-}) => {
+const SearchMarket: React.FC<Props> = ({}) => {
     const [searchValue, setSearchValue] = useState<string>('');
     const debounceValue = useDebounce(searchValue, 500);
 
     // Xử lý với debounce value để lấy ra các cuộc trò chuyện
-    useEffect(() => {
-        setConversations(() => {
-            return initConversations.filter((conversation) => {
-                return (
-                    conversation.participants.find((part) => {
-                        return part.user.name
-                            .toLowerCase()
-                            .includes(debounceValue.toLowerCase());
-                    }) ||
-                    conversation.title
-                        .toLowerCase()
-                        .includes(debounceValue.toLowerCase())
-                );
-            });
-        });
-    }, [debounceValue]);
+    useEffect(() => {}, [debounceValue]);
 
     return (
         <>
@@ -41,7 +20,7 @@ const SearchConversation: React.FC<Props> = ({
                     className="dark:placeholder:text-dark-primary-1"
                     value={searchValue}
                     bordered={false}
-                    placeholder="Tìm cuộc trò chuyện"
+                    placeholder="Tìm kiếm trên market"
                     onChange={(e) => {
                         setSearchValue(e.target.value);
                     }}
@@ -57,4 +36,4 @@ const SearchConversation: React.FC<Props> = ({
     );
 };
 
-export default SearchConversation;
+export default SearchMarket;
