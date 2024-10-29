@@ -10,3 +10,4 @@ export { default as User } from './User';
 export { default as Conversation } from './Conversation';
 export { default as Participant } from './Participant';
 export { default as Category } from './Category';
+export { default as Item } from './Item';

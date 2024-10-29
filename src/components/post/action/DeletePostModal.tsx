@@ -57,7 +57,7 @@ const DeletePostModal: React.FC<Props> = ({
                             <form onSubmit={handleDeletePost}>
                                 <Button
                                     variant={'warning'}
-                                    size={'medium'}
+                                    size={'default'}
                                     className="mr-2 min-w-[80px] "
                                     disabled={isSubmitting}
                                     type="submit"
@@ -68,7 +68,7 @@ const DeletePostModal: React.FC<Props> = ({
                             <Button
                                 className="w-[30%] "
                                 variant={'secondary'}
-                                size={'medium'}
+                                size={'default'}
                                 onClick={handleClose}
                             >
                                 Không

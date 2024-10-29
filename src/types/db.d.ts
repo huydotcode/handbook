@@ -158,3 +158,18 @@ interface ICategory {
     createdAt: Date;
     updatedAt: Date;
 }
+
+interface IItem {
+    _id: string;
+    name: string;
+    seller: string;
+    description: string;
+    price: number;
+    image: IImage;
+    location: string;
+    category: ICategory;
+    slug: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

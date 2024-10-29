@@ -188,7 +188,7 @@ const EditPostModal: FC<Props> = ({
 
                         <Button
                             type="submit"
-                            className="mt-3 h-10 w-full"
+                            className="mt-3 w-full"
                             variant={'primary'}
                         >
                             Chỉnh sửa
