@@ -25,7 +25,6 @@ export const createItem = async ({
     image,
     location,
     category,
-    slug,
     status,
     images,
 }: {
@@ -36,12 +35,13 @@ export const createItem = async ({
     image: string;
     location: string;
     category: string;
-    slug: string;
     status: string;
     images: string[];
 }) => {
     try {
         await connectToDB();
+
+        const slug = name.toLowerCase().replace(/ /g, '-');
 
         const newItem = await new Item({
             name,

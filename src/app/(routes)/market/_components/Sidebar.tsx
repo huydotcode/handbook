@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import SearchMarket from './SearchMarket';
 import { Button } from '@/components/ui';
+import FixedSidebar from '@/components/layout/FixedSidebar';
 
 interface Props {
     categories: ICategory[];
@@ -11,11 +12,7 @@ interface Props {
 const Sidebar: React.FC<Props> = ({ categories }) => {
     return (
         <>
-            <div
-                className={cn(
-                    'mr-2 flex h-full w-[300px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-[80px]'
-                )}
-            >
+            <FixedSidebar>
                 <div className="px-4 py-2">
                     <h1 className="text-2xl font-bold">Market</h1>
 
@@ -43,7 +40,7 @@ const Sidebar: React.FC<Props> = ({ categories }) => {
                         </Button>
                     ))}
                 </div>
-            </div>
+            </FixedSidebar>
         </>
     );
 };

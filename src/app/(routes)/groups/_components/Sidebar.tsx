@@ -2,13 +2,14 @@
 import { Items } from '@/components/shared';
 import { Button, Icons } from '@/components/ui';
 import React from 'react';
+import FixedSidebar from '@/components/layout/FixedSidebar';
 interface Props {
     groups: IGroup[];
 }
 
 const Sidebar: React.FC<Props> = ({ groups }) => {
     return (
-        <div className="no-scrollbar fixed left-0 top-[56px] h-full w-[300px] overflow-scroll border-r-2 bg-secondary-1 p-2 dark:border-none dark:bg-dark-secondary-1 lg:w-[200px] md:w-[72px]">
+        <FixedSidebar>
             <h5 className="lg:hidden">Nhóm bạn đã tham gia</h5>
             <Button
                 className="my-2 w-full md:hidden"
@@ -32,7 +33,7 @@ const Sidebar: React.FC<Props> = ({ groups }) => {
                         <Items.Group data={group} key={group._id} />
                     ))}
             </div>
-        </div>
+        </FixedSidebar>
     );
 };
 export default Sidebar;

@@ -1,6 +1,5 @@
-import { getAuthSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import React from 'react';
+import { FullLayout } from '@/components/layout';
 
 interface Props {
     children: React.ReactNode;
@@ -13,7 +12,7 @@ export function generateMetadata() {
 }
 
 const GroupLayout: React.FC<Props> = async ({ children }) => {
-    return <>{children}</>;
+    return <FullLayout className={'bg-white'}>{children}</FullLayout>;
 };
 
 export default GroupLayout;

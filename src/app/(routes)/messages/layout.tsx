@@ -3,6 +3,7 @@ import { getAuthSession } from '@/lib/auth';
 import { ConversationService } from '@/lib/services';
 import React from 'react';
 import { Sidebar } from './_components';
+import FixedLayout from '@/components/layout/FixedLayout';
 
 interface Props {
     children: React.ReactNode;
@@ -25,13 +26,10 @@ const MessageLayout: React.FC<Props> = async ({ children }) => {
     if (!conversations) return null;
 
     return (
-        <div>
-            <Navbar />
-            <div className="relative left-1/2 flex h-[calc(100vh-56px)] min-w-[80%] max-w-[1876px] -translate-x-1/2 justify-between rounded-xl bg-transparent p-2 md:min-w-full">
-                <Sidebar conversations={conversations} />
-                {children}
-            </div>
-        </div>
+        <FixedLayout>
+            <Sidebar conversations={conversations} />
+            {children}
+        </FixedLayout>
     );
 };
 export default MessageLayout;

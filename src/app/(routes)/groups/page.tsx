@@ -4,6 +4,7 @@ import { getAuthSession } from '@/lib/auth';
 import GroupService from '@/lib/services/group.service';
 import React from 'react';
 import { Sidebar } from './_components';
+import { Container } from '@/components/layout';
 
 interface Props {}
 
@@ -18,7 +19,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
     return (
         <div>
             <Sidebar groups={groups} />
-            <div className="ml-[300px] pl-4 lg:ml-[200px] md:ml-[72px]">
+            <Container>
                 <div className="mx-auto max-w-[600px]">
                     {groups.length > 0 ? (
                         <InfinityPostComponent
@@ -38,7 +39,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
                         </div>
                     )}
                 </div>
-            </div>
+            </Container>
         </div>
     );
 };
