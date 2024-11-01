@@ -6,12 +6,14 @@ interface Props {
     children: React.ReactNode;
     width?: number;
     direction?: 'left' | 'right';
+    hideOnMobile?: boolean;
 }
 
 const FixedSidebar: React.FC<Props> = ({
     className,
     width = 300,
     direction = 'left',
+    hideOnMobile = true,
     children,
 }) => {
     return (
@@ -21,7 +23,8 @@ const FixedSidebar: React.FC<Props> = ({
                 className,
                 direction == 'left' && 'left-0',
                 direction == 'right' && 'right-0',
-                width && `w-${width}`
+                width && `w-${width}`,
+                hideOnMobile && 'md:hidden'
             )}
         >
             {children}
