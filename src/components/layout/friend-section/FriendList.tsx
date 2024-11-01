@@ -21,7 +21,7 @@ const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
         <>
             <div
                 className={cn(
-                    'flex h-full w-full flex-col border-l-2 pl-2 pt-2 transition-all duration-500 dark:border-none',
+                    'flex h-full w-full flex-col pl-2 pt-2 transition-all duration-500 dark:border-none',
                     path !== '/' && 'bg-white dark:bg-dark-secondary-1'
                 )}
             >

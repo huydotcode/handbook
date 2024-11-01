@@ -17,7 +17,7 @@ const MarketLayout: React.FC<Props> = async ({ children }) => {
     const categories = await CategoryService.getCategories();
 
     return (
-        <FullLayout className={'bg-white'}>
+        <FullLayout>
             <Sidebar categories={categories} />
             <Container>{children}</Container>
         </FullLayout>

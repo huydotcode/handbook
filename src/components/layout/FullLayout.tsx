@@ -13,7 +13,9 @@ const FullLayout: React.FC<Props> = ({ className, children }) => {
         <div className={cn('relative', className)}>
             <Navbar />
 
-            <main>{children}</main>
+            <main className={'bg-primary-1 dark:bg-dark-primary-1'}>
+                {children}
+            </main>
 
             <ChatWithGemini />
         </div>

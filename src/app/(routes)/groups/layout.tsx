@@ -12,7 +12,7 @@ export function generateMetadata() {
 }
 
 const GroupLayout: React.FC<Props> = async ({ children }) => {
-    return <FullLayout className={'bg-white'}>{children}</FullLayout>;
+    return <FullLayout>{children}</FullLayout>;
 };
 
 export default GroupLayout;

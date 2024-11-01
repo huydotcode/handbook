@@ -3,6 +3,7 @@ import { ConversationService, UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import FriendList from './FriendList';
+import { FixedSidebar } from '@/components/layout';
 
 interface Props {
     className?: string;
@@ -22,16 +23,11 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
     });
 
     return (
-        <div
-            className={cn(
-                'fixed right-0 top-[56px] h-[calc(100vh-56px)] w-[200px] lg:w-fit md:hidden',
-                className
-            )}
-        >
+        <FixedSidebar direction={'right'}>
             <div className="relative h-full w-full">
                 <FriendList friends={friends} conversations={conversations} />
             </div>
-        </div>
+        </FixedSidebar>
     );
 };
 export default FriendSection;
