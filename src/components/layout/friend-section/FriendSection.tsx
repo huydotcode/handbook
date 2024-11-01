@@ -20,7 +20,12 @@ const FriendSection: React.FC<Props> = async () => {
     });
 
     return (
-        <FixedSidebar width={250} direction={'right'}>
+        <FixedSidebar
+            width={250}
+            xlWidth={200}
+            lgWidth={80}
+            direction={'right'}
+        >
             <div className="relative h-full w-full">
                 <FriendList friends={friends} conversations={conversations} />
             </div>
