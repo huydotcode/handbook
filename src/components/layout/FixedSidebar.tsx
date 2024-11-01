@@ -23,7 +23,7 @@ const FixedSidebar: React.FC<Props> = ({
                 className,
                 direction == 'left' && 'left-0',
                 direction == 'right' && 'right-0',
-                width && `w-${width}`,
+                width && `w-[${width}px]`,
                 hideOnMobile && 'md:hidden'
             )}
         >
