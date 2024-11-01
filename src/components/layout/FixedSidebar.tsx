@@ -19,7 +19,7 @@ const FixedSidebar: React.FC<Props> = ({
     return (
         <aside
             className={cn(
-                'no-scrollbar fixed top-[56px] h-full overflow-scroll border-r-2 bg-white p-2 pr-2 dark:border-none dark:bg-dark-secondary-1',
+                'no-scrollbar fixed top-[56px] h-full overflow-scroll border-r-2 bg-white p-2 pr-2 dark:border-none dark:bg-dark-secondary-1 xl:max-w-[200px] lg:max-w-[80px]',
                 className,
                 direction == 'left' && 'left-0',
                 direction == 'right' && 'right-0',

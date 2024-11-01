@@ -11,7 +11,7 @@ const Sidebar = () => {
     const user = session?.user;
 
     return (
-        <FixedSidebar width={200}>
+        <FixedSidebar width={250}>
             {user && (
                 <Link
                     href={`/profile/${user?.id}`}

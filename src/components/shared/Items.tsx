@@ -171,7 +171,7 @@ const Items = {
                     >
                         <Icon />
                         {!onlyIcon && (
-                            <span className="ml-2 text-xs  lg:hidden">
+                            <span className="ml-2 text-xs lg:hidden">
                                 {link.name}
                             </span>
                         )}
