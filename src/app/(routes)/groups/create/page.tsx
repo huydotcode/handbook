@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { uploadImage } from '@/lib/upload';
 
 interface Props {}
 
@@ -65,24 +66,13 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                 return;
             }
 
-            // const res = await fetch('/api/images', {
-            //     method: 'POST',
-            //     body: JSON.stringify({
-            //         userId: null,
-            //         images: [photo],
-            //     }),
-            // });
-
-            // const image = await res.json();
-
-            // if (!image) {
-            //     toast.error('Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại!');
-            //     return;
-            // }
+            const image = await uploadImage({
+                image: photo,
+            });
 
             const newGroup = await GroupService.createGroup({
                 ...data,
-                avatar: '/assets/img/group-avatar.jpg',
+                avatar: image.url,
                 members,
             });
 

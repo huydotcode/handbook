@@ -22,38 +22,48 @@ export const createItem = async ({
     seller,
     description,
     price,
-    image,
+    images,
     location,
     category,
     status,
-    images,
 }: {
     name: string;
     seller: string;
     description: string;
     price: number;
-    image: string;
+    images: string[];
     location: string;
     category: string;
     status: string;
-    images: string[];
 }) => {
     try {
         await connectToDB();
 
         const slug = name.toLowerCase().replace(/ /g, '-');
 
+        /*
+        * name: string;
+    seller: Schema.Types.ObjectId;
+    description: string;
+    price: number;
+    images: Schema.Types.ObjectId[];
+    location: string;
+    category: Schema.Types.ObjectId;
+    slug: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+        * */
         const newItem = await new Item({
             name,
             seller,
             description,
             price,
-            image,
+            images,
             location,
             category,
             slug,
             status,
-            images,
         });
 
         await newItem.save();

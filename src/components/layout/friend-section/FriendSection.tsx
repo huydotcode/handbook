@@ -5,12 +5,9 @@ import React from 'react';
 import FriendList from './FriendList';
 import { FixedSidebar } from '@/components/layout';
 
-interface Props {
-    className?: string;
-    show?: boolean;
-}
+interface Props {}
 
-const FriendSection: React.FC<Props> = async ({ className, show }) => {
+const FriendSection: React.FC<Props> = async () => {
     const session = await getAuthSession();
     if (!session) return null;
 
@@ -23,7 +20,7 @@ const FriendSection: React.FC<Props> = async ({ className, show }) => {
     });
 
     return (
-        <FixedSidebar direction={'right'}>
+        <FixedSidebar width={280} direction={'right'}>
             <div className="relative h-full w-full">
                 <FriendList friends={friends} conversations={conversations} />
             </div>

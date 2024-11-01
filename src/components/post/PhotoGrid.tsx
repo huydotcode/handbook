@@ -23,7 +23,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
 
                 {images.length > 1 && (
                     <>
-                        <div className="absolute bottom-0 right-0 flex flex-col items-center justify-center  overflow-hidden rounded-l-md">
+                        <div className="absolute bottom-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-l-md border-2 border-black dark:border-white">
                             <div className="relative flex h-full items-center justify-center transition-all">
                                 <div className="relative h-[80px] w-[80px]">
                                     <Image
@@ -41,10 +41,10 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                         setShowSlide((prev) => !prev)
                                     }
                                 >
-                                    <p className="text-2xl ">
+                                    <p className="text-2xl">
                                         +{images.length - 1}
                                     </p>
-                                    <h5 className="text-sm  hover:underline">
+                                    <h5 className="text-sm hover:underline">
                                         Xem thêm
                                     </h5>
                                 </div>

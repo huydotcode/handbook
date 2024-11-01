@@ -11,6 +11,7 @@ import { ModalCreatePost } from '.';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createPostValidation } from '@/lib/validation';
+import { uploadImage } from '@/lib/upload';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -39,17 +40,30 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
 
         try {
             const { content, option } = data;
-            let imagesUpload = [];
+            let imagesUpload: IImage[] = [];
+
+            console.log({
+                photos,
+            });
 
             if (photos && photos.length > 0) {
-                const data = await fetch('/api/images', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        userId: session.user.id,
-                        images: photos,
-                    }),
-                });
-                imagesUpload = await data.json();
+                for (const img of photos) {
+                    try {
+                        const res = await uploadImage({ image: img });
+                        imagesUpload.push(res);
+                    } catch (error: any) {
+                        console.log({
+                            error,
+                        });
+                        toast.error('Đã có lỗi xảy ra khi tải ảnh lên!');
+                        return;
+                    }
+                }
+            }
+
+            if (photos.length != imagesUpload.length) {
+                toast.error('Đã có lỗi xảy ra khi tải ảnh lên!');
+                return;
             }
 
             reset({
@@ -61,7 +75,7 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             const newPost = (await PostService.createPost({
                 content: content,
                 option: option,
-                images: imagesUpload,
+                images: imagesUpload.map((img) => img._id),
                 groupId: groupId,
             })) as IPost;
 

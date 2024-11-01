@@ -19,6 +19,8 @@ import { useQuery } from '@tanstack/react-query';
 import { CategoryService } from '@/lib/services';
 import { useState } from 'react';
 import FileUploader from '@/components/shared/FileUploader';
+import { Container } from '@/components/layout';
+import { uploadImage } from '@/lib/upload';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
@@ -31,6 +33,8 @@ const CreateItemPage = () => {
         resolver: zodResolver(createItemValidation),
     });
 
+    const [files, setFiles] = useState<File[]>([]);
+
     const { data: categories } = useQuery({
         queryKey: ['categories'],
         queryFn: async () => {
@@ -40,16 +44,34 @@ const CreateItemPage = () => {
 
     const onSubmit = async (data: CreateItemValidation) => {
         try {
+            let images = [] as string[];
+
+            if (files.length != 0) {
+                for (let i = 0; i < files.length; i++) {
+                    // Đọc file sang base64
+                    const reader = new FileReader();
+                    reader.readAsDataURL(files[i]);
+                    reader.onload = async () => {
+                        const base64 = reader.result as string;
+                        const image = await uploadImage({
+                            image: base64,
+                        });
+
+                        images.push(image);
+                    };
+                }
+                images = images.map((image: any) => image._id);
+            }
+
             const newItem = await ItemService.createItem({
                 name: data.name,
-                seller: session?.user?.id || '',
+                seller: session?.user.id || '',
                 description: data.description,
                 price: +data.price,
-                image: '',
+                images,
                 location: data.location,
                 category: data.category,
                 status: 'active',
-                images: [],
             });
 
             console.log({
@@ -61,64 +83,62 @@ const CreateItemPage = () => {
     };
 
     return (
-        <>
-            <div className="w-[600px] max-w-full">
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <FormTitle>Tạo sản phẩm</FormTitle>
+        <div className="mx-auto mt-24 w-[600px] max-w-full bg-secondary-1">
+            <Form onSubmit={handleSubmit(onSubmit)}>
+                <FormTitle>Tạo sản phẩm</FormTitle>
 
-                    <FileUploader className={'mb-2'} />
+                <FileUploader className={'mb-2'} />
 
-                    <FormGroup>
-                        <FormLabel>Tên</FormLabel>
-                        <FormInput placeholder="Tên" {...register('name')} />
-                        <FormError>{errors.name?.message}</FormError>
-                    </FormGroup>
+                <FormGroup>
+                    <FormLabel>Tên</FormLabel>
+                    <FormInput placeholder="Tên" {...register('name')} />
+                    <FormError>{errors.name?.message}</FormError>
+                </FormGroup>
 
-                    {/*Number validate*/}
-                    <FormGroup>
-                        <FormLabel>Giá</FormLabel>
-                        <FormInput placeholder="Giá" {...register('price')} />
-                        <FormError>{errors.price?.message}</FormError>
-                    </FormGroup>
+                {/*Number validate*/}
+                <FormGroup>
+                    <FormLabel>Giá</FormLabel>
+                    <FormInput placeholder="Giá" {...register('price')} />
+                    <FormError>{errors.price?.message}</FormError>
+                </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>Mô tả</FormLabel>
-                        <FormTextArea
-                            placeholder="Mô tả"
-                            {...register('description')}
-                        />
-                        <FormError>{errors.description?.message}</FormError>
-                    </FormGroup>
+                <FormGroup>
+                    <FormLabel>Mô tả</FormLabel>
+                    <FormTextArea
+                        placeholder="Mô tả"
+                        {...register('description')}
+                    />
+                    <FormError>{errors.description?.message}</FormError>
+                </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>Danh mục</FormLabel>
-                        <FormSelect
-                            placeholder="Danh mục"
-                            {...register('category')}
-                        >
-                            <option value="">Chọn danh mục</option>
-                            {categories?.map((category: ICategory) => (
-                                <option key={category._id} value={category._id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </FormSelect>
-                        <FormError>{errors.category?.message}</FormError>
-                    </FormGroup>
+                <FormGroup>
+                    <FormLabel>Danh mục</FormLabel>
+                    <FormSelect
+                        placeholder="Danh mục"
+                        {...register('category')}
+                    >
+                        <option value="">Chọn danh mục</option>
+                        {categories?.map((category: ICategory) => (
+                            <option key={category._id} value={category._id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </FormSelect>
+                    <FormError>{errors.category?.message}</FormError>
+                </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>Địa điểm</FormLabel>
-                        <FormInput
-                            placeholder="Địa điểm"
-                            {...register('location')}
-                        />
-                        <FormError>{errors.location?.message}</FormError>
-                    </FormGroup>
+                <FormGroup>
+                    <FormLabel>Địa điểm</FormLabel>
+                    <FormInput
+                        placeholder="Địa điểm"
+                        {...register('location')}
+                    />
+                    <FormError>{errors.location?.message}</FormError>
+                </FormGroup>
 
-                    <FormButton>Tạo sản phẩm</FormButton>
-                </Form>
-            </div>
-        </>
+                <FormButton>Tạo sản phẩm</FormButton>
+            </Form>
+        </div>
     );
 };
 
