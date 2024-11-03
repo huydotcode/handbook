@@ -20,9 +20,12 @@ const Navbar = () => {
         <nav className="fixed left-0 right-0 top-0 z-50 h-14 w-screen shadow-md md:px-2">
             <div className="relative flex h-full w-full items-center justify-between px-5 md:px-1">
                 <div className="flex w-1/4 items-center md:w-1/2">
-                    <Link className="flex h-8 w-8 items-center" href={'/'}>
-                        <Icons.Logo className="text-4xl text-primary-2" />
-                    </Link>
+                    <div className={'flex items-center justify-center'}>
+                        <Link className="flex h-8 w-8 items-center" href={'/'}>
+                            <Icons.Logo className="text-4xl text-primary-2" />
+                        </Link>
+                    </div>
+
                     <Searchbar />
 
                     <div className="ml-2 hidden md:block">
