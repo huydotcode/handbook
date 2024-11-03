@@ -26,9 +26,9 @@ const MessageLayout: React.FC<Props> = async ({ children }) => {
     if (!conversations) return null;
 
     return (
-        <FixedLayout>
+        <FixedLayout fullScreen>
             <Sidebar conversations={conversations} />
-            {children}
+            <div className={'flex flex-1'}>{children}</div>
         </FixedLayout>
     );
 };

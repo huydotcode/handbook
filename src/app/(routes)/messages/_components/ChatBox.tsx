@@ -163,7 +163,7 @@ const ChatBox: React.FC<Props> = ({
         <>
             <div
                 className={cn(
-                    'relative flex h-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
+                    'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                     className
                 )}
             >
