@@ -5,7 +5,7 @@ import { useChat, useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
@@ -31,6 +31,13 @@ const ChatBox: React.FC<Props> = ({
     const { setCurrentRoom, setLastMessages } = useChat();
 
     const [messages, setMessages] = useState<IMessage[]>(initialMessages);
+
+    const messagesInRoom = useMemo(() => {
+        return messages.filter(
+            (msg) => msg.conversation._id === conversation._id
+        );
+    }, [messages, conversation._id]);
+
     const [page, setPage] = useState<number>(2);
 
     const [openInfo, setOpenInfo] = useState<boolean>(false);
@@ -44,12 +51,14 @@ const ChatBox: React.FC<Props> = ({
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
     const [isEnd, setIsEnd] = useState<boolean>(false);
 
+    // Cuộn xuống dưới cùng
     const handleScrollDown = () => {
         bottomRef.current?.scrollIntoView({
             behavior: 'smooth',
         });
     };
 
+    // Set current room
     useEffect(() => {
         setCurrentRoom(conversation._id);
     }, [conversation._id]);
@@ -135,19 +144,13 @@ const ChatBox: React.FC<Props> = ({
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2">
                             <div ref={bottomRef} />
 
-                            {messages
-                                .filter(
-                                    (msg) =>
-                                        msg.conversation._id ===
-                                        conversation._id
-                                )
-                                .map((msg) => (
-                                    <Message
-                                        key={msg._id}
-                                        data={msg}
-                                        messagesInRoom={messages}
-                                    />
-                                ))}
+                            {messagesInRoom.map((msg) => (
+                                <Message
+                                    key={msg._id}
+                                    data={msg}
+                                    messagesInRoom={messages}
+                                />
+                            ))}
 
                             {!isEnd && <div ref={topRef} />}
                         </div>
