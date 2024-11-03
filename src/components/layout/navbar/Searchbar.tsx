@@ -3,13 +3,14 @@ import Items from '@/components/shared/Items';
 import useDebounce from '@/hooks/useDebounce';
 import { UserService } from '@/lib/services';
 import { cn } from '@/lib/utils';
-import { Fade, Modal } from '@mui/material';
+import { Collapse, Fade } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
 import logger from '@/utils/logger';
+
 interface Props {
     className?: string;
 }
@@ -24,19 +25,22 @@ const Searchbar: React.FC<Props> = ({ className }) => {
     const inputRef = useRef() as React.RefObject<HTMLInputElement>;
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPagesize] = useState<number>(5);
+
+    const router = useRouter();
+
+    // Xử lý khi thay đổi input
+    const handleChangeInput = useCallback((e: any) => {
+        setSearchValue(e.target.value);
+    }, []);
+
+    // Xử lý khi đóng modal
     const handleClose = useCallback(() => {
         setSearchResult([]);
         setSearchValue('');
         setShowModal(false);
     }, []);
 
-    const router = useRouter();
-
-    const handleChangeInput = useCallback((e: any) => {
-        setSearchValue(e.target.value);
-    }, []);
-
-    // Fetch search data
+    // Fetch dữ liệu khi search
     useEffect(() => {
         const fetchSearchData = async (value: string) => {
             setIsSearching(true);
@@ -67,6 +71,21 @@ const Searchbar: React.FC<Props> = ({ className }) => {
         }
     }, [debounceValue, page, pageSize, session?.user.id]);
 
+    // Đóng modal khi click ra ngoài
+    useEffect(() => {
+        const handleClickOutside = (event: any) => {
+            if (inputRef.current && !inputRef.current.contains(event.target)) {
+                setShowModal(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
             <div
@@ -91,89 +110,189 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                     <Icons.Search />
                 </label>
 
-                {/* Search-input */}
-                <div
-                    ref={inputRef}
-                    className="h-10 min-w-[170px]  px-2 text-xs lg:hidden"
-                >
-                    <div className="flex h-full items-center text-dark-secondary-2 dark:text-dark-primary-1">
-                        Tìm kiếm trên Handbook
-                    </div>
-                </div>
+                <input
+                    className="h-10 min-w-[170px] bg-transparent px-2 text-sm lg:hidden"
+                    placeholder={'Tìm kiếm trên Handbook'}
+                    value={searchValue}
+                    onChange={handleChangeInput}
+                    name="q"
+                    dir="ltr"
+                    autoComplete="off"
+                    spellCheck="false"
+                />
             </div>
 
-            <Modal
-                open={showModal}
-                onClose={handleClose}
-                className="flex items-center justify-center"
-                disableAutoFocus
-            >
-                <Fade in={showModal}>
-                    <div className="relative my-auto h-[60vh] w-[400px] rounded-xl bg-white px-4 py-2 pt-6 dark:bg-dark-secondary-1 md:h-full md:w-full md:rounded-none">
+            <Collapse in={showModal}>
+                <div
+                    className={
+                        'fixed left-0 top-0 z-10 min-h-[200px] rounded-b-xl bg-secondary-1 p-1 pl-5 shadow-md dark:bg-dark-secondary-1'
+                    }
+                >
+                    <div
+                        className={
+                            'flex h-12 w-full items-center bg-secondary-1 dark:bg-dark-secondary-1'
+                        }
+                    >
                         <Button
-                            className="absolute right-2 top-4 z-20 flex items-center justify-center rounded-full text-3xl"
+                            className="z-20 flex h-8 w-8 items-center justify-center rounded-full text-3xl"
                             variant={'custom'}
                             onClick={handleClose}
                         >
                             <Icons.Close />
                         </Button>
 
-                        <div className=" mx-auto mt-4 flex w-[80%] rounded-xl bg-primary-1 px-2 dark:bg-dark-secondary-2">
+                        <div
+                            className={cn(
+                                'ml-3 flex h-10 items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2',
+                                className
+                            )}
+                            onClick={() => {
+                                setShowModal(true);
+                            }}
+                        >
                             <div className="flex items-center text-lg">
                                 <Icons.Search />
                             </div>
 
                             <input
+                                className="h-10 min-w-[170px] bg-transparent px-2 text-sm"
+                                placeholder={'Tìm kiếm trên Handbook'}
                                 ref={inputRef}
                                 value={searchValue}
                                 onChange={handleChangeInput}
                                 name="q"
-                                className="h-10 w-full bg-transparent px-2 text-base"
                                 dir="ltr"
-                                placeholder="Tìm kiếm trên Handbook"
                                 autoComplete="off"
                                 spellCheck="false"
                             />
                         </div>
+                    </div>
 
-                        {searchResult.length > 0 &&
-                            debounceValue.trim().length > 0 && (
-                                <>
-                                    <div className="dark:no-scrollbar mt-4 w-full overflow-scroll">
-                                        {searchResult.map((user: IUser) => {
-                                            return (
-                                                <Items.User
-                                                    data={user}
-                                                    key={user._id}
-                                                    handleHideModal={() => {
-                                                        handleClose();
-                                                        router.push(
-                                                            `/profile/${user._id}`
-                                                        );
-                                                    }}
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </>
-                            )}
+                    <h5 className={'mt-2 text-sm'}>Kết quả</h5>
 
-                        {!isSearching &&
-                            searchResult.length === 0 &&
-                            debounceValue.trim().length > 0 && (
-                                <div className="mt-2 text-center text-sm">
-                                    Không có kết quả
+                    {searchResult.length > 0 &&
+                        debounceValue.trim().length > 0 && (
+                            <>
+                                <div className="dark:no-scrollbar mt-2 w-full overflow-scroll">
+                                    {searchResult.map((user: IUser) => {
+                                        return (
+                                            <Items.User
+                                                data={user}
+                                                key={user._id}
+                                                handleHideModal={() => {
+                                                    handleClose();
+                                                    router.push(
+                                                        `/profile/${user._id}`
+                                                    );
+                                                }}
+                                            />
+                                        );
+                                    })}
                                 </div>
-                            )}
+                            </>
+                        )}
 
-                        {isSearching && searchResult.length === 0 && (
-                            <div className="mt-4 flex justify-center">
-                                <Icons.Loading className="animate-spin text-2xl" />
+                    {!isSearching &&
+                        searchResult.length === 0 &&
+                        debounceValue.trim().length > 0 && (
+                            <div className="mt-2 text-center text-sm">
+                                Không có kết quả
                             </div>
                         )}
-                    </div>
-                </Fade>
-            </Modal>
+
+                    {isSearching && searchResult.length === 0 && (
+                        <div className="mt-4 flex justify-center">
+                            <Icons.Loading className="animate-spin text-2xl" />
+                        </div>
+                    )}
+                </div>
+            </Collapse>
+
+            {/*{showModal && (*/}
+            {/*    <div*/}
+            {/*        className={*/}
+            {/*            'fixed left-0 top-0 z-10 min-h-[200px] rounded-b-xl bg-secondary-1 p-1 pl-4 shadow-md dark:bg-dark-secondary-1'*/}
+            {/*        }*/}
+            {/*    >*/}
+            {/*        <div*/}
+            {/*            className={*/}
+            {/*                'flex h-12 w-full items-center bg-secondary-1 dark:bg-dark-secondary-1'*/}
+            {/*            }*/}
+            {/*        >*/}
+            {/*            <Button*/}
+            {/*                className="z-20 flex h-8 w-8 items-center justify-center rounded-full text-3xl"*/}
+            {/*                variant={'custom'}*/}
+            {/*                onClick={handleClose}*/}
+            {/*            >*/}
+            {/*                <Icons.Close />*/}
+            {/*            </Button>*/}
+
+            {/*            <div*/}
+            {/*                className={cn(*/}
+            {/*                    'ml-3 flex h-10 items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2',*/}
+            {/*                    className*/}
+            {/*                )}*/}
+            {/*                onClick={() => {*/}
+            {/*                    setShowModal(true);*/}
+            {/*                }}*/}
+            {/*            >*/}
+            {/*                <div className="flex items-center text-lg">*/}
+            {/*                    <Icons.Search />*/}
+            {/*                </div>*/}
+
+            {/*                <input*/}
+            {/*                    className="h-10 min-w-[170px] bg-transparent px-2 text-xs"*/}
+            {/*                    placeholder={'Tìm kiếm trên Handbook'}*/}
+            {/*                    ref={inputRef}*/}
+            {/*                    value={searchValue}*/}
+            {/*                    onChange={handleChangeInput}*/}
+            {/*                    name="q"*/}
+            {/*                    dir="ltr"*/}
+            {/*                    autoComplete="off"*/}
+            {/*                    spellCheck="false"*/}
+            {/*                />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+
+            {/*        <h5 className={'mt-2 text-sm'}>Kết quả</h5>*/}
+
+            {/*        {searchResult.length > 0 &&*/}
+            {/*            debounceValue.trim().length > 0 && (*/}
+            {/*                <>*/}
+            {/*                    <div className="dark:no-scrollbar mt-2 w-full overflow-scroll">*/}
+            {/*                        {searchResult.map((user: IUser) => {*/}
+            {/*                            return (*/}
+            {/*                                <Items.User*/}
+            {/*                                    data={user}*/}
+            {/*                                    key={user._id}*/}
+            {/*                                    handleHideModal={() => {*/}
+            {/*                                        handleClose();*/}
+            {/*                                        router.push(*/}
+            {/*                                            `/profile/${user._id}`*/}
+            {/*                                        );*/}
+            {/*                                    }}*/}
+            {/*                                />*/}
+            {/*                            );*/}
+            {/*                        })}*/}
+            {/*                    </div>*/}
+            {/*                </>*/}
+            {/*            )}*/}
+
+            {/*        {!isSearching &&*/}
+            {/*            searchResult.length === 0 &&*/}
+            {/*            debounceValue.trim().length > 0 && (*/}
+            {/*                <div className="mt-2 text-center text-sm">*/}
+            {/*                    Không có kết quả*/}
+            {/*                </div>*/}
+            {/*            )}*/}
+
+            {/*        {isSearching && searchResult.length === 0 && (*/}
+            {/*            <div className="mt-4 flex justify-center">*/}
+            {/*                <Icons.Loading className="animate-spin text-2xl" />*/}
+            {/*            </div>*/}
+            {/*        )}*/}
+            {/*    </div>*/}
+            {/*)}*/}
         </>
     );
 };

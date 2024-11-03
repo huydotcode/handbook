@@ -52,6 +52,7 @@ const Items = {
             <Button
                 className="mb-2 w-full justify-start"
                 onClick={handleHideModal}
+                border={false}
                 variant={'default'}
             >
                 <Image

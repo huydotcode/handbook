@@ -42,10 +42,23 @@ export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof buttonVariants> {
     href?: string;
+    border?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, children, href, variant, size, type, ...props }, ref) => {
+    (
+        {
+            className,
+            children,
+            href,
+            variant,
+            size,
+            type,
+            border = true,
+            ...props
+        },
+        ref
+    ) => {
         if (href) {
             return (
                 <Link
@@ -59,7 +72,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         return (
             <button
-                className={cn(buttonVariants({ variant, size, className }))}
+                className={cn(
+                    buttonVariants({ variant, size, className }),
+                    !border && 'border-0 shadow-none'
+                )}
                 ref={ref}
                 {...props}
             >
