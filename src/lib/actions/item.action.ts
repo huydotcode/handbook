@@ -73,3 +73,18 @@ export const createItem = async ({
         throw new Error(error);
     }
 };
+
+export const getItems = async () => {
+    try {
+        await connectToDB();
+
+        const items = await Item.find({})
+            .populate('category')
+            .populate('seller')
+            .populate('images');
+
+        return JSON.parse(JSON.stringify(items));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

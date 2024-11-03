@@ -19,7 +19,7 @@ const MarketLayout: React.FC<Props> = async ({ children }) => {
     return (
         <FullLayout>
             <Sidebar categories={categories} />
-            <Container>{children}</Container>
+            <Container direction={'right'}>{children}</Container>
         </FullLayout>
     );
 };

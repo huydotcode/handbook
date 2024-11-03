@@ -44,7 +44,9 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
                     );
                 })}
             </div>
-            {friends.length === 0 && <p className="text-sm">Không có bạn bè</p>}
+            {friends.length === 0 && (
+                <p className="mt-2 text-sm text-gray-500">Không có bạn bè</p>
+            )}
         </section>
     );
 };

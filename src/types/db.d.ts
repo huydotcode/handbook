@@ -165,7 +165,7 @@ interface IItem {
     seller: string;
     description: string;
     price: number;
-    image: IImage;
+    images: IImage[];
     location: string;
     category: ICategory;
     slug: string;

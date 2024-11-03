@@ -105,7 +105,7 @@ const FormButton = React.forwardRef<
     React.ButtonHTMLAttributes<HTMLButtonElement>
 >((props, ref) => {
     return (
-        <Button className={'mt-2'} variant={'primary'} type={'submit'}>
+        <Button className={'mt-2'} variant={'primary'}>
             {props.children}
         </Button>
     );

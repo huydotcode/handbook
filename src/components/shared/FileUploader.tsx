@@ -12,9 +12,10 @@ import { cn } from '@/lib/utils';
 
 interface Props {
     className?: string;
+    handleChange?: (files: File[]) => void;
 }
 
-const FileUploader: React.FC<Props> = ({ className }) => {
+const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
     const [files, setFiles] = useState<File[]>([]);
 
     // Function to handle file selection (from both drag-and-drop and browse)
@@ -24,6 +25,9 @@ const FileUploader: React.FC<Props> = ({ className }) => {
                 ? Array.from(event.target.files)
                 : [];
             setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+            if (handleChange) {
+                handleChange(newFiles);
+            }
         },
         []
     );
@@ -36,6 +40,9 @@ const FileUploader: React.FC<Props> = ({ className }) => {
                 ? Array.from(event.dataTransfer.files)
                 : [];
             setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
+            if (handleChange) {
+                handleChange(droppedFiles);
+            }
         },
         []
     );
@@ -47,6 +54,9 @@ const FileUploader: React.FC<Props> = ({ className }) => {
     // Bỏ file khỏi danh sách
     const handleRemove = (index: number) => {
         setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+        if (handleChange) {
+            handleChange(files.filter((_, i) => i !== index));
+        }
     };
 
     return (

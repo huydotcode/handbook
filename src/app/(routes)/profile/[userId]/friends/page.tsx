@@ -44,6 +44,12 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                             );
                         })}
                     </ul>
+
+                    {friends.length === 0 && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Không có bạn bè
+                        </p>
+                    )}
                 </article>
             </section>
 

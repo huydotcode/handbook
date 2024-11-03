@@ -19,7 +19,7 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
     return (
         <section className="relative my-3 rounded-xl  bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
             <h5 className="text-xl font-bold">Ảnh</h5>
-            <div>
+            <article>
                 <div
                     className={cn('mt-2 grid grid-cols-3 gap-2', {
                         'grid-cols-2 md:grid-cols-1': isPhotosPage,
@@ -54,10 +54,13 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                             );
                         })}
                 </div>
+
                 {photos.length === 0 && (
-                    <p className="text-sm">Không có ảnh nào</p>
+                    <p className="mt-2 text-sm text-gray-500">
+                        Không có ảnh nào
+                    </p>
                 )}
-            </div>
+            </article>
 
             <SlideShow
                 images={photos}

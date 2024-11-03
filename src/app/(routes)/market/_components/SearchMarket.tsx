@@ -14,10 +14,10 @@ const SearchMarket: React.FC<Props> = ({}) => {
 
     return (
         <>
-            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1">
+            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1 md:justify-center md:p-3">
                 <Icons.Search />
                 <Input
-                    className="dark:placeholder:text-dark-primary-1"
+                    className="dark:placeholder:text-dark-primary-1 md:hidden"
                     value={searchValue}
                     bordered={false}
                     placeholder="Tìm kiếm trên market"

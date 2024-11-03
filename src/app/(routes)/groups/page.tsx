@@ -19,26 +19,24 @@ const GroupsPage: React.FC<Props> = async ({}) => {
     return (
         <div>
             <Sidebar groups={groups} />
-            <Container>
-                <div className="mx-auto max-w-[600px]">
-                    {groups.length > 0 ? (
-                        <InfinityPostComponent
-                            className="mt-4"
-                            title="Hoạt động gần đây"
-                            type="group"
-                        />
-                    ) : (
-                        <div className="mt-2 flex items-center justify-center">
-                            <p className="mr-2 text-secondary-1">
-                                Bạn chưa tham gia nhóm nào
-                            </p>
+            <Container direction={'center'} width={600}>
+                {groups.length > 0 ? (
+                    <InfinityPostComponent
+                        className="mt-4"
+                        title="Hoạt động gần đây"
+                        type="group"
+                    />
+                ) : (
+                    <div className="mt-2 flex items-center justify-center">
+                        <p className="mr-2 text-secondary-1">
+                            Bạn chưa tham gia nhóm nào
+                        </p>
 
-                            <Button href="groups/explore" variant={'text'}>
-                                Tìm nhóm
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                        <Button href="groups/explore" variant={'text'}>
+                            Tìm nhóm
+                        </Button>
+                    </div>
+                )}
             </Container>
         </div>
     );

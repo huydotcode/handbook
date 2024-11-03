@@ -153,7 +153,12 @@ export async function acceptFriend({
             }),
         ]);
 
-        return JSON.parse(JSON.stringify(notificaiton));
+        return JSON.parse(
+            JSON.stringify({
+                notification,
+                conversation,
+            })
+        );
     } catch (error: any) {
         throw new Error(error.message || ERROR_MESSAGE);
     }

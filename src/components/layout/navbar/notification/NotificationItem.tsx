@@ -3,7 +3,7 @@ import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useApp, useSocket } from '@/context';
+import { useApp, useSocial, useSocket } from '@/context';
 import { NotificationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
@@ -21,6 +21,7 @@ const NotificationItem: React.FC<Props> = ({
 }) => {
     const { socket } = useSocket();
     const { notifications, setNotifications } = useApp();
+    const { setConversations } = useSocial();
     const [showRemove, setShowRemove] = useState(false);
 
     // Chấp nhận lời mời kết bạn
@@ -28,12 +29,28 @@ const NotificationItem: React.FC<Props> = ({
         if (!notification) return;
 
         try {
-            const notificationAcceptFriend =
+            const { notification: notificationAcceptFriend, conversation } =
                 await NotificationService.acceptFriend({ notification });
 
             setNotifications((prev) =>
                 prev.filter((item) => item._id !== notification._id)
             );
+
+            if (conversation) {
+                setConversations((prev) => [conversation, ...prev]);
+
+                // Join room
+                if (socket) {
+                    socket.emit(socketEvent.JOIN_ROOM, {
+                        roomId: conversation._id,
+                    });
+
+                    socket.emit(socketEvent.JOIN_ROOM, {
+                        roomId: conversation._id,
+                        userId: notification.sender._id,
+                    });
+                }
+            }
 
             if (socket) {
                 socket.emit(socketEvent.RECEIVE_NOTIFICATION, {

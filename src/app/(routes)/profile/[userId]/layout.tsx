@@ -1,6 +1,7 @@
 import { ProfileService } from '@/lib/services';
 import { notFound } from 'next/navigation';
 import { Header } from '../_components';
+import { Container } from '@/components/layout';
 
 interface Props {
     params: {
@@ -32,14 +33,14 @@ const ProfileLayout = async ({ params, children }: Props) => {
     if (!profile) notFound();
 
     return (
-        <div className="relative">
+        <Container>
             <div className="w-full pb-96">
                 <div className="h-full w-full">
                     <Header profile={profile} user={profile.user} />
-                    <main className="mt-4">{children}</main>
+                    <div className="mt-4">{children}</div>
                 </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

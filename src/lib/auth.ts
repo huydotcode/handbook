@@ -7,7 +7,6 @@ import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import toast from 'react-hot-toast';
 
 interface OAuthCredentials {
     iss: string;
@@ -71,17 +70,15 @@ export const authOptions: NextAuthOptions = {
                 username: {},
                 password: {},
             },
-            async authorize(credentials: any) {
+            authorize: async function (credentials: any) {
                 try {
                     const { email, password } = credentials;
 
                     await connectToDB();
 
-                    const user = (await User.findOne({
+                    return await User.findOne({
                         email: email,
-                    })) as User;
-
-                    return user;
+                    });
                 } catch (error) {}
 
                 return null;

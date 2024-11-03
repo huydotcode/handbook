@@ -45,4 +45,16 @@ const getCategories = async () => {
     }
 };
 
-export { createCategory, getCategories };
+const getCategoryById = async ({ categoryId }: { categoryId: string }) => {
+    try {
+        await connectToDB();
+
+        const category = await Category.findById(categoryId);
+
+        return JSON.parse(JSON.stringify(category));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export { createCategory, getCategories, getCategoryById };

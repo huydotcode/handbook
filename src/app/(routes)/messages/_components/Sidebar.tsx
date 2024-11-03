@@ -22,7 +22,7 @@ const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
                 )}
             >
                 <div className="px-4 py-2">
-                    <h1 className="text-2xl font-bold">Trò chuyện</h1>
+                    <h1 className="text-2xl font-bold md:hidden">Trò chuyện</h1>
 
                     <SearchConversation
                         initConversations={initConversations}

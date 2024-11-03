@@ -79,7 +79,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
                     className={`mt-2 w-full ${!isSubmitting && ''}`}
                     size={'small'}
                     type="submit"
-                    variant={'warning'}
+                    variant={'primary'}
                 >
                     {isSubmitting ? 'Đang thay đổi...' : 'Thay đổi'}
                 </Button>

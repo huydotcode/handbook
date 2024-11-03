@@ -19,19 +19,21 @@ import { useQuery } from '@tanstack/react-query';
 import { CategoryService } from '@/lib/services';
 import { useState } from 'react';
 import FileUploader from '@/components/shared/FileUploader';
-import { Container } from '@/components/layout';
 import { uploadImage } from '@/lib/upload';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
+    const router = useRouter();
 
-    const {
-        handleSubmit,
-        register,
-        formState: { errors },
-    } = useForm<CreateItemValidation>({
-        resolver: zodResolver(createItemValidation),
-    });
+    const { handleSubmit, register, formState } = useForm<CreateItemValidation>(
+        {
+            resolver: zodResolver(createItemValidation),
+        }
+    );
+
+    const { errors } = formState;
 
     const [files, setFiles] = useState<File[]>([]);
 
@@ -43,24 +45,34 @@ const CreateItemPage = () => {
     });
 
     const onSubmit = async (data: CreateItemValidation) => {
+        console.log('onSubmit');
         try {
             let images = [] as string[];
 
             if (files.length != 0) {
-                for (let i = 0; i < files.length; i++) {
-                    // Đọc file sang base64
-                    const reader = new FileReader();
-                    reader.readAsDataURL(files[i]);
-                    reader.onload = async () => {
-                        const base64 = reader.result as string;
-                        const image = await uploadImage({
-                            image: base64,
-                        });
+                const uploadPromises = files.map((file) => {
+                    return new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = async () => {
+                            try {
+                                const base64 = reader.result as string;
+                                const image = await uploadImage({
+                                    image: base64,
+                                });
+                                resolve(image._id);
+                            } catch (error) {
+                                reject(error);
+                            }
+                        };
+                        reader.onerror = (error) => reject(error);
+                    });
+                });
 
-                        images.push(image);
-                    };
-                }
-                images = images.map((image: any) => image._id);
+                images = await Promise.all(uploadPromises);
+            } else {
+                toast.error('Vui lòng chọn ảnh sản phẩm');
+                return;
             }
 
             const newItem = await ItemService.createItem({
@@ -74,12 +86,15 @@ const CreateItemPage = () => {
                 status: 'active',
             });
 
-            console.log({
-                newItem,
-            });
+            toast.success('Tạo sản phẩm thành công');
+            router.push('/market');
         } catch (error) {
-            console.error(error);
+            toast.error('Đã có lỗi xảy ra khi tạo sản phẩm');
         }
+    };
+
+    const handleChange = (files: File[]) => {
+        setFiles(files);
     };
 
     return (
@@ -87,7 +102,7 @@ const CreateItemPage = () => {
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <FormTitle>Tạo sản phẩm</FormTitle>
 
-                <FileUploader className={'mb-2'} />
+                <FileUploader className={'mb-2'} handleChange={handleChange} />
 
                 <FormGroup>
                     <FormLabel>Tên</FormLabel>
@@ -95,7 +110,6 @@ const CreateItemPage = () => {
                     <FormError>{errors.name?.message}</FormError>
                 </FormGroup>
 
-                {/*Number validate*/}
                 <FormGroup>
                     <FormLabel>Giá</FormLabel>
                     <FormInput placeholder="Giá" {...register('price')} />
