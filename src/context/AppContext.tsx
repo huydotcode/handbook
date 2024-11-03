@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useSocial, useSocket } from '.';
+import toast from 'react-hot-toast';
 
 type AppContextType = {
     notifications: INotification[];

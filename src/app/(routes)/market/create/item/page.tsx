@@ -45,7 +45,6 @@ const CreateItemPage = () => {
     });
 
     const onSubmit = async (data: CreateItemValidation) => {
-        console.log('onSubmit');
         try {
             let images = [] as string[];
 

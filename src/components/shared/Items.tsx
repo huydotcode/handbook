@@ -31,8 +31,9 @@ interface NavItem {
 }
 
 interface UserItem {
+    className?: string;
     data: IUser;
-    handleHideModal: () => void;
+    handleHideModal?: () => void;
 }
 
 interface GroupItem {
@@ -44,16 +45,18 @@ interface ItemItem {
 }
 
 const Items = {
-    User: (props: UserItem) => {
-        const { data, handleHideModal } = props;
+    User: ({ data, className, handleHideModal }: UserItem) => {
         const { avatar, _id, name } = data;
 
         return (
             <Button
-                className="mb-2 w-full justify-start"
-                onClick={handleHideModal}
+                className={cn('mb-2 w-full justify-start', className)}
+                onClick={() => {
+                    if (handleHideModal) handleHideModal();
+                }}
                 border={false}
                 variant={'default'}
+                href={`/profile/${_id}`}
             >
                 <Image
                     className="overflow-hidden rounded-full object-cover"
@@ -63,12 +66,9 @@ const Items = {
                     height={32}
                 />
 
-                <Link
-                    className="ml-2 text-base dark:text-dark-primary-1"
-                    href={`/profile/${_id}`}
-                >
+                <p className="ml-2 text-base text-black dark:text-dark-primary-1">
                     {name}
-                </Link>
+                </p>
             </Button>
         );
     },

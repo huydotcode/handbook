@@ -1,8 +1,9 @@
 import { Avatar, Button, Icons } from '@/components/ui';
-import { Collapse, Tooltip } from '@mui/material';
-import { CollapseProps } from 'antd';
+import { Tooltip } from '@mui/material';
+import { Collapse, CollapseProps } from 'antd';
 import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
+import { Items } from '@/components/shared';
 
 interface Props {
     conversation: IConversation;
@@ -46,18 +47,11 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
             children: (
                 <div>
                     {conversation.participants.slice(0, 5).map((part) => (
-                        <Button
-                            className="flex items-center"
+                        <Items.User
+                            className={'h-10 text-xs'}
+                            data={part.user}
                             key={part._id}
-                            href={`/profile/${part.user._id}`}
-                        >
-                            <Avatar
-                                imgSrc={part.user.avatar}
-                                width={24}
-                                height={24}
-                            />
-                            <p className="ml-2 text-xs">{part.user.name}</p>
-                        </Button>
+                        />
                     ))}
                 </div>
             ),
@@ -87,6 +81,12 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
                         </div>
                     </div>
                 )}
+
+                <Collapse
+                    className={'mt-2 w-full bg-transparent'}
+                    items={items}
+                    bordered={false}
+                />
             </div>
         </div>
     );

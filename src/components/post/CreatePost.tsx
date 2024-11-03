@@ -42,19 +42,12 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             const { content, option } = data;
             let imagesUpload: IImage[] = [];
 
-            console.log({
-                photos,
-            });
-
             if (photos && photos.length > 0) {
                 for (const img of photos) {
                     try {
                         const res = await uploadImage({ image: img });
                         imagesUpload.push(res);
                     } catch (error: any) {
-                        console.log({
-                            error,
-                        });
                         toast.error('Đã có lỗi xảy ra khi tải ảnh lên!');
                         return;
                     }

@@ -68,9 +68,6 @@ const Action: React.FC<Props> = ({ group }) => {
 
             router.push('/groups');
         } catch (error) {
-            console.log({
-                error,
-            });
             toast.error('Có lỗi xảy ra khi xóa nhóm');
         }
     };

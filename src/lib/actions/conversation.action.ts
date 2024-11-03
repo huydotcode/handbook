@@ -25,6 +25,48 @@ export const getType = (conversationType: string) => {
     }
 };
 
+// Hàm tạo conversation sau khi kết bạn
+export const createConversationAfterAcceptFriend = async ({
+    userId,
+    friendId,
+}: {
+    userId: string;
+    friendId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const newConversation = new Conversation({
+            title: 'Cuộc trò chuyện mới',
+            creator: userId,
+            participants: [],
+        });
+        await newConversation.save();
+
+        // Tạo participant cho user
+        const newParticipant = new Participant({
+            conversation: newConversation._id,
+            user: userId,
+        });
+        await newParticipant.save();
+        newConversation.participants.push(newParticipant._id);
+
+        // Tạo participant cho friend
+        const newParticipantFriend = new Participant({
+            conversation: newConversation._id,
+            user: friendId,
+        });
+        await newParticipantFriend.save();
+        newConversation.participants.push(newParticipantFriend._id);
+
+        await newConversation.save();
+
+        return JSON.parse(JSON.stringify(newConversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const getConversationById = async ({
     conversationId,
 }: {

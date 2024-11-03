@@ -51,10 +51,6 @@ const EditPostModal: FC<Props> = ({
         });
 
     const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
-        console.log({
-            data,
-        });
-
         const newImages = post.images.filter((img) => {
             return photos.includes(img.url);
         });

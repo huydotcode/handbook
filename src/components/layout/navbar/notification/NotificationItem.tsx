@@ -4,7 +4,7 @@ import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useApp, useSocial, useSocket } from '@/context';
-import { NotificationService } from '@/lib/services';
+import { ConversationService, NotificationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
@@ -29,35 +29,50 @@ const NotificationItem: React.FC<Props> = ({
         if (!notification) return;
 
         try {
-            const { notification: notificationAcceptFriend, conversation } =
-                await NotificationService.acceptFriend({ notification });
+            // Chấp nhận lời mời kết bạn
+            const acceptSuccess = await NotificationService.acceptFriend({
+                notification,
+            });
 
             setNotifications((prev) =>
                 prev.filter((item) => item._id !== notification._id)
             );
 
-            if (conversation) {
-                setConversations((prev) => [conversation, ...prev]);
-
-                // Join room
-                if (socket) {
-                    socket.emit(socketEvent.JOIN_ROOM, {
-                        roomId: conversation._id,
-                    });
-
-                    socket.emit(socketEvent.JOIN_ROOM, {
-                        roomId: conversation._id,
-                        userId: notification.sender._id,
-                    });
-                }
+            if (!acceptSuccess) {
+                toast.error('Chấp nhận lời mời kết bạn thất bại!');
+                return;
             }
 
+            const newConversation =
+                await ConversationService.createConversationAfterAcceptFriend({
+                    userId: notification.receiver._id,
+                    friendId: notification.sender._id,
+                });
+
+            setConversations((prev) => [newConversation, ...prev]);
+
+            //Tạo thông báo cho người gửi
+            const notificationAcceptFriend =
+                await NotificationService.createNotificationAcceptFriend({
+                    type: 'accept-friend',
+                    senderId: notification.receiver._id,
+                    receiverId: notification.sender._id,
+                    message: 'Đã chấp nhận lời mời kết bạn',
+                });
+
             if (socket) {
+                // Join room
+                socket.emit(socketEvent.JOIN_ROOM, {
+                    roomId: newConversation._id,
+                });
+
+                // Gửi thông báo cho người gửi
                 socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
                     notification: notificationAcceptFriend,
                 });
             }
         } catch (error) {
+            console.log(error);
             toast.error(
                 'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
             );

@@ -24,9 +24,9 @@ export async function getNotification({
     try {
         await connectToDB();
 
-        const notification = await Notification.findById(
-            notificationId
-        ).populate('sender', POPULATE_SENDER);
+        const notification = await Notification.findById(notificationId)
+            .populate('sender', POPULATE_SENDER)
+            .populate('receiver', POPULATE_SENDER);
 
         return JSON.parse(JSON.stringify(notification));
     } catch (error: any) {
@@ -42,6 +42,7 @@ export async function getNotificationByUserId({ userId }: { userId: string }) {
             receiver: userId,
         })
             .populate('sender', POPULATE_SENDER)
+            .populate('receiver', POPULATE_SENDER)
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(notifications));
@@ -131,36 +132,47 @@ export async function acceptFriend({
         // Lưu cả hai người dùng đồng thời
         await Promise.all([user.save(), friend.save()]);
 
-        // Tạo thông báo chấp nhận kết bạn và lưu
+        return true;
+    } catch (error: any) {
+        throw new Error(error.message || ERROR_MESSAGE);
+    }
+}
+
+// Tạo thông báo chấp nhận kết bạn
+export async function createNotificationAcceptFriend({
+    senderId,
+    receiverId,
+    message,
+    type,
+}: {
+    senderId: string;
+    receiverId: string;
+    message: string;
+    type: string;
+}) {
+    console.log({
+        senderId,
+        receiverId,
+        message,
+        type,
+    });
+    try {
         const notificationAcceptFriend = new Notification({
-            sender: session.user.id,
-            receiver: notification.sender._id,
-            message: 'Đã chấp nhận lời mời kết bạn',
-            type: 'accept-friend',
+            sender: senderId,
+            receiver: receiverId,
+            message,
+            type,
         });
 
         await notificationAcceptFriend.save();
 
-        // Lấy thông báo mới tạo và tạo cuộc hội thoại đồng thời
-        const [notificaiton, conversation] = await Promise.all([
-            getNotification({ notificationId: notificationAcceptFriend._id }),
-            ConversationService.createConversation({
-                creator: session.user.id,
-                participantsUserId: [
-                    user._id.toString(),
-                    friend._id.toString(),
-                ],
-            }),
-        ]);
+        const notification = await getNotification({
+            notificationId: notificationAcceptFriend._id,
+        });
 
-        return JSON.parse(
-            JSON.stringify({
-                notification,
-                conversation,
-            })
-        );
+        return JSON.parse(JSON.stringify(notification));
     } catch (error: any) {
-        throw new Error(error.message || ERROR_MESSAGE);
+        throw new Error(error);
     }
 }
 
