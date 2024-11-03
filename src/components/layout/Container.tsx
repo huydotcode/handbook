@@ -17,7 +17,7 @@ const Container: React.FC<Props> = ({
     return (
         <div
             className={cn(
-                'mt-[56px] h-screen w-[--container-width] max-w-screen pr-2',
+                'mt-[56px] h-screen w-[--container-width] max-w-screen',
                 direction === 'right' && 'ml-[320px] md:ml-0',
                 direction === 'center' && 'mx-auto',
                 width && `w-[${width}px]`,
