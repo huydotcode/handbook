@@ -79,6 +79,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                         <>
                             <span
                                 className={cn(
+                                    'dark:text-dark-primary-1',
                                     lastMsg?.sender._id == session?.user.id
                                         ? 'text-primary-1'
                                         : 'text-secondary-1'
