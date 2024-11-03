@@ -11,6 +11,7 @@ import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
 import Message from './Message';
 import InfomationConversation from './InfomationConversation';
+import { Input } from 'antd';
 
 interface Props {
     className?: string;
@@ -32,6 +33,16 @@ const ChatBox: React.FC<Props> = ({
 
     const [messages, setMessages] = useState<IMessage[]>(initialMessages);
 
+    // Search message
+    const [openSearch, setOpenSearch] = useState<boolean>(false);
+    const [searchValue, setSearchValue] = useState<string>('');
+
+    const searchMessages = useMemo(() => {
+        return searchValue.trim().length > 0
+            ? messages.filter((msg) => msg.text.includes(searchValue))
+            : [];
+    }, [messages, searchValue]);
+
     const messagesInRoom = useMemo(() => {
         return messages.filter(
             (msg) => msg.conversation._id === conversation._id
@@ -42,6 +53,8 @@ const ChatBox: React.FC<Props> = ({
 
     const [openInfo, setOpenInfo] = useState<boolean>(false);
 
+    const searchRef = useRef<HTMLDivElement>(null);
+
     const { ref: topRef, inView } = useInView({
         threshold: 0,
         triggerOnce: false,
@@ -50,6 +63,11 @@ const ChatBox: React.FC<Props> = ({
     const bottomRef = useRef<HTMLDivElement>(null);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
     const [isEnd, setIsEnd] = useState<boolean>(false);
+
+    // Xử lý mở khung tìm kiếm
+    const handleOpenSearch = () => {
+        setOpenSearch(true);
+    };
 
     // Cuộn xuống dưới cùng
     const handleScrollDown = () => {
@@ -124,6 +142,23 @@ const ChatBox: React.FC<Props> = ({
         }
     }, [inView]);
 
+    // Xử lý click ngoài khung tìm kiếm
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(e.target as Node)
+            ) {
+                setOpenSearch(false);
+                setSearchValue('');
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     return (
         <>
             <div
@@ -134,23 +169,66 @@ const ChatBox: React.FC<Props> = ({
             >
                 <ChatHeader
                     currentRoom={conversation}
-                    messages={messages}
-                    setMessages={setMessages}
                     setOpenInfo={setOpenInfo}
+                    handleOpenSearch={handleOpenSearch}
                 />
 
                 <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
+                    {openSearch && (
+                        <div
+                            className="absolute right-2 top-2 z-10 "
+                            ref={searchRef}
+                        >
+                            <div
+                                className={
+                                    'flex items-center rounded-xl bg-primary-1 px-2'
+                                }
+                            >
+                                <Icons.Search size={24} />
+                                <Input
+                                    value={searchValue}
+                                    onChange={(e) =>
+                                        setSearchValue(e.target.value)
+                                    }
+                                    placeholder="Tìm kiếm tin nhắn"
+                                    bordered={false}
+                                />
+                                <Button
+                                    onClick={() => {
+                                        setOpenSearch(false);
+                                        setSearchValue('');
+                                    }}
+                                    variant={'default'}
+                                    border={false}
+                                >
+                                    <Icons.Close size={18} />
+                                </Button>
+                            </div>
+
+                            <h5 className={'mt-2 text-xs text-secondary-1'}>
+                                Kết quả: {searchMessages.length} tin nhắn
+                            </h5>
+                        </div>
+                    )}
+
                     {session?.user && (
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2">
                             <div ref={bottomRef} />
-
-                            {messagesInRoom.map((msg) => (
-                                <Message
-                                    key={msg._id}
-                                    data={msg}
-                                    messagesInRoom={messages}
-                                />
-                            ))}
+                            {searchMessages.length > 0
+                                ? searchMessages.map((msg) => (
+                                      <Message
+                                          key={msg._id}
+                                          data={msg}
+                                          messagesInRoom={messages}
+                                      />
+                                  ))
+                                : messagesInRoom.map((msg) => (
+                                      <Message
+                                          key={msg._id}
+                                          data={msg}
+                                          messagesInRoom={messages}
+                                      />
+                                  ))}
 
                             {!isEnd && <div ref={topRef} />}
                         </div>

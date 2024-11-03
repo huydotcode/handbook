@@ -1,27 +1,21 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { Input } from 'antd';
 import { useSession } from 'next-auth/react';
-import React, { useMemo, useState } from 'react';
-import SearchMessage from './SearchMessage';
+import React, { useMemo } from 'react';
 
 interface Props {
     currentRoom: IConversation;
     setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
-    messages: IMessage[];
-    setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
+    handleOpenSearch: () => void;
 }
 
 const ChatHeader: React.FC<Props> = ({
     currentRoom,
-    messages,
     setOpenInfo,
-    setMessages,
+    handleOpenSearch,
 }) => {
     const { data: session } = useSession();
-    const [openSearchMessage, setOpenSearchMessage] = useState<boolean>(false);
-    const [initMessages, setInitMessages] = useState<IMessage[]>(messages);
 
     const partner = useMemo(() => {
         if (currentRoom.group) {
@@ -96,7 +90,7 @@ const ChatHeader: React.FC<Props> = ({
                     <Button
                         className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
                         variant={'custom'}
-                        onClick={() => setOpenSearchMessage((prev) => !prev)}
+                        onClick={handleOpenSearch}
                     >
                         <Icons.Search size={24} />
                     </Button>
@@ -111,12 +105,12 @@ const ChatHeader: React.FC<Props> = ({
                 </div>
             </div>
 
-            {openSearchMessage && (
-                <SearchMessage
-                    initMessages={initMessages}
-                    setMessages={setMessages}
-                />
-            )}
+            {/*{openSearchMessage && (*/}
+            {/*    <SearchMessage*/}
+            {/*        initMessages={initMessages}*/}
+            {/*        setMessages={setMessages}*/}
+            {/*    />*/}
+            {/*)}*/}
         </>
     );
 };
