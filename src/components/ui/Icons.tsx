@@ -176,6 +176,7 @@ const Icons = {
         );
     },
     Profile: (props: IconProps) => <CgProfile {...props} />,
+    Upload: (props: IconProps) => <FaImage {...props} />,
 };
 
 export default Icons;
