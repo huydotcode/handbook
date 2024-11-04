@@ -26,7 +26,7 @@ const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
                 )}
             >
                 <div className="flex items-center justify-between px-2">
-                    <h1 className="text-md p-2 font-bold lg:hidden">
+                    <h1 className="text-md font-bold lg:hidden">
                         Bạn bè{' '}
                         <span className="ml-2 text-sm text-secondary-1">
                             {friends.length}
