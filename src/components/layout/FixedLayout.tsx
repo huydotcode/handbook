@@ -1,7 +1,5 @@
 import React from 'react';
 import { Navbar } from '@/components/layout';
-import ChatWithGemini from '@/components/ChatWithGemini';
-import { Sidebar } from '@/app/(routes)/messages/_components';
 import { cn } from '@/lib/utils';
 
 interface Props {
