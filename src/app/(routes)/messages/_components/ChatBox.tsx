@@ -5,13 +5,19 @@ import { useChat, useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    KeyboardEventHandler,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
 import Message from './Message';
 import InfomationConversation from './InfomationConversation';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 
 interface Props {
     className?: string;
@@ -54,6 +60,7 @@ const ChatBox: React.FC<Props> = ({
     const [openInfo, setOpenInfo] = useState<boolean>(false);
 
     const searchRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<InputRef>(null);
 
     const { ref: topRef, inView } = useInView({
         threshold: 0,
@@ -67,6 +74,17 @@ const ChatBox: React.FC<Props> = ({
     // Xử lý mở khung tìm kiếm
     const handleOpenSearch = () => {
         setOpenSearch(true);
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
+    // Xử lý nhấn Esc để đóng khung tìm kiếm
+    const handleKeyDownEsc: KeyboardEventHandler<HTMLDivElement> = (e) => {
+        if (e.key === 'Escape' && openSearch) {
+            setOpenSearch(false);
+            setSearchValue('');
+        }
     };
 
     // Cuộn xuống dưới cùng
@@ -166,6 +184,7 @@ const ChatBox: React.FC<Props> = ({
                     'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                     className
                 )}
+                onKeyDown={handleKeyDownEsc}
             >
                 <ChatHeader
                     currentRoom={conversation}
@@ -186,6 +205,7 @@ const ChatBox: React.FC<Props> = ({
                             >
                                 <Icons.Search size={24} />
                                 <Input
+                                    ref={inputRef}
                                     value={searchValue}
                                     onChange={(e) =>
                                         setSearchValue(e.target.value)

@@ -104,13 +104,6 @@ const ChatHeader: React.FC<Props> = ({
                     </Button>
                 </div>
             </div>
-
-            {/*{openSearchMessage && (*/}
-            {/*    <SearchMessage*/}
-            {/*        initMessages={initMessages}*/}
-            {/*        setMessages={setMessages}*/}
-            {/*    />*/}
-            {/*)}*/}
         </>
     );
 };
