@@ -25,6 +25,7 @@ const MessageSchema = new Schema<IMessageModel>(
         },
         images: {
             type: [Schema.Types.ObjectId],
+            ref: 'Image',
             default: [],
         },
         isRead: {
