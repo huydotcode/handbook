@@ -37,18 +37,18 @@ const SearchConversation: React.FC<Props> = ({
 
     return (
         <>
-            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1 md:justify-center md:p-3">
-                <Icons.Search className={'md:hidden'} />
+            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1 lg:justify-center lg:p-3">
+                <Icons.Search className={'lg:hidden'} />
 
                 <Icons.Search
                     className={
-                        'dark:hover:text-dark-primary-2 hidden cursor-pointer hover:text-primary-2 md:block'
+                        'dark:hover:text-dark-primary-2 hidden cursor-pointer hover:text-primary-2 lg:block'
                     }
                     onClick={() => setShowModal((prev) => !prev)}
                 />
 
                 <Input
-                    className="dark:placeholder:text-dark-primary-1 md:hidden"
+                    className="dark:placeholder:text-dark-primary-1 lg:hidden"
                     value={searchValue}
                     bordered={false}
                     placeholder="Tìm cuộc trò chuyện"
@@ -58,7 +58,7 @@ const SearchConversation: React.FC<Props> = ({
                 />
                 {searchValue.length > 0 && (
                     <Icons.Close
-                        className="cursor-pointer md:hidden"
+                        className="cursor-pointer lg:hidden"
                         onClick={() => setSearchValue('')}
                     />
                 )}

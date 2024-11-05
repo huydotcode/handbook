@@ -38,7 +38,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     return (
         <Button
             className={cn(
-                'relative mx-4 flex justify-between rounded-xl px-4 py-2 shadow-none md:justify-center',
+                'relative mx-4 flex justify-between rounded-xl px-4 py-2 shadow-none lg:justify-center',
                 isSelect && 'bg-primary-1'
             )}
             href={`/messages/${conversation._id}`}
@@ -56,7 +56,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                     )}
                 </div>
                 {partner && (
-                    <span className="absolute right-[-2] top-0 ml-2 text-xs md:right-4">
+                    <span className="absolute -right-1 bottom-0 ml-2 text-xs lg:right-4">
                         <Icons.Circle
                             className={`${partner?.isOnline ? 'text-primary-2' : 'text-secondary-1'}`}
                         />
@@ -64,7 +64,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                 )}
             </div>
 
-            <div className="flex flex-1 flex-col md:hidden">
+            <div className="flex flex-1 flex-col lg:hidden">
                 <div className="flex items-center justify-between">
                     <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                         {title}
@@ -95,7 +95,9 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                     'text-secondary-1': lastMsg?.isRead,
                                 })}
                             >
-                                {lastMsg?.text}
+                                {lastMsg?.text.trim().length > 0
+                                    ? lastMsg?.text
+                                    : 'Đã gửi một hình ảnh'}
                             </span>
                         </>
                     )}

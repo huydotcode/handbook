@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
@@ -25,7 +25,9 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const { data: session } = useSession();
     const { socket } = useSocket();
 
-    const [showMenu, setShowMenu] = useState(false);
+    const [showMenu, setShowMenu] = useState<boolean>(false);
+    const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
+    const [startIndex, setStartIndex] = useState<number>(0);
     const menuRef = useRef<HTMLDivElement>(null);
 
     const newDate = useMemo(
@@ -36,10 +38,23 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const index = messagesInRoom.indexOf(msg);
     const isOwnMsg = msg.sender._id === session?.user.id;
 
+    const images = messagesInRoom
+        .filter((msg) => msg.images.length > 0)
+        .map((msg) => msg.images)
+        .map((img) => img.map((i) => i.url));
+
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
     const handleClickContent = () => {
         handleShowMenu();
+    };
+
+    // Xử lý click vào ảnh
+    const handleClickImage = (url: string, index: number) => {
+        setStartIndex(() => {
+            return images.flat().indexOf(url);
+        });
+        setShowSlideShow(true);
     };
 
     // Xử lý xóa tin nhắn
@@ -147,6 +162,34 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                         </div>
                     )}
 
+                    {msg.images.length > 0 && (
+                        <div
+                            className={cn('flex flex-col flex-wrap', {
+                                'justify-end': isOwnMsg,
+                                'justify-start': !isOwnMsg,
+                            })}
+                        >
+                            {msg.images.map((img, index) => (
+                                <img
+                                    className={cn(
+                                        'my-1 max-w-[30%] cursor-pointer object-cover shadow-md',
+                                        {
+                                            'rounded-xl rounded-l-md': isOwnMsg,
+                                            'rounded-xl rounded-r-md':
+                                                !isOwnMsg,
+                                        }
+                                    )}
+                                    onClick={() => {
+                                        handleClickImage(img.url, index);
+                                    }}
+                                    key={index}
+                                    src={img.url}
+                                    alt="image"
+                                />
+                            ))}
+                        </div>
+                    )}
+
                     <Tooltip
                         title={
                             'Gửi lúc ' +
@@ -154,31 +197,45 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                         }
                         arrow={true}
                     >
-                        <div
-                            className={cn(
-                                'relative flex max-w-[70%] items-center px-4 py-2',
-                                {
-                                    'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
-                                        isOwnMsg,
-                                    'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
-                                        !isOwnMsg,
-                                }
-                            )}
-                            onClick={handleClickContent}
-                        >
-                            {showMenu && isOwnMsg && createMenuMessages()}
+                        <>
+                            {msg.text.length > 0 && (
+                                <div
+                                    className={cn(
+                                        'relative flex max-w-[70%] items-center px-4 py-2',
+                                        {
+                                            'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
+                                                isOwnMsg,
+                                            'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
+                                                !isOwnMsg,
+                                        }
+                                    )}
+                                    onClick={handleClickContent}
+                                >
+                                    {showMenu &&
+                                        isOwnMsg &&
+                                        createMenuMessages()}
 
-                            <p
-                                className={cn('text-xs', {
-                                    'text-justify': msg.text.length > 100,
-                                })}
-                            >
-                                {msg.text}
-                            </p>
-                        </div>
+                                    <p
+                                        className={cn('text-xs', {
+                                            'text-justify':
+                                                msg.text.length > 100,
+                                        })}
+                                    >
+                                        {msg.text}
+                                    </p>
+                                </div>
+                            )}
+                        </>
                     </Tooltip>
                 </div>
             </div>
+
+            <SlideShow
+                show={showSlideShow}
+                setShow={setShowSlideShow}
+                images={images.reverse()}
+                startIndex={startIndex}
+            />
         </div>
     );
 };

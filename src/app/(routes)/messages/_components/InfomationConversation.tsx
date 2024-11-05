@@ -1,16 +1,36 @@
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Button, Collapse, Icons, SlideShow } from '@/components/ui';
 import { Tooltip } from '@mui/material';
-import { Collapse, CollapseProps } from 'antd';
 import { useSession } from 'next-auth/react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Items } from '@/components/shared';
+import { useChat } from '@/context';
+import Image from 'next/image';
 
 interface Props {
     conversation: IConversation;
+    openInfo: boolean;
+    setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
+    messagesInRoom: IMessage[];
 }
 
-const InfomationConversation: React.FC<Props> = ({ conversation }) => {
+const InfomationConversation: React.FC<Props> = ({
+    conversation,
+    openInfo,
+    setOpenInfo,
+    messagesInRoom,
+}) => {
     const { data: session } = useSession();
+    const { messages } = useChat();
+
+    const [openSlideShow, setOpenSlideShow] = useState<boolean>(false);
+    const [startImageIndex, setStartImageIndex] = useState<number>(0);
+
+    const imagesInRoom = useMemo(() => {
+        return messagesInRoom
+            .filter((msg) => msg.images.length > 0)
+            .map((msg) => msg.images)
+            .reduce((acc, val) => acc.concat(val), []);
+    }, [messagesInRoom, conversation._id]);
 
     const partner = useMemo(() => {
         if (conversation.group) {
@@ -40,7 +60,7 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
         }
     }, [conversation]);
 
-    const items: CollapseProps['items'] = [
+    const items = [
         {
             key: '1',
             label: 'Thành viên',
@@ -48,7 +68,7 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
                 <div>
                     {conversation.participants.slice(0, 5).map((part) => (
                         <Items.User
-                            className={'h-10 text-xs'}
+                            className={'h-10 text-xs shadow-none'}
                             data={part.user}
                             key={part._id}
                         />
@@ -56,10 +76,42 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
                 </div>
             ),
         },
+        {
+            key: '2',
+            label: 'File đính kèm',
+            children: (
+                <div className="grid grid-cols-2 gap-2 overflow-y-scroll">
+                    {imagesInRoom.map((img, i) => (
+                        <div className={'relative h-16 w-full'}>
+                            <Image
+                                className="absolute cursor-pointer rounded-md object-cover"
+                                fill
+                                key={i}
+                                quality={100}
+                                src={img.url}
+                                alt="image"
+                                onClick={() => {
+                                    setStartImageIndex(i);
+                                    setOpenSlideShow(true);
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            ),
+        },
     ];
 
     return (
-        <div className="relative ml-2 flex h-full min-w-[220px] flex-col rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none">
+        <div className="relative ml-2 flex h-full max-h-screen min-w-[220px] flex-col overflow-y-scroll rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1">
+            <Button
+                className="absolute left-2 top-2 hidden md:block"
+                onClick={() => setOpenInfo(false)}
+                variant={'event'}
+            >
+                <Icons.ArrowBack size={24} />
+            </Button>
+
             <div className="flex flex-col items-center">
                 <Avatar imgSrc={avatar} width={64} height={64} />
                 <h1 className="mt-2">{title}</h1>
@@ -85,9 +137,15 @@ const InfomationConversation: React.FC<Props> = ({ conversation }) => {
                 <Collapse
                     className={'mt-2 w-full bg-transparent'}
                     items={items}
-                    bordered={false}
                 />
             </div>
+
+            <SlideShow
+                show={openSlideShow}
+                setShow={setOpenSlideShow}
+                images={imagesInRoom.map((img) => img.url)}
+                startIndex={startImageIndex}
+            />
         </div>
     );
 };

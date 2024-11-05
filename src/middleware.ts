@@ -8,6 +8,8 @@ export async function middleware(req: NextRequest) {
     if (!token) {
         return NextResponse.redirect(new URL('/auth', req.nextUrl));
     }
+
+    return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more

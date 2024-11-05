@@ -28,6 +28,7 @@ import {
 } from 'react-icons/io';
 import { IoChatbubbleEllipses, IoPersonAdd } from 'react-icons/io5';
 import {
+    MdEmojiEmotions,
     MdGroups,
     MdMoreVert,
     MdNotifications,
@@ -177,6 +178,7 @@ const Icons = {
     },
     Profile: (props: IconProps) => <CgProfile {...props} />,
     Upload: (props: IconProps) => <FaImage {...props} />,
+    Emoji: (props: IconProps) => <MdEmojiEmotions {...props} />,
 };
 
 export default Icons;

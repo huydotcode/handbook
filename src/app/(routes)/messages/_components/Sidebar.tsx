@@ -18,11 +18,11 @@ const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
         <>
             <div
                 className={cn(
-                    'mr-2 flex h-full w-[300px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none md:w-[80px] md:min-w-[80px]'
+                    'mr-2 flex h-full w-[300px] min-w-[80px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none lg:w-[80px]'
                 )}
             >
                 <div className="px-4 py-2">
-                    <h1 className="text-2xl font-bold md:hidden">Trò chuyện</h1>
+                    <h1 className="text-2xl font-bold lg:hidden">Trò chuyện</h1>
 
                     <SearchConversation
                         initConversations={initConversations}

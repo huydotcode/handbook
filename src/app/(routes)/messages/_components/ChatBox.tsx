@@ -34,42 +34,34 @@ const ChatBox: React.FC<Props> = ({
 }) => {
     const { socket } = useSocket();
     const { data: session } = useSession();
-
     const { setCurrentRoom, setLastMessages } = useChat();
+    const { ref: topRef, inView } = useInView({
+        threshold: 0,
+        triggerOnce: false,
+    });
 
     const [messages, setMessages] = useState<IMessage[]>(initialMessages);
-
-    // Search message
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState<string>('');
+    const [page, setPage] = useState<number>(2);
+    const [openInfo, setOpenInfo] = useState<boolean>(false);
+    const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
+    const [isEnd, setIsEnd] = useState<boolean>(false);
 
     const searchMessages = useMemo(() => {
         return searchValue.trim().length > 0
             ? messages.filter((msg) => msg.text.includes(searchValue))
             : [];
     }, [messages, searchValue]);
-
     const messagesInRoom = useMemo(() => {
         return messages.filter(
             (msg) => msg.conversation._id === conversation._id
         );
     }, [messages, conversation._id]);
 
-    const [page, setPage] = useState<number>(2);
-
-    const [openInfo, setOpenInfo] = useState<boolean>(false);
-
     const searchRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<InputRef>(null);
-
-    const { ref: topRef, inView } = useInView({
-        threshold: 0,
-        triggerOnce: false,
-    });
-
     const bottomRef = useRef<HTMLDivElement>(null);
-    const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
-    const [isEnd, setIsEnd] = useState<boolean>(false);
 
     // Xử lý mở khung tìm kiếm
     const handleOpenSearch = () => {
@@ -182,7 +174,8 @@ const ChatBox: React.FC<Props> = ({
             <div
                 className={cn(
                     'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
-                    className
+                    className,
+                    openInfo && 'md:hidden'
                 )}
                 onKeyDown={handleKeyDownEsc}
             >
@@ -255,26 +248,33 @@ const ChatBox: React.FC<Props> = ({
                     )}
                 </div>
 
-                <div className="flex w-full justify-center">
+                <div className="relative flex w-full justify-center">
+                    {showScrollDown && (
+                        <Button
+                            className={cn(
+                                'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100'
+                            )}
+                            onClick={handleScrollDown}
+                        >
+                            <Icons.ArrowDown className="h-4 w-4" />
+                        </Button>
+                    )}
+
                     <InputMessage
                         currentRoom={conversation}
                         setMessages={setMessages}
                     />
                 </div>
-
-                {showScrollDown && (
-                    <Button
-                        className={cn(
-                            'absolute bottom-0 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100'
-                        )}
-                        onClick={handleScrollDown}
-                    >
-                        <Icons.ArrowDown className="h-4 w-4" />
-                    </Button>
-                )}
             </div>
 
-            {openInfo && <InfomationConversation conversation={conversation} />}
+            {openInfo && (
+                <InfomationConversation
+                    conversation={conversation}
+                    messagesInRoom={messagesInRoom}
+                    openInfo={openInfo}
+                    setOpenInfo={setOpenInfo}
+                />
+            )}
         </>
     );
 };

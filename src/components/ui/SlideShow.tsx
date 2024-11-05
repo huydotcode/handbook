@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 
 import { Keyboard, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import Button from './Button';
+import React from 'react';
 
 interface Props {
     show: boolean;

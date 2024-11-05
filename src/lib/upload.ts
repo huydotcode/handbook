@@ -39,22 +39,15 @@ export async function uploadImage({ image }: { image: string }) {
 
     try {
         const session = await getAuthSession();
-
         if (!session) {
             throw new Error('Unauthorized');
         }
 
         const res = await cloudinary.uploader.upload(image, {
-            // upload_preset: 'social-network',
             use_filename: true,
             unique_filename: false,
             overwrite: true,
         });
-
-        // Check
-        if (!res) {
-            throw new Error('Failed to upload image');
-        }
 
         const newImage = new Image({
             publicId: res.public_id,

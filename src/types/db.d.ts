@@ -66,7 +66,7 @@ interface IProfile {
 interface IMessage {
     _id: string;
     text: string;
-    images: string[];
+    images: IImage[];
     sender: IUser;
     conversation: IConversation;
     isRead: boolean;

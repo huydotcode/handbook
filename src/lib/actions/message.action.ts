@@ -33,6 +33,8 @@ export const getMessagesWithConversationId = async ({
             conversation: conversationId,
         })
             .populate('sender', POPULATE_USER)
+            .populate('conversation')
+            .populate('images')
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort({ createdAt: 1 });
@@ -53,14 +55,12 @@ export const sendMessage = async ({
 }: {
     roomId: string;
     text: string;
-    userId: string;
     images?: string[];
 }) => {
     try {
         await connectToDB();
 
         const session = await getAuthSession();
-
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
         const msg = new Message({
@@ -74,7 +74,8 @@ export const sendMessage = async ({
 
         const message = await Message.findById(msg._id)
             .populate('sender', POPULATE_USER)
-            .populate('conversation');
+            .populate('conversation')
+            .populate('images');
 
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
@@ -116,6 +117,7 @@ export const getMessages = async ({
             .limit(pageSize)
             .populate('sender', POPULATE_USER)
             .populate('conversation')
+            .populate('images')
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(messages));
@@ -136,6 +138,8 @@ export const getLastMessage = async ({
             conversation: conversationId,
         })
             .populate('sender', POPULATE_USER)
+            .populate('conversation')
+            .populate('images')
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(message));

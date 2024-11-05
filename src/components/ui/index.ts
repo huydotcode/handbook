@@ -8,6 +8,7 @@ export { default as Modal } from './Modal';
 export { default as Popover } from './Popover';
 export { default as SlideShow } from './SlideShow';
 export { default as TextEditor } from './TextEditor';
+export { default as Collapse } from './Collapse';
 
 // Skeletons
 export { default as CommentSkeleton } from './skeleton/CommentSkeleton';
