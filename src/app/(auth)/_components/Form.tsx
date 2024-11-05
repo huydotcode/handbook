@@ -30,49 +30,42 @@ const Form: React.FC<Props> = ({}) => {
     };
 
     return (
-        <div className="bg-glass flex max-w-2xl justify-between space-y-2 rounded-xl px-10 py-10 shadow-lg">
-            {/* <div className="relative w-[50%] min-w-[200px] p-4">
-                <Image fill src={'/assets/img/auth-bg.jpg'} alt="Background" />
+        <div className="bg-glass w-[400px] max-w-screen rounded-xl px-10 py-10 shadow-lg">
+            <h2 className="flex justify-center text-center text-2xl font-semibold uppercase tracking-tight">
+                {isLoginForm ? 'Đăng nhập' : 'Đăng ký'}
+            </h2>
 
-                <h1 className="text-bold absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-4xl uppercase text-primary-2">
-                    Chào mừng bạn đến với Handbook
-                </h1>
-            </div> */}
+            <div className="mt-4 flex w-full flex-col">
+                {isLoginForm ? (
+                    <LoginForm />
+                ) : (
+                    <SignupForm setIsLoginForm={setIsLoginForm} />
+                )}
+            </div>
 
-            <div className="">
-                <h2 className="flex text-center text-2xl tracking-tight">
-                    {isLoginForm ? 'Đăng nhập' : 'Đăng ký'} với Handbook{' '}
-                    <Icons.Logo className="ml-2" />
-                </h2>
+            <div className={'my-6 h-[1px] w-full bg-secondary-2'}></div>
 
-                <div className="mt-4 flex w-full flex-col">
-                    {isLoginForm ? (
-                        <LoginForm />
-                    ) : (
-                        <SignupForm setIsLoginForm={setIsLoginForm} />
-                    )}
+            <Button
+                className="w-full"
+                size={'large'}
+                onClick={loginWithGoogle}
+                disabled={isLoading}
+            >
+                <Icons.Google className="mr-2" />
+                <h5 className="text-base">Đăng nhập với Google</h5>
+            </Button>
 
-                    <div className="mt-4 flex items-center justify-center">
-                        <h5>Bạn {isLoginForm ? 'chưa' : 'đã'} có tài khoản?</h5>
-                        <Button
-                            className="ml-2 font-bold text-primary-2"
-                            variant={'text'}
-                            size={'medium'}
-                            onClick={() => setIsLoginForm((prev) => !prev)}
-                        >
-                            {isLoginForm ? 'Đăng ký' : 'Đăng nhập'} ngay
-                        </Button>
-                    </div>
-                </div>
-
+            <div className="flex items-center justify-center">
+                <h5 className={'text-sm text-secondary-1'}>
+                    {isLoginForm ? 'Chưa' : 'Đã'} có tài khoản?
+                </h5>
                 <Button
-                    className="w-full"
-                    size={'large'}
-                    onClick={loginWithGoogle}
-                    disabled={isLoading}
+                    className="text-sm font-bold text-primary-2"
+                    variant={'text'}
+                    size={'medium'}
+                    onClick={() => setIsLoginForm((prev) => !prev)}
                 >
-                    <Icons.Google className="mr-2" />
-                    <h5 className="text-base">Đăng nhập với Google</h5>
+                    {isLoginForm ? 'Đăng ký' : 'Đăng nhập'} ngay
                 </Button>
             </div>
         </div>

@@ -92,9 +92,7 @@ const LoginForm: React.FC<Props> = ({}) => {
     return (
         <form onSubmit={handleSubmit(loginWithCrenditals)}>
             <div className="flex flex-col space-y-1">
-                <label htmlFor="username" className="">
-                    Email
-                </label>
+                <label htmlFor="username">Email</label>
                 <input
                     className="focus:ring-blue-600 rounded-md border p-2 shadow-md focus:outline-none focus:ring-2"
                     type="text"
@@ -110,11 +108,11 @@ const LoginForm: React.FC<Props> = ({}) => {
             </div>
 
             <div className="flex flex-col space-y-1">
-                <label htmlFor="password" className="mt-2 ">
+                <label htmlFor="password" className="mt-2">
                     Mật khẩu
                 </label>
                 <input
-                    className="focus:ring-blue-600 rounded-md border p-2  shadow-md focus:outline-none focus:ring-2"
+                    className="focus:ring-blue-600 rounded-md border p-2 shadow-md focus:outline-none focus:ring-2"
                     type="password"
                     id="password"
                     placeholder="Nhập mật khẩu"
