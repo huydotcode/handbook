@@ -126,7 +126,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
     }, []);
 
     return (
-        <div className={'flex w-full flex-1 items-center justify-center py-2'}>
+        <div className={'flex w-full flex-1 items-center justify-center p-2'}>
             <input
                 className={'hidden'}
                 id={'file'}
