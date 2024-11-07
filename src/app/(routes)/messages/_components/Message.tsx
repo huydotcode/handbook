@@ -172,7 +172,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                             {msg.images.map((img, index) => (
                                 <img
                                     className={cn(
-                                        'my-1 max-w-[30%] cursor-pointer object-cover shadow-md',
+                                        'my-1 max-w-[30%] cursor-pointer object-cover shadow-md md:max-w-[50%]',
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
