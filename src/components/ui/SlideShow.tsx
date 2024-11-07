@@ -8,7 +8,7 @@ import 'swiper/css/pagination';
 
 import { Keyboard, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import Button from './Button';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
     show: boolean;
@@ -19,6 +19,21 @@ interface Props {
 
 const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
     if (!show) return <></>;
+
+    // Nhấn esc để thoát
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setShow(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     return (
         <Modal open={show} onClose={() => setShow(false)} disableAutoFocus>
