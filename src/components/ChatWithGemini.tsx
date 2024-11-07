@@ -29,7 +29,7 @@ const ChatWithGemini = () => {
     }, [messages]);
 
     return (
-        <div className="fixed bottom-3 right-3 z-10 w-fit">
+        <div className="fixed bottom-3 right-3 z-10 w-fit md:hidden">
             {!openChat && (
                 <Button
                     onClick={() => setOpenChat((prev) => !prev)}
