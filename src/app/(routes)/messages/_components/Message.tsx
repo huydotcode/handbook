@@ -165,8 +165,8 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                     {msg.images.length > 0 && (
                         <div
                             className={cn('flex flex-col flex-wrap', {
-                                'justify-end': isOwnMsg,
-                                'justify-start': !isOwnMsg,
+                                'items-end': isOwnMsg,
+                                'items-start': !isOwnMsg,
                             })}
                         >
                             {msg.images.map((img, index) => (
