@@ -126,134 +126,130 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
     }, []);
 
     return (
-        <div>
-            <div className={'flex items-center py-2'}>
-                <input
-                    className={'hidden'}
-                    id={'file'}
-                    type="file"
-                    multiple
-                    onChange={(e) => {
-                        if (e.target.files) {
-                            handleFileChange(Array.from(e.target.files));
-                        }
-                    }}
-                />
+        <div className={'flex w-full flex-1 items-center justify-center py-2'}>
+            <input
+                className={'hidden'}
+                id={'file'}
+                type="file"
+                multiple
+                onChange={(e) => {
+                    if (e.target.files) {
+                        handleFileChange(Array.from(e.target.files));
+                    }
+                }}
+            />
 
-                <Button variant={'event'} type={'button'}>
-                    <label
-                        htmlFor="file"
-                        className="flex cursor-pointer items-center gap-2"
-                    >
-                        <Icons.Upload className={'h-6 w-6'} />
-                    </label>
-                </Button>
-
-                <form
-                    className="relative mx-2 flex min-w-[500px] max-w-full overflow-hidden rounded-xl border bg-transparent shadow-xl md:min-w-0 "
-                    onSubmit={handleSubmit(onSubmit)}
-                    autoComplete="off"
+            <Button variant={'event'} type={'button'}>
+                <label
+                    htmlFor="file"
+                    className="flex cursor-pointer items-center gap-2"
                 >
-                    <div className={cn('flex w-full flex-col')}>
-                        {files.length > 0 && (
-                            <div className="flex gap-3 px-4 py-2">
-                                <input
-                                    className={'hidden'}
-                                    id={'more-file'}
-                                    type="file"
-                                    multiple
-                                    onChange={(e) => {
-                                        if (e.target.files) {
-                                            handleFileChange([
-                                                ...files,
-                                                ...Array.from(e.target.files),
-                                            ]);
-                                        }
-                                    }}
-                                />
+                    <Icons.Upload className={'h-6 w-6'} />
+                </label>
+            </Button>
 
-                                <label
-                                    htmlFor="more-file"
-                                    className="justify-cente flex cursor-pointer items-center rounded-lg px-4 hover:bg-hover-1 dark:hover:bg-dark-hover-1"
-                                >
-                                    <Icons.Upload className={'h-8 w-8'} />
-                                </label>
-
-                                {files.map((file, index) => (
-                                    <div key={index} className="relative">
-                                        <img
-                                            src={URL.createObjectURL(file)}
-                                            alt={file.name}
-                                            className="h-16 w-16 rounded-lg object-cover"
-                                        />
-                                        <Button
-                                            className="absolute right-0 top-0 rounded-full p-1 text-white"
-                                            type={'button'}
-                                            onClick={() =>
-                                                handleRemoveFile(index)
-                                            }
-                                        >
-                                            <Icons.Close className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className={'flex items-center justify-between'}>
+            <form
+                className="relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:min-w-0 md:flex-1 "
+                onSubmit={handleSubmit(onSubmit)}
+                autoComplete="off"
+            >
+                <div className={cn('flex w-full flex-col')}>
+                    {files.length > 0 && (
+                        <div className="flex gap-3 px-4 py-2">
                             <input
-                                {...register('text')}
-                                className="flex-1 bg-transparent px-4 py-2"
-                                type="text"
-                                placeholder="Nhập tin nhắn..."
-                                spellCheck={false}
-                                autoComplete="off"
+                                className={'hidden'}
+                                id={'more-file'}
+                                type="file"
+                                multiple
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        handleFileChange([
+                                            ...files,
+                                            ...Array.from(e.target.files),
+                                        ]);
+                                    }
+                                }}
                             />
 
-                            <div className={'flex items-center'}>
-                                <button
-                                    className={
-                                        'p-2 hover:bg-hover-1 dark:hover:bg-dark-hover-1'
-                                    }
-                                    type={'button'}
-                                    onClick={() => {
-                                        setShowEmoji((prev) => !prev);
-                                    }}
-                                >
-                                    <Icons.Emoji className={'h-4 w-4'} />
-                                </button>
-
-                                {showEmoji && (
-                                    <div className={'fixed bottom-20 right-10'}>
-                                        <Picker
-                                            data={data}
-                                            onEmojiSelect={handleEmojiSelect}
-                                            theme={'light'}
-                                            locale={'vi'}
-                                            onClickOutside={() =>
-                                                setShowEmoji(false)
-                                            }
-                                            previewPosition={'none'}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            <Button
-                                className="h-full rounded-none border-l px-4 py-2 text-base"
-                                variant={'event'}
-                                type="submit"
+                            <label
+                                htmlFor="more-file"
+                                className="justify-cente flex cursor-pointer items-center rounded-lg px-4 hover:bg-hover-1 dark:hover:bg-dark-hover-1"
                             >
-                                {isSubmitting ? (
-                                    <Icons.Loading className="animate-spin" />
-                                ) : (
-                                    <Icons.Send />
-                                )}
-                            </Button>
+                                <Icons.Upload className={'h-8 w-8'} />
+                            </label>
+
+                            {files.map((file, index) => (
+                                <div key={index} className="relative">
+                                    <img
+                                        src={URL.createObjectURL(file)}
+                                        alt={file.name}
+                                        className="h-16 w-16 rounded-lg object-cover"
+                                    />
+                                    <Button
+                                        className="absolute right-0 top-0 rounded-full p-1 text-white"
+                                        type={'button'}
+                                        onClick={() => handleRemoveFile(index)}
+                                    >
+                                        <Icons.Close className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
                         </div>
+                    )}
+
+                    <div className={'flex w-full items-center justify-between'}>
+                        <input
+                            {...register('text')}
+                            className="flex-1 bg-transparent px-4 py-2"
+                            type="text"
+                            placeholder="Nhập tin nhắn..."
+                            spellCheck={false}
+                            autoComplete="off"
+                        />
+
+                        <div className={'flex items-center'}>
+                            <button
+                                className={
+                                    'p-2 hover:bg-hover-1 dark:hover:bg-dark-hover-1'
+                                }
+                                type={'button'}
+                                onClick={() => {
+                                    setShowEmoji((prev) => !prev);
+                                }}
+                            >
+                                <Icons.Emoji className={'h-4 w-4'} />
+                            </button>
+
+                            {showEmoji && (
+                                <div className={'fixed bottom-20 right-10'}>
+                                    <Picker
+                                        data={data}
+                                        onEmojiSelect={handleEmojiSelect}
+                                        theme={'light'}
+                                        locale={'vi'}
+                                        onClickOutside={() =>
+                                            setShowEmoji(false)
+                                        }
+                                        previewPosition={'none'}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <Button
+                            className="h-full rounded-none border-l px-4 py-2 text-base"
+                            variant={'event'}
+                            type="submit"
+                        >
+                            {isSubmitting ? (
+                                <Icons.Loading className="animate-spin" />
+                            ) : (
+                                <Icons.Send />
+                            )}
+                        </Button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     );
 };
