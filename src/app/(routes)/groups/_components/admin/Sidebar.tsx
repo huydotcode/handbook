@@ -1,14 +1,14 @@
 'use client';
 import { Avatar, Button, Icons, Modal } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocket } from '@/context';
-import { ConversationService, GroupService } from '@/lib/services';
+import { ConversationService } from '@/lib/services';
 import logger from '@/utils/logger';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { socket } from '@/lib/socket';
 
 interface Props {
     group: IGroup;
@@ -31,8 +31,6 @@ const Sidebar: React.FC<Props> = ({
         useState<IConversation[]>(initConversations);
 
     const { data: session } = useSession();
-    const { socket } = useSocket();
-
     const canCreateConversation = useMemo(() => {
         return currentGroup.members.some(
             (member) =>

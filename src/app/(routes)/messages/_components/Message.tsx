@@ -1,7 +1,6 @@
 'use client';
 import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@mui/material';
@@ -15,6 +14,7 @@ import React, {
 } from 'react';
 import toast from 'react-hot-toast';
 import { FormatDate } from '@/utils/formatDate';
+import { socket } from '@/lib/socket';
 
 interface Props {
     data: IMessage;
@@ -23,8 +23,6 @@ interface Props {
 
 const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     const { data: session } = useSession();
-    const { socket } = useSocket();
-
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
     const [startIndex, setStartIndex] = useState<number>(0);

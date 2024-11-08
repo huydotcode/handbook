@@ -18,6 +18,7 @@ import InputMessage from './InputMessage';
 import Message from './Message';
 import InfomationConversation from './InfomationConversation';
 import { Input, InputRef } from 'antd';
+import { socket } from '@/lib/socket';
 
 interface Props {
     className?: string;
@@ -32,7 +33,6 @@ const ChatBox: React.FC<Props> = ({
     initialMessages,
     conversation,
 }) => {
-    const { socket } = useSocket();
     const { data: session } = useSession();
     const { setCurrentRoom, setLastMessages } = useChat();
     const { ref: topRef, inView } = useInView({

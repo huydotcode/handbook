@@ -1,11 +1,8 @@
 'use client';
 import socketEvent from '@/constants/socketEvent.constant';
-import NotificationService from '@/lib/services/notification.service';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useSocial, useSocket } from '.';
-import toast from 'react-hot-toast';
+import { useSocial } from '.';
+import { socket } from '@/lib/socket';
 
 type AppContextType = {
     notifications: INotification[];
@@ -23,8 +20,6 @@ export const useApp = () => useContext(AppContext);
 
 function AppProvider({ children }: { children: React.ReactNode }) {
     const [notifications, setNotifications] = useState<INotification[]>([]);
-
-    const { socket } = useSocket();
     const { setFriends } = useSocial();
 
     // Lắng nghe thông báo mới

@@ -1,12 +1,10 @@
 'use client';
-import { Button } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocial, useSocket } from '@/context';
+import { useSocial } from '@/context';
 import { MessageService } from '@/lib/services';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { socket } from '@/lib/socket';
 
 /*
     * ChatContext
@@ -52,7 +50,6 @@ export const useChat = () => React.useContext(ChatContext);
 function ChatProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { conversations } = useSocial();
-    const { socket } = useSocket();
 
     const [currentRoom, setCurrentRoom] = useState<string>('' as string);
     const [messages, setMessages] = useState<IMessageState>({});
@@ -64,6 +61,7 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
     }: {
         conversationId: string;
     }) => {
+        console.log('ChatContext: getLastMessage');
         const lastMessage = await MessageService.getLastMessage({
             conversationId: conversationId,
         });

@@ -1,9 +1,7 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -11,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { uploadImage } from '@/lib/upload';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import { socket } from '@/lib/socket';
 
 interface Props {
     currentRoom: IConversation;
@@ -23,9 +22,6 @@ interface IFormData {
 }
 
 const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
-    const { data: session } = useSession();
-    const { socket } = useSocket();
-
     const [files, setFiles] = useState<File[]>([]);
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
@@ -200,9 +196,9 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                     <div className={'flex w-full items-center justify-between'}>
                         <input
                             {...register('text')}
-                            className="flex-1 bg-transparent px-4 py-2"
+                            className="flex-1 bg-transparent px-4 py-2 md:w-[50px]"
                             type="text"
-                            placeholder="Nhập tin nhắn..."
+                            placeholder="Nhắn tin"
                             spellCheck={false}
                             autoComplete="off"
                         />

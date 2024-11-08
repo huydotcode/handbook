@@ -1,23 +1,20 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import {
+import React, {
     createContext,
     useCallback,
     useContext,
     useEffect,
     useState,
 } from 'react';
-import { Socket } from 'socket.io';
-import { io as ClientIO } from 'socket.io-client';
+import { socket } from '@/lib/socket';
 
 type SocketContextType = {
-    socket: Socket | null;
     isConnected: boolean;
     isLoading: boolean;
 };
 
 export const SocketContext = createContext<SocketContextType>({
-    socket: null,
     isConnected: false,
     isLoading: false,
 });
@@ -32,40 +29,29 @@ const SOCKET_API =
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
 
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const socketInitializer = useCallback(async () => {
+    const socketInitializer = useCallback(() => {
+        console.log('Initializing socket');
         if (isInitialized || !session?.user) return;
-
-        const socketIO = await ClientIO(SOCKET_API, {
-            withCredentials: true,
-            transports: ['websocket', 'polling'],
-            auth: {
-                user: session.user,
-            },
-        });
-
-        setSocket(() => {
-            const newSocket = socketIO as any;
-            return newSocket;
-        });
 
         setIsLoading(false);
         setIsInitialized(true);
 
-        socketIO.on('connect', () => {
+        socket.on('connect', () => {
+            console.log('Connected to socket');
             setIsConnected(true);
         });
 
-        socketIO.on('disconnect', () => {
+        socket.on('disconnect', () => {
+            console.log('Disconnected to socket');
             setIsConnected(false);
         });
 
-        socketIO.on('connect_error', (err) => {
+        socket.on('connect_error', (err) => {
             setIsConnected(false);
         });
 
@@ -73,15 +59,22 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             if (socket) {
                 socket.disconnect();
             }
-            setSocket(null);
         };
     }, [socket, session?.user, isInitialized]);
 
     useEffect(() => {
-        if (session?.user) {
-            socketInitializer();
-        }
-    }, [socketInitializer, session?.user]);
+        if (!session) return;
+
+        (async () => {
+            try {
+                socket.connect();
+            } catch (error) {}
+        })();
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const values = {
         socket,
