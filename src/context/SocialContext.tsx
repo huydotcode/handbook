@@ -28,6 +28,7 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
 
     // Lấy danh sách conversation
     const getConversations = async () => {
+        console.log('SocketContext: getConversations');
         try {
             const conversations = await ConversationService.getConversations();
             setConversations(conversations);
@@ -38,6 +39,7 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
 
     // Lấy danh sách bạn bè
     const getFriends = async () => {
+        console.log('SocketContext: getFriends');
         try {
             const friends = await UserService.getFriends({
                 userId: session?.user.id as string,

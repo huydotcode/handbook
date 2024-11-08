@@ -66,6 +66,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     }, [session, userId, username, type, groupId]);
 
     const fetchPosts = useCallback(async () => {
+        console.log('InfinityPostComponent: fetchPosts()');
         setLoading(true);
         try {
             const fetchedPosts = await PostService.getNewFeedPosts({
