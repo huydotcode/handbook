@@ -6,6 +6,7 @@ import React from 'react';
 import Items from '../../shared/Items';
 import Icons from '../../ui/Icons';
 interface Props {
+    show: boolean;
     className?: string;
     itemClassName?: string;
     onlyIcon?: boolean;
@@ -19,6 +20,7 @@ const NavigationPages: React.FC<Props> = ({
     onlyIcon = false,
     direction = 'col',
     handleClose,
+    show,
 }) => {
     const { data: session } = useSession();
 
@@ -26,7 +28,9 @@ const NavigationPages: React.FC<Props> = ({
         <ul
             className={cn(
                 `${className} flex-${direction} bg-white dark:bg-dark-secondary-1`,
-                direction == 'col' && ''
+                direction == 'col' && '',
+                show && 'md:w-fit',
+                !show && 'md:w-0'
             )}
         >
             {session?.user.role === 'admin' && (

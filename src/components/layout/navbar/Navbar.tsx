@@ -1,16 +1,16 @@
 'use client';
 import Link from 'next/link';
 
+import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Button } from '@/components/ui';
-import NavigationPages from './NavigationPages';
-import NavUser from './NavUser';
-import Searchbar from './Searchbar';
 import DarkmodeButton from '../../ui/DarkmodeButton';
 import Icons from '../../ui/Icons';
+import NavigationPages from './NavigationPages';
+import NavUser from './NavUser';
 import NavNotification from './notification/NavNotification';
+import Searchbar from './Searchbar';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -38,10 +38,9 @@ const Navbar = () => {
 
                         <NavigationPages
                             className={cn(
-                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden  shadow-xl transition-all duration-1000',
-                                showPages && 'md:w-fit',
-                                !showPages && 'md:w-0'
+                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden  shadow-xl transition-all duration-1000'
                             )}
+                            show={showPages}
                             direction="col"
                             itemClassName="w-full h-14 rounded-none mx-2"
                             handleClose={() => setShowPages(false)}
@@ -52,6 +51,7 @@ const Navbar = () => {
 
                 <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
                     <NavigationPages
+                        show={showPages}
                         className="flex h-full w-full items-center"
                         direction="row"
                         itemClassName="h-full"
