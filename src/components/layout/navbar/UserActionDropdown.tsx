@@ -18,8 +18,8 @@ const UserActionDropdown = () => {
     const { open, anchorEl, setAnchorEl, handleClose, handleShow } =
         usePopover();
 
-    const handleLogout = () => {
-        signOut();
+    const handleLogout = async () => {
+        await signOut();
     };
 
     return (
