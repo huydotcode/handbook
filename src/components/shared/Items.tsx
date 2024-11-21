@@ -25,7 +25,6 @@ interface NavItem {
     className?: string;
     link: Link;
     onlyIcon?: boolean;
-    direction?: 'row' | 'col';
     index: number;
     handleClose?: () => void;
 }
@@ -134,8 +133,7 @@ const Items = {
         );
     },
     Nav: (props: NavItem) => {
-        const { index, link, className, direction, handleClose, onlyIcon } =
-            props;
+        const { index, link, className, handleClose } = props;
         const path = usePathname();
         const isActived =
             path === link.path ||
@@ -145,18 +143,13 @@ const Items = {
         };
 
         return (
-            <Tooltip
-                title={link.name}
-                placement={direction == 'col' ? 'right' : 'bottom'}
-            >
+            <Tooltip title={link.name}>
                 <li
                     key={index}
                     className={cn(
-                        `flex cursor-pointer items-center rounded-xl p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
+                        `flex flex-1 cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
                         {
-                            'w-[50%]': onlyIcon,
                             'border-b-4 border-b-blue': isActived,
-                            'rounded-none': direction === 'row',
                         },
                         className
                     )}
@@ -164,20 +157,18 @@ const Items = {
                 >
                     <Link
                         className={cn(
-                            'flex h-full w-full items-center dark:text-dark-primary-1 md:justify-center',
+                            'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
                             {
-                                'justify-center': onlyIcon,
                                 'text-blue dark:text-blue': isActived,
                             }
                         )}
                         href={link.path || '/'}
                     >
                         <Icon />
-                        {!onlyIcon && (
-                            <span className="ml-2 text-xs lg:hidden">
-                                {link.name}
-                            </span>
-                        )}
+
+                        <span className="ml-2 hidden text-xs md:block">
+                            {link.name}
+                        </span>
                     </Link>
                 </li>
             </Tooltip>

@@ -5,9 +5,16 @@ interface NavLink {
     name: string;
     path: string;
     icon: React.ReactNode;
+    role?: string;
 }
 
 export const navLink: NavLink[] = [
+    {
+        name: 'Admin',
+        path: '/admin',
+        icon: <Icons.Admin className="h-8 w-8 " />,
+        role: 'admin',
+    },
     {
         name: 'Trang chủ',
         path: '/',
