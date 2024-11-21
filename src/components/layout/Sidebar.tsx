@@ -57,10 +57,7 @@ const Sidebar = () => {
                             <li
                                 key={index}
                                 className={cn(
-                                    `flex w-full cursor-pointer items-center rounded-sm p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
-                                    {
-                                        'border-b-4 border-b-blue': isActived,
-                                    }
+                                    `flex w-full cursor-pointer items-center rounded-xl p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`
                                 )}
                             >
                                 <Link

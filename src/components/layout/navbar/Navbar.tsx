@@ -87,7 +87,7 @@ const Navbar = () => {
                                     <li
                                         key={index}
                                         className={cn(
-                                            `flex cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:w-full md:rounded-xl`,
+                                            `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
                                             {
                                                 'border-b-4 border-b-blue':
                                                     isActived,
