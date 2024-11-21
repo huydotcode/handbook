@@ -9,15 +9,53 @@ import {
 } from 'react';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
+import socketEvent from '@/constants/socketEvent.constant';
 
 type SocketContextType = {
     socket: Socket | null;
+    socketEmitor: {
+        joinRoom: ({
+            roomId,
+            userId,
+        }: {
+            roomId: string;
+            userId: string;
+        }) => void;
+        sendMessage: ({
+            roomId,
+            message,
+        }: {
+            roomId: string;
+            message: IMessage;
+        }) => void;
+        receiveNotification: ({
+            notification,
+        }: {
+            notification: INotification;
+        }) => void;
+        deleteMessage: ({
+            currentMessage,
+            prevMessage,
+        }: {
+            currentMessage: IMessage;
+            prevMessage: IMessage;
+        }) => void;
+        sendRequestAddFriend: ({ request }: { request: INotification }) => void;
+    };
+
     isConnected: boolean;
     isLoading: boolean;
 };
 
 export const SocketContext = createContext<SocketContextType>({
     socket: null,
+    socketEmitor: {
+        joinRoom: () => {},
+        sendMessage: () => {},
+        receiveNotification: () => {},
+        deleteMessage: () => {},
+        sendRequestAddFriend: () => {},
+    },
     isConnected: false,
     isLoading: false,
 });
@@ -77,6 +115,53 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         };
     }, [socket, session?.user, isInitialized]);
 
+    const socketEmitor = {
+        joinRoom: ({ roomId, userId }: { roomId: string; userId: string }) => {
+            socket?.emit('join-room', {
+                roomId,
+                userId,
+            });
+        },
+        sendMessage: ({
+            roomId,
+            message,
+        }: {
+            roomId: string;
+            message: IMessage;
+        }) => {
+            socket?.emit(socketEvent.SEND_MESSAGE, {
+                roomId,
+                message,
+            });
+        },
+        receiveNotification: ({
+            notification,
+        }: {
+            notification: INotification;
+        }) => {
+            socket?.emit(socketEvent.RECEIVE_NOTIFICATION, {
+                notification,
+            });
+        },
+        deleteMessage: ({
+            currentMessage,
+            prevMessage,
+        }: {
+            currentMessage: IMessage;
+            prevMessage: IMessage;
+        }) => {
+            socket?.emit(socketEvent.DELETE_MESSAGE, {
+                currentMessage,
+                prevMessage,
+            });
+        },
+        sendRequestAddFriend: ({ request }: { request: INotification }) => {
+            socket?.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {
+                request,
+            });
+        },
+    };
+
     useEffect(() => {
         if (session?.user) {
             socketInitializer();
@@ -85,6 +170,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
 
     const values = {
         socket,
+        socketEmitor,
         isLoading,
         isConnected,
     };

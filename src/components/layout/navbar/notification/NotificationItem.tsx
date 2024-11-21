@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
-import socketEvent from '@/constants/socketEvent.constant';
 import { useApp, useSocial, useSocket } from '@/context';
 import { ConversationService, NotificationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
@@ -18,7 +17,7 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
-    const { socket } = useSocket();
+    const { socket, socketEmitor } = useSocket();
     const { notifications, setNotifications } = useApp();
     const { setConversations } = useSocial();
     const [showRemove, setShowRemove] = useState(false);
@@ -61,12 +60,13 @@ const NotificationItem: React.FC<Props> = ({
 
             if (socket) {
                 // Join room
-                socket.emit(socketEvent.JOIN_ROOM, {
+                socketEmitor.joinRoom({
                     roomId: newConversation._id,
+                    userId: notification.receiver._id,
                 });
 
                 // Gửi thông báo cho người gửi
-                socket.emit(socketEvent.RECEIVE_NOTIFICATION, {
+                socketEmitor.receiveNotification({
                     notification: notificationAcceptFriend,
                 });
             }

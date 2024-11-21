@@ -1,6 +1,5 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-import socketEvent from '@/constants/socketEvent.constant';
 import { MessageService } from '@/lib/services';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,7 +21,7 @@ interface IFormData {
 }
 
 const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
-    const { socket } = useSocket();
+    const { socket, socketEmitor } = useSocket();
     const [files, setFiles] = useState<File[]>([]);
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
@@ -96,9 +95,11 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
             });
 
             setMessages((prev) => [newMsg, ...prev]);
-            if (socket) {
-                socket.emit(socketEvent.SEND_MESSAGE, newMsg);
-            }
+
+            socketEmitor.sendMessage({
+                roomId: currentRoom._id,
+                message: newMsg,
+            });
 
             setFiles([]);
             reset();

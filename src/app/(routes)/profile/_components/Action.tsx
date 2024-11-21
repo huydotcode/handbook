@@ -1,7 +1,6 @@
 'use client';
 import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
-import socketEvent from '@/constants/socketEvent.constant';
 import { useSocial, useSocket } from '@/context';
 import { NotificationService, UserService } from '@/lib/services';
 import logger from '@/utils/logger';
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const Action: React.FC<Props> = ({ userId }) => {
-    const { socket } = useSocket();
+    const { socket, socketEmitor } = useSocket();
     const { friends, setFriends } = useSocial();
     const [isRequest, setIsRequest] = useState<boolean>(false);
     const [countClick, setCountClick] = useState<number>(0);
@@ -45,11 +44,7 @@ const Action: React.FC<Props> = ({ userId }) => {
 
             setIsRequest(true);
 
-            if (socket) {
-                socket.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {
-                    request: requestAddFriend,
-                });
-            }
+            socketEmitor.sendRequestAddFriend({ request: requestAddFriend });
 
             toast.success('Đã gửi lời mời kết bạn');
         } catch (error) {

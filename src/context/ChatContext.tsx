@@ -49,7 +49,7 @@ export const useChat = () => React.useContext(ChatContext);
 function ChatProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { conversations } = useSocial();
-    const { socket } = useSocket();
+    const { socket, socketEmitor } = useSocket();
 
     const [currentRoom, setCurrentRoom] = useState<string>('' as string);
     const [messages, setMessages] = useState<IMessageState>({});
@@ -76,19 +76,15 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
 
     // Tham gia các cuộc trò chuyện
     useEffect(() => {
-        if (!socket) return;
-
         conversations.forEach((conversation) => {
             setMessages((prev) => ({
                 ...prev,
                 [conversation._id]: [],
             }));
 
-            console.log('socket.emit(JOIN_ROOM)');
-
-            socket.emit(socketEvent.JOIN_ROOM, {
+            socketEmitor.joinRoom({
                 roomId: conversation._id,
-                userId: session?.user?.id,
+                userId: session?.user?.id || '',
             });
         });
     }, [socket, conversations]);
@@ -104,7 +100,7 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
     }, [conversations]);
 
     useEffect(() => {
-        if (!socket) return;
+        if (!socket || !session?.user?.id) return;
 
         socket.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
             if (currentRoom === message.conversation._id) return;

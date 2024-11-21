@@ -22,7 +22,7 @@ interface Props {
 }
 
 const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
-    const { socket } = useSocket();
+    const { socket, socketEmitor } = useSocket();
     const { data: session } = useSession();
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
@@ -64,7 +64,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         const res = await MessageService.deleteMessage({ messageId: msg._id });
         const prevMsg = messagesInRoom[index - 1] || null;
 
-        socket.emit(socketEvent.DELETE_MESSAGE, {
+        socketEmitor.deleteMessage({
             currentMessage: msg,
             prevMessage: prevMsg,
         });
