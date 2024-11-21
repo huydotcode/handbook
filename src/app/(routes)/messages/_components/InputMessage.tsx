@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { uploadImage } from '@/lib/upload';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { socket } from '@/lib/socket';
+import { useSocket } from '@/context';
 
 interface Props {
     currentRoom: IConversation;
@@ -22,6 +22,7 @@ interface IFormData {
 }
 
 const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
+    const { socket } = useSocket();
     const [files, setFiles] = useState<File[]>([]);
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 

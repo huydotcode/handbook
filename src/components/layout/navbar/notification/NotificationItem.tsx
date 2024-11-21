@@ -3,12 +3,11 @@ import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useApp, useSocial } from '@/context';
+import { useApp, useSocial, useSocket } from '@/context';
 import { ConversationService, NotificationService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import React, { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
-import { socket } from '@/lib/socket';
 
 interface Props {
     data: INotification;
@@ -19,6 +18,7 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
+    const { socket } = useSocket();
     const { notifications, setNotifications } = useApp();
     const { setConversations } = useSocial();
     const [showRemove, setShowRemove] = useState(false);

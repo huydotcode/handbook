@@ -1,10 +1,9 @@
 'use client';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocial } from '@/context';
+import { useSocial, useSocket } from '@/context';
 import { MessageService } from '@/lib/services';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import { socket } from '@/lib/socket';
 
 /*
     * ChatContext
@@ -50,6 +49,7 @@ export const useChat = () => React.useContext(ChatContext);
 function ChatProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { conversations } = useSocial();
+    const { socket } = useSocket();
 
     const [currentRoom, setCurrentRoom] = useState<string>('' as string);
     const [messages, setMessages] = useState<IMessageState>({});
@@ -84,8 +84,11 @@ function ChatProvider({ children }: { children: React.ReactNode }) {
                 [conversation._id]: [],
             }));
 
+            console.log('socket.emit(JOIN_ROOM)');
+
             socket.emit(socketEvent.JOIN_ROOM, {
                 roomId: conversation._id,
+                userId: session?.user?.id,
             });
         });
     }, [socket, conversations]);

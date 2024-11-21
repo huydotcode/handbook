@@ -1,64 +1,91 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import React, {
+import {
     createContext,
     useCallback,
     useContext,
     useEffect,
     useState,
 } from 'react';
-import { socket } from '@/lib/socket';
+import { Socket } from 'socket.io';
+import { io as ClientIO } from 'socket.io-client';
 
 type SocketContextType = {
+    socket: Socket | null;
     isConnected: boolean;
+    isLoading: boolean;
 };
 
 export const SocketContext = createContext<SocketContextType>({
+    socket: null,
     isConnected: false,
+    isLoading: false,
 });
 
 export const useSocket = () => useContext(SocketContext);
 
+const SOCKET_API =
+    process.env.NODE_ENV == 'production'
+        ? 'https://handbook-server.onrender.com'
+        : 'http://localhost:5000';
+
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
+
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (!session?.user.id) {
-            socket.disconnect();
-            return;
-        }
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-        if (isConnected) return;
+    const socketInitializer = useCallback(async () => {
+        if (isInitialized || !session?.user) return;
 
-        (async () => {
-            try {
-                socket.connect();
+        const socketIO = ClientIO(SOCKET_API, {
+            withCredentials: true,
+            transports: ['websocket', 'polling'],
+            auth: {
+                user: session.user,
+            },
+        });
 
-                socket.on('connect', () => {
-                    console.log('Connected to socket');
-                    setIsConnected(true);
-                });
+        setSocket(() => {
+            const newSocket = socketIO as any;
+            return newSocket;
+        });
 
-                socket.on('disconnect', () => {
-                    console.log('Disconnected to socket');
-                    setIsConnected(false);
-                });
+        setIsLoading(false);
+        setIsInitialized(true);
 
-                socket.on('connect_error', (err) => {
-                    setIsConnected(false);
-                });
-            } catch (error) {
-                throw new Error("Can't connect to socket");
-            }
-        })();
+        socketIO.on('connect', () => {
+            setIsConnected(true);
+        });
+
+        socketIO.on('disconnect', () => {
+            setIsConnected(false);
+        });
+
+        socketIO.on('connect_error', (err) => {
+            setIsConnected(false);
+        });
 
         return () => {
-            socket.disconnect();
+            if (socket) {
+                socket.disconnect();
+            }
+            setSocket(null);
         };
-    }, [session?.user.id]);
+    }, [socket, session?.user, isInitialized]);
+
+    useEffect(() => {
+        if (session?.user) {
+            socketInitializer();
+        }
+    }, [socketInitializer, session?.user]);
 
     const values = {
+        socket,
+        isLoading,
         isConnected,
     };
 

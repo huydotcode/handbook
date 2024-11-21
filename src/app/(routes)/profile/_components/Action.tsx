@@ -2,18 +2,18 @@
 import { Button } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useSocial } from '@/context';
+import { useSocial, useSocket } from '@/context';
 import { NotificationService, UserService } from '@/lib/services';
 import logger from '@/utils/logger';
 import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { socket } from '@/lib/socket';
 
 interface Props {
     userId: string;
 }
 
 const Action: React.FC<Props> = ({ userId }) => {
+    const { socket } = useSocket();
     const { friends, setFriends } = useSocial();
     const [isRequest, setIsRequest] = useState<boolean>(false);
     const [countClick, setCountClick] = useState<number>(0);

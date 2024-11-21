@@ -14,7 +14,7 @@ import React, {
 } from 'react';
 import toast from 'react-hot-toast';
 import { FormatDate } from '@/utils/formatDate';
-import { socket } from '@/lib/socket';
+import { useSocket } from '@/context';
 
 interface Props {
     data: IMessage;
@@ -22,6 +22,7 @@ interface Props {
 }
 
 const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
+    const { socket } = useSocket();
     const { data: session } = useSession();
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);

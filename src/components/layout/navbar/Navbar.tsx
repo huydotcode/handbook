@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
@@ -36,23 +35,23 @@ const Navbar = () => {
                             <Icons.Menu />
                         </Button>
 
-                        <NavigationPages
-                            className={cn(
-                                'fixed left-0 top-14 z-50 flex h-[calc(100vh-56px)] items-center overflow-hidden  shadow-xl transition-all duration-1000'
-                            )}
-                            show={showPages}
-                            direction="col"
-                            itemClassName="w-full h-14 rounded-none mx-2"
-                            handleClose={() => setShowPages(false)}
-                            onlyIcon={false}
-                        />
+                        {/*<NavigationPages*/}
+                        {/*    className={cn(*/}
+                        {/*        */}
+                        {/*    )}*/}
+                        {/*    show={showPages}*/}
+                        {/*    direction="col"*/}
+                        {/*    itemClassName="w-full h-14 rounded-none mx-2"*/}
+                        {/*    handleClose={() => setShowPages(false)}*/}
+                        {/*    onlyIcon={false}*/}
+                        {/*/>*/}
                     </div>
                 </div>
 
                 <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
                     <NavigationPages
                         show={showPages}
-                        className="flex h-full w-full items-center"
+                        className="top-14 z-50 flex h-full w-full items-center overflow-hidden shadow-xl transition-all duration-1000  md:fixed md:left-0 md:h-[calc(100vh-56px)]"
                         direction="row"
                         itemClassName="h-full"
                         onlyIcon

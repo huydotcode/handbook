@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { socket } from '@/lib/socket';
+import { useSocket } from '@/context';
 
 interface Props {
     group: IGroup;
@@ -24,6 +24,7 @@ const Sidebar: React.FC<Props> = ({
     group: currentGroup,
     conversations: initConversations,
 }) => {
+    const { socket } = useSocket();
     const [showModalCreateConversation, setShowModalCreateConversation] =
         useState<boolean>(false);
 

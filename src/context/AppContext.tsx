@@ -1,8 +1,7 @@
 'use client';
 import socketEvent from '@/constants/socketEvent.constant';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useSocial } from '.';
-import { socket } from '@/lib/socket';
+import { useSocial, useSocket } from '.';
 
 type AppContextType = {
     notifications: INotification[];
@@ -19,6 +18,7 @@ export const AppContext = createContext<AppContextType>({
 export const useApp = () => useContext(AppContext);
 
 function AppProvider({ children }: { children: React.ReactNode }) {
+    const { socket } = useSocket();
     const [notifications, setNotifications] = useState<INotification[]>([]);
     const { setFriends } = useSocial();
 
