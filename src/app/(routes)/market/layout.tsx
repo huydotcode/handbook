@@ -9,7 +9,7 @@ interface Props {
 
 export async function generateMetadata() {
     return {
-        title: 'Messenger | Handbook',
+        title: 'Market | Handbook',
     };
 }
 
@@ -19,7 +19,9 @@ const MarketLayout: React.FC<Props> = async ({ children }) => {
     return (
         <FullLayout>
             <Sidebar categories={categories} />
-            <Container direction={'right'}>{children}</Container>
+            <div className={'ml-[300px] mt-[56px] min-h-screen bg-secondary-1'}>
+                {children}
+            </div>
         </FullLayout>
     );
 };

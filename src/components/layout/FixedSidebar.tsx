@@ -26,7 +26,7 @@ const FixedSidebar: React.FC<Props> = ({
                 hideOnMobile && 'md:hidden'
             )}
         >
-            <div className={cn('', width && `w-[${width}px] xl:w-fit`)}>
+            <div className={cn('', width && `w-[${width}px] xl:w-[80px]`)}>
                 {children}
             </div>
         </aside>

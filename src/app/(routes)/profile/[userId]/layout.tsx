@@ -33,14 +33,14 @@ const ProfileLayout = async ({ params, children }: Props) => {
     if (!profile) notFound();
 
     return (
-        <Container>
+        <div className={'w-container mx-auto max-w-screen'}>
             <div className="w-full pb-96">
                 <div className="h-full w-full">
                     <Header profile={profile} user={profile.user} />
                     <div className="mt-4">{children}</div>
                 </div>
             </div>
-        </Container>
+        </div>
     );
 };
 

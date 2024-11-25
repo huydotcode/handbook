@@ -17,14 +17,24 @@ const Container: React.FC<Props> = ({
     return (
         <div
             className={cn(
-                'mt-[56px] h-screen w-[--container-width] max-w-screen',
-                direction === 'right' && 'ml-[320px] md:ml-0',
+                'mt-[56px] flex h-screen max-w-[100%-320px]',
+                direction === 'right' ? 'ml-[320px]' : '',
                 direction === 'center' && 'mx-auto',
-                width && `w-[${width}px]`,
+                width ? `w-[${width}px]` : 'w-full',
                 className
             )}
         >
-            {children}
+            <div
+                className={cn(
+                    'flex-grow', // Tự động chiếm không gian còn lại
+                    direction === 'right' && 'md:ml-0' // Xử lý khi nhỏ màn hình
+                )}
+                style={{
+                    width: `calc(100vw - 320px)`, // Giới hạn chiều rộng trừ sidebar
+                }}
+            >
+                {children}
+            </div>
         </div>
     );
 };
