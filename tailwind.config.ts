@@ -12,6 +12,7 @@ module.exports = {
                 135: '33.75rem',
                 140: '35rem',
                 150: '36rem',
+                container: 'var(--container-width)',
             },
             textColor: {
                 'primary-1': 'var(--dark-primary-1)',
