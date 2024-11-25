@@ -45,6 +45,7 @@ const CreateItemPage = () => {
     });
 
     const onSubmit = async (data: CreateItemValidation) => {
+        console.log('Submit');
         try {
             let images = [] as string[];
 
@@ -97,7 +98,7 @@ const CreateItemPage = () => {
     };
 
     return (
-        <div className="mx-auto mt-24 w-[600px] max-w-full bg-secondary-1">
+        <div className="mx-auto mt-2 w-[600px] max-w-full bg-secondary-1">
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <FormTitle>Tạo sản phẩm</FormTitle>
 
@@ -149,7 +150,7 @@ const CreateItemPage = () => {
                     <FormError>{errors.location?.message}</FormError>
                 </FormGroup>
 
-                <FormButton>Tạo sản phẩm</FormButton>
+                <FormButton type={'submit'}>Tạo sản phẩm</FormButton>
             </Form>
         </div>
     );
