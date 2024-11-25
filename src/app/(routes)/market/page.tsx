@@ -10,10 +10,9 @@ const MarketPage: React.FC<Props> = async () => {
 
     return (
         <div className={'h-full w-full bg-secondary-1 pl-2 pt-2'}>
-            <h1 className={'text-xl font-bold'}>Mặt hàng đang bán</h1>
-            {items.map((item: IItem) => (
-                <Item data={item} key={item._id} />
-            ))}
+            <h1 className={'text-xl font-bold'}>
+                Trang hiện tại chưa khả dụng
+            </h1>
         </div>
     );
 };
