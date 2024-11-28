@@ -3,8 +3,6 @@ import { navLink } from '@/constants/navLink';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Items } from '../shared';
-import FixedSidebar from '@/components/layout/FixedSidebar';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { Tooltip } from '@mui/material';
@@ -15,7 +13,7 @@ const Sidebar = () => {
     const user = session?.user;
 
     return (
-        <FixedSidebar>
+        <aside className="no-scrollbar fixed left-0 top-[56px] h-full min-w-[280px] max-w-[360px] overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1 xl:min-w-[200px] lg:min-w-0 md:hidden">
             {user && (
                 <Link
                     href={`/profile/${user?.id}`}
@@ -37,7 +35,7 @@ const Sidebar = () => {
 
             <ul
                 className={cn(
-                    `top-14 z-50 flex h-full w-full flex-col items-center justify-between overflow-hidden bg-white transition-all duration-1000 dark:bg-dark-secondary-1 md:hidden`
+                    `top-14 z-50 flex w-full flex-col items-center justify-between overflow-hidden bg-white transition-all duration-1000 dark:bg-dark-secondary-1 md:hidden`
                 )}
             >
                 {navLink.map((link, index) => {
@@ -81,7 +79,7 @@ const Sidebar = () => {
                     );
                 })}
             </ul>
-        </FixedSidebar>
+        </aside>
     );
 };
 
