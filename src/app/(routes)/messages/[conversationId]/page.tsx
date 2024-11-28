@@ -16,11 +16,7 @@ const ConversationPage: React.FC<Props> = async ({
         conversationId,
     })) as IConversation;
 
-    const initialMessages = (await MessageService.getMessages({
-        conversationId,
-        page: 1,
-        pageSize: 20,
-    })) as IMessage[];
+    const initialMessages = [] as IMessage[];
 
     if (!conversation) redirect('/messages');
 

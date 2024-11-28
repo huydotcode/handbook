@@ -19,7 +19,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
     return (
         <div>
             <Sidebar groups={groups} />
-            <Container direction={'center'} width={600}>
+            <div className="ml-[360px] mt-[56px] min-h-screen bg-secondary-1">
                 {groups.length > 0 ? (
                     <InfinityPostComponent
                         className="mt-4"
@@ -37,7 +37,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
                         </Button>
                     </div>
                 )}
-            </Container>
+            </div>
         </div>
     );
 };

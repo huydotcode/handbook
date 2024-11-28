@@ -18,13 +18,16 @@ const Navbar = () => {
     const [showPages, setShowPages] = useState<boolean>(false);
     const path = usePathname();
     const listNavRef = React.useRef<HTMLUListElement>(null);
+    const menuButtonRef = React.useRef<HTMLButtonElement>(null);
 
     // Xử lý click ra ngoài để đóng menu
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 listNavRef.current &&
-                !listNavRef.current.contains(event.target as Node)
+                !listNavRef.current.contains(event.target as Node) &&
+                menuButtonRef.current &&
+                !menuButtonRef.current.contains(event.target as Node)
             ) {
                 setShowPages(false);
             }
@@ -53,19 +56,18 @@ const Navbar = () => {
                         <Button
                             onClick={() => setShowPages((prev) => !prev)}
                             size={'medium'}
+                            ref={menuButtonRef}
                         >
                             <Icons.Menu />
                         </Button>
                     </div>
                 </div>
 
-                <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:w-0">
+                <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
                     <ul
-                        className={cn(
-                            `top-14 flex h-full w-full items-center justify-between overflow-hidden bg-white dark:bg-dark-secondary-1 md:hidden md:transition-all md:duration-100`,
-                            showPages &&
-                                'md:fixed md:left-0 md:top-14 md:flex md:h-[calc(100vh-56px)] md:w-[200px] md:flex-col md:items-start md:justify-start'
-                        )}
+                        className={
+                            'top-14 flex h-full w-full items-center justify-between overflow-hidden bg-white dark:bg-dark-secondary-1'
+                        }
                         ref={listNavRef}
                     >
                         {navLink.map((link, index) => {
@@ -126,6 +128,72 @@ const Navbar = () => {
                         })}
                     </ul>
                 </div>
+
+                {showPages && (
+                    <ul
+                        className={
+                            'fixed left-0 top-14 hidden w-[200px] flex-col items-center justify-between overflow-hidden rounded-b-xl bg-white p-2 shadow-xl dark:bg-dark-secondary-1 md:flex'
+                        }
+                        ref={listNavRef}
+                    >
+                        {navLink.map((link, index) => {
+                            if (
+                                link.role === 'admin' &&
+                                session?.user.role !== 'admin'
+                            )
+                                return null;
+
+                            const isActived =
+                                path === link.path ||
+                                (path.includes(link.path) && link.path !== '/');
+                            const Icon = () => {
+                                return link.icon;
+                            };
+
+                            return (
+                                <Tooltip title={link.name}>
+                                    <li
+                                        key={index}
+                                        className={cn(
+                                            `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
+                                            {
+                                                'border-b-4 border-b-blue':
+                                                    isActived,
+                                            }
+                                        )}
+                                    >
+                                        <Link
+                                            className={cn(
+                                                'flex w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
+                                                {
+                                                    'text-blue dark:text-blue':
+                                                        isActived,
+                                                }
+                                            )}
+                                            href={link.path || '/'}
+                                        >
+                                            <Icon />
+
+                                            <span className="ml-2 hidden text-xs md:block">
+                                                {link.name}
+                                            </span>
+                                        </Link>
+                                    </li>
+                                </Tooltip>
+                            );
+
+                            // return (
+                            //     <Items.Nav
+                            //         link={link}
+                            //         key={index}
+                            //         onlyIcon={true}
+                            //         index={index}
+                            //         handleClose={() => setShowPages(false)}
+                            //     />
+                            // );
+                        })}
+                    </ul>
+                )}
 
                 <div className="flex h-full w-1/4 items-center justify-end md:w-1/2">
                     <div className="relative mr-4 flex items-center">

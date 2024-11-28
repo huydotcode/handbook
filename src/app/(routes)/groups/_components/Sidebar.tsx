@@ -9,7 +9,7 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ groups }) => {
     return (
-        <FixedSidebar>
+        <FixedSidebar hideOnMobile={false}>
             <h5 className="lg:hidden">Nhóm bạn đã tham gia</h5>
             <Button
                 className="my-2 w-full md:hidden"

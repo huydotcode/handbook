@@ -13,22 +13,20 @@ const FixedSidebar: React.FC<Props> = ({
     className,
     width = 300,
     direction = 'left',
-    hideOnMobile = false,
+    hideOnMobile = true,
     children,
 }) => {
     return (
         <aside
             className={cn(
-                'no-scrollbar fixed top-[56px] h-full overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1',
+                'no-scrollbar fixed top-[56px] h-full min-w-[280px] max-w-[360px] overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1 xl:min-w-[200px] lg:min-w-0',
                 className,
                 direction == 'left' && 'left-0',
                 direction == 'right' && 'right-0',
                 hideOnMobile && 'md:hidden'
             )}
         >
-            <div className={cn('', width && `w-[${width}px] xl:w-[80px]`)}>
-                {children}
-            </div>
+            <div>{children}</div>
         </aside>
     );
 };
