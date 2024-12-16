@@ -16,7 +16,7 @@ import {
     FaShare,
     FaUsers,
 } from 'react-icons/fa';
-import { FaLocationDot } from 'react-icons/fa6';
+import { FaEye, FaLocationDot } from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
 import { HiHome } from 'react-icons/hi';
 import {
@@ -179,6 +179,7 @@ const Icons = {
     Profile: (props: IconProps) => <CgProfile {...props} />,
     Upload: (props: IconProps) => <FaImage {...props} />,
     Emoji: (props: IconProps) => <MdEmojiEmotions {...props} />,
+    Eye: (props: IconProps) => <FaEye {...props} />,
 };
 
 export default Icons;
