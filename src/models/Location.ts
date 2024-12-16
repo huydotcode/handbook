@@ -16,6 +16,9 @@ export const LocationSchema = new Schema<ILocationModel>({
     code: String,
 });
 
+LocationSchema.index({ slug: 1 }, { unique: true }); // Unique index for slug
+LocationSchema.index({ name: 1 }); // Index for name search
+
 const Location =
     models.Location || model<ILocationModel>('Location', LocationSchema);
 

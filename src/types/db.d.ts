@@ -170,6 +170,10 @@ interface IItem {
     category: ICategory;
     slug: string;
     status: string;
+    attributes: {
+        name: string;
+        value: string;
+    }[];
     createdAt: Date;
     updatedAt: Date;
 }

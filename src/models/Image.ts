@@ -30,6 +30,8 @@ export const ImageSchema = new Schema<IImageModel>(
     }
 );
 
+ImageSchema.index({ creator: 1 }); // Index for images by creator
+
 const Image = models.Image || model('Image', ImageSchema);
 
 export default Image;

@@ -28,6 +28,9 @@ export const CategorySchema = new Schema<ICategoryModel>(
     }
 );
 
+CategorySchema.index({ slug: 1 }, { unique: true }); // Unique index for slug
+CategorySchema.index({ name: 1 }); // Index for name search
+
 const Category =
     models.Category || model<ICategoryModel>('Category', CategorySchema);
 

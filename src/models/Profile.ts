@@ -29,6 +29,8 @@ const ProfileSchema = new Schema<IProfileModel>(
     }
 );
 
+ProfileSchema.index({ user: 1 });
+
 const Profile =
     models.Profile || model<IProfileModel>('Profile', ProfileSchema);
 export default Profile;

@@ -26,6 +26,8 @@ const ConversationModel = new Schema<IConversationModel>(
     { timestamps: true }
 );
 
+ConversationModel.index({ group: 1 }); // Index for group
+
 const Conversation =
     models.Conversation ||
     model<IConversationModel>('Conversation', ConversationModel);

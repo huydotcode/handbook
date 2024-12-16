@@ -19,6 +19,9 @@ const ParticipantModel = new Schema<IParticipantModel>(
     { timestamps: true }
 );
 
+ParticipantModel.index({ conversation: 1 }); // Index for conversation
+ParticipantModel.index({ user: 1 }); // Index for user
+
 const Participant =
     models.Participant ||
     model<IParticipantModel>('Participant', ParticipantModel);

@@ -71,5 +71,9 @@ const GroupSchema = new Schema<IGroupModel>(
     }
 );
 
+GroupSchema.index({ name: 1 }); // Index for name
+GroupSchema.index({ creator: 1 }); // Index for creator
+GroupSchema.index({ 'members.user': 1 }); // Index for members
+
 const Group = models.Group || model<IGroupModel>('Group', GroupSchema);
 export default Group;

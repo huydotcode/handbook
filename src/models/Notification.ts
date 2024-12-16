@@ -22,6 +22,9 @@ const NotificationSchema = new Schema<INotificationModel>(
     { timestamps: true }
 );
 
+NotificationSchema.index({ sender: 1 }); // Index for notifications by sender
+NotificationSchema.index({ receiver: 1 }); // Index for notifications by receiver
+
 const Notification =
     models.Notification ||
     model<INotificationModel>('Notification', NotificationSchema);

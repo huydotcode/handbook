@@ -45,6 +45,10 @@ export const CommentSchema = new Schema<ICommentModel>(
     }
 );
 
+CommentSchema.index({ post: 1 }); // Index for comments by post
+CommentSchema.index({ replyComment: 1 }); // Index for replies to a comment
+CommentSchema.index({ post: 1, createdAt: -1 }); // Compound index for comments in a post sorted by date
+
 const Comment =
     models.Comment || model<ICommentModel>('Comment', CommentSchema);
 
