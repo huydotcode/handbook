@@ -89,7 +89,7 @@ const Navbar = () => {
                                     <li
                                         key={index}
                                         className={cn(
-                                            `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
+                                            `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
                                             {
                                                 'border-b-4 border-b-blue':
                                                     isActived,
@@ -115,16 +115,6 @@ const Navbar = () => {
                                     </li>
                                 </Tooltip>
                             );
-
-                            // return (
-                            //     <Items.Nav
-                            //         link={link}
-                            //         key={index}
-                            //         onlyIcon={true}
-                            //         index={index}
-                            //         handleClose={() => setShowPages(false)}
-                            //     />
-                            // );
                         })}
                     </ul>
                 </div>
@@ -181,16 +171,6 @@ const Navbar = () => {
                                     </li>
                                 </Tooltip>
                             );
-
-                            // return (
-                            //     <Items.Nav
-                            //         link={link}
-                            //         key={index}
-                            //         onlyIcon={true}
-                            //         index={index}
-                            //         handleClose={() => setShowPages(false)}
-                            //     />
-                            // );
                         })}
                     </ul>
                 )}
