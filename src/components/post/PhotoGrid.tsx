@@ -23,7 +23,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
 
                 {images.length > 1 && (
                     <>
-                        <div className="absolute bottom-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-l-md border-2 border-black dark:border-white">
+                        <div className="absolute bottom-0 right-0 flex flex-col items-center justify-center overflow-hidden rounded-md border shadow-md dark:border-white">
                             <div className="relative flex h-full items-center justify-center transition-all">
                                 <div className="relative h-[80px] w-[80px]">
                                     <Image
@@ -36,7 +36,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
                                 </div>
 
                                 <div
-                                    className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center"
+                                    className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-[rgba(0,0,0,0.2)]"
                                     onClick={() =>
                                         setShowSlide((prev) => !prev)
                                     }
