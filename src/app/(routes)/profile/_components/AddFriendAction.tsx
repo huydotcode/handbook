@@ -11,7 +11,7 @@ interface Props {
     userId: string;
 }
 
-const Action: React.FC<Props> = ({ userId }) => {
+const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { socket, socketEmitor } = useSocket();
     const { friends, setFriends } = useSocial();
     const [isRequest, setIsRequest] = useState<boolean>(false);
@@ -100,7 +100,7 @@ const Action: React.FC<Props> = ({ userId }) => {
     };
 
     useEffect(() => {
-        checkCanRequestAddFriend();
+        (async () => checkCanRequestAddFriend())();
     }, []);
 
     useEffect(() => {
@@ -110,27 +110,16 @@ const Action: React.FC<Props> = ({ userId }) => {
     }, [isFriend]);
 
     return (
-        <div className="flex items-center">
-            <Button
-                className="mr-2 h-12 min-w-[48px]"
-                variant="primary"
-                size="medium"
-            >
-                <Icons.Message />
-                <p className="ml-2 md:hidden">Nhắn tin</p>
-            </Button>
-
-            <Button
-                className="h-12 min-w-[48px]"
-                variant="secondary"
-                size="medium"
-                onClick={handleAddFriend}
-            >
-                {isFriend ? <Icons.Users /> : <Icons.PersonAdd />}
-                <p className="ml-2 md:hidden">{getButtonText()}</p>
-            </Button>
-        </div>
+        <Button
+            className="h-12 min-w-[48px]"
+            variant="secondary"
+            size="medium"
+            onClick={handleAddFriend}
+        >
+            {isFriend ? <Icons.Users /> : <Icons.PersonAdd />}
+            <p className="ml-2 md:hidden">{getButtonText()}</p>
+        </Button>
     );
 };
 
-export default Action;
+export default AddFriendAction;
