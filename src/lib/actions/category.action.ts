@@ -1,25 +1,25 @@
 'use server';
 import { Category } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { revalidatePath } from 'next/cache';
+import { checkAdmin } from '@/lib/checkAdmin';
 
-export const createCategory = async ({
-    name,
-    description,
-    slug,
-    icon,
-    path,
-}: {
+export const createCategory = async (data: {
     name: string;
     description: string;
     slug: string;
     icon: string;
-    path: string;
 }) => {
     try {
+        const isAdmin = await checkAdmin();
+        if (!isAdmin) {
+            throw new Error("You don't have permission to create category");
+        }
+
         await connectToDB();
 
-        const newCategory = await new Category({
+        const { name, description, slug, icon } = data;
+
+        const newCategory = new Category({
             name,
             description,
             slug,
@@ -31,8 +31,6 @@ export const createCategory = async ({
         return JSON.parse(JSON.stringify(newCategory));
     } catch (error: any) {
         throw new Error(error);
-    } finally {
-        revalidatePath(path);
     }
 };
 
@@ -43,22 +41,6 @@ export const getCategories = async () => {
         const categories = await Category.find();
 
         return JSON.parse(JSON.stringify(categories));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const getCategoryById = async ({
-    categoryId,
-}: {
-    categoryId: string;
-}) => {
-    try {
-        await connectToDB();
-
-        const category = await Category.findById(categoryId);
-
-        return JSON.parse(JSON.stringify(category));
     } catch (error: any) {
         throw new Error(error);
     }

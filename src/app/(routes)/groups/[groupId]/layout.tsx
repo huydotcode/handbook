@@ -26,6 +26,10 @@ export async function generateMetadata({ params: { groupId } }: Props) {
             type: 'error',
         });
     }
+
+    return {
+        title: 'Nhóm | Handbook',
+    };
 }
 
 const GroupLayout: React.FC<Props> = async ({
