@@ -1,7 +1,7 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import { MessageService } from '@/lib/services';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -21,7 +21,7 @@ interface IFormData {
 }
 
 const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
-    const { socket, socketEmitor } = useSocket();
+    const { socketEmitor } = useSocket();
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
     const {
@@ -32,33 +32,52 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
         setValue,
         watch,
         getValues,
-        formState: { isSubmitting, isLoading },
+        formState: { isLoading },
+        setFocus,
     } = useForm<IFormData>({
         defaultValues: {
             text: '',
             files: [],
         },
     });
+    const files = getValues('files');
 
     const handleRemoveFile = (index: number) => {
         setValue(
             'files',
-            getValues('files').filter((_, i) => i !== index)
+            files.filter((_, i) => i !== index)
         );
+        setFocus('text');
     };
 
     // Xử lý select emoji
     const handleEmojiSelect = (emoji: any) => {
         setValue('text', getValues('text') + emoji.native);
+        setFocus('text');
     };
 
     const onSubmit = async (data: IFormData) => {
-        if (isSubmitting || isLoading) return;
+        if (isLoading) {
+            console.log(isLoading);
+            return;
+        }
+
+        // Reset form
+        reset();
+        setFocus('text');
 
         const { text, files } = data;
 
         if (!text.trim() && files.length === 0) {
             return;
+        }
+
+        // Nếu có file thì loading
+        if (files.length > 0) {
+            toast.loading('Đang gửi tin nhắn...', {
+                id: 'send-message',
+                position: 'bottom-left',
+            });
         }
 
         try {
@@ -78,10 +97,10 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                 roomId: currentRoom._id,
                 message: newMsg,
             });
-
-            reset();
         } catch (error: any) {
             toast.error('Không thể gửi tin nhắn!');
+        } finally {
+            toast.remove('send-message');
         }
     };
 
@@ -104,64 +123,59 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
 
     return (
         <div className={'flex w-full flex-1 items-center justify-center p-2'}>
-            <Controller
-                name="files"
-                control={control}
-                render={({ field }) => (
-                    <input
-                        id={'files'}
-                        type={'file'}
-                        className={'hidden'}
-                        multiple
-                        onChange={(e) => {
-                            if (e.target.files) {
-                                field.onChange(Array.from(e.target.files));
-                            }
-                        }}
-                    />
-                )}
-            />
-
-            <Button variant={'event'} type={'button'}>
-                <label
-                    htmlFor="files"
-                    className="flex cursor-pointer items-center gap-2"
-                >
-                    <Icons.Upload className={'h-6 w-6'} />
-                </label>
-            </Button>
-
             <form
                 className="relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:min-w-0 md:flex-1 "
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >
-                <div className={cn('flex w-full flex-col')}>
-                    {getValues('files').length > 0 && (
-                        <div className="flex gap-3 px-4 py-2">
+                <Controller
+                    control={control}
+                    name={'files'}
+                    render={({ field: { value, onChange, ...field } }) => {
+                        return (
                             <input
-                                className={'hidden'}
-                                id={'more-file'}
-                                type="file"
-                                multiple
-                                onChange={(e) => {
-                                    if (e.target.files) {
-                                        setValue(
-                                            'files',
-                                            Array.from(e.target.files)
-                                        );
+                                {...field}
+                                className="hidden"
+                                multiple={true}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
                                     }
                                 }}
+                                onChange={(event) => {
+                                    if (event.target.files) {
+                                        console.log(event.target.files);
+                                        onChange(
+                                            Array.from(
+                                                files.concat(
+                                                    Array.from(
+                                                        event.target.files
+                                                    )
+                                                )
+                                            )
+                                        );
+                                    }
+
+                                    setFocus('text');
+                                }}
+                                type="file"
+                                id="files"
                             />
+                        );
+                    }}
+                />
 
-                            <label
-                                htmlFor="more-file"
-                                className="justify-cente flex cursor-pointer items-center rounded-lg px-4 hover:bg-hover-1 dark:hover:bg-dark-hover-1"
-                            >
-                                <Icons.Upload className={'h-8 w-8'} />
-                            </label>
+                <label
+                    className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-hover-1 dark:hover:bg-dark-hover-1"
+                    htmlFor="files"
+                >
+                    <Icons.Upload className={'h-6 w-6'} />
+                </label>
 
-                            {getValues('files').map((file, index) => (
+                <div className={cn('flex w-full flex-col')}>
+                    {files.length > 0 && (
+                        <div className="flex gap-3 px-4 py-2">
+                            {files.map((file, index) => (
                                 <div key={index} className="relative">
                                     <img
                                         src={URL.createObjectURL(file)}
@@ -188,43 +202,51 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                             placeholder="Nhắn tin"
                             spellCheck={false}
                             autoComplete="off"
+                            onKeyDown={(e) => {
+                                // Kiểm tra có text và không phải shift + enter
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+
+                                    if (
+                                        getValues('text').trim() ||
+                                        files.length > 0
+                                    ) {
+                                        handleSubmit(onSubmit)();
+                                    }
+                                }
+                            }}
                         />
 
-                        <div className={'flex items-center'}>
-                            <button
-                                className={
-                                    'p-2 hover:bg-hover-1 dark:hover:bg-dark-hover-1'
-                                }
-                                type={'button'}
-                                onClick={() => {
-                                    setShowEmoji((prev) => !prev);
-                                }}
-                            >
-                                <Icons.Emoji className={'h-4 w-4'} />
-                            </button>
+                        <Button
+                            className={
+                                'h-full rounded-none bg-transparent p-2 shadow-none hover:bg-hover-1 dark:hover:bg-dark-hover-1'
+                            }
+                            onClick={() => {
+                                setShowEmoji((prev) => !prev);
+                            }}
+                        >
+                            <Icons.Emoji className={'h-4 w-4'} />
+                        </Button>
 
-                            {showEmoji && (
-                                <div className={'fixed bottom-20 right-10'}>
-                                    <Picker
-                                        data={data}
-                                        onEmojiSelect={handleEmojiSelect}
-                                        theme={'light'}
-                                        locale={'vi'}
-                                        onClickOutside={() =>
-                                            setShowEmoji(false)
-                                        }
-                                        previewPosition={'none'}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        {showEmoji && (
+                            <div className={'fixed bottom-20 right-10'}>
+                                <Picker
+                                    data={data}
+                                    onEmojiSelect={handleEmojiSelect}
+                                    theme={'light'}
+                                    locale={'vi'}
+                                    onClickOutside={() => setShowEmoji(false)}
+                                    previewPosition={'none'}
+                                />
+                            </div>
+                        )}
 
                         <Button
                             className="h-full rounded-none border-l px-4 py-2 text-base"
                             variant={'event'}
                             type="submit"
                         >
-                            {isSubmitting ? (
+                            {isLoading ? (
                                 <Icons.Loading className="animate-spin" />
                             ) : (
                                 <Icons.Send />
