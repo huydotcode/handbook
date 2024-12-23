@@ -92,7 +92,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
         } catch (error: any) {
             toast.error('Không thể gửi tin nhắn!');
         } finally {
-            toast.remove('send-message');
+            setFocus('text');
         }
     };
 
