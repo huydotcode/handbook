@@ -72,14 +72,6 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
             return;
         }
 
-        // Nếu có file thì loading
-        if (files.length > 0) {
-            toast.loading('Đang gửi tin nhắn...', {
-                id: 'send-message',
-                position: 'bottom-left',
-            });
-        }
-
         try {
             let imagesUpload = await uploadImagesWithFiles({
                 files,
