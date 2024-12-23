@@ -185,7 +185,7 @@ const ChatBox: React.FC<Props> = ({
                     handleOpenSearch={handleOpenSearch}
                 />
 
-                <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
+                <div className="relative h-[calc(100%-112px)] w-full overflow-y-auto overflow-x-hidden p-2 ">
                     {openSearch && (
                         <div
                             className="absolute right-2 top-2 z-10 "
@@ -193,11 +193,14 @@ const ChatBox: React.FC<Props> = ({
                         >
                             <div
                                 className={
-                                    'flex items-center rounded-xl bg-primary-1 px-2'
+                                    'flex items-center rounded-xl border bg-primary-1 px-2 dark:bg-dark-secondary-1'
                                 }
                             >
                                 <Icons.Search size={24} />
                                 <Input
+                                    className={
+                                        'dark:text-dark-primary-1 dark:placeholder:text-secondary-2'
+                                    }
                                     ref={inputRef}
                                     value={searchValue}
                                     onChange={(e) =>
