@@ -19,7 +19,11 @@ const MarketLayout: React.FC<Props> = async ({ children }) => {
     return (
         <FullLayout>
             <Sidebar categories={categories} />
-            <div className={'ml-[300px] mt-[56px] min-h-screen bg-secondary-1'}>
+            <div
+                className={
+                    'ml-[280px] mt-[56px] min-h-[calc(100vh-56px)] bg-secondary-1 dark:bg-dark-secondary-1 md:ml-[80px]'
+                }
+            >
                 {children}
             </div>
         </FullLayout>

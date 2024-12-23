@@ -155,6 +155,7 @@ interface ICategory {
     name: string;
     description: string;
     slug: string;
+    icon: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -162,7 +163,7 @@ interface ICategory {
 interface IItem {
     _id: string;
     name: string;
-    seller: string;
+    seller: IUser;
     description: string;
     price: number;
     images: IImage[];

@@ -38,7 +38,7 @@ const FormGroup = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
-    return <div className="mb-2" ref={ref} {...props} />;
+    return <div className="mb-2 w-full" ref={ref} {...props} />;
 });
 
 const FormInput = React.forwardRef<
@@ -105,7 +105,12 @@ const FormButton = React.forwardRef<
     React.ButtonHTMLAttributes<HTMLButtonElement>
 >((props, ref) => {
     return (
-        <Button className={'mt-2'} variant={'primary'} type={'submit'}>
+        <Button
+            className={'mt-2'}
+            variant={'primary'}
+            type={'submit'}
+            {...props}
+        >
             {props.children}
         </Button>
     );

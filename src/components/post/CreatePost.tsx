@@ -11,7 +11,7 @@ import { ModalCreatePost } from '.';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createPostValidation } from '@/lib/validation';
-import { uploadImage } from '@/lib/upload';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
@@ -27,37 +27,30 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
     const handleShow = () => setShow(true);
 
     const [photos, setPhotos] = useState<any[]>([]);
-    const { control, register, handleSubmit, formState, reset } =
-        useForm<IPostFormData>({
-            defaultValues: {
-                option: 'public',
-            },
-            resolver: zodResolver(createPostValidation),
-        });
+    const form = useForm<IPostFormData>({
+        defaultValues: {
+            option: 'public',
+            files: [],
+        },
+        resolver: zodResolver(createPostValidation),
+    });
+
+    const { control, register, handleSubmit, formState, reset } = form;
 
     const sendPost = async (data: IPostFormData) => {
         if (!session?.user) return;
 
         try {
-            const { content, option } = data;
-            let imagesUpload: IImage[] = [];
+            const { content, option, files } = data;
 
-            if (photos && photos.length > 0) {
-                for (const img of photos) {
-                    try {
-                        const res = await uploadImage({ image: img });
-                        imagesUpload.push(res);
-                    } catch (error: any) {
-                        toast.error('Đã có lỗi xảy ra khi tải ảnh lên!');
-                        return;
-                    }
-                }
-            }
-
-            if (photos.length != imagesUpload.length) {
-                toast.error('Đã có lỗi xảy ra khi tải ảnh lên!');
+            if (!content && photos.length === 0) {
+                toast.error('Nội dung bài viết không được để trống!');
                 return;
             }
+
+            const imagesId = await uploadImagesWithFiles({
+                files,
+            });
 
             reset({
                 content: '',
@@ -68,7 +61,7 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
             const newPost = (await PostService.createPost({
                 content: content,
                 option: option,
-                images: imagesUpload.map((img) => img._id),
+                images: imagesId,
                 groupId: groupId,
             })) as IPost;
 
@@ -87,11 +80,17 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
         if (formState.isSubmitting) return;
         setShow(false);
         try {
-            toast.promise(sendPost(data), {
-                loading: 'Bài viết đang được đăng...!',
-                success: 'Đăng bài thành công!',
-                error: 'Đã có lỗi xảy ra khi đăng bài!',
-            });
+            await toast.promise(
+                sendPost(data),
+                {
+                    loading: 'Bài viết đang được đăng...!',
+                    success: 'Đăng bài thành công!',
+                    error: 'Đã có lỗi xảy ra khi đăng bài!',
+                },
+                {
+                    position: 'bottom-left',
+                }
+            );
         } catch (error: any) {
             logger({
                 message: 'Error submit post' + error,
@@ -143,6 +142,7 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                     setPhotos={setPhotos}
                     register={register}
                     submit={submit}
+                    form={form}
                     formState={formState}
                     control={control}
                 />

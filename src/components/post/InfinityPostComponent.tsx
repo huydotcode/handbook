@@ -95,7 +95,9 @@ const InfinityPostComponent: React.FC<Props> = ({
     }, [page, userId, username, groupId]);
 
     useEffect(() => {
-        fetchPosts();
+        (async () => {
+            await fetchPosts();
+        })();
     }, [fetchPosts]);
 
     return (

@@ -85,9 +85,8 @@ const Navbar = () => {
                             };
 
                             return (
-                                <Tooltip title={link.name}>
+                                <Tooltip key={index} title={link.name}>
                                     <li
-                                        key={index}
                                         className={cn(
                                             `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
                                             {

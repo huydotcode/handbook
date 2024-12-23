@@ -6,14 +6,13 @@ import GroupService from '@/lib/services/group.service';
 import { cn } from '@/lib/utils';
 import { createGroupValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { error } from 'console';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { uploadImage } from '@/lib/upload';
+import { uploadImages } from '@/lib/uploadImage';
 
 interface Props {}
 
@@ -66,13 +65,11 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                 return;
             }
 
-            const image = await uploadImage({
-                image: photo,
-            });
+            const image = await uploadImages({ photos: [photo] });
 
             const newGroup = await GroupService.createGroup({
                 ...data,
-                avatar: image.url,
+                avatar: image[0],
                 members,
             });
 

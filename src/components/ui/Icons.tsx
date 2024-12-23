@@ -16,7 +16,7 @@ import {
     FaShare,
     FaUsers,
 } from 'react-icons/fa';
-import { FaEye, FaLocationDot } from 'react-icons/fa6';
+import { FaCar, FaEye, FaLocationDot, FaShirt } from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
 import { HiHome } from 'react-icons/hi';
 import {
@@ -24,9 +24,10 @@ import {
     IoIosArrowDown,
     IoIosArrowForward,
     IoIosArrowUp,
+    IoMdLaptop,
     IoMdSchool,
 } from 'react-icons/io';
-import { IoChatbubbleEllipses, IoPersonAdd } from 'react-icons/io5';
+import { IoChatbubbleEllipses, IoPersonAdd, IoTime } from 'react-icons/io5';
 import {
     MdEmojiEmotions,
     MdGroups,
@@ -180,6 +181,205 @@ const Icons = {
     Upload: (props: IconProps) => <FaImage {...props} />,
     Emoji: (props: IconProps) => <MdEmojiEmotions {...props} />,
     Eye: (props: IconProps) => <FaEye {...props} />,
+    Car: (props: IconProps) => <FaCar {...props} />,
+    Shirt: (props: IconProps) => <FaShirt {...props} />,
+    Laptop: (props: IconProps) => <IoMdLaptop {...props} />,
+    Time: (props: IconProps) => <IoTime {...props} />,
 };
+
+export const IconsArray = [
+    {
+        name: 'Logo',
+        icon: Icons.Time,
+    },
+    {
+        name: 'Laptop',
+        icon: Icons.Laptop,
+    },
+    {
+        name: 'Menu',
+        icon: Icons.Menu,
+    },
+    {
+        name: 'Home',
+        icon: Icons.Home,
+    },
+    {
+        name: 'Message',
+        icon: Icons.Message,
+    },
+    {
+        name: 'Group',
+        icon: Icons.Group,
+    },
+    {
+        name: 'Users',
+        icon: Icons.Users,
+    },
+    {
+        name: 'Posts',
+        icon: Icons.Posts,
+    },
+    {
+        name: 'Images',
+        icon: Icons.Images,
+    },
+    {
+        name: 'Notification',
+        icon: Icons.Notification,
+    },
+    {
+        name: 'NotificationActive',
+        icon: Icons.NotificationActive,
+    },
+    {
+        name: 'ArrowDown',
+        icon: Icons.ArrowDown,
+    },
+    {
+        name: 'ArrowUp',
+        icon: Icons.ArrowUp,
+    },
+    {
+        name: 'ArrowLeft',
+        icon: Icons.ArrowLeft,
+    },
+    {
+        name: 'ArrowRight',
+        icon: Icons.ArrowRight,
+    },
+    {
+        name: 'ArrowBack',
+        icon: Icons.ArrowBack,
+    },
+    {
+        name: 'ArrowForward',
+        icon: Icons.ArrowForward,
+    },
+    {
+        name: 'Admin',
+        icon: Icons.Admin,
+    },
+    {
+        name: 'Loading',
+        icon: Icons.Loading,
+    },
+    {
+        name: 'Send',
+        icon: Icons.Send,
+    },
+    {
+        name: 'Comment',
+        icon: Icons.Comment,
+    },
+    {
+        name: 'More',
+        icon: Icons.More,
+    },
+    {
+        name: 'Delete',
+        icon: Icons.Delete,
+    },
+    {
+        name: 'Edit',
+        icon: Icons.Edit,
+    },
+    {
+        name: 'Heart',
+        icon: Icons.Heart,
+    },
+    {
+        name: 'Heart2',
+        icon: Icons.Heart2,
+    },
+    {
+        name: 'Close',
+        icon: Icons.Close,
+    },
+    {
+        name: 'Search',
+        icon: Icons.Search,
+    },
+    {
+        name: 'Circle',
+        icon: Icons.Circle,
+    },
+    {
+        name: 'LogOut',
+        icon: Icons.LogOut,
+    },
+    {
+        name: 'Tick',
+        icon: Icons.Tick,
+    },
+    {
+        name: 'Share',
+        icon: Icons.Share,
+    },
+    {
+        name: 'Location',
+        icon: Icons.Location,
+    },
+    {
+        name: 'School',
+        icon: Icons.School,
+    },
+    {
+        name: 'Work',
+        icon: Icons.Work,
+    },
+    {
+        name: 'PersonAdd',
+        icon: Icons.PersonAdd,
+    },
+    {
+        name: 'Reply',
+        icon: Icons.Reply,
+    },
+    {
+        name: 'Birthday',
+        icon: Icons.Birthday,
+    },
+    {
+        name: 'Plus',
+        icon: Icons.Plus,
+    },
+    {
+        name: 'Shop',
+        icon: Icons.Shop,
+    },
+    {
+        name: 'Google',
+        icon: Icons.Google,
+    },
+    {
+        name: 'Gemini',
+        icon: Icons.Gemini,
+    },
+    {
+        name: 'Profile',
+        icon: Icons.Profile,
+    },
+    {
+        name: 'Upload',
+        icon: Icons.Upload,
+    },
+    {
+        name: 'Emoji',
+        icon: Icons.Emoji,
+    },
+    {
+        name: 'Eye',
+        icon: Icons.Eye,
+    },
+    {
+        name: 'Car',
+        icon: Icons.Car,
+    },
+    {
+        name: 'Shirt',
+        icon: Icons.Shirt,
+    },
+];
 
 export default Icons;

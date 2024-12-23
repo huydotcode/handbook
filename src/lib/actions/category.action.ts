@@ -7,11 +7,13 @@ const createCategory = async ({
     name,
     description,
     slug,
+    icon,
     path,
 }: {
     name: string;
     description: string;
     slug: string;
+    icon: string;
     path: string;
 }) => {
     try {
@@ -21,6 +23,7 @@ const createCategory = async ({
             name,
             description,
             slug,
+            icon,
         });
 
         await newCategory.save();
@@ -50,6 +53,18 @@ const getCategoryById = async ({ categoryId }: { categoryId: string }) => {
         await connectToDB();
 
         const category = await Category.findById(categoryId);
+
+        return JSON.parse(JSON.stringify(category));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getCategoryBySlug = async ({ slug }: { slug: string }) => {
+    try {
+        await connectToDB();
+
+        const category = await Category.findOne({ slug });
 
         return JSON.parse(JSON.stringify(category));
     } catch (error: any) {

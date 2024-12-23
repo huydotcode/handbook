@@ -3,6 +3,7 @@ import { Message } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import logger from '@/utils/logger';
+import mongoose from 'mongoose';
 
 /*
     * Message Model: 

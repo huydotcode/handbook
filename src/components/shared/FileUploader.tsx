@@ -74,7 +74,7 @@ const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
                 <>
                     <label
                         htmlFor="file"
-                        className="w-full cursor-pointer rounded-3xl border-2 border-dashed border-gray-700 bg-gray-300 p-8"
+                        className="w-full cursor-pointer rounded-3xl border-2 border-dashed border-gray-700 bg-secondary-2 p-8 dark:bg-dark-secondary-1"
                     >
                         <div className="flex flex-col items-center justify-center gap-1">
                             <svg
@@ -114,7 +114,6 @@ const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
 
                             <Button
                                 onClick={() => handleRemove(index)}
-                                type={'button'}
                                 className="absolute right-0 top-0"
                             >
                                 <Icons.Close />

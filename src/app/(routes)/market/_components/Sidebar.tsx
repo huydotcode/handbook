@@ -1,23 +1,37 @@
 'use client';
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useState } from 'react';
 import SearchMarket from './SearchMarket';
 import { Button, Icons } from '@/components/ui';
 import FixedSidebar from '@/components/layout/FixedSidebar';
 import { Items } from '@/components/shared';
+import { IconsArray } from '@/components/ui/Icons';
 
 interface Props {
     categories: ICategory[];
 }
 
 const Sidebar: React.FC<Props> = ({ categories }) => {
+    const [showFullSidebar, setShowFullSidebar] = useState<boolean>(false);
+
     return (
         <>
-            <FixedSidebar>
-                <div className="px-4 py-2">
-                    <h1 className="text-2xl font-bold lg:hidden">Market</h1>
+            <aside className="no-scrollbar fixed left-0 top-[56px] z-10 h-full min-w-[280px] max-w-[360px] overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1 md:min-w-[80px]">
+                <div className="px-4 py-2 md:px-1">
+                    <h1 className="text-2xl font-bold md:hidden">Market</h1>
 
-                    <SearchMarket />
+                    <SearchMarket
+                        showFull={showFullSidebar}
+                        setShowFullSidebar={setShowFullSidebar}
+                    />
+
+                    <Button
+                        className="my-2 hidden w-full md:flex md:py-2"
+                        variant={'primary'}
+                        href="/market/create/item"
+                    >
+                        <Icons.Plus />
+                    </Button>
 
                     <Button
                         className="my-2 w-full md:hidden"
@@ -26,30 +40,31 @@ const Sidebar: React.FC<Props> = ({ categories }) => {
                     >
                         Tạo mặt hàng cần bán
                     </Button>
-
-                    <Button
-                        className="my-2 hidden w-full md:flex"
-                        variant={'primary'}
-                        href="/market/create/item"
-                    >
-                        <Icons.Plus className="text-xl" />
-                    </Button>
                 </div>
 
-                <div className="px-4 py-2">
-                    <h1 className="text-xl">Danh mục</h1>
+                <div className="px-4 py-2 md:px-1">
+                    <h1 className="text-xl md:hidden">Danh mục</h1>
 
-                    {categories.map((category) => (
-                        <Button
-                            className="mt-2 w-full justify-start"
-                            href={`/market/category/${category.slug}`}
-                            key={category._id}
-                        >
-                            <h2 className="text-sm">{category.name}</h2>
-                        </Button>
-                    ))}
+                    {categories.map((category) => {
+                        const Icon = IconsArray.find(
+                            (icon) => icon.name === category.icon
+                        )?.icon;
+
+                        return (
+                            <Button
+                                className="mt-2 w-full justify-start md:justify-center md:py-4 md:text-xl"
+                                href={`/market/category/${category.slug}`}
+                                key={category._id}
+                            >
+                                {Icon && <Icon className="mr-2 md:mr-0" />}
+                                <h2 className="text-sm md:hidden">
+                                    {category.name}
+                                </h2>
+                            </Button>
+                        );
+                    })}
                 </div>
-            </FixedSidebar>
+            </aside>
         </>
     );
 };

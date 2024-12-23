@@ -15,6 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { editPostValidation } from '@/lib/validation';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
+import { uploadImages } from '@/lib/uploadImage';
 
 interface Props {
     post: IPost;
@@ -51,15 +52,13 @@ const EditPostModal: FC<Props> = ({
         });
 
     const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
-        const newImages = post.images.filter((img) => {
-            return photos.includes(img.url);
-        });
-
         try {
+            const newImages = await uploadImages({ photos: photos });
+
             const postEdited = await PostService.editPost({
                 content: data.content,
                 option: data.option,
-                images: newImages.map((img) => img._id),
+                images: newImages,
                 postId: post._id,
             });
 

@@ -4,7 +4,7 @@ interface IMessageModel {
     text: string;
     images: Types.ObjectId[];
     sender: Types.ObjectId;
-    conversation: string;
+    conversation: Types.ObjectId;
     isRead: boolean;
 }
 
@@ -16,7 +16,7 @@ const MessageSchema = new Schema<IMessageModel>(
             required: true,
         },
         conversation: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: 'Conversation',
             required: true,
         },

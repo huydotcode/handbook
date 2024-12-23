@@ -2,13 +2,13 @@
 import { Button, Icons } from '@/components/ui';
 import { MessageService } from '@/lib/services';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
-import { uploadImage } from '@/lib/upload';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useSocket } from '@/context';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 
 interface Props {
     currentRoom: IConversation;
@@ -22,71 +22,49 @@ interface IFormData {
 
 const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
     const { socket, socketEmitor } = useSocket();
-    const [files, setFiles] = useState<File[]>([]);
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
     const {
+        control,
         handleSubmit,
         register,
         reset,
         setValue,
+        watch,
         getValues,
         formState: { isSubmitting, isLoading },
-    } = useForm<IFormData>();
-
-    const handleFileChange = (files: File[]) => {
-        setFiles(files);
-        setValue('files', files);
-    };
+    } = useForm<IFormData>({
+        defaultValues: {
+            text: '',
+            files: [],
+        },
+    });
 
     const handleRemoveFile = (index: number) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
         setValue(
             'files',
-            files.filter((_, i) => i !== index)
+            getValues('files').filter((_, i) => i !== index)
         );
     };
 
     // Xử lý select emoji
     const handleEmojiSelect = (emoji: any) => {
-        console.log(emoji);
         setValue('text', getValues('text') + emoji.native);
     };
 
     const onSubmit = async (data: IFormData) => {
         if (isSubmitting || isLoading) return;
 
-        const { text } = data;
+        const { text, files } = data;
 
-        if (text.trim().length === 0 && files.length === 0) {
+        if (!text.trim() && files.length === 0) {
             return;
         }
 
         try {
-            let imagesUpload = [] as string[];
-
-            if (files.length > 0) {
-                const uploadPromises = files.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = async () => {
-                            try {
-                                const base64 = reader.result as string;
-                                const image = await uploadImage({
-                                    image: base64,
-                                });
-                                resolve(image._id);
-                            } catch (error) {
-                                reject(error);
-                            }
-                        };
-                        reader.onerror = (error) => reject(error);
-                    });
-                });
-
-                imagesUpload = await Promise.all(uploadPromises);
-            }
+            let imagesUpload = await uploadImagesWithFiles({
+                files,
+            });
 
             const newMsg = await MessageService.sendMessage({
                 roomId: currentRoom._id,
@@ -101,7 +79,6 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                 message: newMsg,
             });
 
-            setFiles([]);
             reset();
         } catch (error: any) {
             toast.error('Không thể gửi tin nhắn!');
@@ -123,23 +100,31 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
         };
     }, []);
 
+    watch('files');
+
     return (
         <div className={'flex w-full flex-1 items-center justify-center p-2'}>
-            <input
-                className={'hidden'}
-                id={'file'}
-                type="file"
-                multiple
-                onChange={(e) => {
-                    if (e.target.files) {
-                        handleFileChange(Array.from(e.target.files));
-                    }
-                }}
+            <Controller
+                name="files"
+                control={control}
+                render={({ field }) => (
+                    <input
+                        id={'files'}
+                        type={'file'}
+                        className={'hidden'}
+                        multiple
+                        onChange={(e) => {
+                            if (e.target.files) {
+                                field.onChange(Array.from(e.target.files));
+                            }
+                        }}
+                    />
+                )}
             />
 
             <Button variant={'event'} type={'button'}>
                 <label
-                    htmlFor="file"
+                    htmlFor="files"
                     className="flex cursor-pointer items-center gap-2"
                 >
                     <Icons.Upload className={'h-6 w-6'} />
@@ -152,7 +137,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                 autoComplete="off"
             >
                 <div className={cn('flex w-full flex-col')}>
-                    {files.length > 0 && (
+                    {getValues('files').length > 0 && (
                         <div className="flex gap-3 px-4 py-2">
                             <input
                                 className={'hidden'}
@@ -161,10 +146,10 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                                 multiple
                                 onChange={(e) => {
                                     if (e.target.files) {
-                                        handleFileChange([
-                                            ...files,
-                                            ...Array.from(e.target.files),
-                                        ]);
+                                        setValue(
+                                            'files',
+                                            Array.from(e.target.files)
+                                        );
                                     }
                                 }}
                             />
@@ -176,7 +161,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                                 <Icons.Upload className={'h-8 w-8'} />
                             </label>
 
-                            {files.map((file, index) => (
+                            {getValues('files').map((file, index) => (
                                 <div key={index} className="relative">
                                     <img
                                         src={URL.createObjectURL(file)}
@@ -185,7 +170,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                                     />
                                     <Button
                                         className="absolute right-0 top-0 rounded-full p-1 text-white"
-                                        type={'button'}
+                                        type={'reset'}
                                         onClick={() => handleRemoveFile(index)}
                                     >
                                         <Icons.Close className="h-4 w-4" />

@@ -140,6 +140,13 @@ export const createPost = async ({
     option: string;
     groupId?: string | null;
 }) => {
+    console.log({
+        content,
+        images,
+        option,
+        groupId,
+    });
+
     const session = await getAuthSession();
     if (!session) return;
 

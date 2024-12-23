@@ -2,8 +2,11 @@ import { navProfile } from '@/constants/navLink';
 import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
-import Action from './Action';
+import AddFriendAction from './AddFriendAction';
 import { TabItem } from '@/components/shared';
+import { Button } from '@/components/ui';
+import Icons from '../../../../components/ui/Icons';
+import FollowAction from '@/app/(routes)/profile/_components/FollowAction';
 
 interface Props {
     profile: IProfile;
@@ -42,7 +45,20 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                         </span>
                     </div>
                 </div>
-                {notCurrentUser && <Action userId={user._id} />}
+
+                <div className="flex items-center gap-2">
+                    <Button
+                        className="h-12 min-w-[48px]"
+                        variant="primary"
+                        size="medium"
+                    >
+                        <Icons.Message />
+                        <p className="ml-2 md:hidden">Nhắn tin</p>
+                    </Button>
+
+                    {notCurrentUser && <FollowAction userId={user._id} />}
+                    {notCurrentUser && <AddFriendAction userId={user._id} />}
+                </div>
             </div>
 
             <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">

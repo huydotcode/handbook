@@ -4,6 +4,7 @@ interface ICategoryModel {
     name: string;
     description: string;
     slug: string;
+    icon: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -19,6 +20,10 @@ export const CategorySchema = new Schema<ICategoryModel>(
             required: true,
         },
         slug: {
+            type: String,
+            required: true,
+        },
+        icon: {
             type: String,
             required: true,
         },

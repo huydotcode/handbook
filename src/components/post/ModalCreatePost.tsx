@@ -7,6 +7,7 @@ import {
     Controller,
     FormState,
     UseFormRegister,
+    UseFormReturn,
 } from 'react-hook-form';
 
 import { Fade, Modal } from '@mui/material';
@@ -29,6 +30,7 @@ interface Props {
     ) => Promise<void>;
     photos: any;
     setPhotos: React.Dispatch<React.SetStateAction<any[]>>;
+    form: UseFormReturn<IPostFormData>;
     formState: FormState<IPostFormData>;
     control: Control<IPostFormData, any>;
 }
@@ -40,11 +42,14 @@ const ModalCreatePost: React.FC<Props> = ({
     control,
     formState,
     register,
+    form,
     submit,
     photos,
     setPhotos,
 }) => {
     const { data: session } = useSession();
+
+    // Xử lý thay đổi ảnh
     const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (fileList) {
@@ -68,6 +73,8 @@ const ModalCreatePost: React.FC<Props> = ({
                     setPhotos((prev) => [...prev, result]);
                 };
             });
+
+            form.setValue('files', files);
         }
     };
 

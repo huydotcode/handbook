@@ -39,6 +39,7 @@ export type LoginValidation = z.infer<typeof loginValidation>;
 export const createPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
     option: z.string().optional(),
+    files: z.array(z.any()).optional(),
 });
 
 export type CreatePostValidation = z.infer<typeof createPostValidation>;
@@ -66,7 +67,7 @@ export const createItemValidation = z.object({
     description: z.string().min(1, 'Mô tả không được để trống'),
     category: z.string().min(1, 'Danh mục không được để trống'),
     location: z.string().min(1, 'Địa điểm không được để trống'),
-    images: z.array(z.string()).min(1, 'Ít nhất 1 ảnh'),
+    images: z.array(z.any()).nonempty(),
 });
 
 export type CreateItemValidation = z.infer<typeof createItemValidation>;

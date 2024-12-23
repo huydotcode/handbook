@@ -17,25 +17,32 @@ import ItemService from '@/lib/services/item.service';
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { CategoryService } from '@/lib/services';
-import { useState } from 'react';
-import FileUploader from '@/components/shared/FileUploader';
-import { uploadImage } from '@/lib/upload';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import FileUploader from '@/components/shared/FileUploader';
+import { Loading } from '@/components/ui';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
     const router = useRouter();
 
-    const { handleSubmit, register, formState } = useForm<CreateItemValidation>(
-        {
+    const { watch, handleSubmit, register, formState, getValues, setValue } =
+        useForm<CreateItemValidation>({
             resolver: zodResolver(createItemValidation),
-        }
-    );
+            defaultValues: {
+                name: '',
+                price: '',
+                description: '',
+                category: '',
+                location: '',
+                images: [],
+            },
+        });
+
+    const files = getValues('images') || ([] as File[]);
 
     const { errors } = formState;
-
-    const [files, setFiles] = useState<File[]>([]);
 
     const { data: categories } = useQuery({
         queryKey: ['categories'],
@@ -45,37 +52,14 @@ const CreateItemPage = () => {
     });
 
     const onSubmit = async (data: CreateItemValidation) => {
-        console.log('Submit');
+        router.push('/market');
+
         try {
-            let images = [] as string[];
+            let images = await uploadImagesWithFiles({
+                files,
+            });
 
-            if (files.length != 0) {
-                const uploadPromises = files.map((file) => {
-                    return new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = async () => {
-                            try {
-                                const base64 = reader.result as string;
-                                const image = await uploadImage({
-                                    image: base64,
-                                });
-                                resolve(image._id);
-                            } catch (error) {
-                                reject(error);
-                            }
-                        };
-                        reader.onerror = (error) => reject(error);
-                    });
-                });
-
-                images = await Promise.all(uploadPromises);
-            } else {
-                toast.error('Vui lòng chọn ảnh sản phẩm');
-                return;
-            }
-
-            const newItem = await ItemService.createItem({
+            const newItem = (await ItemService.createItem({
                 name: data.name,
                 seller: session?.user.id || '',
                 description: data.description,
@@ -84,75 +68,106 @@ const CreateItemPage = () => {
                 location: data.location,
                 category: data.category,
                 status: 'active',
-            });
+            })) as IItem;
 
             toast.success('Tạo sản phẩm thành công');
-            router.push('/market');
         } catch (error) {
-            toast.error('Đã có lỗi xảy ra khi tạo sản phẩm');
+            console.log(error);
         }
     };
 
-    const handleChange = (files: File[]) => {
-        setFiles(files);
+    const handleChange = (filesChange: any) => {
+        setValue('images', filesChange);
     };
 
+    watch('images');
+
     return (
-        <div className="mx-auto mt-2 w-[600px] max-w-full bg-secondary-1">
-            <Form onSubmit={handleSubmit(onSubmit)}>
-                <FormTitle>Tạo sản phẩm</FormTitle>
+        <>
+            <div className="mx-auto mt-2 h-full w-[600px] max-w-full pt-4">
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <FormTitle>Tạo sản phẩm</FormTitle>
 
-                <FileUploader className={'mb-2'} handleChange={handleChange} />
-
-                <FormGroup>
-                    <FormLabel>Tên</FormLabel>
-                    <FormInput placeholder="Tên" {...register('name')} />
-                    <FormError>{errors.name?.message}</FormError>
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>Giá</FormLabel>
-                    <FormInput placeholder="Giá" {...register('price')} />
-                    <FormError>{errors.price?.message}</FormError>
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>Mô tả</FormLabel>
-                    <FormTextArea
-                        placeholder="Mô tả"
-                        {...register('description')}
+                    <FileUploader
+                        className={'mb-2'}
+                        handleChange={handleChange}
                     />
-                    <FormError>{errors.description?.message}</FormError>
-                </FormGroup>
 
-                <FormGroup>
-                    <FormLabel>Danh mục</FormLabel>
-                    <FormSelect
-                        placeholder="Danh mục"
-                        {...register('category')}
+                    <div
+                        className={
+                            'flex w-full items-center justify-between gap-2 md:flex-col'
+                        }
                     >
-                        <option value="">Chọn danh mục</option>
-                        {categories?.map((category: ICategory) => (
-                            <option key={category._id} value={category._id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </FormSelect>
-                    <FormError>{errors.category?.message}</FormError>
-                </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Tên</FormLabel>
+                            <FormInput
+                                placeholder="Tên"
+                                {...register('name')}
+                            />
+                            <FormError>{errors.name?.message}</FormError>
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Giá</FormLabel>
+                            <FormInput
+                                placeholder="Giá"
+                                {...register('price')}
+                            />
+                            <FormError>{errors.price?.message}</FormError>
+                        </FormGroup>
+                    </div>
+                    <FormGroup>
+                        <FormLabel>Mô tả</FormLabel>
+                        <FormTextArea
+                            placeholder="Mô tả"
+                            {...register('description')}
+                        />
+                        <FormError>{errors.description?.message}</FormError>
+                    </FormGroup>
+                    <div
+                        className={
+                            'flex w-full items-center justify-between gap-2 md:flex-col'
+                        }
+                    >
+                        <FormGroup>
+                            <FormLabel>Danh mục</FormLabel>
+                            <FormSelect
+                                placeholder="Danh mục"
+                                {...register('category')}
+                            >
+                                <option value="">Chọn danh mục</option>
+                                {categories?.map((category: ICategory) => (
+                                    <option
+                                        key={category._id}
+                                        value={category._id}
+                                    >
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </FormSelect>
+                            <FormError>{errors.category?.message}</FormError>
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Địa điểm</FormLabel>
+                            <FormInput
+                                placeholder="Địa điểm"
+                                {...register('location')}
+                            />
+                            <FormError>{errors.location?.message}</FormError>
+                        </FormGroup>
+                    </div>
+                    <FormButton
+                        disabled={formState.isSubmitting}
+                        type={'submit'}
+                    >
+                        Tạo sản phẩm
+                    </FormButton>
+                </Form>
+            </div>
 
-                <FormGroup>
-                    <FormLabel>Địa điểm</FormLabel>
-                    <FormInput
-                        placeholder="Địa điểm"
-                        {...register('location')}
-                    />
-                    <FormError>{errors.location?.message}</FormError>
-                </FormGroup>
-
-                <FormButton type={'submit'}>Tạo sản phẩm</FormButton>
-            </Form>
-        </div>
+            {formState.isSubmitting && (
+                <Loading fullScreen={true} title={'Đang tải mặt hàng'} />
+            )}
+        </>
     );
 };
 

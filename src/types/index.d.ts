@@ -61,6 +61,7 @@ interface ILoading {
 interface IPostFormData {
     option: 'public' | 'friend' | 'private';
     content: string;
+    files: File[];
 }
 
 interface GemimiChatMessage {
