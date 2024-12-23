@@ -9,6 +9,8 @@ type SocialContextType = {
     conversations: IConversation[];
     setFriends: React.Dispatch<React.SetStateAction<IFriend[]>>;
     setConversations: React.Dispatch<React.SetStateAction<IConversation[]>>;
+    followers: IFriend[];
+    setFollowers: React.Dispatch<React.SetStateAction<IFriend[]>>;
 };
 
 export const SocialContext = createContext<SocialContextType>({
@@ -16,6 +18,8 @@ export const SocialContext = createContext<SocialContextType>({
     conversations: [],
     setFriends: () => {},
     setConversations: () => {},
+    followers: [],
+    setFollowers: () => {},
 });
 
 export const useSocial = () => useContext(SocialContext);
@@ -24,7 +28,22 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
 
     const [friends, setFriends] = useState<IFriend[]>([]);
+    const [followers, setFollowers] = useState<IFriend[]>([]);
     const [conversations, setConversations] = useState<IConversation[]>([]);
+
+    // Lấy danh sách các user mà user hiện tại đang theo dõi
+    const getFollowers = async () => {
+        console.log('SocketContext: getFollowers');
+        try {
+            const followers = await UserService.getFollowersByUserId({
+                userId: session?.user.id as string,
+            });
+
+            setFollowers(followers);
+        } catch (error) {
+            toast.error('Lỗi khi lấy danh sách người theo dõi');
+        }
+    };
 
     // Lấy danh sách conversation
     const getConversations = async () => {
@@ -57,6 +76,7 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
             if (session?.user) {
                 await getConversations();
                 await getFriends();
+                await getFollowers();
             }
         })();
     }, [session?.user.id]);
@@ -66,6 +86,8 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
         friends,
         setConversations,
         setFriends,
+        followers,
+        setFollowers,
     } as SocialContextType;
 
     if (!session) return children;

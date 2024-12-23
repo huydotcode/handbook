@@ -13,7 +13,7 @@ interface IUserModel {
     familyName: string;
     locale: string;
     friends: Types.ObjectId[];
-    followers: Types.ObjectId[];
+    followings: Types.ObjectId[];
     isOnline: boolean;
     isBlocked: boolean;
     lastAccessed: Date;
@@ -57,7 +57,7 @@ const UserSchema = new Schema<IUserModel>(
         familyName: String,
         locale: String,
         friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        followings: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         lastAccessed: {
             type: Date,
             default: Date.now(),

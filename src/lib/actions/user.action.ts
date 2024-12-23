@@ -178,3 +178,77 @@ export const checkAuth = async ({
 
     return null;
 };
+
+export const getFollowersByUserId = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+        const user = await User.findById(userId).exec();
+        if (!user) throw new Error('Đã có lỗi xảy ra');
+        const followers = await User.find({
+            _id: { $in: user.followings },
+        }).select('_id name avatar username isOnline lastAccessed');
+
+        return JSON.parse(JSON.stringify(followers));
+    } catch (error: any) {
+        logger({
+            message: 'Error get followers' + error,
+            type: 'error',
+        });
+    }
+};
+
+export const follow = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
+
+        await User.updateOne(
+            {
+                _id: session.user.id,
+            },
+            {
+                $push: {
+                    followings: userId,
+                },
+            }
+        );
+
+        return true;
+    } catch (error: any) {
+        logger({
+            message: 'Error follow' + error,
+            type: 'error',
+        });
+    }
+
+    return false;
+};
+
+export const unfollow = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
+
+        await User.updateOne(
+            {
+                _id: session.user.id,
+            },
+            {
+                $pull: {
+                    followings: userId,
+                },
+            }
+        );
+
+        return true;
+    } catch (error: any) {
+        logger({
+            message: 'Error unfollow' + error,
+            type: 'error',
+        });
+    }
+
+    return false;
+};
