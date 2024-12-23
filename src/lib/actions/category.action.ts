@@ -3,7 +3,7 @@ import { Category } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 
-const createCategory = async ({
+export const createCategory = async ({
     name,
     description,
     slug,
@@ -36,7 +36,7 @@ const createCategory = async ({
     }
 };
 
-const getCategories = async () => {
+export const getCategories = async () => {
     try {
         await connectToDB();
 
@@ -48,7 +48,11 @@ const getCategories = async () => {
     }
 };
 
-const getCategoryById = async ({ categoryId }: { categoryId: string }) => {
+export const getCategoryById = async ({
+    categoryId,
+}: {
+    categoryId: string;
+}) => {
     try {
         await connectToDB();
 
@@ -71,5 +75,3 @@ export const getCategoryBySlug = async ({ slug }: { slug: string }) => {
         throw new Error(error);
     }
 };
-
-export { createCategory, getCategories, getCategoryById };

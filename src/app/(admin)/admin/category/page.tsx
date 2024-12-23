@@ -14,6 +14,7 @@ import { CategoryService } from '@/lib/services';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { IconsArray } from '@/components/ui/Icons';
+import { usePathname } from 'next/navigation';
 
 /*
     name: string;
@@ -36,6 +37,7 @@ const CategoryPage: React.FC = () => {
             return await CategoryService.getCategories();
         },
     });
+    const path = usePathname();
 
     const { handleSubmit, register, formState } = useForm<CategoryForm>({
         defaultValues: {
@@ -49,12 +51,12 @@ const CategoryPage: React.FC = () => {
     const onSubmit = async (data: CategoryForm) => {
         console.log('onSubmit', data);
         try {
-            const newCategory = await CategoryService.createCategory({
+            await CategoryService.createCategory({
                 name: data.name,
-                description: data.description,
-                slug: data.slug,
                 icon: data.icon,
-                path: '/admin/category',
+                slug: data.slug,
+                description: data.description,
+                path,
             });
 
             await refetch();
