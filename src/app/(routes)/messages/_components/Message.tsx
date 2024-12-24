@@ -15,6 +15,7 @@ import React, {
 import toast from 'react-hot-toast';
 import { FormatDate } from '@/utils/formatDate';
 import { useSocket } from '@/context';
+import { urlRegex } from '@/utils/regex';
 
 interface Props {
     data: IMessage;
@@ -114,6 +115,12 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
         }
     }, [showMenu]);
 
+    useEffect(() => {
+        msg.text
+            .split(' ')
+            .forEach((text) => console.log(text, text.match(urlRegex)));
+    }, []);
+
     return (
         <div
             key={msg._id}
@@ -200,7 +207,7 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                             {msg.text.length > 0 && (
                                 <div
                                     className={cn(
-                                        'relative flex max-w-[70%] items-center px-4 py-2',
+                                        'relative flex max-w-[70%] items-center px-4 py-2 text-xs',
                                         {
                                             'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
                                                 isOwnMsg,
@@ -214,13 +221,39 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                                         isOwnMsg &&
                                         createMenuMessages()}
 
-                                    <p
-                                        className={cn('text-xs', {
-                                            'text-justify':
-                                                msg.text.length > 100,
-                                        })}
-                                    >
-                                        {msg.text}
+                                    <p>
+                                        {msg.text
+                                            .split(' ')
+                                            .map((text, index) => {
+                                                // Kểm tra url
+                                                if (text.match(urlRegex)) {
+                                                    return (
+                                                        <a
+                                                            key={index}
+                                                            href={text}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className={cn(
+                                                                'underline',
+                                                                {
+                                                                    'text-primary-1':
+                                                                        isOwnMsg,
+                                                                    'text-primary-2 dark:text-dark-primary-1':
+                                                                        !isOwnMsg,
+                                                                }
+                                                            )}
+                                                        >
+                                                            {text + ' '}
+                                                        </a>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <span key={index}>
+                                                            {text + ' '}
+                                                        </span>
+                                                    );
+                                                }
+                                            })}
                                     </p>
                                 </div>
                             )}

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
-import { Button } from './ui';
+import { Button } from '../ui';
 import { useSession } from 'next-auth/react';
 
 interface IFormData {

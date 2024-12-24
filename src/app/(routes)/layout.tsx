@@ -1,6 +1,4 @@
 import React from 'react';
-import ChatWithGemini from '@/components/ChatWithGemini';
-import { Navbar } from '@/components/layout';
 import { getAuthSession } from '@/lib/auth';
 import FullLayout from '@/components/layout/FullLayout';
 

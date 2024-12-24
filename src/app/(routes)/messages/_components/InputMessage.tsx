@@ -1,7 +1,7 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 import { MessageService } from '@/lib/services';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
