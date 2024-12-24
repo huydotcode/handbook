@@ -24,7 +24,7 @@ const PostPage: React.FC<Props> = ({ params: { postId } }) => {
     if (!post) return null;
 
     return (
-        <div className="mt-2">
+        <div className="mx-auto mt-[64px] w-[800px] max-w-screen">
             <Post data={post} setPosts={setPosts} />
         </div>
     );
