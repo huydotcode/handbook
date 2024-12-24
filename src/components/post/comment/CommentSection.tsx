@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Comment from './CommentItem';
 import InputComment from './InputComment';
+import toast from 'react-hot-toast';
 
 interface Props {
     postId: string;
@@ -24,7 +25,9 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     const {
         handleSubmit,
         register,
-        formState: { isSubmitting },
+        reset,
+        setFocus,
+        formState: { isLoading },
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -67,11 +70,15 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
 
     // Gửi bình luận
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
-        if (!session?.user.id || isSubmitting) return;
+        if (!session?.user.id) return;
+
+        reset();
+        setFocus('text');
+        const { text } = data;
 
         try {
             const newComment = await CommentService.sendComment({
-                content: data.text,
+                content: text,
                 postId,
                 replyTo: null,
             });
@@ -80,12 +87,9 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 return [newComment, ...prev];
             });
         } catch (error: any) {
-            logger({
-                message: 'Error send comment' + error,
-                type: 'error',
+            toast.error('Không thể gửi bình luận!', {
+                position: 'bottom-left',
             });
-        } finally {
-            formRef.current?.reset();
         }
     };
 
@@ -113,7 +117,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                                 variant={'custom'}
                                 type="submit"
                             >
-                                {isSubmitting ? (
+                                {isLoading ? (
                                     <Icons.Loading className="animate-spin" />
                                 ) : (
                                     <Icons.Send className="text-xl" />
