@@ -40,60 +40,58 @@ const SwiperImagesItem: React.FC<Props> = ({ images }) => {
             mousewheel={true}
             keyboard={true}
             modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-            className={'relative h-full w-full'}
             onBeforeInit={(swiper) => {
                 swiperRef.current = swiper;
             }}
+            className={'h-full'}
         >
             <>
-                <div className={'relative'}>
-                    {images.map((image, index) => {
-                        return (
-                            <SwiperSlide key={index}>
-                                <div className={'relative h-full w-full'}>
-                                    <div
-                                        slot="prevButton"
-                                        className={
-                                            'absolute left-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
-                                        }
+                {images.map((image, index) => {
+                    return (
+                        <SwiperSlide key={index}>
+                            <div className={'relative h-full w-full'}>
+                                <div
+                                    slot="prevButton"
+                                    className={
+                                        'absolute left-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
+                                    }
+                                >
+                                    <Button
+                                        variant={'custom'}
+                                        onClick={handlePrev}
                                     >
-                                        <Button
-                                            variant={'custom'}
-                                            onClick={handlePrev}
-                                        >
-                                            <Icons.ArrowBack
-                                                className={'h-8 w-8'}
-                                            />
-                                        </Button>
-                                    </div>
-
-                                    <Image
-                                        className={'object-contain'}
-                                        src={image.url}
-                                        alt={image.publicId}
-                                        fill={true}
-                                    />
-
-                                    <div
-                                        slot="nextButton"
-                                        className={
-                                            'absolute right-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
-                                        }
-                                    >
-                                        <Button
-                                            variant={'custom'}
-                                            onClick={handleNext}
-                                        >
-                                            <Icons.ArrowForward
-                                                className={'h-8 w-8'}
-                                            />
-                                        </Button>
-                                    </div>
+                                        <Icons.ArrowBack
+                                            className={'h-8 w-8'}
+                                        />
+                                    </Button>
                                 </div>
-                            </SwiperSlide>
-                        );
-                    })}
-                </div>
+
+                                <Image
+                                    className={'object-contain'}
+                                    src={image.url}
+                                    alt={image.publicId}
+                                    fill={true}
+                                />
+
+                                <div
+                                    slot="nextButton"
+                                    className={
+                                        'absolute right-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
+                                    }
+                                >
+                                    <Button
+                                        variant={'custom'}
+                                        onClick={handleNext}
+                                    >
+                                        <Icons.ArrowForward
+                                            className={'h-8 w-8'}
+                                        />
+                                    </Button>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                    );
+                })}
             </>
         </Swiper>
     );

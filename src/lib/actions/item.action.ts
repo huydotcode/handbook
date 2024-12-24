@@ -1,22 +1,6 @@
 'use server';
-
 import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { CategoryService } from '@/lib/services';
-
-// interface IItemModel {
-//     name: string;
-//     seller: Schema.Types.ObjectId;
-//     description: string;
-//     price: number;
-//     image: Schema.Types.ObjectId;
-//     location: string;
-//     category: Schema.Types.ObjectId;
-//     slug: string;
-//     status: string;
-//     createdAt: Date;
-//     updatedAt: Date;
-// }
 
 export const createItem = async ({
     name,

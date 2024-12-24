@@ -25,23 +25,27 @@ export default async function ItemPage({ params }: Props) {
     const isOwner = session?.user?.id === item.seller._id;
 
     return (
-        <div className={'m-2 flex h-full w-full p-2'}>
+        <div className={'flex h-full w-full px-4 py-2'}>
             <div
                 className={
-                    'flex h-[calc(100vh-80px)] w-full justify-between lg:flex-col'
+                    'flex h-[calc(100vh-80px)] w-full justify-between xl:block xl:h-full'
                 }
             >
                 {/* Left */}
                 <div
                     className={
-                        'h-full min-w-[500px] max-w-[70vw] rounded-xl border p-2'
+                        'h-screen max-w-[40vw] rounded-xl border p-2 xl:h-[50vh] xl:max-w-screen'
                     }
                 >
                     <SwiperImagesItem images={item.images} />
                 </div>
 
                 {/* Right */}
-                <div className={'ml-4 h-full flex-1'}>
+                <div
+                    className={
+                        'ml-4 h-full flex-1 overflow-scroll xl:ml-0 xl:mt-2'
+                    }
+                >
                     <h1 className={'text-xl font-bold'}>{item.name}</h1>
                     <p className={'mt-2 text-sm'}>{item.category.name}</p>
 
@@ -62,9 +66,7 @@ export default async function ItemPage({ params }: Props) {
                     </span>
 
                     <h5 className={'mt-2 text-lg font-bold'}>Mô tả</h5>
-                    <p className={'text-sm text-secondary-1'}>
-                        {item.description}
-                    </p>
+                    <p className={'text-sm'}>{item.description}</p>
 
                     <div className="mt-2 flex items-center">
                         {!isOwner && (
@@ -93,13 +95,10 @@ export default async function ItemPage({ params }: Props) {
                             Mặt hàng khác
                         </h5>
 
-                        <div
-                            className={
-                                'grid grid-cols-3 lg:grid-cols-2 md:grid-cols-1'
-                            }
-                        >
+                        <div className={'grid grid-cols-2'}>
                             {itemsOther
                                 .filter((i: IItem) => i._id !== item._id)
+                                .slice(0, 4)
                                 .map((item: IItem) => (
                                     <Item data={item} key={item._id} />
                                 ))}

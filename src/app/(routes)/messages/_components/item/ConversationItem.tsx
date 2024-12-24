@@ -95,7 +95,8 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                     'text-secondary-1': lastMsg?.isRead,
                                 })}
                             >
-                                {lastMsg?.text.trim().length > 0
+                                {lastMsg?.text.trim().length > 0 &&
+                                lastMsg.images.length > 0
                                     ? lastMsg?.text
                                     : 'Đã gửi một hình ảnh'}
                             </span>
