@@ -175,7 +175,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                                         className="h-16 w-16 rounded-lg object-cover"
                                     />
                                     <Button
-                                        className="absolute right-0 top-0 rounded-full p-1 text-white"
+                                        className="absolute right-0 top-0 rounded-full p-1"
                                         type={'reset'}
                                         onClick={() => handleRemoveFile(index)}
                                     >
