@@ -51,7 +51,7 @@ const Sidebar = () => {
                         return null;
 
                     return (
-                        <Tooltip title={link.name}>
+                        <Tooltip title={link.name} key={link.name}>
                             <li
                                 key={index}
                                 className={cn(

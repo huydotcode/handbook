@@ -73,9 +73,13 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
         }
 
         try {
-            let imagesUpload = await uploadImagesWithFiles({
-                files,
-            });
+            let imagesUpload;
+
+            if (files.length > 0) {
+                imagesUpload = await uploadImagesWithFiles({
+                    files,
+                });
+            }
 
             const newMsg = await MessageService.sendMessage({
                 roomId: currentRoom._id,
