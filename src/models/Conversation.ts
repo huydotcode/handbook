@@ -12,9 +12,13 @@ interface IConversationModel {
 
 const ConversationModel = new Schema<IConversationModel>(
     {
-        title: { type: String, required: true },
+        title: { type: String, default: '' },
         creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        participants: [{ type: Schema.Types.ObjectId, ref: 'Participant' }],
+        participants: {
+            type: [{ type: Schema.Types.ObjectId, ref: 'Participant' }],
+            required: true,
+            default: [],
+        },
         group: {
             type: Schema.Types.ObjectId,
             ref: 'Group',

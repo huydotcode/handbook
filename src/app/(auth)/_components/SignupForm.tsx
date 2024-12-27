@@ -16,10 +16,11 @@ type FormData = {
 };
 
 interface Props {
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     setIsLoginForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
+const SignupForm: React.FC<Props> = ({ setIsLoading, setIsLoginForm }) => {
     const { register, handleSubmit, formState, setError } = useForm<FormData>({
         resolver: zodResolver(signUpValidation),
     });
@@ -27,6 +28,7 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
     const { errors, isSubmitting } = formState;
 
     const signUp: SubmitHandler<FormData> = async (data) => {
+        setIsLoading(true);
         if (isSubmitting) return;
 
         if (data.password !== data.repassword) {
@@ -68,6 +70,8 @@ const SignupForm: React.FC<Props> = ({ setIsLoginForm }) => {
                 type: 'error',
             });
             toast.error('Có lỗi xảy ra khi đăng ký');
+        } finally {
+            setIsLoading(false);
         }
     };
 

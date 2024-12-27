@@ -84,8 +84,11 @@ const CreateItemPage = () => {
 
     return (
         <>
-            <div className="mx-auto mt-2 h-full w-[600px] max-w-full pt-4">
-                <Form onSubmit={handleSubmit(onSubmit)}>
+            <div className="mx-auto mt-2 h-full w-[600px] max-w-full  pt-4">
+                <Form
+                    className="bg-secondary-1"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
                     <FormTitle>Tạo sản phẩm</FormTitle>
 
                     <FileUploader

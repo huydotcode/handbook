@@ -4,6 +4,7 @@ interface User {
     name: string;
     image: string;
     email: string;
+    password: string;
 }
 
 interface IComment {

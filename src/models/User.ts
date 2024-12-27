@@ -74,6 +74,9 @@ if (modelNames && modelNames().includes('User')) {
 
 UserSchema.methods.comparePassword = async function (password: string) {
     const user = this as IUserModel;
+    if (user.password === undefined) {
+        return false;
+    }
     return bcrypt.compare(password, user.password!);
 };
 

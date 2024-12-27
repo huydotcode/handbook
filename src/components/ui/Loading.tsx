@@ -5,17 +5,23 @@ interface Props {
     className?: string;
     fullScreen?: boolean;
     title?: string;
+    overlay?: boolean;
 }
 
-const Loading: FC<Props> = ({ fullScreen, className, title }) => {
+const Loading: FC<Props> = ({
+    fullScreen,
+    className,
+    title,
+    overlay = true,
+}) => {
     return (
         <div
             className={cn(
                 'loader-container flex items-center justify-center overflow-hidden',
-                fullScreen &&
-                    'fixed left-0 top-0 z-50 h-screen w-screen bg-black bg-opacity-10',
+                fullScreen && 'fixed left-0 top-0 z-50 h-screen w-screen',
                 className,
-                title && 'flex-col'
+                title && 'flex-col',
+                overlay && 'bg-black bg-opacity-10'
             )}
         >
             <div className="loader">

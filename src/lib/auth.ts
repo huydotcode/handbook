@@ -3,7 +3,8 @@ import connectToDB from '@/services/mongoose';
 import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
 import logger from '@/utils/logger';
 
-import { NextAuthOptions } from 'next-auth';
+import bcrypt from 'bcrypt';
+import { NextAuthOptions, RequestInternal } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
@@ -53,9 +54,6 @@ export const authOptions: NextAuthOptions = {
     session: {
         strategy: 'jwt',
     },
-    pages: {
-        signIn: '/auth',
-    },
     secret: process.env.JWT_SECRET,
     jwt: {
         secret: process.env.JWT_SECRET,
@@ -71,20 +69,31 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
+                console.log('Authorize', {
+                    credentials,
+                });
+
                 try {
                     const { email, password } = credentials;
 
                     await connectToDB();
 
-                    return await User.findOne({
-                        email: email,
-                    });
-                } catch (error) {}
+                    const user = await User.findOne({ email });
 
-                return null;
+                    if (user) {
+                        const isMatch = user.comparePassword(password);
+                        if (!isMatch) return null;
+                    }
+
+                    return await User.findOne({ email });
+                } catch (error) {
+                    console.error('Authorization error:', error);
+                    return null;
+                }
             },
         }),
     ],
+
     callbacks: {
         async jwt({ token, user }) {
             await connectToDB();
@@ -210,10 +219,12 @@ export const authOptions: NextAuthOptions = {
                 return false;
             }
         },
-        redirect({ baseUrl, url }) {
-            return baseUrl;
-        },
     },
+};
+
+export const hashPassword = async (password: string) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
 };
 
 export const getAuthSession = () => getServerSession(authOptions);

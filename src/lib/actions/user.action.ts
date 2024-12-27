@@ -155,6 +155,15 @@ export const checkAuth = async ({
             email: email,
         })) as User;
 
+        if (user && user.password === undefined) {
+            return {
+                error: {
+                    type: 'password',
+                    message: 'Đăng nhập thất bại',
+                },
+            };
+        }
+
         if (!user) {
             return {
                 error: {
@@ -174,7 +183,9 @@ export const checkAuth = async ({
                 },
             };
         }
-    } catch (error) {}
+    } catch (error) {
+        console.log('Error checking auth:', error);
+    }
 
     return null;
 };

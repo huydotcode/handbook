@@ -313,3 +313,73 @@ export const deleteConversation = async ({
 
     return false;
 };
+
+export const getParticipantsByUserId = async ({
+    userId,
+}: {
+    userId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const participants = await Participant.find({
+            user: userId,
+        })
+            .populate('conversation')
+            .populate('user');
+
+        return JSON.parse(JSON.stringify(participants));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const getConversationWithTwoUsers = async ({
+    userId,
+    otherUserId,
+}: {
+    userId: string;
+    otherUserId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const conversations = await getConversationsByUserId({ userId });
+
+        const conversationExist = conversations.find(
+            (conversation: IConversation) => {
+                return (
+                    conversation.participants.length == 2 &&
+                    conversation.participants.find((part) => {
+                        return part.user._id.toString() === otherUserId;
+                    })
+                );
+            }
+        );
+
+        if (conversationExist) {
+            console.log('conversationExist', conversationExist);
+            return JSON.parse(
+                JSON.stringify({
+                    isNew: false,
+                    conversation: conversationExist,
+                })
+            );
+        } else {
+            console.log("conversation doesn't exist");
+            const newConversation = await createConversation({
+                creator: userId,
+                participantsUserId: [userId, otherUserId],
+            });
+
+            return JSON.parse(
+                JSON.stringify({
+                    isNew: true,
+                    conversation: newConversation,
+                })
+            );
+        }
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

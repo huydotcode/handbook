@@ -12,9 +12,12 @@ const Form = React.forwardRef<
 >((props, ref) => {
     return (
         <form
-            className="flex w-full flex-col rounded-xl border border-primary-1 px-6 py-4 dark:bg-dark-secondary-2"
-            ref={ref}
             {...props}
+            ref={ref}
+            className={cn(
+                'flex w-full flex-col rounded-xl border border-primary-1  px-6 py-4 dark:bg-dark-secondary-2',
+                props.className
+            )}
         >
             {props.children}
         </form>
@@ -27,9 +30,12 @@ const FormTitle = React.forwardRef<
 >((props, ref) => {
     return (
         <h1
-            className="mb-2 text-center text-2xl font-bold"
-            ref={ref}
             {...props}
+            className={cn(
+                'mb-2 text-center text-2xl font-bold',
+                props.className
+            )}
+            ref={ref}
         />
     );
 });
@@ -38,7 +44,13 @@ const FormGroup = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
-    return <div className="mb-2 w-full" ref={ref} {...props} />;
+    return (
+        <div
+            {...props}
+            className={cn('mb-2 w-full', props.className)}
+            ref={ref}
+        />
+    );
 });
 
 const FormInput = React.forwardRef<
@@ -47,9 +59,12 @@ const FormInput = React.forwardRef<
 >((props, ref) => {
     return (
         <input
-            ref={ref}
-            className="mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
             {...props}
+            ref={ref}
+            className={cn(
+                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
+                props.className
+            )}
         />
     );
 });
@@ -60,9 +75,12 @@ const FormSelect = React.forwardRef<
 >((props, ref) => {
     return (
         <select
-            ref={ref}
-            className="mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
             {...props}
+            ref={ref}
+            className={cn(
+                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
+                props.className
+            )}
         />
     );
 });
@@ -73,9 +91,9 @@ const FormLabel = React.forwardRef<
 >((props, ref) => {
     return (
         <label
+            {...props}
             className={cn('text-sm', props.className)}
             ref={ref}
-            {...props}
         />
     );
 });
@@ -84,7 +102,13 @@ const FormError = React.forwardRef<
     HTMLParagraphElement,
     React.HTMLAttributes<HTMLParagraphElement>
 >((props, ref) => {
-    return <p ref={ref} className="text-red-500" {...props} />;
+    return (
+        <p
+            {...props}
+            ref={ref}
+            className={cn('text-red-500', props.className)}
+        />
+    );
 });
 
 const FormTextArea = React.forwardRef<
@@ -93,9 +117,12 @@ const FormTextArea = React.forwardRef<
 >((props, ref) => {
     return (
         <textarea
-            ref={ref}
-            className="mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
             {...props}
+            ref={ref}
+            className={cn(
+                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
+                props.className
+            )}
         />
     );
 });
@@ -106,10 +133,10 @@ const FormButton = React.forwardRef<
 >((props, ref) => {
     return (
         <Button
-            className={'mt-2'}
+            {...props}
+            className={cn('mt-2', props.className)}
             variant={'primary'}
             type={'submit'}
-            {...props}
         >
             {props.children}
         </Button>

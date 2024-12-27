@@ -16,7 +16,7 @@ const Item: React.FC<Props> = ({ data: item }) => {
     return (
         <Button
             variant={'custom'}
-            className="relative flex w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:hover:bg-dark-hover-1"
+            className="relative flex w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-1"
             key={item._id}
             href={`/market/${item._id}`}
         >
@@ -38,9 +38,13 @@ const Item: React.FC<Props> = ({ data: item }) => {
                 </span>
             </div>
 
-            <span className="absolute bottom-1 right-1 w-full text-end text-xl font-medium">
-                {formatMoney(item.price)}
-            </span>
+            <div className="flex w-full items-center justify-between">
+                <span className="text-start text-xs">{item.seller.name}</span>
+
+                <span className="text-end text-base font-medium">
+                    {formatMoney(item.price)}
+                </span>
+            </div>
         </Button>
     );
 };

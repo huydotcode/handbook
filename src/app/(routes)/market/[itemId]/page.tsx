@@ -1,11 +1,11 @@
-import ItemService from '@/lib/services/item.service';
-import Image from 'next/image';
-import React from 'react';
-import SwiperImagesItem from '@/app/(routes)/market/_components/SwiperImagesItem';
-import { formatMoney } from '@/utils/formatMoney';
-import { Button, Icons } from '@/components/ui';
-import { getAuthSession } from '@/lib/auth';
 import Item from '@/app/(routes)/market/_components/Item';
+import SwiperImagesItem from '@/app/(routes)/market/_components/SwiperImagesItem';
+import { MessageAction } from '@/components/shared';
+import { Icons } from '@/components/ui';
+import { getAuthSession } from '@/lib/auth';
+import ItemService from '@/lib/services/item.service';
+import { formatMoney } from '@/utils/formatMoney';
+import Image from 'next/image';
 
 interface Props {
     params: {
@@ -34,7 +34,7 @@ export default async function ItemPage({ params }: Props) {
                 {/* Left */}
                 <div
                     className={
-                        'h-screen max-w-[40vw] rounded-xl border p-2 xl:h-[50vh] xl:max-w-screen'
+                        'max-h-screen min-w-[500px] max-w-[40vw] rounded-xl border p-2 dark:border-none xl:h-[50vh] xl:max-w-screen'
                     }
                 >
                     <SwiperImagesItem images={item.images} />
@@ -70,11 +70,11 @@ export default async function ItemPage({ params }: Props) {
 
                     <div className="mt-2 flex items-center">
                         {!isOwner && (
-                            <Button variant={'primary'}>Nhắn tin</Button>
+                            <MessageAction messageTo={item.seller._id} />
                         )}
                     </div>
 
-                    <div className="mt-2 rounded-xl border px-4 py-2">
+                    <div className="mt-2 rounded-xl border px-4 py-2 dark:border-none">
                         <h5 className={'mt-2 text-lg font-bold'}>
                             Thông tin người bán
                         </h5>

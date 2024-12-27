@@ -1,12 +1,10 @@
+import FollowAction from '@/app/(routes)/profile/_components/FollowAction';
+import { MessageAction, TabItem } from '@/components/shared';
 import { navProfile } from '@/constants/navLink';
 import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
 import AddFriendAction from './AddFriendAction';
-import { TabItem } from '@/components/shared';
-import { Button } from '@/components/ui';
-import Icons from '../../../../components/ui/Icons';
-import FollowAction from '@/app/(routes)/profile/_components/FollowAction';
 
 interface Props {
     profile: IProfile;
@@ -47,17 +45,16 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button
-                        className="h-12 min-w-[48px]"
-                        variant="primary"
-                        size="medium"
-                    >
-                        <Icons.Message />
-                        <p className="ml-2 md:hidden">Nhắn tin</p>
-                    </Button>
-
-                    {notCurrentUser && <FollowAction userId={user._id} />}
-                    {notCurrentUser && <AddFriendAction userId={user._id} />}
+                    {notCurrentUser && (
+                        <>
+                            <MessageAction
+                                className="h-full"
+                                messageTo={user._id}
+                            />
+                            <FollowAction userId={user._id} />
+                            <AddFriendAction userId={user._id} />
+                        </>
+                    )}
                 </div>
             </div>
 
