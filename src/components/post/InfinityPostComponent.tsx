@@ -2,7 +2,6 @@
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-
 import { PostService } from '@/lib/services';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
@@ -66,7 +65,6 @@ const InfinityPostComponent: React.FC<Props> = ({
     }, [session, userId, username, type, groupId]);
 
     const fetchPosts = useCallback(async () => {
-        console.log('InfinityPostComponent: fetchPosts()');
         setLoading(true);
         try {
             const fetchedPosts = await PostService.getNewFeedPosts({
@@ -95,9 +93,21 @@ const InfinityPostComponent: React.FC<Props> = ({
     }, [page, userId, username, groupId]);
 
     useEffect(() => {
+        let timer: NodeJS.Timeout;
+
         (async () => {
             await fetchPosts();
+
+            if (!isEnd) {
+                timer = setTimeout(() => {
+                    setPage((prev) => prev + 1);
+                }, 3000);
+            }
         })();
+
+        return () => {
+            clearTimeout(timer);
+        };
     }, [fetchPosts]);
 
     return (
