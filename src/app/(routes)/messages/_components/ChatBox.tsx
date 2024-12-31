@@ -168,8 +168,9 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                 </div>
             </div>
 
-            {openInfo && (
+            {openInfo && messages && (
                 <InfomationConversation
+                    messages={messages}
                     conversation={conversation}
                     openInfo={openInfo}
                     setOpenInfo={setOpenInfo}

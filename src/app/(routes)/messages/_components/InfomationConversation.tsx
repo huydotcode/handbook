@@ -10,15 +10,16 @@ interface Props {
     conversation: IConversation;
     openInfo: boolean;
     setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
+    messages: IMessage[];
 }
 
 const InfomationConversation: React.FC<Props> = ({
     conversation,
     openInfo,
     setOpenInfo,
+    messages,
 }) => {
     const { data: session } = useSession();
-    const { data: messages } = useMessages(conversation._id);
 
     const [openSlideShow, setOpenSlideShow] = useState<boolean>(false);
     const [startImageIndex, setStartImageIndex] = useState<number>(0);
