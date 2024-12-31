@@ -2,28 +2,14 @@
 import { Comment, Post } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
-import { isValidObjectId } from 'mongoose';
 import { getAuthSession } from '../auth';
 
-/*
-    * Comment Model: 
-    text: string;
-    author: Types.ObjectId;
-    replyComment: Types.ObjectId;
-    loves: Types.ObjectId[];
-    post: Types.ObjectId;
-    isDeleted: boolean;
-*/
-
-export const getComment = async ({
-    commentId = null,
+export const getCommentByCommentId = async ({
+    commentId,
 }: {
-    commentId: string | null;
+    commentId: string;
 }) => {
     try {
-        if (!commentId) return null;
-        if (commentId && !isValidObjectId(commentId)) return null;
-
         await connectToDB();
 
         const comment = await Comment.findById(commentId)
@@ -131,11 +117,11 @@ export const sendComment = async ({
     replyTo: string | null;
     postId: string;
 }) => {
-    const session = await getAuthSession();
-    if (!session) return;
-
     try {
         await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
 
         const newComment = new Comment({
             text: content,
@@ -152,7 +138,9 @@ export const sendComment = async ({
             },
         });
 
-        const comment = await getComment({ commentId: newComment._id });
+        const comment = await getCommentByCommentId({
+            commentId: newComment._id,
+        });
 
         if (!comment) {
             return null;
@@ -168,6 +156,9 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
 
     try {
         await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
 
         const comment = await Comment.findById(commentId);
 

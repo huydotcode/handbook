@@ -1,6 +1,6 @@
 import { Button, Modal } from '@/components/ui';
-import { getLocations } from '@/lib/actions/profile.action';
-import { ProfileService } from '@/lib/services';
+import { getLocations, updateInfo } from '@/lib/actions/profile.action';
+import { getLocationsKey } from '@/lib/queryKey';
 import logger from '@/utils/logger';
 import { TextareaAutosize } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ type FormInfo = {
 
 const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
     const { data } = useQuery({
-        queryKey: ['locations'],
+        queryKey: getLocationsKey(),
         queryFn: async () => {
             const locations = await getLocations();
             return locations;
@@ -49,7 +49,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
         if (isSubmitting) return;
 
         try {
-            await ProfileService.updateInfo({
+            await updateInfo({
                 ...data,
                 profileId: profile._id,
                 path,

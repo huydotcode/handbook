@@ -1,5 +1,10 @@
 'use client';
+import { Icons } from '@/components/ui';
+import socketEvent from '@/constants/socketEvent.constant';
+import { invalidateMessages } from '@/lib/query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 import {
     createContext,
     useCallback,
@@ -7,9 +12,10 @@ import {
     useEffect,
     useState,
 } from 'react';
+import toast from 'react-hot-toast';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
-import socketEvent from '@/constants/socketEvent.constant';
+import Link from 'next/link';
 
 type SocketContextType = {
     socket: Socket | null;
@@ -33,14 +39,15 @@ type SocketContextType = {
         }: {
             notification: INotification;
         }) => void;
-        deleteMessage: ({
-            currentMessage,
-            prevMessage,
-        }: {
-            currentMessage: IMessage;
-            prevMessage: IMessage;
-        }) => void;
+        deleteMessage: ({ message }: { message: IMessage }) => void;
         sendRequestAddFriend: ({ request }: { request: INotification }) => void;
+        readMessage: ({
+            roomId,
+            userId,
+        }: {
+            roomId: string;
+            userId: string;
+        }) => void;
     };
 
     isConnected: boolean;
@@ -55,6 +62,7 @@ export const SocketContext = createContext<SocketContextType>({
         receiveNotification: () => {},
         deleteMessage: () => {},
         sendRequestAddFriend: () => {},
+        readMessage: () => {},
     },
     isConnected: false,
     isLoading: false,
@@ -69,6 +77,8 @@ const SOCKET_API =
 
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
+
+    const queryClient = useQueryClient();
 
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -103,8 +113,48 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             setIsConnected(false);
         });
 
+        socketIO.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
+            if (session.user.id === message.sender._id) return;
+
+            invalidateMessages(queryClient, message.conversation._id);
+
+            const pathName = window.location.pathname;
+
+            // Nếu mà đang trong conversation thì gửi event read message
+            if (pathName.includes(`/messages/${message.conversation._id}`)) {
+                socketEmitor.readMessage({
+                    roomId: message.conversation._id,
+                    userId: session.user.id,
+                });
+            } else {
+                toast(
+                    <Link
+                        className={'flex items-center text-primary-2'}
+                        href={`/messages/${message.conversation._id}`}
+                    >
+                        <Icons.Message className={'text-3xl'} />
+                        <p className={'ml-2'}>Bạn có tin nhắn mới</p>
+                    </Link>,
+                    {
+                        id: message.conversation._id,
+                        position: 'bottom-left',
+                    }
+                );
+            }
+        });
+
+        socketIO.on(socketEvent.DELETE_MESSAGE, (message: IMessage) => {
+            if (session.user.id === message.sender._id) return;
+
+            invalidateMessages(queryClient, message.conversation._id);
+        });
+
         socketIO.on('connect_error', (err) => {
             setIsConnected(false);
+        });
+
+        socketIO.on(socketEvent.READ_MESSAGE, ({ roomId, userId }) => {
+            invalidateMessages(queryClient, roomId);
         });
 
         return () => {
@@ -117,7 +167,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
 
     const socketEmitor = {
         joinRoom: ({ roomId, userId }: { roomId: string; userId: string }) => {
-            socket?.emit('join-room', {
+            socket?.emit(socketEvent.JOIN_ROOM, {
                 roomId,
                 userId,
             });
@@ -143,21 +193,20 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 notification,
             });
         },
-        deleteMessage: ({
-            currentMessage,
-            prevMessage,
-        }: {
-            currentMessage: IMessage;
-            prevMessage: IMessage;
-        }) => {
+        deleteMessage: ({ message }: { message: IMessage }) => {
             socket?.emit(socketEvent.DELETE_MESSAGE, {
-                currentMessage,
-                prevMessage,
+                message,
             });
         },
         sendRequestAddFriend: ({ request }: { request: INotification }) => {
             socket?.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, {
                 request,
+            });
+        },
+        readMessage({ roomId, userId }: { roomId: string; userId: string }) {
+            socket?.emit(socketEvent.READ_MESSAGE, {
+                roomId,
+                userId,
             });
         },
     };

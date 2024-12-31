@@ -22,13 +22,6 @@ interface ICommentState {
     countAllParentComments: number;
 }
 
-interface IPostContext {
-    post: IPost;
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
-    countAllComments: number;
-    setCountAllComments: React.Dispatch<React.SetStateAction<number>>;
-}
-
 interface IFriend {
     _id: string;
     name: string;

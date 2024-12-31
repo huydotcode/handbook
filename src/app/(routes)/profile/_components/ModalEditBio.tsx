@@ -1,5 +1,5 @@
 import { Button, Modal } from '@/components/ui';
-import { ProfileService } from '@/lib/services';
+import { updateBio } from '@/lib/actions/profile.action';
 import logger from '@/utils/logger';
 import { TextareaAutosize } from '@mui/material';
 import { useSession } from 'next-auth/react';
@@ -37,7 +37,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
         }
 
         try {
-            await ProfileService.updateBio({
+            await updateBio({
                 newBio: newBio,
                 path: path,
                 userId: session.user.id,

@@ -1,11 +1,11 @@
-import ItemService from '@/lib/services/item.service';
 import React from 'react';
 import Item from './_components/Item';
+import { getItems } from '@/lib/actions/item.action';
 
 interface Props {}
 
 const MarketPage: React.FC<Props> = async () => {
-    const items = await ItemService.getItems();
+    const items = await getItems();
 
     return (
         <div className={'h-full min-h-screen w-full p-4'}>

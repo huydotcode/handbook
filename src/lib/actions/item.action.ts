@@ -1,6 +1,7 @@
 'use server';
 import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
+import { getAuthSession } from '../auth';
 
 export const createItem = async ({
     name,
@@ -21,9 +22,11 @@ export const createItem = async ({
     category: string;
     status: string;
 }) => {
-    console.log('Createitem');
     try {
         await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
 
         const slug = name.toLowerCase().replace(/ /g, '-') + '-' + Date.now();
         const newItem = await new Item({
@@ -77,8 +80,6 @@ export const getItemById = async ({ id }: { id: string }) => {
 };
 
 export const getItemsBySeller = async ({ seller }: { seller: string }) => {
-    console.log('GetItemsBySeller' + seller);
-
     if (!seller) {
         throw new Error('Seller is required');
     }

@@ -140,7 +140,7 @@ const Navbar = () => {
                             };
 
                             return (
-                                <Tooltip title={link.name}>
+                                <Tooltip key={link.name} title={link.name}>
                                     <li
                                         key={index}
                                         className={cn(

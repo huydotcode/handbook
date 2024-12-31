@@ -3,22 +3,11 @@ import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
-import { ConversationService } from '../services';
+import {
+    deleteConversation,
+    getConversationsByGroupId,
+} from './conversation.action';
 
-/*
-    * Group Model: 
-    name: string;
-    description: string;
-    avatar: string;
-    members: GroupMember[];
-    creator: Schema.Types.ObjectId;
-    coverPhoto: string;
-    type: string;
-    introduction: string;
-    lastActivity: Date;
-*/
-
-// Tạo nhóm mới
 export const createGroup = async ({
     name,
     description,
@@ -68,17 +57,9 @@ export const createGroup = async ({
     }
 };
 
-export const getGroups = async ({ userId }: { userId: string }) => {
+export const getGroupsByUserId = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
-        const session = (await getAuthSession()) as Session;
-
-        if (!session?.user) {
-            return {
-                msg: 'Bạn cần đăng nhập để thực hiện tính năng này!',
-                success: false,
-            };
-        }
 
         const groups = await Group.find({
             members: {
@@ -117,7 +98,7 @@ export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
     }
 };
 
-export const getMembers = async ({ groupId }: { groupId: string }) => {
+export const getMembersByGroupId = async ({ groupId }: { groupId: string }) => {
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -158,8 +139,6 @@ export const leaveGroup = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-
-    return false;
 };
 
 export const deleteGroup = async ({ groupId }: { groupId: string }) => {
@@ -179,13 +158,12 @@ export const deleteGroup = async ({ groupId }: { groupId: string }) => {
             throw new Error('Bạn không có quyền xóa nhóm này!');
         }
 
-        const conversatios =
-            await ConversationService.getConversationsByGroupId({
-                groupId,
-            });
+        const conversatios = await getConversationsByGroupId({
+            groupId,
+        });
 
         for (const conversation of conversatios) {
-            await ConversationService.deleteConversation({
+            await deleteConversation({
                 conversationId: conversation._id,
             });
         }

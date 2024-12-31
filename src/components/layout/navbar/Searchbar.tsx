@@ -1,15 +1,15 @@
 'use client';
 import Items from '@/components/shared/Items';
 import useDebounce from '@/hooks/useDebounce';
-import { UserService } from '@/lib/services';
+import { getUsers } from '@/lib/actions/user.action';
 import { cn } from '@/lib/utils';
-import { Collapse, Fade } from '@mui/material';
+import logger from '@/utils/logger';
+import { Collapse } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
-import logger from '@/utils/logger';
 
 interface Props {
     className?: string;
@@ -48,7 +48,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
             if (!session?.user.id) return;
 
             try {
-                const { users, isNext } = await UserService.getUsers({
+                const { users, isNext } = await getUsers({
                     userId: session?.user.id,
                     pageNumber: page,
                     pageSize: pageSize,

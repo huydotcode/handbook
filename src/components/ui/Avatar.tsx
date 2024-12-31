@@ -15,6 +15,7 @@ interface Props {
     alt?: string;
     href?: string;
     rounded?: string;
+    onlyImage?: boolean;
 }
 
 const Avatar: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const Avatar: React.FC<Props> = ({
     fill = false,
     href,
     rounded = 'full',
+    onlyImage = false,
 }) => {
     const isUser = session?.user.id || userUrl;
     const sizeProps = fill
@@ -36,6 +38,18 @@ const Avatar: React.FC<Props> = ({
               width: width,
               height: height,
           };
+
+    if (onlyImage) {
+        return (
+            <Image
+                className={cn(`rounded-${rounded}`, className)}
+                src={session?.user.image || imgSrc || ''}
+                alt={session?.user.name || alt || ''}
+                priority={true}
+                {...sizeProps}
+            />
+        );
+    }
 
     return (
         <Link

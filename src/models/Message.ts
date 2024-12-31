@@ -40,6 +40,7 @@ const MessageSchema = new Schema<IMessageModel>(
 
 MessageSchema.index({ conversation: 1 }); // Index for messages by conversation
 MessageSchema.index({ sender: 1 }); // Index for messages by sender
+MessageSchema.index({ createdAt: -1 }); // Index for messages by createdAt
 
 const Message =
     models.Message || model<IMessageModel>('Message', MessageSchema);

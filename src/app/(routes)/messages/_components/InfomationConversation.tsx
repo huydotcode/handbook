@@ -1,45 +1,40 @@
+import { Items } from '@/components/shared';
 import { Avatar, Button, Collapse, Icons, SlideShow } from '@/components/ui';
+import { useMessages } from '@/context/SocialContext';
 import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
-import React, { useMemo, useState } from 'react';
-import { Items } from '@/components/shared';
-import { useChat } from '@/context';
 import Image from 'next/image';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface Props {
     conversation: IConversation;
     openInfo: boolean;
     setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
-    messagesInRoom: IMessage[];
 }
 
 const InfomationConversation: React.FC<Props> = ({
     conversation,
     openInfo,
     setOpenInfo,
-    messagesInRoom,
 }) => {
     const { data: session } = useSession();
-    const { messages } = useChat();
+    const { data: messages } = useMessages(conversation._id);
 
     const [openSlideShow, setOpenSlideShow] = useState<boolean>(false);
     const [startImageIndex, setStartImageIndex] = useState<number>(0);
 
     const imagesInRoom = useMemo(() => {
-        return messagesInRoom
-            .filter((msg) => msg.images.length > 0)
-            .map((msg) => msg.images)
-            .reduce((acc, val) => acc.concat(val), []);
-    }, [messagesInRoom, conversation._id]);
+        return (messages && messages.map((msg) => msg.images).flat()) || [];
+    }, [messages]);
 
     const partner = useMemo(() => {
         if (conversation.group) {
             return null;
         } else {
-            if (conversation.participants[0].user._id === session?.user?.id) {
-                return conversation.participants[1].user;
+            if (conversation.participants[0]._id === session?.user?.id) {
+                return conversation.participants[1];
             } else {
-                return conversation.participants[0].user;
+                return conversation.participants[0];
             }
         }
     }, [conversation]);
@@ -69,7 +64,7 @@ const InfomationConversation: React.FC<Props> = ({
                     {conversation.participants.slice(0, 5).map((part) => (
                         <Items.User
                             className={'h-10 text-xs shadow-none'}
-                            data={part.user}
+                            data={part}
                             key={part._id}
                         />
                     ))}

@@ -1,18 +1,25 @@
+'use client';
 import FollowAction from '@/app/(routes)/profile/_components/FollowAction';
 import { MessageAction, TabItem } from '@/components/shared';
 import { navProfile } from '@/constants/navLink';
-import { getAuthSession } from '@/lib/auth';
 import Image from 'next/image';
 import React from 'react';
 import AddFriendAction from './AddFriendAction';
+import { useSession } from 'next-auth/react';
+import { useProfile } from '@/context/SocialContext';
+import { Session } from 'next-auth';
 
 interface Props {
-    profile: IProfile;
-    user: IUser;
+    session: Session;
 }
 
-const Header: React.FC<Props> = async ({ profile, user }) => {
-    const session = await getAuthSession();
+const Header: React.FC<Props> = ({ session }) => {
+    if (!session) return null;
+
+    const { data: profile } = useProfile(session?.user.id);
+    if (!profile) return null;
+
+    const user = profile.user;
     const notCurrentUser = session && session.user.id !== user._id.toString();
 
     return (
@@ -38,13 +45,22 @@ const Header: React.FC<Props> = async ({ profile, user }) => {
                         <h5 className="text-2xl font-black md:text-lg">
                             {user?.name}
                         </h5>
-                        <span className="text-sm">
-                            {user?.friends?.length} bạn bè
-                        </span>
+                        <div className="flex flex-col">
+                            {user?.friends?.length > 0 && (
+                                <span className="text-sm">
+                                    {user?.friends?.length} bạn bè
+                                </span>
+                            )}
+                            {user?.followersCount > 0 && (
+                                <span className="text-sm">
+                                    {user?.followersCount} người theo dõi
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex h-12 items-center gap-2">
                     {notCurrentUser && (
                         <>
                             <MessageAction

@@ -18,7 +18,7 @@ const Item: React.FC<Props> = ({ data: item }) => {
             variant={'custom'}
             className="relative flex w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-1"
             key={item._id}
-            href={`/market/${item._id}`}
+            href={`/market/item/${item._id}`}
         >
             <div className="relative flex max-h-[30vh] min-h-[150px] w-full items-center">
                 <Image

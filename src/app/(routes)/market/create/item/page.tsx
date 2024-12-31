@@ -1,4 +1,6 @@
 'use client';
+import FileUploader from '@/components/shared/FileUploader';
+import { Loading } from '@/components/ui';
 import {
     Form,
     FormButton,
@@ -10,18 +12,17 @@ import {
     FormTextArea,
     FormTitle,
 } from '@/components/ui/Form';
+import { getCategories } from '@/lib/actions/category.action';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createItemValidation, CreateItemValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import ItemService from '@/lib/services/item.service';
-import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
-import { CategoryService } from '@/lib/services';
-import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import FileUploader from '@/components/shared/FileUploader';
-import { Loading } from '@/components/ui';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { createItem } from '@/lib/actions/item.action';
+import { getCategoriesKey } from '@/lib/queryKey';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
@@ -45,9 +46,9 @@ const CreateItemPage = () => {
     const { errors } = formState;
 
     const { data: categories } = useQuery({
-        queryKey: ['categories'],
+        queryKey: getCategoriesKey(),
         queryFn: async () => {
-            return await CategoryService.getCategories();
+            return await getCategories();
         },
     });
 
@@ -59,7 +60,7 @@ const CreateItemPage = () => {
                 files,
             });
 
-            const newItem = (await ItemService.createItem({
+            const newItem = (await createItem({
                 name: data.name,
                 seller: session?.user.id || '',
                 description: data.description,
@@ -73,6 +74,7 @@ const CreateItemPage = () => {
             toast.success('Tạo sản phẩm thành công');
         } catch (error) {
             console.log(error);
+            toast.error('Có lỗi xảy ra');
         }
     };
 

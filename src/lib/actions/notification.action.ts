@@ -1,9 +1,8 @@
 'use server';
 import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { getAuthSession } from '../auth';
-import { ConversationService } from '../services';
 import mongoose from 'mongoose';
+import { getAuthSession } from '../auth';
 
 /*
     * Notification Model: 
@@ -16,7 +15,7 @@ import mongoose from 'mongoose';
 
 const POPULATE_SENDER = 'name avatar username isOnline';
 
-export async function getNotification({
+export async function getNotificationByNotiId({
     notificationId,
 }: {
     notificationId: string;
@@ -34,12 +33,76 @@ export async function getNotification({
     }
 }
 
+export const getNotificationAddFriendByUsers = async ({
+    senderId,
+    receiverId,
+}: {
+    senderId: string;
+    receiverId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const notifications = await Notification.find({
+            sender: senderId,
+            receiver: receiverId,
+        })
+            .populate('sender', POPULATE_SENDER)
+            .populate('receiver', POPULATE_SENDER)
+            .sort({ createdAt: -1 });
+
+        return JSON.parse(JSON.stringify(notifications));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+// Lấy các noti kết bạn được gửi đến user
+export async function getNotificationAddFriendByUserId({
+    receiverId,
+}: {
+    receiverId: string;
+}) {
+    try {
+        await connectToDB();
+
+        const notifications = await Notification.findOne({
+            receiver: receiverId,
+            type: 'request-add-friend',
+        })
+            .populate('sender', POPULATE_SENDER)
+            .populate('receiver', POPULATE_SENDER)
+            .sort({ createdAt: -1 });
+
+        return JSON.parse(JSON.stringify(notifications));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
 export async function getNotificationByUserId({ userId }: { userId: string }) {
     try {
         await connectToDB();
 
         const notifications = await Notification.find({
             receiver: userId,
+        })
+            .populate('sender', POPULATE_SENDER)
+            .populate('receiver', POPULATE_SENDER)
+            .sort({ createdAt: -1 });
+
+        return JSON.parse(JSON.stringify(notifications));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+export async function getRequestByUserId({ userId }: { userId: string }) {
+    try {
+        await connectToDB();
+
+        const notifications = await Notification.find({
+            sender: userId,
         })
             .populate('sender', POPULATE_SENDER)
             .populate('receiver', POPULATE_SENDER)
@@ -76,6 +139,16 @@ export async function sendRequestAddFriend({
     try {
         await connectToDB();
         const session = await getAuthSession();
+        if (!session?.user) throw new Error('Đã có lỗi xảy ra');
+
+        // Kiểm tra xem đã gửi lời mời kết bạn chưa
+        const isExistRequest = await Notification.findOne({
+            sender: session?.user.id,
+            receiver: receiverId,
+            type: 'request-add-friend',
+        });
+
+        if (isExistRequest) return;
 
         const newNotification = await new Notification({
             sender: session?.user.id,
@@ -86,7 +159,7 @@ export async function sendRequestAddFriend({
 
         await newNotification.save();
 
-        const notification = await getNotification({
+        const notification = await getNotificationByNotiId({
             notificationId: newNotification._id,
         });
 
@@ -150,12 +223,6 @@ export async function createNotificationAcceptFriend({
     message: string;
     type: string;
 }) {
-    console.log({
-        senderId,
-        receiverId,
-        message,
-        type,
-    });
     try {
         const notificationAcceptFriend = new Notification({
             sender: senderId,
@@ -166,7 +233,7 @@ export async function createNotificationAcceptFriend({
 
         await notificationAcceptFriend.save();
 
-        const notification = await getNotification({
+        const notification = await getNotificationByNotiId({
             notificationId: notificationAcceptFriend._id,
         });
 
@@ -200,7 +267,7 @@ export async function declineFriend({
     }
 }
 
-export async function removeNotification({
+export async function deleteNotification({
     notificationId,
 }: {
     notificationId: string;
@@ -208,6 +275,33 @@ export async function removeNotification({
     try {
         await connectToDB();
         await Notification.deleteOne({ _id: notificationId });
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+// Xóa thông báo của 2 người dùng với nhau
+export async function deleteNotificationByUsers({
+    senderId,
+    receiverId,
+    type,
+}: {
+    senderId: string;
+    receiverId: string;
+    type: string;
+}) {
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session?.user) throw new Error('Đã có lỗi xảy ra');
+
+        await Notification.deleteMany({
+            sender: senderId,
+            receiver: receiverId,
+        });
+
         return true;
     } catch (error: any) {
         throw new Error(error);
@@ -235,7 +329,7 @@ export async function canRequestAddFriend({ userId }: { userId: string }) {
         }
     } catch (error: any) {
         throw new Error(error);
-    } finally {
-        return true;
     }
+
+    return true;
 }

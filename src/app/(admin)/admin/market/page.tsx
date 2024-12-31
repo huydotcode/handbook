@@ -10,11 +10,11 @@ import {
     FormTitle,
 } from '@/components/ui/Form';
 import { useForm } from 'react-hook-form';
-import { CategoryService } from '@/lib/services';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { IconsArray } from '@/components/ui/Icons';
-import { usePathname } from 'next/navigation';
+import { createCategory, getCategories } from '@/lib/actions/category.action';
+import { getCategoriesKey } from '@/lib/queryKey';
 
 interface CategoryForm {
     name: string;
@@ -25,9 +25,9 @@ interface CategoryForm {
 
 const CategoryPage: React.FC = () => {
     const { data, refetch } = useQuery({
-        queryKey: ['categories'],
+        queryKey: getCategoriesKey(),
         queryFn: async () => {
-            return await CategoryService.getCategories();
+            return await getCategories();
         },
     });
 
@@ -42,7 +42,7 @@ const CategoryPage: React.FC = () => {
 
     const onSubmit = async (data: CategoryForm) => {
         try {
-            const newCategory = await CategoryService.createCategory(data);
+            const newCategory = await createCategory(data);
 
             await refetch();
 

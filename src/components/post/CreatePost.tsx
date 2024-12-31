@@ -1,26 +1,29 @@
 'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import React, { FC, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import PostService from '@/lib/services/post.service';
-import { ModalCreatePost } from '.';
+import { createPost } from '@/lib/actions/post.action';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { createPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createPostValidation } from '@/lib/validation';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ModalCreatePost } from '.';
+import { HOME_POSTS } from './InfinityPostComponent';
+import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
     groupId?: string;
     type?: 'home' | 'profile' | 'group';
 }
 
-const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
+const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -35,9 +38,16 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
         resolver: zodResolver(createPostValidation),
     });
 
+    const mutation = useMutation({
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+        },
+        mutationFn: onSubmit,
+    });
+
     const { control, register, handleSubmit, formState, reset } = form;
 
-    const sendPost = async (data: IPostFormData) => {
+    async function sendPost(data: IPostFormData) {
         if (!session?.user) return;
 
         try {
@@ -58,25 +68,23 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
 
             setPhotos([]);
 
-            const newPost = (await PostService.createPost({
+            const newPost = (await createPost({
                 content: content,
                 option: option,
                 images: imagesId,
                 groupId: groupId,
             })) as IPost;
 
-            if (newPost) {
-                setPosts((prev) => [newPost, ...prev]);
-            }
+            queryClient.invalidateQueries({ queryKey: getPostsKey() });
         } catch (error: any) {
             logger({
                 message: 'Error send post' + error,
                 type: 'error',
             });
         }
-    };
+    }
 
-    const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
+    async function onSubmit(data: IPostFormData) {
         if (formState.isSubmitting) return;
         setShow(false);
         try {
@@ -101,8 +109,10 @@ const CreatePost: FC<Props> = ({ setPosts, groupId, type = 'home' }) => {
                 content: '',
             });
         }
-    };
-    const submit = handleSubmit(onSubmit);
+    }
+    const submit = handleSubmit(
+        mutation.mutate as SubmitHandler<IPostFormData>
+    );
 
     return (
         <>

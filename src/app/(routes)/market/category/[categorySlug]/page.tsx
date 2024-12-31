@@ -1,7 +1,7 @@
-import React from 'react';
-import ItemService from '@/lib/services/item.service';
 import Item from '@/app/(routes)/market/_components/Item';
-import { CategoryService } from '@/lib/services';
+import { getCategoryBySlug } from '@/lib/actions/category.action';
+import React from 'react';
+import { getItemsByCategoryId } from '@/lib/actions/item.action';
 
 interface Props {
     params: {
@@ -10,10 +10,10 @@ interface Props {
 }
 
 const CategoryPage: React.FC<Props> = async ({ params: { categorySlug } }) => {
-    const category = await CategoryService.getCategoryBySlug({
+    const category = await getCategoryBySlug({
         slug: categorySlug,
     });
-    const items = await ItemService.getItemsByCategoryId({
+    const items = await getItemsByCategoryId({
         categoryId: category._id,
     });
 

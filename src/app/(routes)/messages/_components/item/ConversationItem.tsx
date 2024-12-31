@@ -1,10 +1,11 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import { useChat } from '@/context';
+import { useLastMessage } from '@/context/SocialContext';
+
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 interface Props {
     data: IConversation;
@@ -12,17 +13,13 @@ interface Props {
 
 const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     const { data: session } = useSession();
+    const { data: lastMessage } = useLastMessage(conversation._id);
     const path = usePathname();
-    const { lastMessages } = useChat();
-
-    const lastMsg = lastMessages[conversation._id];
 
     const partner = useMemo(() => {
         return conversation.group
             ? null
-            : conversation.participants.find(
-                  (participant) => participant.user._id !== session?.user.id
-              )?.user;
+            : conversation.participants.find((p) => p._id !== session?.user.id);
     }, [conversation, session]);
 
     const isSelect = useMemo(() => {
@@ -48,11 +45,16 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                 <div className="h-8 w-8">
                     {conversation.group ? (
                         <Avatar
+                            onlyImage
                             imgSrc={conversation.group.avatar}
                             alt={conversation.group.name}
                         />
                     ) : (
-                        <Avatar imgSrc={partner?.avatar} alt={partner?.name} />
+                        <Avatar
+                            onlyImage
+                            imgSrc={partner?.avatar}
+                            alt={partner?.name}
+                        />
                     )}
                 </div>
                 {partner && (
@@ -71,7 +73,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                     </h3>
                 </div>
                 <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">
-                    {!lastMsg ? (
+                    {!lastMessage ? (
                         <span className="text-secondary-1">
                             Chưa có tin nhắn
                         </span>
@@ -80,25 +82,26 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                             <span
                                 className={cn(
                                     'dark:text-dark-primary-1',
-                                    lastMsg?.sender._id == session?.user.id
+                                    lastMessage?.sender._id == session?.user.id
                                         ? 'text-primary-1'
                                         : 'text-secondary-1'
                                 )}
                             >
-                                {lastMsg?.sender._id == session?.user.id
+                                {lastMessage?.sender._id == session?.user.id
                                     ? 'Bạn: '
-                                    : `${lastMsg?.sender.name}: `}
+                                    : `${lastMessage?.sender.name}: `}
                             </span>
+
                             <span
                                 className={cn('', {
-                                    'font-bold': !lastMsg?.isRead,
-                                    'text-secondary-1': lastMsg?.isRead,
+                                    'font-bold': !lastMessage?.isRead,
+                                    'font-normal text-secondary-1':
+                                        lastMessage?.isRead,
                                 })}
                             >
-                                {lastMsg?.text.trim().length > 0 &&
-                                lastMsg.images.length > 0
-                                    ? lastMsg?.text
-                                    : 'Đã gửi một hình ảnh'}
+                                {lastMessage.text.trim().length > 0
+                                    ? lastMessage.text
+                                    : 'Đã gửi một ảnh'}
                             </span>
                         </>
                     )}

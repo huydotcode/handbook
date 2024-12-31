@@ -1,102 +1,140 @@
 'use client';
-import { ConversationService, UserService } from '@/lib/services';
+import { getConversationsByUserId } from '@/lib/actions/conversation.action';
+import { getLastMessageByCoversationId } from '@/lib/actions/message.action';
+import {
+    getFollowersByUserId,
+    getFriendsByUserId,
+} from '@/lib/actions/user.action';
+import {
+    getConversationsKey,
+    getFollowersKey,
+    getFriendsKey,
+    getLastMessagesKey,
+    getMessagesKey,
+    getProfileKey,
+} from '@/lib/queryKey';
+import {
+    useInfiniteQuery,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { createContext, useContext, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { useEffect } from 'react';
+import { useSocket } from './SocketContext';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
 
-type SocialContextType = {
-    friends: IFriend[];
-    conversations: IConversation[];
-    setFriends: React.Dispatch<React.SetStateAction<IFriend[]>>;
-    setConversations: React.Dispatch<React.SetStateAction<IConversation[]>>;
-    followers: IFriend[];
-    setFollowers: React.Dispatch<React.SetStateAction<IFriend[]>>;
-};
+export const useProfile = (userId: string) =>
+    useQuery<IProfile>({
+        queryKey: getProfileKey(userId),
+        queryFn: () => getProfileByUserId({ query: userId }),
+        enabled: !!userId,
+    });
 
-export const SocialContext = createContext<SocialContextType>({
-    friends: [],
-    conversations: [],
-    setFriends: () => {},
-    setConversations: () => {},
-    followers: [],
-    setFollowers: () => {},
-});
+export const useFriends = (userId: string | undefined) =>
+    useQuery<IFriend[]>({
+        queryKey: getFriendsKey(userId),
+        queryFn: async () => {
+            if (!userId) return [];
 
-export const useSocial = () => useContext(SocialContext);
+            const friends = await getFriendsByUserId({ userId });
+            return friends;
+        },
+        enabled: !!userId,
+    });
+
+export const useFollowers = (userId: string | undefined) =>
+    useQuery<IFriend[]>({
+        queryKey: getFollowersKey(userId),
+        queryFn: async () => {
+            if (!userId) return [];
+
+            const followers = await getFollowersByUserId({ userId });
+            return followers;
+        },
+        enabled: !!userId,
+    });
+
+export const useConversations = (userId: string | undefined) =>
+    useQuery<IConversation[]>({
+        queryKey: getConversationsKey(userId),
+        queryFn: async () => {
+            if (!userId) return [];
+
+            const conversations = await getConversationsByUserId({ userId });
+            return conversations;
+        },
+        enabled: !!userId,
+    });
+
+const PAGE_SIZE = 10;
+
+export const useMessages = (conversationId: string | undefined) =>
+    useInfiniteQuery({
+        queryKey: getMessagesKey(conversationId),
+        queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
+            if (!conversationId) return [];
+
+            const res = await fetch(
+                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            );
+
+            const messages = await res.json();
+
+            return messages;
+        },
+        getNextPageParam: (lastPage, pages) => {
+            return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
+        },
+        initialPageParam: 1,
+        enabled: !!conversationId,
+        // Seclect data thành một mảng
+        select: (data) => {
+            return data.pages.flatMap((page) => page) as IMessage[];
+        },
+    });
+
+export const useLastMessage = (conversationId: string) =>
+    useQuery<IMessage>({
+        queryKey: getLastMessagesKey(conversationId),
+        queryFn: async () => {
+            const lastMessage = await getLastMessageByCoversationId({
+                conversationId: conversationId,
+            });
+            return lastMessage;
+        },
+        enabled: !!conversationId,
+    });
 
 function SocialProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
+    const { socketEmitor } = useSocket();
+    const queryClient = useQueryClient();
 
-    const [friends, setFriends] = useState<IFriend[]>([]);
-    const [followers, setFollowers] = useState<IFriend[]>([]);
-    const [conversations, setConversations] = useState<IConversation[]>([]);
+    const { refetch: refetchFriends } = useFriends(session?.user.id);
+    const { refetch: refetchFollowers } = useFollowers(session?.user.id);
+    const { data: conversations, refetch: refetchConversations } =
+        useConversations(session?.user.id);
 
-    // Lấy danh sách các user mà user hiện tại đang theo dõi
-    const getFollowers = async () => {
-        console.log('SocketContext: getFollowers');
-        try {
-            const followers = await UserService.getFollowersByUserId({
-                userId: session?.user.id as string,
-            });
-
-            setFollowers(followers);
-        } catch (error) {
-            toast.error('Lỗi khi lấy danh sách người theo dõi');
-        }
-    };
-
-    // Lấy danh sách conversation
-    const getConversations = async () => {
-        console.log('SocketContext: getConversations');
-        try {
-            const conversations = await ConversationService.getConversations();
-            setConversations(conversations);
-        } catch (error) {
-            toast.error('Lỗi khi lấy danh sách cuộc trò chuyện');
-        }
-    };
-
-    // Lấy danh sách bạn bè
-    const getFriends = async () => {
-        console.log('SocketContext: getFriends');
-        try {
-            const friends = await UserService.getFriends({
-                userId: session?.user.id as string,
-            });
-
-            setFriends(friends);
-        } catch (error) {
-            toast.error('Lỗi khi lấy danh sách bạn bè');
-        }
-    };
-
-    // Lấy danh sách bạn bè, danh sách cuộc trò chuyện
     useEffect(() => {
-        (async () => {
-            if (session?.user) {
-                await getConversations();
-                await getFriends();
-                await getFollowers();
-            }
-        })();
-    }, [session?.user.id]);
+        if (session?.user?.id) {
+            refetchFriends();
+            refetchFollowers();
+            refetchConversations();
+        }
+    }, [session?.user?.id]);
 
-    const values = {
-        conversations,
-        friends,
-        setConversations,
-        setFriends,
-        followers,
-        setFollowers,
-    } as SocialContextType;
+    useEffect(() => {
+        if (!session?.user?.id || !conversations) return;
 
-    if (!session) return children;
+        conversations.forEach((conversation) => {
+            socketEmitor.joinRoom({
+                roomId: conversation._id,
+                userId: session?.user.id,
+            });
+        });
+    }, [conversations, session?.user?.id]);
 
-    return (
-        <SocialContext.Provider value={values}>
-            {children}
-        </SocialContext.Provider>
-    );
+    return <>{children}</>;
 }
 
 export default SocialProvider;

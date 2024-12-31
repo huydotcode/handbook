@@ -1,31 +1,38 @@
 'use server';
-import { Conversation, Participant } from '@/models';
+import { Conversation } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
+import ConversationRole from '@/models/ConversationRole';
 
-// f: Trang nhắn với bạn bè
-// r: Trang nhắn với người lạ
-// d: Trang nhắn với nhóm
-// c: Trang nhắn với trang
+export const createConversationRoleAdmin = async ({
+    userId,
+    conversationId,
+    role = 'admin',
+}: {
+    userId: string;
+    conversationId: string;
+    role?: string;
+}) => {
+    try {
+        await connectToDB();
 
-const POPULATE_USER = 'name avatar username isOnline lastAccessed';
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
 
-export const getType = (conversationType: string) => {
-    switch (conversationType) {
-        case 'f':
-            return 'friend';
-        case 'r':
-            return 'stranger';
-        case 'd':
-            return 'group';
-        case 'c':
-            return 'page';
-        default:
-            return 'friend';
+        const newConversationRole = new ConversationRole({
+            userId: userId,
+            conversationId: conversationId,
+            role,
+        });
+
+        await newConversationRole.save();
+
+        return JSON.parse(JSON.stringify(newConversationRole));
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
-// Hàm tạo conversation sau khi kết bạn
 export const createConversationAfterAcceptFriend = async ({
     userId,
     friendId,
@@ -36,29 +43,23 @@ export const createConversationAfterAcceptFriend = async ({
     try {
         await connectToDB();
 
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversationExist = await getConversationByParticipants({
+            userId,
+            otherUserId: friendId,
+        });
+
+        if (conversationExist) {
+            return JSON.parse(JSON.stringify(conversationExist));
+        }
+
         const newConversation = new Conversation({
             title: 'Cuộc trò chuyện mới',
             creator: userId,
-            participants: [],
+            participants: [userId, friendId],
         });
-        await newConversation.save();
-
-        // Tạo participant cho user
-        const newParticipant = new Participant({
-            conversation: newConversation._id,
-            user: userId,
-        });
-        await newParticipant.save();
-        newConversation.participants.push(newParticipant._id);
-
-        // Tạo participant cho friend
-        const newParticipantFriend = new Participant({
-            conversation: newConversation._id,
-            user: friendId,
-        });
-        await newParticipantFriend.save();
-        newConversation.participants.push(newParticipantFriend._id);
-
         await newConversation.save();
 
         return JSON.parse(JSON.stringify(newConversation));
@@ -82,65 +83,7 @@ export const getConversationById = async ({
             .populate('creator')
             .populate('group');
 
-        await Participant.populate(conversation, {
-            path: 'participants.user',
-        });
-
         return JSON.parse(JSON.stringify(conversation));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const getConversation = async ({
-    conversationId,
-    conversationType,
-}: {
-    conversationId: string;
-    conversationType: 'f' | 'r' | 'd' | 'c';
-}) => {
-    try {
-        await connectToDB();
-
-        const session = await getAuthSession();
-
-        if (!session) throw new Error('Chưa đăng nhập');
-
-        const type = getType(conversationType);
-
-        if (type === 'group') {
-            return null;
-        }
-
-        return null;
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const getConversations = async () => {
-    try {
-        await connectToDB();
-
-        const session = await getAuthSession();
-        if (!session) throw new Error('Chưa đăng nhập');
-
-        const participants = await Participant.find({
-            user: session.user.id,
-        })
-            .populate('conversation')
-            .populate('user');
-
-        const conversations = await Conversation.find({
-            participants: {
-                $in: participants.map((participant) => participant._id),
-            },
-        })
-            .populate('participants')
-            .populate('creator')
-            .populate('group');
-
-        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -161,12 +104,6 @@ export const getConversationsByGroupId = async ({
             .populate('creator')
             .populate('group');
 
-        for (const conversation of conversations) {
-            await Participant.populate(conversation, {
-                path: 'participants.user',
-            });
-        }
-
         return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
@@ -177,7 +114,7 @@ export const createConversation = async ({
     creator,
     participantsUserId,
     status = 'active',
-    title = 'Cuộc hội thoại mới',
+    title,
     groupId = null,
 }: {
     participantsUserId: string[];
@@ -189,29 +126,23 @@ export const createConversation = async ({
     try {
         await connectToDB();
 
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
         const newConversation = new Conversation({
             title,
             creator,
-            participants: [],
+            participants: participantsUserId,
             status,
             group: groupId,
         });
 
         await newConversation.save();
 
-        for (const userId of participantsUserId) {
-            // Tạo participant
-            const newParticipant = new Participant({
-                conversation: newConversation._id,
-                user: userId,
-            });
-
-            await newParticipant.save();
-
-            newConversation.participants.push(newParticipant._id);
-        }
-
-        await newConversation.save();
+        await createConversationRoleAdmin({
+            userId: creator,
+            conversationId: newConversation._id,
+        });
 
         return JSON.parse(JSON.stringify(newConversation));
     } catch (error: any) {
@@ -227,22 +158,14 @@ export const getConversationsByUserId = async ({
     try {
         await connectToDB();
 
-        const participants = await Participant.find({
-            user: userId,
-        }).populate('conversation', POPULATE_USER);
-
         const conversations = await Conversation.find({
             participants: {
-                $in: participants.map((participant) => participant._id),
+                $elemMatch: { $eq: userId },
             },
         })
             .populate('participants')
             .populate('creator')
             .populate('group');
-
-        await Participant.populate(conversations, {
-            path: 'participants.user',
-        });
 
         return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
@@ -260,23 +183,11 @@ export const getConversationByParticipants = async ({
     try {
         await connectToDB();
 
-        const participant = await Participant.findOne({
-            user: userId,
-        });
-
-        const otherParticipant = await Participant.findOne({
-            user: otherUserId,
-        });
-
         const conversation = await Conversation.findOne({
             participants: {
-                $all: [participant?._id, otherParticipant?._id],
+                $all: [userId, otherUserId],
             },
         });
-
-        if (!conversation) {
-            return null;
-        }
 
         return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
@@ -292,43 +203,12 @@ export const deleteConversation = async ({
     try {
         await connectToDB();
 
-        const conversation = await Conversation.findById(conversationId);
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
 
-        if (!conversation) {
-            throw new Error('Không tìm thấy cuộc trò chuyện');
-        }
-
-        // Xóa participant
-        await Participant.deleteMany({
-            conversation: conversation._id,
-        });
-
-        // Xóa cuộc trò chuyện
         await Conversation.deleteOne({ _id: conversationId });
 
         return true;
-    } catch (error: any) {
-        throw new Error(error);
-    }
-
-    return false;
-};
-
-export const getParticipantsByUserId = async ({
-    userId,
-}: {
-    userId: string;
-}) => {
-    try {
-        await connectToDB();
-
-        const participants = await Participant.find({
-            user: userId,
-        })
-            .populate('conversation')
-            .populate('user');
-
-        return JSON.parse(JSON.stringify(participants));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -344,21 +224,12 @@ export const getConversationWithTwoUsers = async ({
     try {
         await connectToDB();
 
-        const conversations = await getConversationsByUserId({ userId });
-
-        const conversationExist = conversations.find(
-            (conversation: IConversation) => {
-                return (
-                    conversation.participants.length == 2 &&
-                    conversation.participants.find((part) => {
-                        return part.user._id.toString() === otherUserId;
-                    })
-                );
-            }
-        );
+        const conversationExist = await getConversationByParticipants({
+            userId,
+            otherUserId,
+        });
 
         if (conversationExist) {
-            console.log('conversationExist', conversationExist);
             return JSON.parse(
                 JSON.stringify({
                     isNew: false,
@@ -366,7 +237,6 @@ export const getConversationWithTwoUsers = async ({
                 })
             );
         } else {
-            console.log("conversation doesn't exist");
             const newConversation = await createConversation({
                 creator: userId,
                 participantsUserId: [userId, otherUserId],

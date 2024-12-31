@@ -1,47 +1,43 @@
 'use client';
 import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
-import socketEvent from '@/constants/socketEvent.constant';
-import { MessageService } from '@/lib/services';
-import { cn } from '@/lib/utils';
-import { Tooltip } from '@mui/material';
-import { useSession } from 'next-auth/react';
-import React, {
-    FormEventHandler,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
-import toast from 'react-hot-toast';
-import { FormatDate } from '@/utils/formatDate';
 import { useSocket } from '@/context';
+import { useMessages } from '@/context/SocialContext';
+import { deleteMessage } from '@/lib/actions/message.action';
+import { invalidateMessages } from '@/lib/query';
+import { cn } from '@/lib/utils';
+import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
+import { Tooltip } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     data: IMessage;
-    messagesInRoom: IMessage[];
 }
 
-const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
-    const { socket, socketEmitor } = useSocket();
+const Message: React.FC<Props> = ({ data: msg }) => {
     const { data: session } = useSession();
+    const { data: messages } = useMessages(msg.conversation._id);
+    const { socket, socketEmitor } = useSocket();
+    const queryClient = useQueryClient();
+    if (!messages) return null;
+
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
     const [startIndex, setStartIndex] = useState<number>(0);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const newDate = useMemo(
-        () => new Date(msg.createdAt).toLocaleString(),
-        [msg.createdAt]
-    );
-
-    const index = messagesInRoom.indexOf(msg);
+    const index = messages.findIndex((m) => m._id === msg._id);
     const isOwnMsg = msg.sender._id === session?.user.id;
 
-    const images = messagesInRoom
-        .filter((msg) => msg.images.length > 0)
-        .map((msg) => msg.images)
-        .map((img) => img.map((i) => i.url));
+    const images = messages
+        ? messages
+              .filter((msg) => msg.images.length > 0)
+              .map((msg) => msg.images)
+              .map((img) => img.map((i) => i.url))
+        : [];
 
     const handleShowMenu = () => setShowMenu(true);
     const handleHideMenu = () => setShowMenu(false);
@@ -60,18 +56,19 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
     // Xử lý xóa tin nhắn
     const handleDeleteMsg: FormEventHandler = async (e) => {
         e.preventDefault();
-        if (!socket) return;
 
-        const res = await MessageService.deleteMessage({ messageId: msg._id });
-        const prevMsg = messagesInRoom[index - 1] || null;
+        try {
+            if (!socket) return;
 
-        socketEmitor.deleteMessage({
-            currentMessage: msg,
-            prevMessage: prevMsg,
-        });
+            await deleteMessage({ messageId: msg._id });
 
-        if (!res) {
-            toast.error('Xóa thất bại!', { id: 'delete-message' });
+            invalidateMessages(queryClient, msg.conversation._id);
+
+            socketEmitor.deleteMessage({
+                message: msg,
+            });
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra!', { id: 'delete-message' });
         }
     };
 
@@ -114,12 +111,6 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
             return () => clearTimeout(timer);
         }
     }, [showMenu]);
-
-    useEffect(() => {
-        msg.text
-            .split(' ')
-            .forEach((text) => console.log(text, text.match(urlRegex)));
-    }, []);
 
     return (
         <div
@@ -221,42 +212,50 @@ const Message: React.FC<Props> = ({ data: msg, messagesInRoom }) => {
                                         isOwnMsg &&
                                         createMenuMessages()}
 
-                                    <p>
-                                        {msg.text
-                                            .split(' ')
-                                            .map((text, index) => {
-                                                // Kểm tra url
-                                                if (text.match(urlRegex)) {
-                                                    return (
-                                                        <a
-                                                            key={index}
-                                                            href={text}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            className={cn(
-                                                                'underline',
-                                                                {
-                                                                    'text-primary-1':
-                                                                        isOwnMsg,
-                                                                    'text-primary-2 dark:text-dark-primary-1':
-                                                                        !isOwnMsg,
-                                                                }
-                                                            )}
-                                                        >
-                                                            {text + ' '}
-                                                        </a>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <span key={index}>
-                                                            {text + ' '}
-                                                        </span>
-                                                    );
-                                                }
-                                            })}
-                                    </p>
+                                    <div className="flex flex-col">
+                                        <p>
+                                            {msg.text
+                                                .split(' ')
+                                                .map((text, index) => {
+                                                    // Kểm tra url
+                                                    if (text.match(urlRegex)) {
+                                                        return (
+                                                            <a
+                                                                key={index}
+                                                                href={text}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className={cn(
+                                                                    'underline',
+                                                                    {
+                                                                        'text-primary-1':
+                                                                            isOwnMsg,
+                                                                        'text-primary-2 dark:text-dark-primary-1':
+                                                                            !isOwnMsg,
+                                                                    }
+                                                                )}
+                                                            >
+                                                                {text + ' '}
+                                                            </a>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <span key={index}>
+                                                                {text + ' '}
+                                                            </span>
+                                                        );
+                                                    }
+                                                })}
+                                        </p>
+                                    </div>
                                 </div>
                             )}
+                            {index == 0 &&
+                                msg.sender._id === session?.user.id && (
+                                    <span className="text-xs text-secondary-1">
+                                        {msg.isRead && 'Đã xem'}
+                                    </span>
+                                )}
                         </>
                     </Tooltip>
                 </div>

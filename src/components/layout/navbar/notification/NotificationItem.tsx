@@ -2,9 +2,20 @@
 import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
-import { useApp, useSocial, useSocket } from '@/context';
-import { ConversationService, NotificationService } from '@/lib/services';
+import { useSocket } from '@/context';
+import { useNotifications } from '@/context/AppContext';
+import { createConversationAfterAcceptFriend } from '@/lib/actions/conversation.action';
+import {
+    acceptFriend,
+    createNotificationAcceptFriend,
+    declineFriend,
+    deleteNotification,
+    getNotificationAddFriendByUserId,
+} from '@/lib/actions/notification.action';
+import { getConversationsKey, getNotificationsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -17,41 +28,62 @@ const NotificationItem: React.FC<Props> = ({
     data: notification,
     showMessage = true,
 }) => {
+    const { data: session } = useSession();
+    if (!session) return null;
+
     const { socket, socketEmitor } = useSocket();
-    const { notifications, setNotifications } = useApp();
-    const { setConversations } = useSocial();
+    const queryClient = useQueryClient();
+
+    const { data: notifications } = useNotifications(session?.user?.id);
+
     const [showRemove, setShowRemove] = useState(false);
 
-    // Chấp nhận lời mời kết bạn
-    const handleAcceptFriend = useCallback(async () => {
-        if (!notification) return;
+    if (!notifications) return null;
 
+    // Chấp nhận lời mời kết bạn // Xử lý phía người nhận
+    const handleAcceptFriend = useCallback(async () => {
         try {
+            const notificatonRequestAddFriend =
+                await getNotificationAddFriendByUserId({
+                    receiverId: notification.receiver._id,
+                });
+
+            if (!notificatonRequestAddFriend) {
+                toast.error('Không tìm thấy thông báo. Vui lòng thử lại!');
+
+                queryClient.invalidateQueries({
+                    queryKey: getNotificationsKey(session.user.id),
+                });
+
+                return;
+            }
+
             // Chấp nhận lời mời kết bạn
-            const acceptSuccess = await NotificationService.acceptFriend({
+            const acceptSuccess = await acceptFriend({
                 notification,
             });
 
-            setNotifications((prev) =>
-                prev.filter((item) => item._id !== notification._id)
-            );
+            queryClient.invalidateQueries({
+                queryKey: getNotificationsKey(session.user.id),
+            });
 
             if (!acceptSuccess) {
                 toast.error('Chấp nhận lời mời kết bạn thất bại!');
                 return;
             }
 
-            const newConversation =
-                await ConversationService.createConversationAfterAcceptFriend({
-                    userId: notification.receiver._id,
-                    friendId: notification.sender._id,
-                });
+            const newConversation = await createConversationAfterAcceptFriend({
+                userId: notification.receiver._id,
+                friendId: notification.sender._id,
+            });
 
-            setConversations((prev) => [newConversation, ...prev]);
+            queryClient.invalidateQueries({
+                queryKey: getConversationsKey(notification.receiver._id),
+            });
 
             //Tạo thông báo cho người gửi
             const notificationAcceptFriend =
-                await NotificationService.createNotificationAcceptFriend({
+                await createNotificationAcceptFriend({
                     type: 'accept-friend',
                     senderId: notification.receiver._id,
                     receiverId: notification.sender._id,
@@ -63,6 +95,11 @@ const NotificationItem: React.FC<Props> = ({
                 socketEmitor.joinRoom({
                     roomId: newConversation._id,
                     userId: notification.receiver._id,
+                });
+
+                socketEmitor.joinRoom({
+                    roomId: newConversation._id,
+                    userId: notification.sender._id,
                 });
 
                 // Gửi thông báo cho người gửi
@@ -81,11 +118,11 @@ const NotificationItem: React.FC<Props> = ({
     // Từ chối lời mời kết bạn
     const handleDeclineFriend = async () => {
         try {
-            await NotificationService.declineFriend({ notification });
+            await declineFriend({ notification });
 
-            setNotifications(
-                notifications.filter((item) => item._id !== notification._id)
-            );
+            queryClient.invalidateQueries({
+                queryKey: getNotificationsKey(session.user.id),
+            });
         } catch (error) {
             toast.error('Không thể từ chối lời mời kết bạn. Vui lòng thử lại!');
         }
@@ -93,13 +130,13 @@ const NotificationItem: React.FC<Props> = ({
 
     const removeNotification = async () => {
         try {
-            await NotificationService.removeNotification({
+            await deleteNotification({
                 notificationId: notification._id,
             });
 
-            setNotifications((prev) =>
-                prev.filter((item) => item._id !== notification._id)
-            );
+            queryClient.invalidateQueries({
+                queryKey: getNotificationsKey(session.user.id),
+            });
         } catch (error) {
             toast.error('Không thể xóa thông báo. Vui lòng thử lại!');
         }

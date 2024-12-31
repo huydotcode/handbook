@@ -1,7 +1,7 @@
-import { ProfileService } from '@/lib/services';
-import { notFound } from 'next/navigation';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
 import { Header } from '../_components';
-import { Container } from '@/components/layout';
+import { getAuthSession } from '@/lib/auth';
+import { Loading } from '@/components/ui';
 
 interface Props {
     params: {
@@ -17,26 +17,27 @@ export async function generateMetadata({
         userId: string;
     };
 }) {
-    const profile = (await ProfileService.getProfileByUserId({
+    const profile = (await getProfileByUserId({
         query: params.userId,
     })) as IProfile;
 
     return {
-        title: profile.user.name,
+        title: `${profile.user.name} - Profile`,
     };
 }
 
 const ProfileLayout = async ({ params, children }: Props) => {
-    const profile = (await ProfileService.getProfileByUserId({
-        query: params.userId,
-    })) as IProfile;
-    if (!profile) notFound();
+    const session = await getAuthSession();
+
+    if (!session) {
+        return <Loading fullScreen={true} />;
+    }
 
     return (
-        <div className={'w-container mx-auto max-w-screen'}>
+        <div className={'mx-auto w-container max-w-screen'}>
             <div className="w-full pb-96">
                 <div className="h-full w-full">
-                    <Header profile={profile} user={profile.user} />
+                    <Header session={session} />
                     <div className="mt-4">{children}</div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { ProfileService } from '@/lib/services';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
 import React from 'react';
 import { InfomationSection } from '../../_components';
 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const AboutPage: React.FC<Props> = async ({ params: { userId } }) => {
-    const profile = await ProfileService.getProfileByUserId({
+    const profile = await getProfileByUserId({
         query: userId,
     });
 

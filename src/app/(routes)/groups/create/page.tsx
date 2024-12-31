@@ -1,8 +1,9 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
 
-import { UserService } from '@/lib/services';
-import GroupService from '@/lib/services/group.service';
+import { createGroup } from '@/lib/actions/group.action';
+import { getFriendsByUserId } from '@/lib/actions/user.action';
+import { uploadImages } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { createGroupValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +13,6 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { uploadImages } from '@/lib/uploadImage';
 
 interface Props {}
 
@@ -47,7 +47,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
     useEffect(() => {
         (async () => {
-            const friends = await UserService.getFriends({
+            const friends = await getFriendsByUserId({
                 userId: session?.user.id as string,
             });
 
@@ -67,7 +67,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
             const image = await uploadImages({ photos: [photo] });
 
-            const newGroup = await GroupService.createGroup({
+            const newGroup = await createGroup({
                 ...data,
                 avatar: image[0],
                 members,

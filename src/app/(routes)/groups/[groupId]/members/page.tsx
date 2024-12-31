@@ -1,5 +1,8 @@
 import { Avatar, Button } from '@/components/ui';
-import GroupService from '@/lib/services/group.service';
+import {
+    getGroupByGroupId,
+    getMembersByGroupId,
+} from '@/lib/actions/group.action';
 import React from 'react';
 
 interface Props {
@@ -11,8 +14,8 @@ interface Props {
 const MAX_MEMBERS = 6;
 
 const page: React.FC<Props> = async ({ params: { groupId } }) => {
-    const group = (await GroupService.getGroupByGroupId({ groupId })) as IGroup;
-    const members = (await GroupService.getMembers({
+    const group = (await getGroupByGroupId({ groupId })) as IGroup;
+    const members = (await getMembersByGroupId({
         groupId,
     })) as IMemberGroup[];
 

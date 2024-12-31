@@ -1,6 +1,7 @@
 'use client';
 import { Items } from '@/components/shared';
 import { Icons } from '@/components/ui';
+import { useConversations, useFriends } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
@@ -8,14 +9,13 @@ import React from 'react';
 
 interface Props {
     className?: string;
-    friends: IFriend[];
-    conversations: IConversation[];
 }
 
-const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
+const FriendList: React.FC<Props> = ({ className }) => {
     const path = usePathname();
-
     const { data: session } = useSession();
+    const { data: conversations } = useConversations(session?.user.id);
+    const { data: friends } = useFriends(session?.user.id);
 
     return (
         <>
@@ -29,7 +29,7 @@ const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
                     <h1 className="text-md font-bold lg:hidden">
                         Bạn bè{' '}
                         <span className="ml-2 text-sm text-secondary-1">
-                            {friends.length}
+                            {friends && friends.length}
                         </span>
                     </h1>
 
@@ -49,8 +49,8 @@ const FriendList: React.FC<Props> = ({ friends, className, conversations }) => {
 
                                     return conversation.participants.some(
                                         (participant) =>
-                                            participant.user._id === friendId ||
-                                            participant.user._id === userId
+                                            participant._id === friendId ||
+                                            participant._id === userId
                                     );
                                 });
 

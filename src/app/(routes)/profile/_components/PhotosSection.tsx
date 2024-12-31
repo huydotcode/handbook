@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { removeImage } from '@/lib/actions/image.action';
 
 interface Props {
     photos: string[];
@@ -21,9 +22,12 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
             <h5 className="text-xl font-bold">Ảnh</h5>
             <article>
                 <div
-                    className={cn('mt-2 grid grid-cols-3 gap-2', {
-                        'grid-cols-2 md:grid-cols-1': isPhotosPage,
-                    })}
+                    className={cn(
+                        'mt-2 grid grid-cols-3 gap-2 lg:grid-cols-2',
+                        {
+                            'grid-cols-2 md:grid-cols-1': isPhotosPage,
+                        }
+                    )}
                 >
                     {photos
                         .slice(0, 5)
@@ -31,7 +35,7 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                             return (
                                 <div
                                     className={cn(
-                                        'relative w-full  rounded-md shadow-md hover:cursor-pointer',
+                                        'relative w-full rounded-md shadow-md hover:cursor-pointer',
                                         {
                                             'min-h-[400px]': isPhotosPage,
                                             'min-h-[200px]': !isPhotosPage,
@@ -44,7 +48,12 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                                     }}
                                 >
                                     <Image
-                                        className="rounded-md"
+                                        onError={async (e) => {
+                                            await removeImage({
+                                                imageUrl: picture,
+                                            });
+                                        }}
+                                        className="rounded-md object-contain"
                                         src={picture}
                                         alt={picture}
                                         fill

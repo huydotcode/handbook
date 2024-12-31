@@ -21,10 +21,10 @@ const ChatHeader: React.FC<Props> = ({
         if (currentRoom.group) {
             return null;
         } else {
-            if (currentRoom.participants[0].user._id === session?.user?.id) {
-                return currentRoom.participants[1].user;
+            if (currentRoom.participants[0]._id === session?.user?.id) {
+                return currentRoom.participants[1];
             } else {
-                return currentRoom.participants[0].user;
+                return currentRoom.participants[0];
             }
         }
     }, [currentRoom]);

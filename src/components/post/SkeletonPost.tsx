@@ -9,7 +9,7 @@ interface Props {
 
 const SkeletonPost: FC<Props> = ({ className, refInView }) => {
     return (
-        <div className={cn('no-scrollbar w-full sm:w-screen', className)}>
+        <div className={cn('no-scrollbar mb-4 w-full sm:w-screen', className)}>
             <div
                 className="relative my-4 overflow-hidden rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1"
                 ref={refInView}

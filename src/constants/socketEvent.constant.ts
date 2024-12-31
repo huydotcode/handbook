@@ -1,5 +1,13 @@
 interface SocketEvent {
-    [key: string]: string;
+    SEND_REQUEST_ADD_FRIEND: string;
+    ACCEPT_FRIEND: string;
+    RECEIVE_NOTIFICATION: string;
+    JOIN_ROOM: string;
+    LEAVE_ROOM: string;
+    READ_MESSAGE: string;
+    SEND_MESSAGE: string;
+    RECEIVE_MESSAGE: string;
+    DELETE_MESSAGE: string;
 }
 
 const socketEvent: SocketEvent = {
@@ -12,6 +20,8 @@ const socketEvent: SocketEvent = {
 
     // Message
     JOIN_ROOM: 'join-room',
+    LEAVE_ROOM: 'leave-room',
+
     READ_MESSAGE: 'read-message',
     SEND_MESSAGE: 'send-message',
     RECEIVE_MESSAGE: 'receive-message',

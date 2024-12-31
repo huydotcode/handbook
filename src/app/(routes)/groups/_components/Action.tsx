@@ -1,8 +1,8 @@
 'use client';
 import { Button, ConfirmModal } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
+import { deleteGroup, leaveGroup } from '@/lib/actions/group.action';
 
-import { GroupService, UserService } from '@/lib/services';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -46,7 +46,7 @@ const Action: React.FC<Props> = ({ group }) => {
 
     const handleOutGroup = async () => {
         try {
-            await GroupService.leaveGroup({
+            await leaveGroup({
                 groupId: groupId,
                 userId: session?.user?.id as string,
             });
@@ -64,7 +64,7 @@ const Action: React.FC<Props> = ({ group }) => {
 
     const handleDeleteGroup = async () => {
         try {
-            await GroupService.deleteGroup({ groupId });
+            await deleteGroup({ groupId });
 
             router.push('/groups');
         } catch (error) {

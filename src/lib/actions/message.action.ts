@@ -1,9 +1,8 @@
 'use server';
 import { Message } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { getAuthSession } from '../auth';
 import logger from '@/utils/logger';
-import mongoose from 'mongoose';
+import { getAuthSession } from '../auth';
 
 /*
     * Message Model: 
@@ -127,7 +126,7 @@ export const getMessages = async ({
     }
 };
 
-export const getLastMessage = async ({
+export const getLastMessageByCoversationId = async ({
     conversationId,
 }: {
     conversationId: string;

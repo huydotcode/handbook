@@ -1,17 +1,23 @@
 'use client';
 import { Button } from '@/components/ui';
-import { NotificationService } from '@/lib/services';
+import { markAllAsRead } from '@/lib/actions/notification.action';
+import { getNotificationsKey } from '@/lib/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import NotificationList from './NotificationList';
-import { useApp } from '@/context';
 
 function NotificationPopover() {
-    const { setNotifications } = useApp();
+    const { data: session } = useSession();
+    if (!session) return null;
+    const queryClient = useQueryClient();
 
     const handleMarkAllAsRead = async () => {
         try {
-            await NotificationService.markAllAsRead();
-            setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+            await markAllAsRead();
+            queryClient.invalidateQueries({
+                queryKey: getNotificationsKey(session.user.id),
+            });
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
         }

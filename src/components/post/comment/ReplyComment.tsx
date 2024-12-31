@@ -3,7 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Icons } from '@/components/ui';
-import CommentService from '@/lib/services/comment.service';
+import {
+    deleteComment,
+    getReplyComments,
+    sendComment,
+} from '@/lib/actions/comment.action';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
@@ -44,7 +48,7 @@ const ReplyComment: React.FC<Props> = ({
 
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
         try {
-            const newReplyComment = await CommentService.sendComment({
+            const newReplyComment = await sendComment({
                 content: data.text,
                 replyTo: parentId,
                 postId,
@@ -70,7 +74,7 @@ const ReplyComment: React.FC<Props> = ({
 
     const handleDeleteComment = async () => {
         try {
-            await CommentService.deleteComment({ commentId: parentId });
+            await deleteComment({ commentId: parentId });
             setIsDeleted(true);
         } catch (error) {
             logger({
@@ -83,7 +87,7 @@ const ReplyComment: React.FC<Props> = ({
 
     useEffect(() => {
         (async () => {
-            const replyComments = (await CommentService.getReplyComments({
+            const replyComments = (await getReplyComments({
                 commentId: parentId,
                 page,
                 pageSize: PAGE_SIZE,

@@ -1,5 +1,5 @@
 import { InfinityPostComponent } from '@/components/post';
-import { ProfileService } from '@/lib/services';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
 import mongoose from 'mongoose';
 import { FC } from 'react';
 import { InfomationSection } from '../_components';
@@ -11,7 +11,7 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
-    const profile = await ProfileService.getProfileByUserId({
+    const profile = await getProfileByUserId({
         query: params.userId,
     });
 

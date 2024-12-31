@@ -1,18 +1,22 @@
 'use client';
 import { Button, Icons } from '@/components/ui';
-import { MessageService } from '@/lib/services';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { useSocket } from '@/context';
+import { sendMessage } from '@/lib/actions/message.action';
+import { queryClientAddMessage } from '@/lib/query';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { useSocket } from '@/context';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { getLastMessagesKey, getMessagesKey } from '@/lib/queryKey';
+import conversation from '@/models/Conversation';
 
 interface Props {
     currentRoom: IConversation;
-    setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }
 
 interface IFormData {
@@ -20,8 +24,11 @@ interface IFormData {
     files: File[];
 }
 
-const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
+const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { socketEmitor } = useSocket();
+    const { data: session } = useSession();
+    const queryClient = useQueryClient();
+
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
     const {
@@ -57,12 +64,6 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
     };
 
     const onSubmit = async (data: IFormData) => {
-        if (isLoading) {
-            console.log(isLoading);
-            return;
-        }
-
-        // Reset form
         reset();
         setFocus('text');
 
@@ -81,13 +82,19 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                 });
             }
 
-            const newMsg = await MessageService.sendMessage({
+            const newMsg = await sendMessage({
                 roomId: currentRoom._id,
                 text,
                 images: imagesUpload,
             });
 
-            setMessages((prev) => [newMsg, ...prev]);
+            queryClient.invalidateQueries({
+                queryKey: getMessagesKey(currentRoom._id),
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: getLastMessagesKey(currentRoom._id),
+            });
 
             socketEmitor.sendMessage({
                 roomId: currentRoom._id,
@@ -140,7 +147,6 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setMessages }) => {
                                 }}
                                 onChange={(event) => {
                                     if (event.target.files) {
-                                        console.log(event.target.files);
                                         onChange(
                                             Array.from(
                                                 files.concat(

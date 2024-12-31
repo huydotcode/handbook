@@ -1,10 +1,9 @@
 'use client';
 import { Button } from '@/components/ui';
 import { useSocket } from '@/context';
-import { ConversationService } from '@/lib/services';
+import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -20,11 +19,10 @@ const MessageAction = ({ className, messageTo }: Props) => {
     const handleClick = async () => {
         if (!session) return;
 
-        const { isNew, conversation } =
-            await ConversationService.getConversationWithTwoUsers({
-                userId: session?.user?.id,
-                otherUserId: messageTo,
-            });
+        const { isNew, conversation } = await getConversationWithTwoUsers({
+            userId: session?.user?.id,
+            otherUserId: messageTo,
+        });
 
         if (!conversation) {
             toast.error('Có lỗi xảy ra, vui lòng thử lại sau');

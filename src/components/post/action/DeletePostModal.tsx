@@ -1,38 +1,42 @@
 'use client';
 import { Button } from '@/components/ui';
-import PostService from '@/lib/services/post.service';
+import { deletePost } from '@/lib/actions/post.action';
 import logger from '@/utils/logger';
 import { Fade, Modal } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { FormEventHandler, useState } from 'react';
+import { HOME_POSTS } from '../InfinityPostComponent';
+import toast from 'react-hot-toast';
+import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
     show: boolean;
     postId: string;
     handleClose: () => void;
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-const DeletePostModal: React.FC<Props> = ({
-    postId,
-    show,
-    handleClose,
-    setPosts,
-}) => {
+const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
+    const queryClient = useQueryClient();
     const [isSubmitting, setIsSubmitting] = useState<boolean>();
 
     const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await PostService.deletePost({
+            await deletePost({
                 postId,
             });
-            setPosts((prev) => prev.filter((item) => item._id != postId));
+
+            queryClient.invalidateQueries({
+                queryKey: getPostsKey(),
+            });
+
+            toast.success('Xóa bài viết thành công', {
+                id: 'delete-post',
+            });
         } catch (error: any) {
-            handleClose();
-            logger({
-                message: 'Error delete post' + error,
-                type: 'error',
+            toast.error('Xóa bài viết không thành công', {
+                id: 'delete-post',
             });
         } finally {
             handleClose();

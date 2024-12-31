@@ -1,18 +1,41 @@
 'use client';
+import { useConversations } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import ConversationItem from './item/ConversationItem';
 import SearchConversation from './SearchConversation';
 
-interface Props {
-    conversations: IConversation[];
-}
+interface Props {}
 
-const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
-    const [conversations, setConversations] =
-        useState<IConversation[]>(initConversations);
+const Sidebar: React.FC<Props> = ({}) => {
+    const { data: session } = useSession();
+    if (!session) return null;
+    const { data: initConversations } = useConversations(session?.user?.id);
+    const [filter, setFilter] = useState<string>('');
 
-    if (!conversations) return null;
+    const conversations =
+        filter.trim().length > 0
+            ? initConversations?.filter((conversation) => {
+                  return (
+                      conversation.participants.find((user) =>
+                          user.name
+                              .toLocaleLowerCase()
+                              .includes(filter.toLocaleLowerCase())
+                      ) ||
+                      conversation.title
+                          .toLocaleLowerCase()
+                          .includes(filter.toLocaleLowerCase())
+                  );
+              })
+            : initConversations;
+
+    useEffect(() => {
+        console.log({
+            initConversations,
+        });
+    }, [initConversations]);
 
     return (
         <>
@@ -24,20 +47,18 @@ const Sidebar: React.FC<Props> = ({ conversations: initConversations }) => {
                 <div className="px-4 py-2">
                     <h1 className="text-2xl font-bold lg:hidden">Trò chuyện</h1>
 
-                    <SearchConversation
-                        initConversations={initConversations}
-                        setConversations={setConversations}
-                    />
+                    <SearchConversation setFilter={setFilter} />
                 </div>
 
-                {conversations.map((conversation: IConversation) => {
-                    return (
-                        <ConversationItem
-                            data={conversation}
-                            key={conversation._id}
-                        />
-                    );
-                })}
+                {initConversations &&
+                    initConversations.map((conversation: IConversation) => {
+                        return (
+                            <ConversationItem
+                                data={conversation}
+                                key={conversation._id}
+                            />
+                        );
+                    })}
             </div>
         </>
     );

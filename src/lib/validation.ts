@@ -48,6 +48,7 @@ export type CreatePostValidation = z.infer<typeof createPostValidation>;
 export const editPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
     option: z.string().optional(),
+    files: z.array(z.any()).optional(),
 });
 
 export type EditPostValidation = z.infer<typeof editPostValidation>;

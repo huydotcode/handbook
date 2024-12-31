@@ -1,13 +1,14 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import CommentService from '@/lib/services/comment.service';
-import logger from '@/utils/logger';
+import { sendComment } from '@/lib/actions/comment.action';
+import { getCommentsKey } from '@/lib/queryKey';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import Comment from './CommentItem';
 import InputComment from './InputComment';
-import toast from 'react-hot-toast';
 
 interface Props {
     postId: string;
@@ -19,9 +20,36 @@ type FormData = {
 
 const PAGE_SIZE = 5;
 
+export const useComments = (postId: string | undefined) =>
+    useInfiniteQuery({
+        queryKey: getCommentsKey(postId),
+        queryFn: async ({ pageParam = 1 }) => {
+            if (!postId) return [];
+
+            const res = await fetch(
+                `/api/comments?postId=${postId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            );
+
+            const comments = await res.json();
+            return comments;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
+        getPreviousPageParam: (firstPage, allPages) => {
+            return firstPage.length === PAGE_SIZE ? 1 : undefined;
+        },
+        enabled: !!postId,
+    });
+
 const CommentSection: React.FC<Props> = ({ postId }) => {
     const { data: session } = useSession();
+    const query = useComments(postId);
 
+    const queryClient = useQueryClient();
     const {
         handleSubmit,
         register,
@@ -31,60 +59,21 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const [comments, setComments] = useState<IComment[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [page, setPage] = useState<number>(1);
-    const [hasNextPage, setHasNextPage] = useState<boolean>(true);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                setLoading(true);
-
-                const comments = await CommentService.getCommentsByPostId({
-                    page,
-                    pageSize: PAGE_SIZE,
-                    postId,
-                });
-
-                if (comments.length === 0) {
-                    setHasNextPage(false);
-                    return;
-                }
-
-                if (comments.length < PAGE_SIZE) {
-                    setHasNextPage(false);
-                } else {
-                    setHasNextPage(true);
-                }
-
-                setComments((prev) => {
-                    return [...prev, ...comments];
-                });
-            } catch (error) {
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, [postId, page]);
-
     // Gửi bình luận
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
-        if (!session?.user.id) return;
-
         reset();
         setFocus('text');
         const { text } = data;
 
         try {
-            const newComment = await CommentService.sendComment({
+            await sendComment({
                 content: text,
                 postId,
                 replyTo: null,
             });
 
-            setComments((prev) => {
-                return [newComment, ...prev];
+            queryClient.invalidateQueries({
+                queryKey: getCommentsKey(postId),
             });
         } catch (error: any) {
             toast.error('Không thể gửi bình luận!', {
@@ -93,75 +82,69 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
         }
     };
 
+    if (!session) return null;
+
     return (
         <>
             {/* Form viết bình luận */}
-            {session?.user ? (
-                <div className="mb-2 mt-2 flex items-center">
-                    <Avatar session={session} />
+            <div className="mb-2 mt-2 flex items-center">
+                <Avatar session={session} />
 
-                    <div className="ml-2 flex-1">
-                        <form
-                            className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
-                            onSubmit={handleSubmit(onSubmitComment)}
-                            ref={formRef}
+                <div className="ml-2 flex-1">
+                    <form
+                        className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
+                        onSubmit={handleSubmit(onSubmitComment)}
+                        ref={formRef}
+                    >
+                        <InputComment
+                            register={register}
+                            placeholder="Viết bình luận..."
+                            formRef={formRef}
+                        />
+
+                        <Button
+                            className="right-0 w-10 rounded-r-xl border-l-2 px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
+                            variant={'custom'}
+                            type="submit"
                         >
-                            <InputComment
-                                register={register}
-                                placeholder="Viết bình luận..."
-                                formRef={formRef}
-                            />
-
-                            <Button
-                                className="right-0 w-10 rounded-r-xl border-l-2 px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
-                                variant={'custom'}
-                                type="submit"
-                            >
-                                {isLoading ? (
-                                    <Icons.Loading className="animate-spin" />
-                                ) : (
-                                    <Icons.Send className="text-xl" />
-                                )}
-                            </Button>
-                        </form>
-                    </div>
+                            {isLoading ? (
+                                <Icons.Loading className="animate-spin" />
+                            ) : (
+                                <Icons.Send className="text-xl" />
+                            )}
+                        </Button>
+                    </form>
                 </div>
-            ) : (
-                <Button
-                    className="my-2 justify-start p-0 text-xs text-secondary-1"
-                    variant={'text'}
-                    href="/login"
-                >
-                    Bạn cần đăng nhập để viết bình luận
-                </Button>
-            )}
-
-            {loading && (
-                <div className="text-center text-xs text-secondary-1">
-                    Đang tải bình luận
-                </div>
-            )}
-
-            {/* Không có bình luận nào */}
-            {comments.length === 0 && !loading && (
-                <div className="text-center text-xs text-secondary-1">
-                    Không có bình luận nào
-                </div>
-            )}
-
-            {/* Comments */}
-            <div className="mt-3 grid gap-2">
-                {comments.map((cmt) => {
-                    return <Comment data={cmt} key={cmt._id} />;
-                })}
             </div>
+            {query.isLoading && (
+                <div className="flex justify-center text-2xl text-secondary-1 ">
+                    <Icons.Loading />
+                </div>
+            )}
 
-            {/* Tải thêm */}
+            {query.data?.pages.length === 0 && (
+                <div className="text-center text-xs text-secondary-1">
+                    Chưa có bình luận nào
+                </div>
+            )}
 
-            {hasNextPage && (
+            {query.data?.pages[0] && query.data?.pages[0].length === 0 && (
+                <div className="text-center text-xs text-secondary-1">
+                    Chưa có bình luận nào
+                </div>
+            )}
+            {query.data?.pages.map((page, i) => (
+                <div key={i}>
+                    {page.map((comment: IComment) => (
+                        <Comment key={comment._id} data={comment} />
+                    ))}
+                </div>
+            ))}
+            {query.hasNextPage && (
                 <Button
                     className="my-2 justify-start p-0 text-xs text-secondary-1"
                     variant={'text'}
+                    onClick={() => query.fetchNextPage()}
                 >
                     Xem thêm bình luận
                 </Button>

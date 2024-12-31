@@ -1,13 +1,12 @@
 'use client';
 import { useMutation } from '@tanstack/react-query';
-import { Session } from 'next-auth';
 import React from 'react';
 
-import PostService from '@/lib/services/post.service';
-import toast from 'react-hot-toast';
-import Icons from '../ui/Icons';
+import { sendReaction } from '@/lib/actions/post.action';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
+import Icons from '../ui/Icons';
 
 interface Props {
     post: IPost;
@@ -45,7 +44,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                     });
                 }
 
-                await PostService.sendReaction({
+                await sendReaction({
                     postId: post._id,
                 });
             } catch (error: any) {

@@ -63,7 +63,6 @@ interface IProfile {
     createdAt: Date;
     updatedAt: Date;
 }
-
 interface IMessage {
     _id: string;
     text: string;
@@ -114,12 +113,20 @@ interface IUser {
     locale: string;
 
     friends: IUser[];
-    followers: IUser[];
+    followersCount: number;
 
     isOnline: boolean;
     isBlocked: boolean;
 
     lastAccessed: Date;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface IFollows {
+    _id: string;
+    follower: IUser;
+    following: IUser;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -134,19 +141,20 @@ interface IConversation {
     _id: string;
     title: string;
     creator: string;
-    participants: IParticipant[];
+    participants: IUser[];
+    lastMessage: IMessage;
     group?: IGroup;
+    type: string;
     status: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-interface IParticipant {
+interface IConversationRole {
     _id: string;
-    conversation: IConversation;
-    user: IUser;
+    conversationId: string;
+    userId: string;
     role: string;
-    status: string;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -1,11 +1,9 @@
 'use client';
-import { Button, Icons, Loading } from '@/components/ui';
-import { UserService } from '@/lib/services';
-import logger from '@/utils/logger';
-import { Dialog } from '@mui/material';
+import { Button, Icons } from '@/components/ui';
+import { checkAuth } from '@/lib/actions/user.action';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -34,7 +32,7 @@ const LoginForm: React.FC<Props> = ({ setIsLoading }) => {
         const { email, password } = formData;
 
         try {
-            const validUser = (await UserService.checkAuth({
+            const validUser = (await checkAuth({
                 email,
                 password,
             })) as {

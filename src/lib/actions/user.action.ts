@@ -1,9 +1,10 @@
 'use server';
-import { Conversation, Participant, User } from '@/models';
+import { User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
-import { FilterQuery, SortOrder } from 'mongoose';
+import { FilterQuery, SortOrder, Types } from 'mongoose';
 import { getAuthSession } from '../auth';
+import Follows from '@/models/Follows';
 
 /*
     * Notification Model: 
@@ -63,7 +64,7 @@ export const getUsers = async ({
     }
 };
 
-export const getFriends = async ({ userId }: { userId: string }) => {
+export const getFriendsByUserId = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
         const user = await User.findById(userId).exec();
@@ -118,19 +119,6 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
 
         await user.save();
         await friend.save();
-
-        // Xóa conversation
-        const paticipants = await Participant.find({
-            userId: { $in: [session.user.id, friendId] },
-        }).select('_id');
-
-        await Conversation.deleteMany({
-            participants: { $all: paticipants.map((p) => p._id) },
-        });
-
-        await Participant.deleteMany({
-            userId: { $in: [session.user.id, friendId] },
-        });
 
         return true;
     } catch (error: any) {
@@ -195,9 +183,18 @@ export const getFollowersByUserId = async ({ userId }: { userId: string }) => {
         await connectToDB();
         const user = await User.findById(userId).exec();
         if (!user) throw new Error('Đã có lỗi xảy ra');
-        const followers = await User.find({
-            _id: { $in: user.followings },
-        }).select('_id name avatar username isOnline lastAccessed');
+        // const followers = await User.find({
+        //     _id: { $in: user.followings },
+        // }).select('_id name avatar username isOnline lastAccessed');
+
+        const follows = await Follows.find({
+            following: userId,
+        }).populate(
+            'follower',
+            '_id name avatar username isOnline lastAccessed'
+        );
+
+        const followers = follows.map((follow) => follow.follower);
 
         return JSON.parse(JSON.stringify(followers));
     } catch (error: any) {
@@ -214,26 +211,31 @@ export const follow = async ({ userId }: { userId: string }) => {
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
-        await User.updateOne(
-            {
-                _id: session.user.id,
-            },
-            {
-                $push: {
-                    followings: userId,
-                },
-            }
-        );
+        const existingFollow = await Follows.findOne({
+            follower: session.user.id,
+            following: userId,
+        });
 
-        return true;
+        if (existingFollow) {
+            return JSON.parse(JSON.stringify(existingFollow));
+        }
+
+        const newFollow = new Follows({
+            follower: session.user.id,
+            following: userId,
+        });
+
+        await newFollow.save();
+
+        const user = await User.findById(userId).exec();
+
+        return JSON.parse(JSON.stringify(user));
     } catch (error: any) {
         logger({
             message: 'Error follow' + error,
             type: 'error',
         });
     }
-
-    return false;
 };
 
 export const unfollow = async ({ userId }: { userId: string }) => {
@@ -249,6 +251,17 @@ export const unfollow = async ({ userId }: { userId: string }) => {
             {
                 $pull: {
                     followings: userId,
+                },
+            }
+        );
+
+        await User.updateOne(
+            {
+                _id: userId,
+            },
+            {
+                $pull: {
+                    followers: session.user.id,
                 },
             }
         );

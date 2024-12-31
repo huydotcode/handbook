@@ -1,5 +1,5 @@
 'use server';
-import { Image, Location, Notification, Profile, User } from '@/models';
+import { Image, Location, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
@@ -33,6 +33,10 @@ export const updateBio = async ({
 }) => {
     try {
         await connectToDB();
+
+        const sesson = await getAuthSession();
+        if (!sesson) throw new Error('Unauthorized');
+
         await Profile.updateOne({ userId: userId }, { bio: newBio });
     } catch (error: any) {
         throw new Error('Error updating bio', error);

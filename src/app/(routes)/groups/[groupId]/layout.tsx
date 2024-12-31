@@ -1,5 +1,6 @@
+import { getConversationsByGroupId } from '@/lib/actions/conversation.action';
+import { getGroupByGroupId } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
-import { ConversationService, GroupService } from '@/lib/services';
 import logger from '@/utils/logger';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -15,7 +16,7 @@ interface Props {
 
 export async function generateMetadata({ params: { groupId } }: Props) {
     try {
-        const group = await GroupService.getGroupByGroupId({ groupId });
+        const group = await getGroupByGroupId({ groupId });
 
         return {
             title: `${group.name} | Nhóm | Handbook`,
@@ -36,8 +37,8 @@ const GroupLayout: React.FC<Props> = async ({
     params: { groupId },
     children,
 }) => {
-    const group = (await GroupService.getGroupByGroupId({ groupId })) as IGroup;
-    const conversations = (await ConversationService.getConversationsByGroupId({
+    const group = (await getGroupByGroupId({ groupId })) as IGroup;
+    const conversations = (await getConversationsByGroupId({
         groupId: groupId,
     })) as IConversation[];
 

@@ -1,7 +1,9 @@
 'use client';
 import { Post } from '@/components/post';
-import { PostService } from '@/lib/services';
+import { getPostByPostId } from '@/lib/actions/post.action';
+import { getPostKey } from '@/lib/queryKey';
 import { useQuery } from '@tanstack/react-query';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 interface Props {
@@ -12,20 +14,18 @@ interface Props {
 
 const PostPage: React.FC<Props> = ({ params: { postId } }) => {
     const { data: post } = useQuery<IPost>({
-        queryKey: ['post', postId],
+        queryKey: getPostKey(postId),
         queryFn: async () => {
-            const post = await PostService.getPostByPostId({ postId });
+            const post = await getPostByPostId({ postId });
             return post;
         },
     });
 
-    const setPosts = () => {};
-
-    if (!post) return null;
+    if (!post) redirect('/');
 
     return (
         <div className="mx-auto mt-[64px] w-[800px] max-w-screen">
-            <Post data={post} setPosts={setPosts} />
+            <Post data={post} />
         </div>
     );
 };

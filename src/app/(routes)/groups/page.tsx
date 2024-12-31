@@ -1,10 +1,9 @@
 import { InfinityPostComponent } from '@/components/post';
 import { Button } from '@/components/ui';
+import { getGroupsByUserId } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
-import GroupService from '@/lib/services/group.service';
 import React from 'react';
 import { Sidebar } from './_components';
-import { Container } from '@/components/layout';
 
 interface Props {}
 
@@ -12,7 +11,7 @@ const GroupsPage: React.FC<Props> = async ({}) => {
     const session = await getAuthSession();
     if (!session) return null;
 
-    const groups = (await GroupService.getGroups({
+    const groups = (await getGroupsByUserId({
         userId: session.user.id,
     })) as IGroup[];
 

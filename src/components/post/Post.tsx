@@ -1,7 +1,5 @@
 'use client';
-import CommentService from '@/lib/services/comment.service';
 import TimeAgoConverted from '@/utils/timeConvert';
-import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -11,10 +9,9 @@ import { Avatar } from '../ui';
 
 interface Props {
     data: IPost;
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-const Post: React.FC<Props> = ({ data: post, setPosts }) => {
+const Post: React.FC<Props> = ({ data: post }) => {
     const pathname = usePathname();
     const { data: session } = useSession();
 
@@ -101,7 +98,7 @@ const Post: React.FC<Props> = ({ data: post, setPosts }) => {
                 </div>
 
                 {session?.user && session.user.id === post.author._id && (
-                    <ActionPost post={post} setPosts={setPosts} />
+                    <ActionPost post={post} />
                 )}
             </div>
 

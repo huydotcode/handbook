@@ -1,38 +1,25 @@
-import React, { useEffect, useState } from 'react';
 import { Icons, Modal } from '@/components/ui';
 import { useDebounce } from '@/hooks';
+import { useQueryClient } from '@tanstack/react-query';
 import { Input } from 'antd';
-import { viewport } from '@popperjs/core';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
-    initConversations: IConversation[];
-    setConversations: React.Dispatch<React.SetStateAction<IConversation[]>>;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SearchConversation: React.FC<Props> = ({
-    initConversations,
-    setConversations,
-}) => {
+const SearchConversation: React.FC<Props> = ({ setFilter }) => {
+    const queryClient = useQueryClient();
+    const { data: session } = useSession();
+
     const [showModal, setShowModal] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState<string>('');
     const debounceValue = useDebounce(searchValue, 500);
 
     // Xử lý với debounce value để lấy ra các cuộc trò chuyện
     useEffect(() => {
-        setConversations(() => {
-            return initConversations.filter((conversation) => {
-                return (
-                    conversation.participants.find((part) => {
-                        return part.user.name
-                            .toLowerCase()
-                            .includes(debounceValue.toLowerCase());
-                    }) ||
-                    conversation.title
-                        .toLowerCase()
-                        .includes(debounceValue.toLowerCase())
-                );
-            });
-        });
+        setFilter(debounceValue);
     }, [debounceValue]);
 
     return (

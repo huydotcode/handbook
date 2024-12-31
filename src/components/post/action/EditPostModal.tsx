@@ -3,87 +3,133 @@ import { useSession } from 'next-auth/react';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Avatar, Button, Icons, Modal, TextEditor } from '@/components/ui';
+import { Avatar, Button, Modal, TextEditor } from '@/components/ui';
 import postAudience from '@/constants/postAudience.constant';
-import PostService from '@/lib/services/post.service';
+import { createPost, editPost } from '@/lib/actions/post.action';
+import { uploadImages, uploadImagesWithFiles } from '@/lib/uploadImage';
+import { editPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
-import Image from 'next/image';
+import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { IShowModal } from '../ActionPost';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { editPostValidation } from '@/lib/validation';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
-import { uploadImages } from '@/lib/uploadImage';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { HOME_POSTS } from '../InfinityPostComponent';
+import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
     post: IPost;
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<IShowModal>>;
     handleClose: () => void;
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>;
 }
 
-const EditPostModal: FC<Props> = ({
-    post,
-    setShow,
-    show,
-    handleClose,
-    setPosts,
-}) => {
+const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
 
     if (!post) return null;
 
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)
     );
+    const [removeImages, setRemoveImages] = useState<string[]>([]);
 
     if (!post) return null;
 
-    const { control, register, handleSubmit, formState, reset } =
+    const { control, register, handleSubmit, formState, reset, setValue } =
         useForm<IPostFormData>({
             defaultValues: {
                 content: post.text,
                 option: post.option as 'public' | 'private',
+                files: [],
             },
             resolver: zodResolver(editPostValidation),
         });
 
-    const onSubmit: SubmitHandler<IPostFormData> = async (data) => {
-        try {
-            const newImages = await uploadImages({ photos: photos });
+    const mutation = useMutation({
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+        },
+        mutationFn: onSubmit,
+    });
 
-            const postEdited = await PostService.editPost({
-                content: data.content,
-                option: data.option,
-                images: newImages,
-                postId: post._id,
+    const updatePost = async (data: IPostFormData) => {
+        if (!session?.user) return;
+
+        try {
+            const { content, option, files } = data;
+
+            const imagesOld = post.images.map((img) => img._id);
+
+            if (!content && photos.length === 0) {
+                toast.error('Nội dung bài viết không được để trống!');
+                return;
+            }
+
+            const imagesId = await uploadImagesWithFiles({
+                files,
             });
 
-            setPosts((prev) =>
-                prev.map((p) => (p._id === post._id ? postEdited : p))
+            const newImages = imagesId.concat(
+                imagesOld.filter((img) => !removeImages.includes(img))
             );
 
-            toast.success('Chỉnh sửa bài viết thành công', {
-                id: 'success-edit-post',
-                duration: 3000,
+            reset({
+                content: '',
             });
-        } catch (error) {
+
+            setPhotos([]);
+
+            await editPost({
+                content: content,
+                option: option,
+                postId: post._id,
+                images: newImages,
+            });
+
+            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+        } catch (error: any) {
             logger({
-                message: 'Error edit post' + error,
+                message: 'Error send post' + error,
                 type: 'error',
             });
-            toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
-        } finally {
-            reset();
-            handleClose();
         }
     };
 
-    const submit = handleSubmit(onSubmit);
+    async function onSubmit(data: IPostFormData) {
+        if (formState.isSubmitting) return;
+        setShow({ editModal: false, deleteModal: false });
+        try {
+            await toast.promise(
+                updatePost(data),
+                {
+                    loading: 'Bài viết đang được cập nhật...!',
+                    success: 'Cập nhật thành công!',
+                    error: 'Đã có lỗi xảy ra khi cập nhật!',
+                },
+                {
+                    position: 'bottom-left',
+                }
+            );
+        } catch (error: any) {
+            logger({
+                message: 'Error submit post' + error,
+                type: 'error',
+            });
+        } finally {
+            reset({
+                content: '',
+            });
+        }
+    }
+    const submit = handleSubmit(
+        mutation.mutate as SubmitHandler<IPostFormData>
+    );
 
+    // Xử lý thay đổi ảnh
     const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (fileList) {
@@ -107,11 +153,14 @@ const EditPostModal: FC<Props> = ({
                     setPhotos((prev) => [...prev, result]);
                 };
             });
+
+            setValue('files', files);
         }
     };
 
     const handleRemoveImage = (index: number) => {
         setPhotos((prev) => prev.filter((_, i) => i !== index));
+        setRemoveImages((prev) => [...prev, post.images[index]._id]);
     };
 
     return (

@@ -80,7 +80,12 @@ const Icons = {
     ArrowBack: (props: IconProps) => <IoIosArrowBack {...props} />,
     ArrowForward: (props: IconProps) => <IoIosArrowForward {...props} />,
     Admin: (props: IconProps) => <RiAdminFill {...props} />,
-    Loading: (props: IconProps) => <AiOutlineLoading {...props} />,
+    Loading: (props: IconProps) => (
+        <AiOutlineLoading
+            {...props}
+            className={cn('animate-spin', props.className)}
+        />
+    ),
     Send: (props: IconProps) => <BsFillSendFill {...props} />,
     Comment: (props: IconProps) => <FaRegComment {...props} />,
     More: (props: IconProps) => <MdMoreVert {...props} />,

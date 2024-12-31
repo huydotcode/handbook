@@ -5,6 +5,8 @@ interface IConversationModel {
     creator: Types.ObjectId;
     participants: Types.ObjectId[];
     group: Types.ObjectId;
+    lastMessage: Types.ObjectId;
+    type: string;
     status: string;
     createdAt: Date;
     updatedAt: Date;
@@ -15,10 +17,17 @@ const ConversationModel = new Schema<IConversationModel>(
         title: { type: String, default: '' },
         creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         participants: {
-            type: [{ type: Schema.Types.ObjectId, ref: 'Participant' }],
+            type: [Schema.Types.ObjectId],
+            ref: 'User',
             required: true,
-            default: [],
         },
+        lastMessage: {
+            type: Schema.Types.ObjectId,
+            ref: 'Message',
+            required: false,
+            default: null,
+        },
+        type: { type: String, default: 'private', enum: ['private', 'group'] },
         group: {
             type: Schema.Types.ObjectId,
             ref: 'Group',
@@ -30,7 +39,7 @@ const ConversationModel = new Schema<IConversationModel>(
     { timestamps: true }
 );
 
-ConversationModel.index({ group: 1 }); // Index for group
+ConversationModel.index({ title: 'text' });
 
 const Conversation =
     models.Conversation ||

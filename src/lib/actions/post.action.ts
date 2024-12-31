@@ -3,18 +3,6 @@ import { Comment, Group, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 
-/*
-    * POST MODEL
-    option: string;
-    text: string;
-    images: Types.ObjectId[];
-    author: Types.ObjectId;
-    loves: Types.ObjectId[];
-    shares: Types.ObjectId[];
-    group: Types.ObjectId;
-    comments: Types.ObjectId[];
-*/
-
 const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = 'name avatar members';
 
@@ -140,13 +128,6 @@ export const createPost = async ({
     option: string;
     groupId?: string | null;
 }) => {
-    console.log({
-        content,
-        images,
-        option,
-        groupId,
-    });
-
     const session = await getAuthSession();
     if (!session) return;
 

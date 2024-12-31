@@ -1,14 +1,14 @@
 'use client';
 import { Avatar, Button, Icons, Modal } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { ConversationService } from '@/lib/services';
+import { useSocket } from '@/context';
+import { createConversation } from '@/lib/actions/conversation.action';
 import logger from '@/utils/logger';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { useSocket } from '@/context';
 
 interface Props {
     group: IGroup;
@@ -49,24 +49,19 @@ const Sidebar: React.FC<Props> = ({
         if (!session) return toast.error('Chưa đăng nhập');
 
         try {
-            const newConversation =
-                await ConversationService.createConversation({
-                    creator: session.user.id,
-                    participantsUserId: currentGroup.members.map(
-                        (mem) => mem.user._id
-                    ),
-                    title: data.name,
-                    groupId: currentGroup._id,
-                });
+            const newConversation = await createConversation({
+                creator: session.user.id,
+                participantsUserId: currentGroup.members.map(
+                    (mem) => mem.user._id
+                ),
+                title: data.name,
+                groupId: currentGroup._id,
+            });
 
             if (newConversation) {
                 toast.success('Tạo cuộc hội thoại thành công!');
                 setShowModalCreateConversation(false);
                 setConversations([...conversations, newConversation]);
-
-                socket?.emit(socketEvent.JOIN_ROOM, {
-                    conversationId: newConversation._id,
-                });
             }
         } catch (error) {
             logger({

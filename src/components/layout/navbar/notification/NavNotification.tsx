@@ -7,26 +7,16 @@ import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
 import { Badge } from '@mui/material';
 import { Icons } from '@/components/ui';
-import { NotificationService } from '@/lib/services';
+import { getNotificationByUserId } from '@/lib/actions/notification.action';
+import { useNotifications } from '@/context/AppContext';
 
 interface Props {}
 
 const NavNotification: React.FC<Props> = ({}) => {
     const { data: session } = useSession();
-    const { notifications, setNotifications } = useApp();
+    if (!session) return null;
+    const { data: notifications } = useNotifications(session?.user?.id);
     const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        if (session) {
-            (async () => {
-                const notifications =
-                    await NotificationService.getNotificationByUserId({
-                        userId: session.user.id,
-                    });
-                setNotifications(notifications);
-            })();
-        }
-    }, [session]);
 
     if (!notifications) return null;
 

@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { UserService } from '@/lib/services';
 import useDebounce from '@/hooks/useDebounce';
 import logger from '@/utils/logger';
+import { useCallback, useEffect, useState } from 'react';
 
 interface ISearch {
     fn: (value: string) => Promise<any>;

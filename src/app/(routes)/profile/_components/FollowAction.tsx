@@ -1,10 +1,10 @@
 'use client';
 import { Button } from '@/components/ui';
-import Icons from '@/components/ui/Icons';
-import { useSocial, useSocket } from '@/context';
-import { NotificationService, UserService } from '@/lib/services';
-import logger from '@/utils/logger';
-import React, { useEffect, useMemo, useState } from 'react';
+import { follow, unfollow } from '@/lib/actions/user.action';
+import { getFollowersKey, getRequestsKey } from '@/lib/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -12,67 +12,53 @@ interface Props {
 }
 
 const FollowAction: React.FC<Props> = ({ userId }) => {
-    const { socket, socketEmitor } = useSocket();
-    const { followers, setFollowers } = useSocial();
-    const [isFollow, setIsFollow] = useState<boolean>(false);
+    const { data: session } = useSession();
+
+    const queryClient = useQueryClient();
+    const followers = queryClient.getQueryData<IFriend[]>([
+        'followers',
+        session?.user.id,
+    ]);
+
     const [countClick, setCountClick] = useState<number>(0);
 
     // Kiểm tra xem có thể gửi lời mời kết bạn không
-    const checkIsFollowing = async () => {
-        const isFollowing =
-            followers && followers.some((follower) => follower._id === userId);
+    const isFollow =
+        followers && followers.some((follower) => follower._id === userId);
 
-        setIsFollow(isFollowing);
-    };
-
-    const followAction = async () => {
-        if (isFollow) return;
-
+    const followUser = async () => {
         try {
-            const follower = await UserService.follow({
+            await follow({
                 userId,
             });
 
-            if (follower) {
-                setIsFollow(true);
-            } else {
-                setIsFollow(false);
-            }
-        } catch (error) {
-            logger({
-                message: 'Error handle add friend: ' + error,
-                type: 'error',
+            queryClient.invalidateQueries({
+                queryKey: getRequestsKey(session?.user.id),
             });
-            setIsFollow(false);
+
+            toast.success('Đã theo dõi');
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra khi theo dõi!');
         }
     };
 
-    const unFollowAction = async () => {
+    const unfollowUser = async () => {
         try {
-            const follower = await UserService.unfollow({
+            await unfollow({
                 userId,
             });
 
-            if (follower) {
-                setIsFollow(false);
-            } else {
-                setIsFollow(true);
-            }
-        } catch (error) {
-            logger({
-                message: 'Error handle add friend: ' + error,
-                type: 'error',
+            queryClient.invalidateQueries({
+                queryKey: getFollowersKey(session?.user.id),
             });
-            setIsFollow(true);
+
+            toast.success('Đã bỏ theo dõi');
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra khi bỏ theo dõi!');
         }
     };
 
-    const getButtonText = () => {
-        if (isFollow) return 'Đang Follow';
-        return 'Theo dõi';
-    };
-
-    const handleAddFriend = () => {
+    const handleFollowClick = () => {
         setCountClick((prev) => prev + 1);
 
         if (countClick === 5) {
@@ -86,24 +72,20 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
         }
 
         if (isFollow) {
-            unFollowAction();
+            unfollowUser();
         } else {
-            followAction();
+            followUser();
         }
     };
-
-    useEffect(() => {
-        (async () => checkIsFollowing())();
-    }, []);
 
     return (
         <Button
             className="h-12 min-w-[48px]"
-            variant="secondary"
+            variant={isFollow ? 'secondary' : 'primary'}
             size="medium"
-            onClick={handleAddFriend}
+            onClick={handleFollowClick}
         >
-            <p className="ml-2 md:hidden">{getButtonText()}</p>
+            {isFollow ? 'Đang Follow' : 'Theo dõi'}
         </Button>
     );
 };
