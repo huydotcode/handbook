@@ -43,6 +43,8 @@ export const useComments = (postId: string | undefined) =>
             return firstPage.length === PAGE_SIZE ? 1 : undefined;
         },
         enabled: !!postId,
+        refetchOnWindowFocus: false,
+        refetchInterval: false,
     });
 
 const CommentSection: React.FC<Props> = ({ postId }) => {
