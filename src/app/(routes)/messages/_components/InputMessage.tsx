@@ -10,7 +10,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { getLastMessagesKey, getMessagesKey } from '@/lib/queryKey';
 import { invalidateMessages } from '@/lib/query';
 
 interface Props {

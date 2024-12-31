@@ -15,14 +15,14 @@ import toast from 'react-hot-toast';
 
 interface Props {
     data: IMessage;
+    messages: IMessage[];
 }
 
-const Message: React.FC<Props> = ({ data: msg }) => {
+const Message: React.FC<Props> = ({ data: msg, messages }) => {
     const { data: session } = useSession();
-    const { data: messages } = useMessages(msg.conversation._id);
+
     const { socket, socketEmitor } = useSocket();
     const queryClient = useQueryClient();
-    if (!messages) return null;
 
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);

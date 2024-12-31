@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
-import Image from 'next/image';
 
 interface Props {}
 

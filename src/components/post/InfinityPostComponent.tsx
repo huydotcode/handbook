@@ -38,7 +38,9 @@ const InfinityPostComponent: React.FC<Props> = ({
             const res = await fetch(
                 `/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
             );
-            return res.json();
+
+            const posts = await res.json();
+            return posts;
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;

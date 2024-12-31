@@ -16,7 +16,6 @@ import ChatHeader from './ChatHeader';
 import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
-import toast from 'react-hot-toast';
 
 interface Props {
     className?: string;
@@ -32,12 +31,10 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
         hasNextPage,
     } = useMessages(conversation._id);
     const { data: session } = useSession();
-    const { socketEmitor } = useSocket();
-
-    const { data: lastMessage } = useLastMessage(conversation._id);
-
     if (!session) return null;
 
+    const { socketEmitor } = useSocket();
+    const { data: lastMessage } = useLastMessage(conversation._id);
     const { ref: topRef, inView } = useInView({
         threshold: 0,
         triggerOnce: false,
@@ -144,7 +141,11 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                         <div ref={bottomRef} />
 
                         {messages?.map((message) => (
-                            <Message key={message._id} data={message} />
+                            <Message
+                                key={message._id}
+                                data={message}
+                                messages={messages}
+                            />
                         ))}
 
                         {hasNextPage && <div className="py-2" ref={topRef} />}
