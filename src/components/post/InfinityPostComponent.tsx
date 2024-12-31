@@ -46,6 +46,8 @@ const InfinityPostComponent: React.FC<Props> = ({
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
         },
         initialPageParam: 1,
+        refetchOnWindowFocus: false,
+        refetchInterval: false,
     });
 
     const { ref: bottomRef, inView } = useInView({
@@ -59,10 +61,10 @@ const InfinityPostComponent: React.FC<Props> = ({
     const isProfilePage = type === 'profile';
 
     useEffect(() => {
-        if (inView) {
+        if (!query.isFetching && inView) {
             query.fetchNextPage();
         }
-    }, [inView]);
+    }, [query.isFetching, inView]);
 
     return (
         <>

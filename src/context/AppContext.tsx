@@ -37,6 +37,8 @@ export const useCategories = () =>
             const categories = await getCategories();
             return categories;
         },
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useRequests = (userId: string | undefined) =>

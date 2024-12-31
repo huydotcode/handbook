@@ -45,6 +45,7 @@ export const useComments = (postId: string | undefined) =>
         enabled: !!postId,
         refetchOnWindowFocus: false,
         refetchInterval: false,
+        retry: false,
     });
 
 const CommentSection: React.FC<Props> = ({ postId }) => {
