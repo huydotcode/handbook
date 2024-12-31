@@ -1,4 +1,4 @@
-import { Comment, Message } from '@/models';
+import { Comment } from '@/models';
 
 export const GET = async (request: Request, response: Response) => {
     const url = new URL(request.url);

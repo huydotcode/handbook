@@ -57,7 +57,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     const isProfilePage = type === 'profile';
 
     useEffect(() => {
-        if (inView) {
+        if (!query.isFetchingNextPage && inView) {
             query.fetchNextPage();
         }
     }, [inView]);
