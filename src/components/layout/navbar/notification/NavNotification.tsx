@@ -1,13 +1,11 @@
 'use client';
-import { useApp } from '@/context';
 import { Popover } from 'antd';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
 import { Badge } from '@mui/material';
 import { Icons } from '@/components/ui';
-import { getNotificationByUserId } from '@/lib/actions/notification.action';
 import { useNotifications } from '@/context/AppContext';
 
 interface Props {}

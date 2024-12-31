@@ -1,6 +1,5 @@
 'use client';
 import Icons from '@/components/ui/Icons';
-import { useApp } from '@/context';
 import React from 'react';
 import NotificationItem from './NotificationItem';
 import { useSession } from 'next-auth/react';

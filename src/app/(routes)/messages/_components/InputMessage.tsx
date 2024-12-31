@@ -2,18 +2,16 @@
 import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
 import { sendMessage } from '@/lib/actions/message.action';
-import { queryClientAddMessage } from '@/lib/query';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { getLastMessagesKey, getMessagesKey } from '@/lib/queryKey';
-import conversation from '@/models/Conversation';
+import { invalidateMessages } from '@/lib/query';
 
 interface Props {
     currentRoom: IConversation;
@@ -26,7 +24,6 @@ interface IFormData {
 
 const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { socketEmitor } = useSocket();
-    const { data: session } = useSession();
     const queryClient = useQueryClient();
 
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
@@ -88,13 +85,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 images: imagesUpload,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getMessagesKey(currentRoom._id),
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: getLastMessagesKey(currentRoom._id),
-            });
+            invalidateMessages(queryClient, currentRoom._id);
 
             socketEmitor.sendMessage({
                 roomId: currentRoom._id,
