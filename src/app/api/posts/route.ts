@@ -8,11 +8,20 @@ export const GET = async (request: Request, response: Response) => {
     const url = new URL(request.url);
 
     const page = url.searchParams.get('page') || 1;
-    const pageSize = url.searchParams.get('pageSize') || 10;
+    const pageSize = url.searchParams.get('pageSize') || 3;
     const groupId = url.searchParams.get('groupId');
     const userId = url.searchParams.get('userId');
     const username = url.searchParams.get('username');
     const type = url.searchParams.get('type');
+
+    console.log({
+        page,
+        pageSize,
+        groupId,
+        userId,
+        username,
+        type,
+    });
 
     const query = {} as any;
 

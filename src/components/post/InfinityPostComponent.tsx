@@ -36,7 +36,7 @@ const InfinityPostComponent: React.FC<Props> = ({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username),
         queryFn: async ({ pageParam = 1 }) => {
             const res = await fetch(
-                `/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}$groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
+                `/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
             );
             return res.json();
         },
@@ -57,10 +57,10 @@ const InfinityPostComponent: React.FC<Props> = ({
     const isProfilePage = type === 'profile';
 
     useEffect(() => {
-        if (!query.isFetchingNextPage && inView) {
+        if (inView) {
             query.fetchNextPage();
         }
-    }, [query.isFetchingNextPage, inView]);
+    }, [inView]);
 
     return (
         <>
