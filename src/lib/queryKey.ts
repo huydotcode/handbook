@@ -56,3 +56,4 @@ export const getCommentsKey = (postId: string | undefined) => [
 /* Other keys */
 export const getLocationsKey = () => ['locations'];
 export const getCategoriesKey = () => ['categories'];
+export const getItemsKey = () => ['items'];
