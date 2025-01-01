@@ -24,8 +24,9 @@ export const useNotifications = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const notifications = await getNotificationByUserId({ userId });
-            return notifications;
+            const res = await fetch(`/api/notifications?userId=${userId}`);
+            const data = await res.json();
+            return data.notifications;
         },
         enabled: !!userId,
     });
@@ -47,8 +48,9 @@ export const useRequests = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const requests = await getRequestByUserId({ userId });
-            return requests;
+            const res = await fetch(`/api/requests?userId=${userId}`);
+            const data = await res.json();
+            return data.notifications;
         },
     });
 

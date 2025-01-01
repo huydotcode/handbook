@@ -73,6 +73,8 @@ export const getFriendsByUserId = async ({ userId }: { userId: string }) => {
             _id: { $in: user.friends },
         }).select('_id name avatar username isOnline lastAccessed');
 
+        console.log('getFriendsByUserId -> friends', friends);
+
         return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
         logger({

@@ -1,7 +1,6 @@
 import { getProfileByUserId } from '@/lib/actions/profile.action';
+import { redirect } from 'next/navigation';
 import { Header } from '../_components';
-import { getAuthSession } from '@/lib/auth';
-import { Loading } from '@/components/ui';
 
 interface Props {
     params: {
@@ -26,18 +25,23 @@ export async function generateMetadata({
     };
 }
 
-const ProfileLayout = async ({ params, children }: Props) => {
-    const session = await getAuthSession();
+const getProfile = async (userId: string) => {
+    const res = await fetch(
+        `${process.env.NEXTAUTH_URL}/api/profile?userid=${userId}`
+    );
+    const data = await res.json();
+    return data.profile;
+};
 
-    if (!session) {
-        return <Loading fullScreen={true} />;
-    }
+const ProfileLayout = async ({ params, children }: Props) => {
+    const profile = await getProfile(params.userId);
+    if (!profile) redirect('/');
 
     return (
         <div className={'mx-auto w-container max-w-screen'}>
             <div className="w-full pb-96">
                 <div className="h-full w-full">
-                    <Header session={session} />
+                    <Header profile={profile} />
                     <div className="mt-4">{children}</div>
                 </div>
             </div>

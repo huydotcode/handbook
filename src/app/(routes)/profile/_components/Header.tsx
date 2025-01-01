@@ -10,15 +10,11 @@ import { useProfile } from '@/context/SocialContext';
 import { Session } from 'next-auth';
 
 interface Props {
-    session: Session;
+    profile: IProfile;
 }
 
-const Header: React.FC<Props> = ({ session }) => {
-    if (!session) return null;
-
-    const { data: profile } = useProfile(session?.user.id);
-    if (!profile) return null;
-
+const Header: React.FC<Props> = ({ profile }) => {
+    const { data: session } = useSession();
     const user = profile.user;
     const notCurrentUser = session && session.user.id !== user._id.toString();
 

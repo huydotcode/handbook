@@ -2,20 +2,32 @@
 import { Items } from '@/components/shared';
 import { Icons } from '@/components/ui';
 import { useConversations, useFriends } from '@/context/SocialContext';
+import { getConversationsKey, getFriendsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
+import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
     className?: string;
+    session: Session;
 }
 
-const FriendList: React.FC<Props> = ({ className }) => {
+const FriendList: React.FC<Props> = ({ session, className }) => {
     const path = usePathname();
-    const { data: session } = useSession();
+    const queryClient = useQueryClient();
+
     const { data: conversations } = useConversations(session?.user.id);
     const { data: friends } = useFriends(session?.user.id);
+
+    useEffect(() => {
+        console.log({
+            conversations,
+            friends,
+        });
+    }, [conversations, friends]);
 
     return (
         <>

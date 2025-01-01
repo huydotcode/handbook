@@ -26,7 +26,12 @@ import { getProfileByUserId } from '@/lib/actions/profile.action';
 export const useProfile = (userId: string) =>
     useQuery<IProfile>({
         queryKey: getProfileKey(userId),
-        queryFn: () => getProfileByUserId({ query: userId }),
+        queryFn: async () => {
+            const res = await fetch(`/api/profile?userid=${userId}`);
+            const data = await res.json();
+
+            return data.profile;
+        },
         enabled: !!userId,
     });
 
@@ -36,10 +41,12 @@ export const useFriends = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const friends = await getFriendsByUserId({ userId });
+            const res = await fetch(`/api/friends`);
+            const data = await res.json();
+            const friends = data.friends;
+
             return friends;
         },
-        enabled: !!userId,
     });
 
 export const useFollowers = (userId: string | undefined) =>
@@ -60,7 +67,9 @@ export const useConversations = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const conversations = await getConversationsByUserId({ userId });
+            const res = await fetch(`/api/conversations?userId=${userId}`);
+            const data = await res.json();
+            const conversations = data.conversations;
             return conversations;
         },
         enabled: !!userId,
@@ -110,18 +119,8 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
     const { socketEmitor } = useSocket();
     const queryClient = useQueryClient();
 
-    const { refetch: refetchFriends } = useFriends(session?.user.id);
-    const { refetch: refetchFollowers } = useFollowers(session?.user.id);
     const { data: conversations, refetch: refetchConversations } =
         useConversations(session?.user.id);
-
-    useEffect(() => {
-        if (session?.user?.id) {
-            refetchFriends();
-            refetchFollowers();
-            refetchConversations();
-        }
-    }, [session?.user?.id]);
 
     useEffect(() => {
         if (!session?.user?.id || !conversations) return;
