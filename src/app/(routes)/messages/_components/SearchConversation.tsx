@@ -1,8 +1,6 @@
 import { Icons, Modal } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { Input } from 'antd';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -10,9 +8,6 @@ interface Props {
 }
 
 const SearchConversation: React.FC<Props> = ({ setFilter }) => {
-    const queryClient = useQueryClient();
-    const { data: session } = useSession();
-
     const [showModal, setShowModal] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState<string>('');
     const debounceValue = useDebounce(searchValue, 500);
@@ -24,18 +19,18 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
 
     return (
         <>
-            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1 lg:justify-center lg:p-3">
-                <Icons.Search className={'lg:hidden'} />
+            <div className="mt-2 flex items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1 lg:justify-center lg:p-3 sm:px-2 sm:py-1">
+                <Icons.Search className={'lg:hidden sm:block'} />
 
                 <Icons.Search
                     className={
-                        'dark:hover:text-dark-primary-2 hidden cursor-pointer hover:text-primary-2 lg:block'
+                        'dark:hover:text-dark-primary-2 hidden cursor-pointer hover:text-primary-2 lg:block sm:hidden'
                     }
                     onClick={() => setShowModal((prev) => !prev)}
                 />
 
                 <Input
-                    className="dark:placeholder:text-dark-primary-1 lg:hidden"
+                    className="dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden sm:block"
                     value={searchValue}
                     bordered={false}
                     placeholder="Tìm cuộc trò chuyện"

@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Button, Icons, Loading } from '@/components/ui';
 import { sendComment } from '@/lib/actions/comment.action';
 import { getCommentsKey } from '@/lib/queryKey';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -119,11 +119,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                     </form>
                 </div>
             </div>
-            {query.isLoading && (
-                <div className="flex justify-center text-2xl text-secondary-1 ">
-                    <Icons.Loading />
-                </div>
-            )}
+            {query.isLoading && <Loading text={'Đang tải bình luận'} />}
 
             {query.data?.pages.length === 0 && (
                 <div className="text-center text-xs text-secondary-1">

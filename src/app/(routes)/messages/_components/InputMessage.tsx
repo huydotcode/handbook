@@ -121,7 +121,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
             }
         >
             <form
-                className="relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:mx-auto md:min-w-[250px] md:max-w-screen md:flex-auto"
+                className="md:max-[calc(100vw-100px)] relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:mx-auto md:min-w-[300px] md:flex-auto"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >

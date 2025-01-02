@@ -1,3 +1,4 @@
+'use client';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
@@ -83,7 +84,7 @@ const Icons = {
     Loading: (props: IconProps) => (
         <AiOutlineLoading
             {...props}
-            className={cn('animate-spin', props.className)}
+            className={cn('animate-spin text-secondary-1', props.className)}
         />
     ),
     Send: (props: IconProps) => <BsFillSendFill {...props} />,

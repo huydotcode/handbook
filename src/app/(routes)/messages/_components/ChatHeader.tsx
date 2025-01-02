@@ -2,7 +2,10 @@
 import { Avatar, Button, Icons } from '@/components/ui';
 import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import useBreakpoint from '@/hooks/useBreakpoint';
+import { splitName } from '@/utils/splitName';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     currentRoom: IConversation;
@@ -16,6 +19,7 @@ const ChatHeader: React.FC<Props> = ({
     handleOpenSearch,
 }) => {
     const { data: session } = useSession();
+    const router = useRouter();
 
     const partner = useMemo(() => {
         if (currentRoom.group) {
@@ -28,6 +32,8 @@ const ChatHeader: React.FC<Props> = ({
             }
         }
     }, [currentRoom]);
+
+    const { breakpoint } = useBreakpoint();
 
     const title = useMemo(() => {
         if (currentRoom.group) {
@@ -49,6 +55,16 @@ const ChatHeader: React.FC<Props> = ({
         <>
             <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
                 <div className="flex items-center">
+                    {breakpoint == 'sm' && (
+                        <Button
+                            className="mr-2 rounded-xl p-2 text-2xl hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                            variant={'custom'}
+                            onClick={() => router.push('/messages')}
+                        >
+                            <Icons.ArrowBack />
+                        </Button>
+                    )}
+
                     {currentRoom.group ? (
                         <Avatar
                             imgSrc={avatar}
@@ -65,7 +81,13 @@ const ChatHeader: React.FC<Props> = ({
                     )}
 
                     <div className="flex flex-col">
-                        <h3 className="text-md ml-2 font-bold">{title}</h3>
+                        <h3 className="text-md ml-2 font-bold">
+                            {currentRoom.group
+                                ? title
+                                : breakpoint == 'sm' && title
+                                  ? splitName(title).lastName
+                                  : title}
+                        </h3>
 
                         {partner && (
                             <>
@@ -76,7 +98,11 @@ const ChatHeader: React.FC<Props> = ({
                                         <TimeAgoConverted
                                             time={partner.lastAccessed}
                                             className="text-xs"
-                                            textBefore="Hoạt động"
+                                            textBefore={
+                                                breakpoint == 'sm'
+                                                    ? 'Online'
+                                                    : 'Hoạt động'
+                                            }
                                             textAfter=" trước"
                                         />
                                     )}

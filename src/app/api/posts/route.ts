@@ -14,15 +14,6 @@ export const GET = async (request: Request, response: Response) => {
     const username = url.searchParams.get('username');
     const type = url.searchParams.get('type');
 
-    console.log({
-        page,
-        pageSize,
-        groupId,
-        userId,
-        username,
-        type,
-    });
-
     const query = {} as any;
 
     const session = await getAuthSession();

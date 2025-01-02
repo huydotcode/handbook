@@ -1,11 +1,11 @@
 'use client';
 import { useConversations } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
-import ConversationItem from './item/ConversationItem';
+import React, { useState } from 'react';
+import ConversationItem from './ConversationItem';
 import SearchConversation from './SearchConversation';
+import { usePathname } from 'next/navigation';
 
 interface Props {}
 
@@ -14,6 +14,9 @@ const Sidebar: React.FC<Props> = ({}) => {
     if (!session) return null;
     const { data: initConversations } = useConversations(session?.user?.id);
     const [filter, setFilter] = useState<string>('');
+
+    const pathName = usePathname();
+    const isMessagesPage = pathName === '/messages';
 
     const conversations =
         filter.trim().length > 0
@@ -31,27 +34,24 @@ const Sidebar: React.FC<Props> = ({}) => {
               })
             : initConversations;
 
-    useEffect(() => {
-        console.log({
-            initConversations,
-        });
-    }, [initConversations]);
-
     return (
         <>
             <div
                 className={cn(
-                    'mr-2 flex h-full w-[300px] min-w-[80px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none lg:w-[80px]'
+                    'mr-2 flex h-full w-[300px] min-w-[80px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none lg:w-[80px] sm:w-full',
+                    !isMessagesPage && 'sm:hidden'
                 )}
             >
                 <div className="px-4 py-2">
-                    <h1 className="text-2xl font-bold lg:hidden">Trò chuyện</h1>
+                    <h1 className="text-2xl font-bold lg:hidden sm:block">
+                        Trò chuyện
+                    </h1>
 
                     <SearchConversation setFilter={setFilter} />
                 </div>
 
-                {initConversations &&
-                    initConversations.map((conversation: IConversation) => {
+                {conversations &&
+                    conversations.map((conversation: IConversation) => {
                         return (
                             <ConversationItem
                                 data={conversation}

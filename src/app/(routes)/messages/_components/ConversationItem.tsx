@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { splitName } from '@/utils/splitName';
+import TimeConvert, { TimeAgoConverted } from '@/utils/timeConvert';
 
 interface Props {
     data: IConversation;
@@ -66,7 +68,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                 )}
             </div>
 
-            <div className="flex flex-1 flex-col lg:hidden">
+            <div className="flex flex-1 flex-col lg:hidden sm:flex">
                 <div className="flex items-center justify-between">
                     <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
                         {title}
@@ -79,30 +81,58 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                         </span>
                     ) : (
                         <>
-                            <span
-                                className={cn(
-                                    'dark:text-dark-primary-1',
-                                    lastMessage?.sender._id == session?.user.id
-                                        ? 'text-primary-1'
-                                        : 'text-secondary-1'
-                                )}
+                            <div
+                                className={'flex items-center justify-between'}
                             >
-                                {lastMessage?.sender._id == session?.user.id
-                                    ? 'Bạn: '
-                                    : `${lastMessage?.sender.name}: `}
-                            </span>
+                                <div className={'flex items-center'}>
+                                    <span
+                                        className={cn(
+                                            'text-secondary-1 dark:text-dark-primary-1'
+                                        )}
+                                    >
+                                        {lastMessage?.sender._id ==
+                                        session?.user.id
+                                            ? 'Bạn: '
+                                            : `${splitName(lastMessage?.sender.name).lastName}: `}
+                                    </span>
 
-                            <span
-                                className={cn('', {
-                                    'font-bold': !lastMessage?.isRead,
-                                    'font-normal text-secondary-1':
-                                        lastMessage?.isRead,
-                                })}
-                            >
-                                {lastMessage.text.trim().length > 0
-                                    ? lastMessage.text
-                                    : 'Đã gửi một ảnh'}
-                            </span>
+                                    <span
+                                        className={cn('ml-1', {
+                                            'font-bold':
+                                                !lastMessage?.isRead &&
+                                                lastMessage.sender._id !==
+                                                    session?.user.id,
+                                            'font-normal text-secondary-1':
+                                                lastMessage.sender._id ==
+                                                session?.user.id,
+                                        })}
+                                    >
+                                        {lastMessage.text.trim().length > 0
+                                            ? lastMessage.text
+                                            : 'Đã gửi một ảnh'}
+                                    </span>
+                                </div>
+
+                                {lastMessage.createdAt && (
+                                    <span
+                                        className={cn('', {
+                                            'font-bold':
+                                                !lastMessage?.isRead &&
+                                                lastMessage.sender._id !==
+                                                    session?.user.id,
+                                            'font-normal text-secondary-1':
+                                                lastMessage.sender._id ==
+                                                session?.user.id,
+                                        })}
+                                    >
+                                        <TimeAgoConverted
+                                            time={lastMessage.createdAt}
+                                        />
+                                    </span>
+                                )}
+                            </div>
+
+                            {/*Time*/}
                         </>
                     )}
                 </div>

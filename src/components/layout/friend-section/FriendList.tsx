@@ -22,13 +22,6 @@ const FriendList: React.FC<Props> = ({ session, className }) => {
     const { data: conversations } = useConversations(session?.user.id);
     const { data: friends } = useFriends(session?.user.id);
 
-    useEffect(() => {
-        console.log({
-            conversations,
-            friends,
-        });
-    }, [conversations, friends]);
-
     return (
         <>
             <div

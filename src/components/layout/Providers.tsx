@@ -23,10 +23,9 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
                                 attribute="class"
                                 defaultTheme="system"
                                 enableSystem
-                                disableTransitionOnChange
                             >
                                 <Toaster
-                                    position="bottom-center"
+                                    position="bottom-left"
                                     reverseOrder={false}
                                 />
                                 {children}

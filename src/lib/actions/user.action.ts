@@ -73,8 +73,6 @@ export const getFriendsByUserId = async ({ userId }: { userId: string }) => {
             _id: { $in: user.friends },
         }).select('_id name avatar username isOnline lastAccessed');
 
-        console.log('getFriendsByUserId -> friends', friends);
-
         return JSON.parse(JSON.stringify(friends));
     } catch (error: any) {
         logger({
@@ -173,8 +171,8 @@ export const checkAuth = async ({
                 },
             };
         }
-    } catch (error) {
-        console.log('Error checking auth:', error);
+    } catch (error: any) {
+        console.log(error);
     }
 
     return null;
@@ -185,9 +183,6 @@ export const getFollowersByUserId = async ({ userId }: { userId: string }) => {
         await connectToDB();
         const user = await User.findById(userId).exec();
         if (!user) throw new Error('Đã có lỗi xảy ra');
-        // const followers = await User.find({
-        //     _id: { $in: user.followings },
-        // }).select('_id name avatar username isOnline lastAccessed');
 
         const follows = await Follows.find({
             following: userId,
