@@ -1,4 +1,3 @@
-import { getConversationById } from '@/lib/actions/conversation.action';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -9,6 +8,22 @@ interface Props {
         conversationId: string;
     };
 }
+
+const getConversationById = async ({
+    conversationId,
+}: {
+    conversationId: string;
+}) => {
+    try {
+        const res = await fetch(
+            `${process.env.NEXTAUTH_URL}/api/conversations/${conversationId}`
+        );
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 const ConversationPage: React.FC<Props> = async ({
     params: { conversationId },

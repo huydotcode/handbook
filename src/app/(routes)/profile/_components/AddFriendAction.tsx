@@ -5,15 +5,15 @@ import { useSocket } from '@/context';
 import { useRequests } from '@/context/AppContext';
 import { useFriends } from '@/context/SocialContext';
 import {
-    canRequestAddFriend,
     deleteNotificationByUsers,
     sendRequestAddFriend,
 } from '@/lib/actions/notification.action';
-import { getRequestsKey } from '@/lib/queryKey';
+import { getFriendsKey, getRequestsKey } from '@/lib/queryKey';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { unfriend } from '@/lib/actions/user.action';
 
 interface Props {
     userId: string;
@@ -59,9 +59,9 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
         },
     });
 
-    const { mutate: unfriend } = useMutation({
+    const { mutate: mutationUnFriend } = useMutation({
         mutationFn: async ({ friendId }: { friendId: string }) => {
-            await unfriend({ friendId });
+            unfriend({ friendId });
         },
         onMutate: () => {
             toast('Đang hủy kết bạn...', {
@@ -70,6 +70,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: getFriendsKey(session?.user.id),
+            });
+
             toast.success('Hủy kết bạn thành công', {
                 id: 'unfriend',
                 position: 'bottom-left',
@@ -139,7 +143,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
         try {
             if (isFriend) {
-                unfriend({
+                mutationUnFriend({
                     friendId: userId,
                 });
             } else if (isRequest) {
@@ -150,7 +154,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
             setCountClick(0);
         } catch (error) {
-            console.log(error);
+            toast('Đã có lỗi xảy ra.', {
+                id: 'handleAddFriend',
+                position: 'bottom-left',
+            });
         }
     };
 
@@ -163,7 +170,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="h-full min-w-[48px]"
+            className="h-full min-w-[48px] md:h-full md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
             variant={
                 isFriend ? 'secondary' : !isRequest ? 'primary' : 'secondary'
             }
@@ -176,8 +183,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 </>
             ) : (
                 <>
-                    {isFriend ? <Icons.Users /> : <Icons.PersonAdd />}
-                    <p className="ml-2 md:hidden">{getButtonText()}</p>
+                    <span className={'md:hidden'}>
+                        {isFriend ? <Icons.Users /> : <Icons.PersonAdd />}
+                    </span>
+                    <p className="ml-2 md:ml-0">{getButtonText()}</p>
                 </>
             )}
         </Button>

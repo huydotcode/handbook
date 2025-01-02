@@ -115,9 +115,13 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     watch('files');
 
     return (
-        <div className={'flex w-full flex-1 items-center justify-center p-2'}>
+        <div
+            className={
+                'flex w-full flex-1 items-center justify-center p-2 md:p-0'
+            }
+        >
             <form
-                className="relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:min-w-0 md:flex-1 "
+                className="relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:mx-auto md:min-w-[300px] md:max-w-screen md:flex-auto"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
             >

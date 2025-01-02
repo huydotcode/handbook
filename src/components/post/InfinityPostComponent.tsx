@@ -18,8 +18,6 @@ interface Props {
 }
 
 export const HOME_POSTS = ['posts', 'home'];
-export const PROFILE_POSTS = ['posts', 'profile'];
-export const GROUP_POSTS = ['posts', 'group'];
 
 const PAGE_SIZE = 3;
 

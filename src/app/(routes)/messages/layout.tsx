@@ -1,8 +1,6 @@
 import FixedLayout from '@/components/layout/FixedLayout';
-import { getAuthSession } from '@/lib/auth';
 import React from 'react';
 import { Sidebar } from './_components';
-
 interface Props {
     children: React.ReactNode;
 }
@@ -14,9 +12,6 @@ export async function generateMetadata() {
 }
 
 const MessageLayout: React.FC<Props> = async ({ children }) => {
-    const session = await getAuthSession();
-    if (!session) return null;
-
     return (
         <FixedLayout fullScreen>
             <Sidebar />

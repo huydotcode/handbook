@@ -16,6 +16,7 @@ import ChatHeader from './ChatHeader';
 import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     className?: string;
@@ -39,6 +40,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
         threshold: 0,
         triggerOnce: false,
     });
+    const router = useRouter();
 
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(false);
@@ -137,7 +139,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                         </div>
                     )}
 
-                    <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2">
+                    <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
                         <div ref={bottomRef} />
 
                         {messages?.map((message) => (
@@ -152,11 +154,11 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                     </div>
                 </div>
 
-                <div className="relative flex w-full justify-center">
+                <div className="relative flex justify-center">
                     {showScrollDown && (
                         <Button
                             className={cn(
-                                'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100'
+                                'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100 md:-top-[7rem]'
                             )}
                             onClick={handleScrollDown}
                         >

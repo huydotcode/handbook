@@ -80,7 +80,7 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="h-12 min-w-[48px]"
+            className="h-12 min-w-[48px] md:h-full md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
             variant={isFollow ? 'secondary' : 'primary'}
             size="medium"
             onClick={handleFollowClick}

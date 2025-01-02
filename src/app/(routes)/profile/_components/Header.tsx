@@ -6,8 +6,8 @@ import Image from 'next/image';
 import React from 'react';
 import AddFriendAction from './AddFriendAction';
 import { useSession } from 'next-auth/react';
-import { useProfile } from '@/context/SocialContext';
-import { Session } from 'next-auth';
+import { Dropdown, MenuProps } from 'antd';
+import { Button, Icons } from '@/components/ui';
 
 interface Props {
     profile: IProfile;
@@ -17,6 +17,36 @@ const Header: React.FC<Props> = ({ profile }) => {
     const { data: session } = useSession();
     const user = profile.user;
     const notCurrentUser = session && session.user.id !== user._id.toString();
+
+    const items: MenuProps['items'] = [
+        {
+            key: '1',
+            label: (
+                <div className={'h-8'}>
+                    <MessageAction
+                        className="h-full w-full md:h-full md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
+                        messageTo={user._id}
+                    />
+                </div>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <div className={'h-8'}>
+                    <FollowAction userId={user._id} />
+                </div>
+            ),
+        },
+        {
+            key: '3',
+            label: (
+                <div className={'h-8'}>
+                    <AddFriendAction userId={user._id} />
+                </div>
+            ),
+        },
+    ];
 
     return (
         <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-secondary-1">
@@ -56,18 +86,32 @@ const Header: React.FC<Props> = ({ profile }) => {
                     </div>
                 </div>
 
-                <div className="flex h-12 items-center gap-2">
-                    {notCurrentUser && (
-                        <>
+                {notCurrentUser && (
+                    <>
+                        <div className="flex h-12 items-center gap-2 md:hidden">
                             <MessageAction
                                 className="h-full"
                                 messageTo={user._id}
                             />
                             <FollowAction userId={user._id} />
                             <AddFriendAction userId={user._id} />
-                        </>
-                    )}
-                </div>
+                        </div>
+
+                        <Dropdown
+                            trigger={['click', 'hover']}
+                            menu={{ items }}
+                            placement="bottomCenter"
+                            autoFocus
+                        >
+                            <Button
+                                variant="custom"
+                                className="hidden rounded-full p-2 text-3xl md:flex"
+                            >
+                                <Icons.Menu />
+                            </Button>
+                        </Dropdown>
+                    </>
+                )}
             </div>
 
             <div className="flex w-[600px] max-w-screen items-center px-2 pt-2">
