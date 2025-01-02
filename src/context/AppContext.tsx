@@ -29,6 +29,8 @@ export const useNotifications = (userId: string | undefined) =>
             return data.notifications;
         },
         enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useCategories = () =>
@@ -52,6 +54,9 @@ export const useRequests = (userId: string | undefined) =>
             const data = await res.json();
             return data.notifications;
         },
+        enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 function AppProvider({ children }: { children: React.ReactNode }) {
