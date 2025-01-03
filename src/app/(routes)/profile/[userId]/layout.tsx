@@ -35,7 +35,7 @@ const getProfile = async (userId: string) => {
 
 const ProfileLayout = async ({ params, children }: Props) => {
     const profile = await getProfile(params.userId);
-    if (!profile) notFound();
+    if (profile) throw new Error("Profile doesn't exist");
 
     return (
         <div className={'mx-auto w-container max-w-screen'}>
