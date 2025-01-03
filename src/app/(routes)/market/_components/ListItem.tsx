@@ -21,8 +21,8 @@ const ListItem: React.FC<Props> = () => {
             const res = await fetch(
                 `/api/items?page=${pageParam}&pageSize=${PAGE_SIZE}`
             );
-            const data = await res.json();
-            return data;
+            const items = await res.json();
+            return items;
         },
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.length < PAGE_SIZE) return undefined;

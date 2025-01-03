@@ -23,7 +23,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { data: session } = useSession();
     if (!session?.user) return null;
     const queryClient = useQueryClient();
-    const requests = useRequests(session?.user.id);
+    const { data: requests } = useRequests(session?.user.id);
 
     const { mutateAsync: sendRequest, isPending } = useMutation({
         mutationFn: async ({ receiverId }: { receiverId: string }) => {
@@ -90,9 +90,9 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { socketEmitor } = useSocket();
     const { data: friends, refetch } = useFriends(session?.user.id);
 
-    const isRequest = requests.data?.some(
-        (request) => request.receiver._id === userId
-    );
+    const isRequest =
+        requests &&
+        requests?.some((request) => request.receiver._id === userId);
     const [countClick, setCountClick] = useState<number>(0);
 
     // Kiểm tra trạng thái bạn bè

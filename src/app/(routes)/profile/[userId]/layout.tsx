@@ -29,13 +29,13 @@ const getProfile = async (userId: string) => {
     const res = await fetch(
         `${process.env.NEXTAUTH_URL}/api/profile?userid=${userId}`
     );
-    const data = await res.json();
-    return data.profile;
+    const profile = await res.json();
+    return profile;
 };
 
 const ProfileLayout = async ({ params, children }: Props) => {
     const profile = await getProfile(params.userId);
-    if (profile) throw new Error("Profile doesn't exist");
+    if (!profile) throw new Error("Profile doesn't exist");
 
     return (
         <div className={'mx-auto w-container max-w-screen'}>

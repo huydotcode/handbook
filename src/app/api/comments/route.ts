@@ -1,10 +1,11 @@
 import { Comment } from '@/models';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (request: Request, response: Response) => {
-    const url = new URL(request.url);
-    const postId = url.searchParams.get('postId');
-    const page = url.searchParams.get('page') || 1;
-    const pageSize = url.searchParams.get('pageSize') || 10;
+export const GET = async (request: NextRequest, response: Response) => {
+    const searchParams = request.nextUrl.searchParams;
+    const postId = searchParams.get('postId');
+    const page = searchParams.get('page') || '1';
+    const pageSize = searchParams.get('pageSize') || '5';
 
     try {
         const comments = await Comment.find({
@@ -18,8 +19,17 @@ export const GET = async (request: Request, response: Response) => {
             .populate('loves')
             .sort({ createdAt: -1 });
 
-        return new Response(JSON.stringify(comments), { status: 200 });
+        return NextResponse.json(comments, {
+            status: 200,
+        });
     } catch (error) {
-        return new Response('Internal server error', { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Lỗi lấy thông tin bình luận',
+            },
+            {
+                status: 500,
+            }
+        );
     }
 };

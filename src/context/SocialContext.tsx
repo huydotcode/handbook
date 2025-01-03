@@ -1,13 +1,7 @@
 'use client';
-import { getConversationsByUserId } from '@/lib/actions/conversation.action';
 import { getLastMessageByCoversationId } from '@/lib/actions/message.action';
 import {
-    getFollowersByUserId,
-    getFriendsByUserId,
-} from '@/lib/actions/user.action';
-import {
     getConversationsKey,
-    getFollowersKey,
     getFriendsKey,
     getLastMessagesKey,
     getMessagesKey,
@@ -21,7 +15,8 @@ import {
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
-import { getProfileByUserId } from '@/lib/actions/profile.action';
+
+const PAGE_SIZE = 10;
 
 export const useProfile = (userId: string) =>
     useQuery<IProfile>({
@@ -29,36 +24,37 @@ export const useProfile = (userId: string) =>
         queryFn: async () => {
             const res = await fetch(`/api/profile?userid=${userId}`);
             const data = await res.json();
-
-            return data.profile;
+            return data;
         },
         enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        retry: false,
     });
 
 export const useFriends = (userId: string | undefined) =>
-    useQuery<IFriend[]>({
+    useInfiniteQuery({
         queryKey: getFriendsKey(userId),
-        queryFn: async () => {
+        queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(`/api/friends`);
-            const data = await res.json();
-            const friends = data.friends;
-
+            const res = await fetch(
+                `/api/friends?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            );
+            const friends = await res.json();
             return friends;
         },
-    });
-
-export const useFollowers = (userId: string | undefined) =>
-    useQuery<IFriend[]>({
-        queryKey: getFollowersKey(userId),
-        queryFn: async () => {
-            if (!userId) return [];
-
-            const followers = await getFollowersByUserId({ userId });
-            return followers;
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === 10 ? allPages.length + 1 : undefined;
+        },
+        select: (data) => {
+            return data.pages.flatMap((page) => page) as IUser[];
         },
         enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        retry: false,
     });
 
 export const useConversations = (userId: string | undefined) =>
@@ -68,14 +64,11 @@ export const useConversations = (userId: string | undefined) =>
             if (!userId) return [];
 
             const res = await fetch(`/api/conversations?userId=${userId}`);
-            const data = await res.json();
-            const conversations = data.conversations;
+            const conversations = await res.json();
             return conversations;
         },
         enabled: !!userId,
     });
-
-const PAGE_SIZE = 10;
 
 export const useMessages = (conversationId: string | undefined) =>
     useInfiniteQuery({

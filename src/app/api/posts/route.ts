@@ -1,5 +1,6 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
+import { NextResponse } from 'next/server';
 
 const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = 'name avatar';
@@ -92,7 +93,9 @@ export const GET = async (request: Request, response: Response) => {
             }
         });
 
-        return new Response(JSON.stringify(posts), { status: 200 });
+        return NextResponse.json(posts, {
+            status: 200,
+        });
     } catch (error) {
         return new Response('Error', { status: 500 });
     }

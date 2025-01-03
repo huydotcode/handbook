@@ -11,26 +11,48 @@ import {
     getNotificationsKey,
     getRequestsKey,
 } from '@/lib/queryKey';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
 import { getCategories } from '@/lib/actions/category.action';
 
+const PAGE_SIZE = 5;
+
 export const useNotifications = (userId: string | undefined) =>
-    useQuery<INotification[]>({
+    useInfiniteQuery({
         queryKey: getNotificationsKey(userId),
-        queryFn: async () => {
+        queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(`/api/notifications?userId=${userId}`);
-            const data = await res.json();
-            return data.notifications;
+            const res = await fetch(
+                `/api/notifications?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            );
+            const notifications = await res.json();
+            return notifications;
+        },
+        select: (data) => {
+            return data.pages.flatMap((page) => page);
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
+        getPreviousPageParam: (firstPage, allPages) => {
+            return firstPage.length === PAGE_SIZE ? 1 : undefined;
         },
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
+
+        retry: false,
     });
 
 export const useCategories = () =>
@@ -42,21 +64,37 @@ export const useCategories = () =>
         },
         refetchInterval: false,
         refetchOnWindowFocus: false,
+        retry: false,
     });
 
 export const useRequests = (userId: string | undefined) =>
-    useQuery<INotification[]>({
+    useInfiniteQuery({
         queryKey: getRequestsKey(userId),
-        queryFn: async () => {
+        queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(`/api/requests?userId=${userId}`);
-            const data = await res.json();
-            return data.notifications;
+            const res = await fetch(
+                `/api/requests?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            );
+            const requests = await res.json();
+            return requests;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
+        getPreviousPageParam: (firstPage, allPages) => {
+            return firstPage.length === PAGE_SIZE ? 1 : undefined;
+        },
+        select: (data) => {
+            return data.pages.flatMap((page) => page);
         },
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
+        retry: false,
     });
 
 function AppProvider({ children }: { children: React.ReactNode }) {

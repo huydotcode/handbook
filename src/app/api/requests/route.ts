@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const userId = searchParams.get('userId');
+    const page = searchParams.get('page') || '1';
+    const pageSize = searchParams.get('pageSize') || '10';
 
     if (!userId) {
         return NextResponse.json(
@@ -18,15 +20,16 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const notifications = await Notification.find({
+        const requests = await Notification.find({
             sender: userId,
         })
+            .sort({ createdAt: -1 })
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
             .populate('sender', POPULATE_USER)
             .populate('receiver', POPULATE_USER);
 
-        return NextResponse.json({
-            notifications,
-        });
+        return NextResponse.json(requests, { status: 200 });
     } catch (error: any) {
         return NextResponse.json(
             {

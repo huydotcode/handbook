@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { Image } from '@/models';
 import { getAuthSession } from '@/lib/auth';
+import { NextResponse } from 'next/server';
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
 
         await newImage.save();
 
-        return new Response(JSON.stringify(newImage), {
+        return NextResponse.json(newImage, {
             status: 200,
         });
     } catch (error) {

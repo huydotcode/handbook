@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const userId = searchParams.get('userId');
+    const page = searchParams.get('page') || '1';
+    const pageSize = searchParams.get('pageSize') || '10';
 
     if (!userId) {
         return NextResponse.json(
@@ -21,11 +23,14 @@ export async function GET(req: NextRequest) {
         const notifications = await Notification.find({
             receiver: userId,
         })
-            .populate('sender', POPULATE_USER)
+            .sort({ createdAt: -1 }) // Sắp xếp trước
+            .skip((+page - 1) * +pageSize) // Bỏ qua các bản ghi không cần thiết
+            .limit(+pageSize) // Lấy số lượng bản ghi cần thiết
+            .populate('sender', POPULATE_USER) // Populate sau cùng
             .populate('receiver', POPULATE_USER);
 
-        return NextResponse.json({
-            notifications,
+        return NextResponse.json(notifications, {
+            status: 200,
         });
     } catch (error: any) {
         return NextResponse.json(

@@ -18,7 +18,7 @@ type FormData = {
     text: string;
 };
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 3;
 
 export const useComments = (postId: string | undefined) =>
     useInfiniteQuery({

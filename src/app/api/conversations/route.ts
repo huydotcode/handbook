@@ -29,12 +29,7 @@ export async function GET(req: NextRequest) {
             .populate('creator', POPULATE_USER)
             .populate('group');
 
-        return NextResponse.json(
-            {
-                conversations,
-            },
-            { status: 200 }
-        );
+        return NextResponse.json(conversations, { status: 200 });
     } catch (error) {
         return NextResponse.json(
             {

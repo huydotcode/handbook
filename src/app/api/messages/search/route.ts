@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
             .populate('images')
             .sort({ createdAt: -1 });
 
-        return NextResponse.json(messages);
+        return NextResponse.json(messages, {
+            status: 200,
+        });
     } catch (error) {
         throw new Error('Internal server error');
     }

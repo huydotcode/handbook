@@ -21,5 +21,6 @@ export const config = {
         '/market/:path*',
         '/profile/:path*',
         '/messages/:path*',
+        '/posts/:path*',
     ],
 };
