@@ -1,6 +1,6 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
-import { Button, Icons, Loading } from '@/components/ui';
+import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
@@ -70,6 +70,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     });
     const topRef2 = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const lastMessageRef = useRef<HTMLDivElement>(null);
 
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(false);
@@ -188,6 +189,15 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         isFetchingNextPage,
     ]);
 
+    // Scroll tới tin nhắn cuối cùng
+    useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({
+                behavior: 'smooth',
+            });
+        }
+    }, [lastMessage]);
+
     return (
         <>
             <div
@@ -227,6 +237,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                 data={message}
                                 messages={messages}
                                 searchMessage={findMessage}
+                                isLastMessage={lastMessage?._id === message._id}
                             />
                         ))}
 

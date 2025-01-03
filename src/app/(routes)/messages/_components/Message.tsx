@@ -1,7 +1,7 @@
 'use client';
 import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
 import { useSocket } from '@/context';
-import { useMessages } from '@/context/SocialContext';
+import { useLastMessage, useMessages } from '@/context/SocialContext';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { invalidateMessages } from '@/lib/query';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,8 @@ interface Props {
     handleClick?: () => void;
     searchMessage?: IMessage;
     isSearchMessage?: boolean;
+    ref?: React.RefObject<HTMLDivElement>;
+    isLastMessage?: boolean;
 }
 
 const Message: React.FC<Props> = ({
@@ -28,6 +30,7 @@ const Message: React.FC<Props> = ({
     handleClick,
     searchMessage,
     isSearchMessage = false,
+    isLastMessage,
 }) => {
     const { data: session } = useSession();
     const isFindMessage = searchMessage && searchMessage._id === msg._id;
@@ -42,6 +45,7 @@ const Message: React.FC<Props> = ({
 
     const index = messages.findIndex((m) => m._id === msg._id);
     const isOwnMsg = msg.sender._id === session?.user.id;
+    const messageRef = useRef<HTMLDivElement>(null);
 
     const images = messages
         ? messages
@@ -123,6 +127,12 @@ const Message: React.FC<Props> = ({
         }
     }, [showMenu]);
 
+    useEffect(() => {
+        if (isLastMessage) {
+            messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [isLastMessage]);
+
     return (
         <div
             id={msg._id}
@@ -131,6 +141,7 @@ const Message: React.FC<Props> = ({
                 'justify-end': isOwnMsg,
                 'justify-start': !isOwnMsg,
             })}
+            ref={messageRef}
         >
             <div
                 className={cn('flex', {
