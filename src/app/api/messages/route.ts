@@ -19,6 +19,6 @@ export const GET = async (request: Request, response: Response) => {
 
         return new Response(JSON.stringify(messages), { status: 200 });
     } catch (error) {
-        return new Response('Internal server error', { status: 500 });
+        return new Response(`Internal server error ${error}`, { status: 500 });
     }
 };

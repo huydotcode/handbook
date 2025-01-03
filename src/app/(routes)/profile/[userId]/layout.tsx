@@ -1,5 +1,5 @@
 import { getProfileByUserId } from '@/lib/actions/profile.action';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Header } from '../_components';
 
 interface Props {
@@ -35,7 +35,7 @@ const getProfile = async (userId: string) => {
 
 const ProfileLayout = async ({ params, children }: Props) => {
     const profile = await getProfile(params.userId);
-    if (!profile) redirect('/');
+    if (!profile) notFound();
 
     return (
         <div className={'mx-auto w-container max-w-screen'}>

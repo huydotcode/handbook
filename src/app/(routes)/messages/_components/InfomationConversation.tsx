@@ -1,21 +1,18 @@
 import { Items } from '@/components/shared';
 import { Avatar, Button, Collapse, Icons, SlideShow } from '@/components/ui';
-import { useMessages } from '@/context/SocialContext';
 import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 interface Props {
     conversation: IConversation;
-    openInfo: boolean;
     setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
     messages: IMessage[];
 }
 
 const InfomationConversation: React.FC<Props> = ({
     conversation,
-    openInfo,
     setOpenInfo,
     messages,
 }) => {
@@ -99,7 +96,7 @@ const InfomationConversation: React.FC<Props> = ({
     ];
 
     return (
-        <div className="relative ml-2 flex h-full max-h-screen min-w-[220px] flex-col overflow-y-scroll rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1">
+        <div className="relative ml-2 flex h-full max-h-screen w-[240px] flex-col overflow-y-scroll rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1">
             <Button
                 className="absolute left-2 top-2 hidden md:block"
                 onClick={() => setOpenInfo(false)}

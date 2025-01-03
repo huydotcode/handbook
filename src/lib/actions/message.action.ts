@@ -15,6 +15,28 @@ import { getAuthSession } from '../auth';
 
 const POPULATE_USER = 'name avatar username';
 
+export const getMessageByMessageId = async ({
+    messageId,
+}: {
+    messageId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const message = await Message.findById(messageId)
+            .populate('sender', POPULATE_USER)
+            .populate('conversation')
+            .populate('images');
+
+        return JSON.parse(JSON.stringify(message));
+    } catch (error) {
+        logger({
+            message: 'Error get message by message id' + error,
+            type: 'error',
+        });
+    }
+};
+
 export const getMessagesWithConversationId = async ({
     conversationId,
     page,

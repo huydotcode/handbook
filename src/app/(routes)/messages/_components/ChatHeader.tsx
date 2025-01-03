@@ -9,13 +9,13 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
     currentRoom: IConversation;
-    setOpenInfo: React.Dispatch<React.SetStateAction<boolean>>;
+    handleOpenInfo: () => void;
     handleOpenSearch: () => void;
 }
 
 const ChatHeader: React.FC<Props> = ({
     currentRoom,
-    setOpenInfo,
+    handleOpenInfo,
     handleOpenSearch,
 }) => {
     const { data: session } = useSession();
@@ -124,7 +124,7 @@ const ChatHeader: React.FC<Props> = ({
                     <Button
                         className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
                         variant={'custom'}
-                        onClick={() => setOpenInfo((prev) => !prev)}
+                        onClick={() => handleOpenInfo()}
                     >
                         <Icons.More size={24} />
                     </Button>

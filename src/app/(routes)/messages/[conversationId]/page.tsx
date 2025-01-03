@@ -1,11 +1,15 @@
 import { getAuthSession } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import React from 'react';
 import { ChatBox } from '../_components';
+import { getMessageByMessageId } from '@/lib/actions/message.action';
 
 interface Props {
     params: {
         conversationId: string;
+    };
+    searchParams: {
+        findMessage?: string;
     };
 }
 
@@ -27,6 +31,7 @@ const getConversationById = async ({
 
 const ConversationPage: React.FC<Props> = async ({
     params: { conversationId },
+    searchParams: { findMessage },
 }) => {
     const session = await getAuthSession();
     if (!session) return null;
@@ -37,15 +42,24 @@ const ConversationPage: React.FC<Props> = async ({
 
     // Kiểm tra xem cuộc trò chuyện có tồn tại không
     if (!conversation) {
-        redirect('/messages');
+        notFound();
     }
 
     // Kiểm tra xem người dùng có trong cuộc trò chuyện không
-    if (!conversation.participants.find((p) => p._id === session.user.id)) {
-        redirect('/messages');
+    if (conversation && conversation.participants) {
+        if (!conversation.participants.find((p) => p._id === session.user.id)) {
+            redirect('/messages');
+        }
     }
 
-    return <ChatBox conversation={conversation} />;
+    if (findMessage) {
+        const message = (await getMessageByMessageId({
+            messageId: findMessage,
+        })) as IMessage;
+        return <ChatBox conversation={conversation} findMessage={message} />;
+    } else {
+        return <ChatBox conversation={conversation} />;
+    }
 };
 
 export default ConversationPage;

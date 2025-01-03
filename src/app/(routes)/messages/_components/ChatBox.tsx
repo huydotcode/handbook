@@ -1,8 +1,8 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
-import { Button, Icons } from '@/components/ui';
+import { Button, Icons, Loading } from '@/components/ui';
 import { useSocket } from '@/context';
-import { useLastMessage, useMessages } from '@/context/SocialContext';
+import { useLastMessage } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, {
@@ -17,20 +17,48 @@ import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
 import { useRouter } from 'next/navigation';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { getMessagesKey } from '@/lib/queryKey';
 
 interface Props {
     className?: string;
     conversation: IConversation;
+    findMessage?: IMessage;
 }
 
-const ChatBox: React.FC<Props> = ({ className, conversation }) => {
+const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
+    const pageSize = 50;
+    const conversationId = conversation._id;
+    const [isFind, setIsFind] = useState<boolean>(false);
     const {
         data: messages,
         fetchNextPage,
         isLoading,
         isFetchingNextPage,
         hasNextPage,
-    } = useMessages(conversation._id);
+    } = useInfiniteQuery({
+        queryKey: getMessagesKey(conversationId),
+        queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
+            if (!conversationId) return [];
+
+            const res = await fetch(
+                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${pageSize}`
+            );
+            const messages = await res.json();
+            return messages;
+        },
+        getNextPageParam: (lastPage, pages) => {
+            return lastPage.length === pageSize ? pages.length + 1 : undefined;
+        },
+        initialPageParam: 1,
+        enabled: !!conversationId,
+        select: (data) => {
+            return data.pages.flatMap((page) => page) as IMessage[];
+        },
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+    });
     const { data: session } = useSession();
     if (!session) return null;
 
@@ -40,16 +68,13 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
         threshold: 0,
         triggerOnce: false,
     });
+    const topRef2 = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(false);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
     const bottomRef = useRef<HTMLDivElement>(null);
-
-    const handleOpenSearch = () => {
-        setOpenSearch(true);
-    };
 
     // Xử lý nhấn Esc để đóng khung tìm kiếm
     const handleKeyDownEsc: KeyboardEventHandler<HTMLDivElement> = (e) => {
@@ -64,6 +89,16 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
         bottomRef.current?.scrollIntoView({
             behavior: 'smooth',
         });
+    };
+
+    const handleOpenSearch = () => {
+        setOpenInfo(false);
+        setOpenSearch((prev) => !prev);
+    };
+
+    const handleOpenInfo = () => {
+        setOpenSearch(false);
+        setOpenInfo((prev) => !prev);
     };
 
     useEffect(() => {
@@ -106,27 +141,71 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
         };
     }, [bottomRef.current]);
 
+    useEffect(() => {
+        setIsFind(false);
+    }, [findMessage]);
+
+    useEffect(() => {
+        if (findMessage && !isFind && messages && !isFetchingNextPage) {
+            const handleFindMessage = async () => {
+                // Vòng lặp fetch cho đến khi tìm thấy hoặc hết trang
+
+                // Tìm tin nhắn trong dữ liệu hiện có
+                const foundMessage = messages.find(
+                    (message) => message._id === findMessage._id
+                );
+
+                if (foundMessage) {
+                    // Tìm thấy
+                    toast.success('Tìm thấy tin nhắn');
+
+                    document.getElementById(foundMessage._id)?.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                    setIsFind(true); // Đánh dấu tìm thấy
+                    return;
+                }
+
+                if (hasNextPage) {
+                    // Nếu không tìm thấy, fetch trang tiếp theo
+                    await fetchNextPage();
+                }
+
+                if (!hasNextPage) {
+                    toast.error('Không tìm thấy tin nhắn');
+                }
+            };
+
+            handleFindMessage();
+        }
+    }, [
+        findMessage,
+        messages,
+        fetchNextPage,
+        hasNextPage,
+        isFind,
+        pageSize,
+        isFetchingNextPage,
+    ]);
+
     return (
         <>
             <div
                 className={cn(
                     'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                     className,
-                    openInfo && 'md:hidden'
+                    openInfo && 'md:hidden',
+                    openSearch && 'md:hidden'
                 )}
                 onKeyDown={handleKeyDownEsc}
             >
                 <ChatHeader
                     currentRoom={conversation}
-                    setOpenInfo={setOpenInfo}
+                    handleOpenInfo={handleOpenInfo}
                     handleOpenSearch={handleOpenSearch}
                 />
 
                 <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2 ">
-                    {openSearch && (
-                        <SearchMessage setOpenSearch={setOpenSearch} />
-                    )}
-
                     {isFetchingNextPage && (
                         <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
                             <Icons.Loading />
@@ -147,11 +226,28 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                                 key={message._id}
                                 data={message}
                                 messages={messages}
+                                searchMessage={findMessage}
                             />
                         ))}
 
                         {hasNextPage && <div className="py-2" ref={topRef} />}
+                        {hasNextPage && <div className="py-2" ref={topRef2} />}
                     </div>
+
+                    {findMessage && (
+                        <Button
+                            className={cn(
+                                'absolute left-1/2 top-4 -translate-x-1/2'
+                            )}
+                            variant={'secondary'}
+                            onClick={() => {
+                                router.push(`/messages/${conversation._id}`);
+                                setOpenSearch(false);
+                            }}
+                        >
+                            Thoát tìm kiếm
+                        </Button>
+                    )}
                 </div>
 
                 <div className="relative flex justify-center">
@@ -174,10 +270,15 @@ const ChatBox: React.FC<Props> = ({ className, conversation }) => {
                 <InfomationConversation
                     messages={messages}
                     conversation={conversation}
-                    openInfo={openInfo}
                     setOpenInfo={setOpenInfo}
                 />
             )}
+
+            <SearchMessage
+                openSearch={openSearch}
+                conversationId={conversation._id}
+                setOpenSearch={setOpenSearch}
+            />
         </>
     );
 };

@@ -16,17 +16,11 @@ export const GET = async (
             .populate('group');
 
         if (!conversation) {
-            return NextResponse.json({
-                error: 'Conversation not found',
-                success: false,
-            });
+            return NextResponse.error();
         }
 
         return NextResponse.json(conversation, { status: 200 });
     } catch (error: any) {
-        return NextResponse.json({
-            error: error.message,
-            success: false,
-        });
+        return NextResponse.error();
     }
 };

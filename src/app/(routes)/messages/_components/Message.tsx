@@ -12,14 +12,25 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import TimeAgoConverted from '@/utils/timeConvert';
 
 interface Props {
     data: IMessage;
     messages: IMessage[];
+    handleClick?: () => void;
+    searchMessage?: IMessage;
+    isSearchMessage?: boolean;
 }
 
-const Message: React.FC<Props> = ({ data: msg, messages }) => {
+const Message: React.FC<Props> = ({
+    data: msg,
+    messages,
+    handleClick,
+    searchMessage,
+    isSearchMessage = false,
+}) => {
     const { data: session } = useSession();
+    const isFindMessage = searchMessage && searchMessage._id === msg._id;
 
     const { socket, socketEmitor } = useSocket();
     const queryClient = useQueryClient();
@@ -106,7 +117,7 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
 
     // Xử lý ẩn menu
     useEffect(() => {
-        if (showMenu) {
+        if (showMenu || !isSearchMessage) {
             const timer = setTimeout(() => handleHideMenu(), 2000);
             return () => clearTimeout(timer);
         }
@@ -114,6 +125,7 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
 
     return (
         <div
+            id={msg._id}
             key={msg._id}
             className={cn('relative mb-[2px] flex w-full ', {
                 'justify-end': isOwnMsg,
@@ -127,6 +139,21 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
                     'w-full items-center': !msg.conversation.group,
                 })}
             >
+                {/* Time */}
+                {isSearchMessage && (
+                    <div
+                        className={cn('absolute text-xs text-secondary-1', {
+                            'left-0': isOwnMsg,
+                            'right-0': !isOwnMsg,
+                        })}
+                    >
+                        <TimeAgoConverted
+                            time={msg.createdAt}
+                            textAfter={'trước'}
+                        />
+                    </div>
+                )}
+
                 {/* Avatar */}
                 {msg.conversation.group && (
                     <div
@@ -204,12 +231,21 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
                                                 isOwnMsg,
                                             'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
                                                 !isOwnMsg,
+                                            'border-4 border-yellow-300':
+                                                isFindMessage,
+                                            'cursor-pointer': isSearchMessage,
                                         }
                                     )}
-                                    onClick={handleClickContent}
+                                    onClick={() => {
+                                        handleClickContent();
+                                        if (handleClick) {
+                                            handleClick();
+                                        }
+                                    }}
                                 >
                                     {showMenu &&
                                         isOwnMsg &&
+                                        !isSearchMessage &&
                                         createMenuMessages()}
 
                                     <div className="flex flex-col">
@@ -232,6 +268,8 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
                                                                             isOwnMsg,
                                                                         'text-primary-2 dark:text-dark-primary-1':
                                                                             !isOwnMsg,
+                                                                        'text-yellow-300':
+                                                                            isFindMessage,
                                                                     }
                                                                 )}
                                                             >
@@ -240,7 +278,13 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
                                                         );
                                                     } else {
                                                         return (
-                                                            <span key={index}>
+                                                            <span
+                                                                className={cn({
+                                                                    'font-bold text-yellow-400':
+                                                                        isFindMessage,
+                                                                })}
+                                                                key={index}
+                                                            >
                                                                 {text + ' '}
                                                             </span>
                                                         );
@@ -251,6 +295,7 @@ const Message: React.FC<Props> = ({ data: msg, messages }) => {
                                 </div>
                             )}
                             {index == 0 &&
+                                !isSearchMessage &&
                                 msg.sender._id === session?.user.id && (
                                     <span className="text-xs text-secondary-1">
                                         {msg.isRead && 'Đã xem'}
