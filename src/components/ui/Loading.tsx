@@ -23,7 +23,7 @@ const Loading: FC<Props> = ({
         if (initText) {
             const interval = setInterval(() => {
                 setText((prev) => {
-                    if (prev.length === 3) return '';
+                    if (prev.length === initText.length + 3) return '';
                     return prev + '.';
                 });
             }, 500);
@@ -34,10 +34,10 @@ const Loading: FC<Props> = ({
         }
     }, [initText]);
 
-    if (text.length > 0) {
+    if (initText && initText.length > 0) {
         return (
             <div className="flex justify-center text-xs text-secondary-1 ">
-                {initText?.concat(text)}
+                {text}
             </div>
         );
     }
