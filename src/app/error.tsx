@@ -21,7 +21,7 @@ const ErrorPage = () => {
                         </p>
                         <Link
                             rel="noopener noreferrer"
-                            href="/client/public"
+                            href="/"
                             className="rounded px-8 py-3 font-semibold dark:bg-violet-600 dark:text-gray-50"
                         >
                             Quay lại trang chủ
