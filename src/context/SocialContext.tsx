@@ -7,11 +7,7 @@ import {
     getMessagesKey,
     getProfileKey,
 } from '@/lib/queryKey';
-import {
-    useInfiniteQuery,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
@@ -116,10 +112,7 @@ export const useLastMessage = (conversationId: string) =>
 function SocialProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
-    const queryClient = useQueryClient();
-
-    const { data: conversations, refetch: refetchConversations } =
-        useConversations(session?.user.id);
+    const { data: conversations } = useConversations(session?.user.id);
 
     useEffect(() => {
         if (!session?.user?.id || !conversations) return;

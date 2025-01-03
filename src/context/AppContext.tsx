@@ -103,9 +103,6 @@ function AppProvider({ children }: { children: React.ReactNode }) {
     const { socket } = useSocket();
     const queryClient = useQueryClient();
 
-    useNotifications(session?.user.id);
-    useRequests(session?.user.id);
-
     // Lắng nghe thông báo mới
     useEffect(() => {
         if (!session?.user?.id || !socket) return;
