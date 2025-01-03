@@ -68,6 +68,8 @@ export const useConversations = (userId: string | undefined) =>
             return conversations;
         },
         enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useMessages = (conversationId: string | undefined) =>
@@ -93,6 +95,8 @@ export const useMessages = (conversationId: string | undefined) =>
         select: (data) => {
             return data.pages.flatMap((page) => page) as IMessage[];
         },
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useLastMessage = (conversationId: string) =>
@@ -105,6 +109,8 @@ export const useLastMessage = (conversationId: string) =>
             return lastMessage;
         },
         enabled: !!conversationId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 function SocialProvider({ children }: { children: React.ReactNode }) {
