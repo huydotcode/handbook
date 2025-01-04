@@ -11,7 +11,7 @@ const font = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
     title: 'Handbook',
-    description: 'Social website',
+    description: 'Mạng xã hội Việt Nam',
 };
 
 interface Props {
@@ -24,7 +24,7 @@ export default function RootLayout(props: Props) {
             <head>
                 <link
                     rel="icon"
-                    href="/assets/img/logo.webp"
+                    href="/assets/img/logo.png"
                     type="image/svg"
                     sizes="svg"
                 />
