@@ -1,18 +1,17 @@
 'use client';
 import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
 import { useSocket } from '@/context';
-import { useLastMessage, useMessages } from '@/context/SocialContext';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { invalidateMessages } from '@/lib/query';
 import { cn } from '@/lib/utils';
 import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
+import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import TimeAgoConverted from '@/utils/timeConvert';
 
 interface Props {
     data: IMessage;
