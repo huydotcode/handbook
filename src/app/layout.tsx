@@ -20,7 +20,7 @@ interface Props {
 
 export default function RootLayout(props: Props) {
     return (
-        <html lang="en" translate="no">
+        <html lang="en" translate="no" suppressHydrationWarning>
             <head>
                 <link
                     rel="icon"

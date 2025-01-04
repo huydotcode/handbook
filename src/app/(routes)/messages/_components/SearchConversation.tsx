@@ -29,10 +29,9 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
                     onClick={() => setShowModal((prev) => !prev)}
                 />
 
-                <Input
-                    className="dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden sm:block"
+                <input
+                    className="border-none bg-transparent px-2 py-1 dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden sm:block"
                     value={searchValue}
-                    bordered={false}
                     placeholder="Tìm cuộc trò chuyện"
                     onChange={(e) => {
                         setSearchValue(e.target.value);
@@ -51,8 +50,8 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
                     title="Tìm kiếm cuộc trò chuyện"
                 >
                     <div className={'flex'}>
-                        <Input
-                            className="dark:placeholder:text-dark-primary-1"
+                        <input
+                            className="w-full border-none bg-primary-1 px-4 py-2 dark:bg-dark-primary-1 dark:placeholder:text-dark-primary-1"
                             value={searchValue}
                             placeholder="Tìm cuộc trò chuyện"
                             onChange={(e) => {

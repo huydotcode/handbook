@@ -17,11 +17,11 @@ export const getNewFeedPosts = async ({
 }: {
     page: string;
     pageSize: string;
-    groupId: string;
-    userId: string;
-    username: string;
-    type: string;
-    path: string;
+    groupId?: string;
+    userId?: string;
+    username?: string;
+    type?: string;
+    path?: string;
 }) => {
     try {
         await connectToDB();

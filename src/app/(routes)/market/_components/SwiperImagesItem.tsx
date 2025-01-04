@@ -11,7 +11,7 @@ interface Props {
 }
 
 const SwiperImagesItem: React.FC<Props> = ({ images }) => {
-    const swiperRef = useRef<SwiperType>();
+    const swiperRef = useRef<SwiperType>(null);
 
     const handleNext = useCallback(() => {
         if (swiperRef.current) {

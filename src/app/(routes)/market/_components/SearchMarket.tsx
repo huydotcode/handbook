@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { Icons } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { Input } from 'antd';
 import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
     showFull: boolean;
@@ -31,13 +30,15 @@ const SearchMarket: React.FC<Props> = ({ showFull, setShowFullSidebar }) => {
                         setShowFullSidebar((prev) => !prev);
                     }}
                 />
-                <Input
-                    className={cn('dark:placeholder:text-dark-primary-1', {
-                        'md:flex': showFull,
-                        'md:hidden': !showFull,
-                    })}
+                <input
+                    className={cn(
+                        'border-none bg-transparent px-2 py-1 dark:placeholder:text-dark-primary-1',
+                        {
+                            'md:flex': showFull,
+                            'md:hidden': !showFull,
+                        }
+                    )}
                     value={searchValue}
-                    bordered={false}
                     placeholder="Tìm kiếm trên market"
                     onChange={(e) => {
                         setSearchValue(e.target.value);

@@ -22,7 +22,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
     const [searchResult, setSearchResult] = useState([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const debounceValue = useDebounce(searchValue, 300);
-    const inputRef = useRef() as React.RefObject<HTMLInputElement>;
+    const inputRef = useRef(null) as React.RefObject<HTMLInputElement | null>;
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPagesize] = useState<number>(5);
 
@@ -207,92 +207,6 @@ const Searchbar: React.FC<Props> = ({ className }) => {
                     )}
                 </div>
             </Collapse>
-
-            {/*{showModal && (*/}
-            {/*    <div*/}
-            {/*        className={*/}
-            {/*            'fixed left-0 top-0 z-10 min-h-[200px] rounded-b-xl bg-secondary-1 p-1 pl-4 shadow-md dark:bg-dark-secondary-1'*/}
-            {/*        }*/}
-            {/*    >*/}
-            {/*        <div*/}
-            {/*            className={*/}
-            {/*                'flex h-12 w-full items-center bg-secondary-1 dark:bg-dark-secondary-1'*/}
-            {/*            }*/}
-            {/*        >*/}
-            {/*            <Button*/}
-            {/*                className="z-20 flex h-8 w-8 items-center justify-center rounded-full text-3xl"*/}
-            {/*                variant={'custom'}*/}
-            {/*                onClick={handleClose}*/}
-            {/*            >*/}
-            {/*                <Icons.Close />*/}
-            {/*            </Button>*/}
-
-            {/*            <div*/}
-            {/*                className={cn(*/}
-            {/*                    'ml-3 flex h-10 items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2',*/}
-            {/*                    className*/}
-            {/*                )}*/}
-            {/*                onClick={() => {*/}
-            {/*                    setShowModal(true);*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                <div className="flex items-center text-lg">*/}
-            {/*                    <Icons.Search />*/}
-            {/*                </div>*/}
-
-            {/*                <input*/}
-            {/*                    className="h-10 min-w-[170px] bg-transparent px-2 text-xs"*/}
-            {/*                    placeholder={'Tìm kiếm trên Handbook'}*/}
-            {/*                    ref={inputRef}*/}
-            {/*                    value={searchValue}*/}
-            {/*                    onChange={handleChangeInput}*/}
-            {/*                    name="q"*/}
-            {/*                    dir="ltr"*/}
-            {/*                    autoComplete="off"*/}
-            {/*                    spellCheck="false"*/}
-            {/*                />*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-
-            {/*        <h5 className={'mt-2 text-sm'}>Kết quả</h5>*/}
-
-            {/*        {searchResult.length > 0 &&*/}
-            {/*            debounceValue.trim().length > 0 && (*/}
-            {/*                <>*/}
-            {/*                    <div className="dark:no-scrollbar mt-2 w-full overflow-scroll">*/}
-            {/*                        {searchResult.map((user: IUser) => {*/}
-            {/*                            return (*/}
-            {/*                                <Items.User*/}
-            {/*                                    data={user}*/}
-            {/*                                    key={user._id}*/}
-            {/*                                    handleHideModal={() => {*/}
-            {/*                                        handleClose();*/}
-            {/*                                        router.push(*/}
-            {/*                                            `/profile/${user._id}`*/}
-            {/*                                        );*/}
-            {/*                                    }}*/}
-            {/*                                />*/}
-            {/*                            );*/}
-            {/*                        })}*/}
-            {/*                    </div>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-
-            {/*        {!isSearching &&*/}
-            {/*            searchResult.length === 0 &&*/}
-            {/*            debounceValue.trim().length > 0 && (*/}
-            {/*                <div className="mt-2 text-center text-sm">*/}
-            {/*                    Không có kết quả*/}
-            {/*                </div>*/}
-            {/*            )}*/}
-
-            {/*        {isSearching && searchResult.length === 0 && (*/}
-            {/*            <div className="mt-4 flex justify-center">*/}
-            {/*                <Icons.Loading className="animate-spin text-2xl" />*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    </div>*/}
-            {/*)}*/}
         </>
     );
 };

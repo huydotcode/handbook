@@ -18,7 +18,7 @@ const TextEditor: React.FC<Props> = React.forwardRef(function TextEditor(
 ) {
     const { onChange, value } = field;
 
-    const editorRef: React.RefObject<any> = useRef();
+    const editorRef: React.RefObject<any> = useRef(undefined);
 
     const handleChange = (e: any) => {
         onChange(e.target.value);

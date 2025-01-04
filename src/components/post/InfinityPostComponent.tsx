@@ -7,6 +7,8 @@ import React, { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
+import { getNewFeedPosts } from '@/lib/actions/post.action';
+import { usePathname } from 'next/navigation';
 
 interface Props {
     className?: string;
@@ -30,22 +32,26 @@ const InfinityPostComponent: React.FC<Props> = ({
     title,
 }) => {
     const { data: session } = useSession();
+    const path = usePathname();
     const query = useInfiniteQuery({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username),
         queryFn: async ({ pageParam = 1 }) => {
-            const res = await fetch(
-                `/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}`
-            );
+            const posts = await getNewFeedPosts({
+                page: pageParam.toString(),
+                pageSize: PAGE_SIZE.toString(),
+                path,
+                type,
+                groupId,
+                userId,
+                username,
+            });
 
-            const posts = await res.json();
             return posts;
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
         },
         initialPageParam: 1,
-        refetchOnWindowFocus: false,
-        refetchInterval: false,
     });
 
     const { ref: bottomRef, inView } = useInView({

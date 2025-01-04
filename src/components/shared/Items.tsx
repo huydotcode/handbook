@@ -101,12 +101,12 @@ const Items = {
             <Dropdown
                 trigger={['click', 'hover']}
                 menu={{ items }}
-                placement="bottomCenter"
+                placement="bottom"
                 autoFocus
             >
                 <Button
                     variant={'custom'}
-                    className="flex w-[250px] cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 xl:w-fit lg:w-auto lg:justify-center"
+                    className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
                     key={friend._id}
                 >
                     <div className="flex items-center lg:h-8 lg:w-8">

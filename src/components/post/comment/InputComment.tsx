@@ -9,7 +9,7 @@ type IFormData = {
 interface Props {
     placeholder?: string;
     register: UseFormRegister<IFormData>;
-    formRef: React.RefObject<HTMLFormElement>;
+    formRef: React.RefObject<HTMLFormElement | null>;
 }
 
 const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {

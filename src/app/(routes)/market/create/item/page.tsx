@@ -135,10 +135,7 @@ const CreateItemPage = () => {
                     >
                         <FormGroup>
                             <FormLabel>Danh mục</FormLabel>
-                            <FormSelect
-                                placeholder="Danh mục"
-                                {...register('category')}
-                            >
+                            <FormSelect {...register('category')}>
                                 <option value="">Chọn danh mục</option>
                                 {categories?.map((category: ICategory) => (
                                     <option
