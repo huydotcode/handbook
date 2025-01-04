@@ -1,5 +1,4 @@
 import { getProfileByUserId } from '@/lib/actions/profile.action';
-import { notFound, redirect } from 'next/navigation';
 import { Header } from '../_components';
 
 interface Props {
