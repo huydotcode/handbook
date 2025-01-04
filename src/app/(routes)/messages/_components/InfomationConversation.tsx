@@ -136,7 +136,7 @@ const InfomationConversation: React.FC<Props> = ({
             <SlideShow
                 show={openSlideShow}
                 setShow={setOpenSlideShow}
-                images={imagesInRoom.map((img) => img.url)}
+                images={imagesInRoom}
                 startIndex={startImageIndex}
             />
         </div>

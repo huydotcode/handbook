@@ -15,7 +15,7 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
         userId: params.userId,
     })) as IFriend[];
 
-    const photos = await getProfilePicturesAction({
+    const images = await getProfilePicturesAction({
         userId: params.userId,
     });
 
@@ -54,7 +54,7 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                 </article>
             </section>
 
-            <PhotosSection photos={photos} />
+            <PhotosSection photos={images} />
         </>
     );
 };

@@ -51,7 +51,7 @@ const Message: React.FC<Props> = ({
         ? messages
               .filter((msg) => msg.images.length > 0)
               .map((msg) => msg.images)
-              .map((img) => img.map((i) => i.url))
+              .flatMap((img) => img)
         : [];
 
     const handleShowMenu = () => setShowMenu(true);
@@ -63,7 +63,7 @@ const Message: React.FC<Props> = ({
     // Xử lý click vào ảnh
     const handleClickImage = (url: string, index: number) => {
         setStartIndex(() => {
-            return images.flat().indexOf(url);
+            return index;
         });
         setShowSlideShow(true);
     };

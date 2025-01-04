@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { removeImage } from '@/lib/actions/image.action';
 
 interface Props {
-    photos: string[];
+    photos: IImage[];
 }
 
 const PhotosSection: React.FC<Props> = ({ photos }) => {
@@ -29,39 +29,37 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                         }
                     )}
                 >
-                    {photos
-                        .slice(0, 5)
-                        .map((picture: string, index: number) => {
-                            return (
-                                <div
-                                    className={cn(
-                                        'relative w-full rounded-md shadow-md hover:cursor-pointer',
-                                        {
-                                            'min-h-[400px]': isPhotosPage,
-                                            'min-h-[200px]': !isPhotosPage,
-                                        }
-                                    )}
-                                    key={index}
-                                    onClick={() => {
-                                        setShowSlide(true);
-                                        setIndexPicture(index);
+                    {photos.slice(0, 5).map((picture, index: number) => {
+                        return (
+                            <div
+                                className={cn(
+                                    'relative w-full rounded-md shadow-md hover:cursor-pointer',
+                                    {
+                                        'min-h-[400px]': isPhotosPage,
+                                        'min-h-[200px]': !isPhotosPage,
+                                    }
+                                )}
+                                key={index}
+                                onClick={() => {
+                                    setShowSlide(true);
+                                    setIndexPicture(index);
+                                }}
+                            >
+                                <Image
+                                    onError={async (e) => {
+                                        await removeImage({
+                                            imageUrl: picture.url,
+                                        });
                                     }}
-                                >
-                                    <Image
-                                        onError={async (e) => {
-                                            await removeImage({
-                                                imageUrl: picture,
-                                            });
-                                        }}
-                                        className="rounded-md object-contain"
-                                        src={picture}
-                                        alt={picture}
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 768px"
-                                    />
-                                </div>
-                            );
-                        })}
+                                    className="rounded-md object-contain"
+                                    src={picture.url}
+                                    alt={picture.url}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 768px"
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {photos.length === 0 && (

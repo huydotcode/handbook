@@ -17,7 +17,13 @@ import {
     FaShare,
     FaUsers,
 } from 'react-icons/fa';
-import { FaCar, FaEye, FaLocationDot, FaShirt } from 'react-icons/fa6';
+import {
+    FaCar,
+    FaDownload,
+    FaEye,
+    FaLocationDot,
+    FaShirt,
+} from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
 import { HiHome } from 'react-icons/hi';
 import {
@@ -60,7 +66,6 @@ const Icons = {
             />
         );
     },
-
     Menu: (props: IconProps) => <AiOutlineMenu {...props} />,
     Home: (props: IconProps) => <HiHome {...props} />,
     Message: (props: IconProps) => <IoChatbubbleEllipses {...props} />,
@@ -191,9 +196,14 @@ const Icons = {
     Shirt: (props: IconProps) => <FaShirt {...props} />,
     Laptop: (props: IconProps) => <IoMdLaptop {...props} />,
     Time: (props: IconProps) => <IoTime {...props} />,
+    Download: (props: IconProps) => <FaDownload {...props} />,
 };
 
 export const IconsArray = [
+    {
+        name: 'Download',
+        icon: Icons.Download,
+    },
     {
         name: 'Logo',
         icon: Icons.Time,
@@ -386,6 +396,6 @@ export const IconsArray = [
         name: 'Shirt',
         icon: Icons.Shirt,
     },
-];
+].sort((a, b) => a.name.localeCompare(b.name));
 
 export default Icons;

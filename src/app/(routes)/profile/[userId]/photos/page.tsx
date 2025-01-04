@@ -10,9 +10,9 @@ interface Props {
 }
 
 const PhotosPage: React.FC<Props> = async ({ params }) => {
-    const photos = (await getProfilePicturesAction({
+    const photos = await getProfilePicturesAction({
         userId: params.userId,
-    })) as string[];
+    });
 
     const friends = (await getFriendsByUserId({
         userId: params.userId,

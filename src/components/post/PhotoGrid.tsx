@@ -1,7 +1,7 @@
 'use client';
-import { FC, useEffect, useState } from 'react';
-import SlideShow from '../ui/SlideShow';
 import Image from 'next/image';
+import { FC, useState } from 'react';
+import SlideShow from '../ui/SlideShow';
 
 interface Props {
     images: IImage[];
@@ -57,7 +57,7 @@ const PhotoGrid: FC<Props> = ({ images }) => {
             <SlideShow
                 show={showSlide}
                 setShow={setShowSlide}
-                images={images.map((image: any) => image.url)}
+                images={images}
             />
         </>
     );

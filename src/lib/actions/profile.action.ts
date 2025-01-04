@@ -54,9 +54,7 @@ export const getProfilePicturesAction = async ({
         await connectToDB();
 
         const images = await Image.find({ creator: userId });
-        const imagesUrls = images.map((img) => img.url) as string[];
-
-        return JSON.parse(JSON.stringify(imagesUrls));
+        return JSON.parse(JSON.stringify(images));
     } catch (error: any) {
         throw new Error(error);
     }

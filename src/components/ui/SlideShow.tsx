@@ -6,20 +6,32 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
+import { downloadImage } from '@/utils/downloadFile';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Keyboard, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import Button from './Button';
-import React, { useEffect } from 'react';
 import Icons from './Icons';
 
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
-    images: any[];
+    images: IImage[];
     startIndex?: number;
 }
 
 const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
-    if (!show) return <></>;
+    const [swiperInstance, setSwiperInstance] = useState<any>();
+
+    const download = () => {
+        const image = images[swiperInstance.activeIndex];
+        if (!image) {
+            toast.error('Không thể tải ảnh');
+            return;
+        }
+
+        downloadImage(image);
+    };
 
     // Nhấn esc để thoát
     useEffect(() => {
@@ -36,11 +48,21 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
         };
     }, []);
 
+    if (!show) return <></>;
+
     return (
         <Modal open={show} onClose={() => setShow(false)} disableAutoFocus>
             <>
                 <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-between overflow-hidden">
-                    <div className="absolute right-0 top-0 z-50 flex h-16 w-screen items-center justify-end bg-black bg-opacity-30 px-4">
+                    <div className="absolute right-0 top-0 z-50 flex h-16 w-screen items-center justify-end gap-2 bg-black bg-opacity-30 px-4">
+                        <Button
+                            className="rounded-full"
+                            variant={'secondary'}
+                            onClick={download}
+                        >
+                            <Icons.Download size={24} />
+                        </Button>
+
                         <Button
                             className="rounded-full"
                             variant={'secondary'}
@@ -60,6 +82,7 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
                         keyboard={true}
                         modules={[Navigation, Pagination, Mousewheel, Keyboard]}
                         className="h-screen w-screen"
+                        onSwiper={(swiper) => setSwiperInstance(swiper)}
                     >
                         <>
                             {images.map((image, index) => {
@@ -68,7 +91,7 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
                                         <div
                                             className="h-full w-full bg-contain bg-center bg-no-repeat"
                                             style={{
-                                                backgroundImage: `url(${image})`,
+                                                backgroundImage: `url(${image.url})`,
                                             }}
                                         ></div>
                                     </SwiperSlide>
