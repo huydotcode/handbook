@@ -1,6 +1,6 @@
 'use client';
 import { Avatar, Button, Icons, Loading } from '@/components/ui';
-import { sendComment } from '@/lib/actions/comment.action';
+import { getCommentsByPostId, sendComment } from '@/lib/actions/comment.action';
 import { getCommentsKey } from '@/lib/queryKey';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
@@ -26,11 +26,17 @@ export const useComments = (postId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!postId) return [];
 
-            const res = await fetch(
-                `/api/comments?postId=${postId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
+            const comments = await getCommentsByPostId({
+                page: pageParam,
+                pageSize: PAGE_SIZE,
+                postId,
+            });
 
-            const comments = await res.json();
+            // const res = await fetch(
+            //     `/api/comments?postId=${postId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            // );
+
+            // const comments = await res.json();
             return comments;
         },
         initialPageParam: 1,
