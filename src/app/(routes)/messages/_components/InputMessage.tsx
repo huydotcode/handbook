@@ -5,8 +5,8 @@ import { sendMessage } from '@/lib/actions/message.action';
 import { invalidateMessages } from '@/lib/query';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
+// import data from '@emoji-mart/data';
+// import Picker from '@emoji-mart/react';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -228,7 +228,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                             <Icons.Emoji className={'h-4 w-4'} />
                         </Button>
 
-                        {showEmoji && (
+                        {/* {showEmoji && (
                             <div className={'fixed bottom-20 right-10'}>
                                 <Picker
                                     data={data}
@@ -239,7 +239,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                                     previewPosition={'none'}
                                 />
                             </div>
-                        )}
+                        )} */}
 
                         <Button
                             className="h-full rounded-none border-l px-4 py-2 text-base"
