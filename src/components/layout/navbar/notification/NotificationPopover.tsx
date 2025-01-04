@@ -6,8 +6,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import NotificationList from './NotificationList';
+import React from 'react';
 
-function NotificationPopover() {
+interface Props {
+    notifications: INotification[];
+}
+
+const NotificationPopover: React.FC<Props> = ({ notifications }) => {
     const { data: session } = useSession();
     if (!session) return null;
     const queryClient = useQueryClient();
@@ -35,9 +40,9 @@ function NotificationPopover() {
                 </Button>
             </div>
 
-            <NotificationList />
+            <NotificationList data={notifications} />
         </div>
     );
-}
+};
 
 export default NotificationPopover;

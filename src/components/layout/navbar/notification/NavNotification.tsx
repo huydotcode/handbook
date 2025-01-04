@@ -22,7 +22,7 @@ const NavNotification: React.FC<Props> = ({}) => {
         <>
             <Popover
                 placement="bottomLeft"
-                content={NotificationPopover}
+                content={<NotificationPopover notifications={notifications} />}
                 trigger="click"
                 onOpenChange={(open) => setOpen(open)}
                 overlayInnerStyle={{ padding: 0 }}
