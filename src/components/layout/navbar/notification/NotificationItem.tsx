@@ -3,7 +3,6 @@ import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import { useSocket } from '@/context';
-import { useNotifications } from '@/context/AppContext';
 import { createConversationAfterAcceptFriend } from '@/lib/actions/conversation.action';
 import {
     acceptFriend,
@@ -34,11 +33,7 @@ const NotificationItem: React.FC<Props> = ({
     const { socket, socketEmitor } = useSocket();
     const queryClient = useQueryClient();
 
-    const { data: notifications } = useNotifications(session?.user?.id);
-
     const [showRemove, setShowRemove] = useState(false);
-
-    if (!notifications) return null;
 
     // Chấp nhận lời mời kết bạn // Xử lý phía người nhận
     const handleAcceptFriend = useCallback(async () => {
