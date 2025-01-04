@@ -4,9 +4,9 @@ import { markAllAsRead } from '@/lib/actions/notification.action';
 import { getNotificationsKey } from '@/lib/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
-import NotificationList from './NotificationList';
 import React from 'react';
+import toast from 'react-hot-toast';
+import NotificationItem from './NotificationItem';
 
 interface Props {
     notifications: INotification[];
@@ -40,7 +40,20 @@ const NotificationPopover: React.FC<Props> = ({ notifications }) => {
                 </Button>
             </div>
 
-            <NotificationList data={notifications} />
+            {notifications.map((notification) => {
+                return (
+                    <NotificationItem
+                        key={notification._id}
+                        data={notification}
+                    />
+                );
+            })}
+
+            {notifications.length == 0 && (
+                <div className="flex h-[200px] w-full items-center justify-center dark:text-dark-primary-1">
+                    <p>Không có thông báo nào</p>
+                </div>
+            )}
         </div>
     );
 };
