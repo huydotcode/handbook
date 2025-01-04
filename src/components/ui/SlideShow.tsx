@@ -9,6 +9,7 @@ import 'swiper/css/pagination';
 import { Keyboard, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import Button from './Button';
 import React, { useEffect } from 'react';
+import Icons from './Icons';
 
 interface Props {
     show: boolean;
@@ -39,14 +40,15 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
         <Modal open={show} onClose={() => setShow(false)} disableAutoFocus>
             <>
                 <div className="fixed left-0 top-0 flex h-screen w-screen items-center justify-between overflow-hidden">
-                    <Button
-                        className="absolute right-2 top-2 z-50 translate-x-[-50%] rounded-md bg-secondary-1 p-2 dark:bg-dark-secondary-1"
-                        variant={'custom'}
-                        size={'medium'}
-                        onClick={() => setShow(false)}
-                    >
-                        Thoát
-                    </Button>
+                    <div className="absolute right-0 top-0 z-50 flex h-16 w-screen items-center justify-end bg-black bg-opacity-30 px-4">
+                        <Button
+                            className="rounded-full"
+                            variant={'secondary'}
+                            onClick={() => setShow(false)}
+                        >
+                            <Icons.Close size={24} />
+                        </Button>
+                    </div>
 
                     <Swiper
                         zoom={true}

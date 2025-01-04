@@ -158,7 +158,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
                 if (foundMessage) {
                     // Tìm thấy
-                    toast.success('Tìm thấy tin nhắn');
 
                     document.getElementById(foundMessage._id)?.scrollIntoView({
                         behavior: 'smooth',
@@ -173,7 +172,9 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 }
 
                 if (!hasNextPage) {
-                    toast.error('Không tìm thấy tin nhắn');
+                    toast.error('Không tìm thấy tin nhắn', {
+                        position: 'top-center',
+                    });
                 }
             };
 

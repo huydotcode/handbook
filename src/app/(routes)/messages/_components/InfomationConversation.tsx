@@ -4,6 +4,7 @@ import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
+import SideHeader from './SideHeader';
 
 interface Props {
     conversation: IConversation;
@@ -96,16 +97,13 @@ const InfomationConversation: React.FC<Props> = ({
     ];
 
     return (
-        <div className="relative ml-2 flex h-full max-h-screen w-[240px] flex-col overflow-y-scroll rounded-xl bg-white p-4 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1">
-            <Button
-                className="absolute left-2 top-2 hidden md:block"
-                onClick={() => setOpenInfo(false)}
-                variant={'event'}
-            >
-                <Icons.ArrowBack size={24} />
-            </Button>
+        <div className="relative ml-2 flex h-full max-h-screen w-[240px] flex-col overflow-y-scroll rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1 sm:ml-0">
+            <SideHeader
+                title="Thông tin"
+                handleClickBack={() => setOpenInfo(false)}
+            />
 
-            <div className="flex flex-col items-center">
+            <div className="mt-2 flex flex-col items-center px-4">
                 <Avatar imgSrc={avatar} width={64} height={64} />
                 <h1 className="mt-2">{title}</h1>
                 {partner && (
@@ -115,14 +113,16 @@ const InfomationConversation: React.FC<Props> = ({
                         </p>
 
                         <div className="flex gap-2 pt-2">
-                            <Tooltip title="Trang cá nhân">
+                            <div className="flex flex-col items-center">
                                 <Button
                                     className="flex flex-col rounded-full"
                                     href={`/profile/${partner._id}`}
                                 >
                                     <Icons.Profile size={24} />
                                 </Button>
-                            </Tooltip>
+
+                                <h5 className="mt-2 text-xs">Trang cá nhân</h5>
+                            </div>
                         </div>
                     </div>
                 )}

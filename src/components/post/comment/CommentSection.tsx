@@ -32,11 +32,6 @@ export const useComments = (postId: string | undefined) =>
                 postId,
             });
 
-            // const res = await fetch(
-            //     `/api/comments?postId=${postId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            // );
-
-            // const comments = await res.json();
             return comments;
         },
         initialPageParam: 1,
@@ -125,19 +120,16 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                     </form>
                 </div>
             </div>
+
             {query.isLoading && <Loading text={'Đang tải bình luận'} />}
 
-            {query.data?.pages.length === 0 && (
-                <div className="text-center text-xs text-secondary-1">
-                    Chưa có bình luận nào
-                </div>
-            )}
+            {query.data?.pages.length === 0 ||
+                (query.data?.pages[0] && query.data?.pages[0].length === 0 && (
+                    <div className="text-center text-xs text-secondary-1">
+                        Chưa có bình luận nào
+                    </div>
+                ))}
 
-            {query.data?.pages[0] && query.data?.pages[0].length === 0 && (
-                <div className="text-center text-xs text-secondary-1">
-                    Chưa có bình luận nào
-                </div>
-            )}
             {query.data?.pages.map((page, i) => (
                 <div key={i}>
                     {page.map((comment: IComment) => (

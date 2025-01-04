@@ -17,7 +17,7 @@ const MessageLayout: React.FC<Props> = async ({ children }) => {
             <Sidebar />
             <div
                 className={
-                    'relative flex h-full w-full flex-1 rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none'
+                    'fixed left-[320px] top-2 flex h-[calc(100vh-72px)] w-[calc(100vw-330px)] rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none lg:left-[96px] lg:w-[calc(100vw-104px)] sm:left-0 sm:w-screen'
                 }
             >
                 {children}
