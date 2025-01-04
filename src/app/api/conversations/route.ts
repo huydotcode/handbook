@@ -3,9 +3,10 @@ import { Conversation } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-    const searchParams = req.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
 
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = req.nextUrl.searchParams;
     const userId = searchParams.get('userId');
 
     if (!userId) {

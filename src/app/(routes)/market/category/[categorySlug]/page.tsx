@@ -4,12 +4,11 @@ import React from 'react';
 import { getItemsByCategoryId } from '@/lib/actions/item.action';
 
 interface Props {
-    params: {
-        categorySlug: string;
-    };
+    params: Promise<{ categorySlug: string }>;
 }
 
-const CategoryPage: React.FC<Props> = async ({ params: { categorySlug } }) => {
+const CategoryPage: React.FC<Props> = async ({ params }) => {
+    const { categorySlug } = await params;
     const category = await getCategoryBySlug({
         slug: categorySlug,
     });

@@ -5,19 +5,18 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Button, Modal, TextEditor } from '@/components/ui';
 import postAudience from '@/constants/postAudience.constant';
-import { createPost, editPost } from '@/lib/actions/post.action';
-import { uploadImages, uploadImagesWithFiles } from '@/lib/uploadImage';
+import { editPost } from '@/lib/actions/post.action';
+import { getPostsKey } from '@/lib/queryKey';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { editPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { IShowModal } from '../ActionPost';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { HOME_POSTS } from '../InfinityPostComponent';
-import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
     post: IPost;
@@ -29,16 +28,10 @@ interface Props {
 const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-
-    if (!post) return null;
-
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)
     );
     const [removeImages, setRemoveImages] = useState<string[]>([]);
-
-    if (!post) return null;
-
     const { control, register, handleSubmit, formState, reset, setValue } =
         useForm<IPostFormData>({
             defaultValues: {

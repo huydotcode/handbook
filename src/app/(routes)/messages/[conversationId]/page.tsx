@@ -1,16 +1,12 @@
+import { getMessageByMessageId } from '@/lib/actions/message.action';
 import { getAuthSession } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import React from 'react';
 import { ChatBox } from '../_components';
-import { getMessageByMessageId } from '@/lib/actions/message.action';
 
 interface Props {
-    params: {
-        conversationId: string;
-    };
-    searchParams: {
-        findMessage?: string;
-    };
+    params: Promise<{ conversationId: string }>;
+    searchParams: Promise<{ findMessage: string }>;
 }
 
 const getConversationById = async ({
@@ -29,12 +25,12 @@ const getConversationById = async ({
     }
 };
 
-const ConversationPage: React.FC<Props> = async ({
-    params: { conversationId },
-    searchParams: { findMessage },
-}) => {
+const ConversationPage: React.FC<Props> = async ({ params, searchParams }) => {
     const session = await getAuthSession();
     if (!session) return null;
+
+    const { conversationId } = await params;
+    const { findMessage } = await searchParams;
 
     const conversation = (await getConversationById({
         conversationId,

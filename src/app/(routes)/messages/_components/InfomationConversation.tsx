@@ -36,7 +36,7 @@ const InfomationConversation: React.FC<Props> = ({
                 return conversation.participants[0];
             }
         }
-    }, [conversation]);
+    }, [conversation.group, conversation.participants, session?.user?.id]);
 
     const title = useMemo(() => {
         if (conversation.group) {
@@ -44,7 +44,7 @@ const InfomationConversation: React.FC<Props> = ({
         } else {
             return partner?.name;
         }
-    }, [conversation]);
+    }, [conversation.group, partner?.name]);
 
     const avatar = useMemo(() => {
         if (conversation.group) {
@@ -52,7 +52,7 @@ const InfomationConversation: React.FC<Props> = ({
         } else {
             return partner?.avatar;
         }
-    }, [conversation]);
+    }, [conversation.group, partner?.avatar]);
 
     const items = [
         {
@@ -76,7 +76,7 @@ const InfomationConversation: React.FC<Props> = ({
             children: (
                 <div className="grid grid-cols-2 gap-2 overflow-y-scroll">
                     {imagesInRoom.map((img, i) => (
-                        <div className={'relative h-16 w-full'}>
+                        <div className={'relative h-16 w-full'} key={i}>
                             <Image
                                 className="absolute cursor-pointer rounded-md object-cover"
                                 fill

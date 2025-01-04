@@ -14,14 +14,13 @@ interface Props {
 
 const NotificationPopover: React.FC<Props> = ({ notifications }) => {
     const { data: session } = useSession();
-    if (!session) return null;
     const queryClient = useQueryClient();
 
     const handleMarkAllAsRead = async () => {
         try {
             await markAllAsRead();
             queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session.user.id),
+                queryKey: getNotificationsKey(session?.user.id),
             });
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');

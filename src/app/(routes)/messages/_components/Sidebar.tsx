@@ -2,16 +2,15 @@
 import { useConversations } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import ConversationItem from './ConversationItem';
 import SearchConversation from './SearchConversation';
-import { usePathname } from 'next/navigation';
 
 interface Props {}
 
 const Sidebar: React.FC<Props> = ({}) => {
     const { data: session } = useSession();
-    if (!session) return null;
     const { data: initConversations } = useConversations(session?.user?.id);
     const [filter, setFilter] = useState<string>('');
 

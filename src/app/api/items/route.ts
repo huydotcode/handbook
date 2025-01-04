@@ -2,8 +2,10 @@ import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-    const searchParams = req.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
     const page = searchParams.get('page') || 1;
     const pageSize = searchParams.get('pageSize') || 20;
 

@@ -3,19 +3,15 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Button } from '../ui';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
-import { Button } from '../ui';
-import { useSession } from 'next-auth/react';
 
 interface IFormData {
     text: string;
 }
 
 const ChatWithGemini = () => {
-    const { data: session } = useSession();
-    if (!session) return null;
-
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [messages, setMessages] = useState<GemimiChatMessage[]>([]);
     const bottomRef = useRef<HTMLDivElement>(null);

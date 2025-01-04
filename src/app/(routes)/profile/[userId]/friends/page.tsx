@@ -5,18 +5,17 @@ import React from 'react';
 import { PhotosSection } from '../../_components';
 
 interface Props {
-    params: {
-        userId: string;
-    };
+    params: Promise<{ userId: string }>;
 }
 
 const FriendsPage: React.FC<Props> = async ({ params }) => {
+    const { userId } = await params;
     const friends = (await getFriendsByUserId({
-        userId: params.userId,
+        userId: userId,
     })) as IFriend[];
 
     const images = await getProfilePicturesAction({
-        userId: params.userId,
+        userId: userId,
     });
 
     return (

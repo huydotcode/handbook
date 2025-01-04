@@ -46,7 +46,7 @@ const SlideShow: React.FC<Props> = ({ show, setShow, images, startIndex }) => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [setShow]);
 
     if (!show) return <></>;
 

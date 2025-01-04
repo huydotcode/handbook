@@ -5,21 +5,20 @@ import { FC } from 'react';
 import { InfomationSection } from '../_components';
 
 interface ProfilePageProps {
-    params: {
-        userId: string;
-    };
+    params: Promise<{ userId: string }>;
 }
 
 const ProfilePage: FC<ProfilePageProps> = async ({ params }) => {
+    const { userId } = await params;
     const profile = await getProfileByUserId({
-        query: params.userId,
+        query: userId,
     });
 
-    const props = mongoose.isValidObjectId(params.userId)
+    const props = mongoose.isValidObjectId(userId)
         ? {
-              userId: params.userId,
+              userId: userId,
           }
-        : { username: params.userId };
+        : { username: userId };
 
     return (
         <div className="flex justify-between md:flex-col">

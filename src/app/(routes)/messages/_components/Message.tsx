@@ -10,6 +10,7 @@ import TimeAgoConverted from '@/utils/timeConvert';
 import { Tooltip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -124,7 +125,7 @@ const Message: React.FC<Props> = ({
             const timer = setTimeout(() => handleHideMenu(), 2000);
             return () => clearTimeout(timer);
         }
-    }, [showMenu]);
+    }, [isSearchMessage, showMenu]);
 
     useEffect(() => {
         if (isLastMessage) {
@@ -204,22 +205,27 @@ const Message: React.FC<Props> = ({
                             })}
                         >
                             {msg.images.map((img, index) => (
-                                <img
+                                <div
+                                    key={index}
                                     className={cn(
-                                        'my-1 max-h-[70vh] max-w-[50%] cursor-pointer object-cover shadow-md md:max-w-[70%]',
+                                        'relative my-1 max-h-[70vh] max-w-[50%] cursor-pointer object-cover shadow-md md:max-w-[70%]',
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
                                                 !isOwnMsg,
                                         }
                                     )}
-                                    onClick={() => {
-                                        handleClickImage(img.url, index);
-                                    }}
-                                    key={index}
-                                    src={img.url}
-                                    alt="image"
-                                />
+                                >
+                                    <Image
+                                        onClick={() => {
+                                            handleClickImage(img.url, index);
+                                        }}
+                                        src={img.url}
+                                        alt="image"
+                                        fill
+                                        quality={100}
+                                    />
+                                </div>
                             ))}
                         </div>
                     )}

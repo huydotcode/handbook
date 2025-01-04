@@ -2,15 +2,16 @@
 import { Button, Icons } from '@/components/ui';
 import { useSocket } from '@/context';
 import { sendMessage } from '@/lib/actions/message.action';
+import { invalidateMessages } from '@/lib/query';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { invalidateMessages } from '@/lib/query';
 
 interface Props {
     currentRoom: IConversation;
@@ -173,10 +174,13 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                         <div className="flex gap-3 px-4 py-2">
                             {files.map((file, index) => (
                                 <div key={index} className="relative">
-                                    <img
+                                    <Image
                                         src={URL.createObjectURL(file)}
                                         alt={file.name}
                                         className="h-16 w-16 rounded-lg object-cover"
+                                        width={64}
+                                        height={64}
+                                        quality={100}
                                     />
                                     <Button
                                         className="absolute right-0 top-0 rounded-full p-1"

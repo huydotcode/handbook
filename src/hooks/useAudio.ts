@@ -24,13 +24,13 @@ export default function useAudio({
             default:
                 return setAudio(new Audio(URL));
         }
-    }, []);
+    }, [type]);
 
     useEffect(() => {
         if (audio) {
             playing ? audio.play() : audio.pause();
         }
-    }, [playing]);
+    }, [audio, playing]);
 
     useEffect(() => {
         if (!audio) return;
@@ -39,7 +39,7 @@ export default function useAudio({
         return () => {
             audio.removeEventListener('ended', () => setPlaying(false));
         };
-    }, []);
+    }, [audio]);
 
     return { playing, toggle };
 }

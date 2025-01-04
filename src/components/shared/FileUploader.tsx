@@ -29,7 +29,7 @@ const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
                 handleChange(newFiles);
             }
         },
-        []
+        [handleChange]
     );
 
     // Xử lý khi thả file vào
@@ -44,7 +44,7 @@ const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
                 handleChange(droppedFiles);
             }
         },
-        []
+        [handleChange]
     );
 
     // Ngăn chặn hành động mặc định

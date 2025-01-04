@@ -2,21 +2,14 @@ import { getProfileByUserId } from '@/lib/actions/profile.action';
 import { Header } from '../_components';
 
 interface Props {
-    params: {
-        userId: string;
-    };
+    params: Promise<{ userId: string }>;
     children: React.ReactNode;
 }
 
-export async function generateMetadata({
-    params,
-}: {
-    params: {
-        userId: string;
-    };
-}) {
+export async function generateMetadata({ params }: Props) {
+    const { userId } = await params;
     const profile = (await getProfileByUserId({
-        query: params.userId,
+        query: userId,
     })) as IProfile;
 
     return {
@@ -33,7 +26,8 @@ const getProfile = async (userId: string) => {
 };
 
 const ProfileLayout = async ({ params, children }: Props) => {
-    const profile = await getProfile(params.userId);
+    const { userId } = await params;
+    const profile = await getProfile(userId);
     if (!profile) throw new Error("Profile doesn't exist");
 
     return (

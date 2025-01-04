@@ -28,8 +28,6 @@ const NotificationItem: React.FC<Props> = ({
     showMessage = true,
 }) => {
     const { data: session } = useSession();
-    if (!session) return null;
-
     const { socket, socketEmitor } = useSocket();
     const queryClient = useQueryClient();
 
@@ -47,7 +45,7 @@ const NotificationItem: React.FC<Props> = ({
                 toast.error('Không tìm thấy thông báo. Vui lòng thử lại!');
 
                 queryClient.invalidateQueries({
-                    queryKey: getNotificationsKey(session.user.id),
+                    queryKey: getNotificationsKey(session?.user.id),
                 });
 
                 return;
@@ -59,7 +57,7 @@ const NotificationItem: React.FC<Props> = ({
             });
 
             queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session.user.id),
+                queryKey: getNotificationsKey(session?.user.id),
             });
 
             if (!acceptSuccess) {
@@ -108,7 +106,7 @@ const NotificationItem: React.FC<Props> = ({
                 'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
             );
         }
-    }, [notification, socket]);
+    }, [notification, queryClient, session?.user.id, socket, socketEmitor]);
 
     // Từ chối lời mời kết bạn
     const handleDeclineFriend = async () => {
@@ -116,7 +114,7 @@ const NotificationItem: React.FC<Props> = ({
             await declineFriend({ notification });
 
             queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session.user.id),
+                queryKey: getNotificationsKey(session?.user.id),
             });
         } catch (error) {
             toast.error('Không thể từ chối lời mời kết bạn. Vui lòng thử lại!');
@@ -130,7 +128,7 @@ const NotificationItem: React.FC<Props> = ({
             });
 
             queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session.user.id),
+                queryKey: getNotificationsKey(session?.user.id),
             });
         } catch (error) {
             toast.error('Không thể xóa thông báo. Vui lòng thử lại!');

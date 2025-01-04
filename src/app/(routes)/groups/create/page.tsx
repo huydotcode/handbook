@@ -53,7 +53,7 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
             setFriends(friends);
         })();
-    }, []);
+    }, [session?.user.id]);
 
     const onSubmit = async (data: ICreateGroup) => {
         if (isSubmitting) return;

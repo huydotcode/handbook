@@ -60,8 +60,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         refetchOnWindowFocus: false,
     });
     const { data: session } = useSession();
-    if (!session) return null;
-
     const { socketEmitor } = useSocket();
     const { data: lastMessage } = useLastMessage(conversation._id);
     const { ref: topRef, inView } = useInView({
@@ -106,7 +104,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         if (inView) {
             fetchNextPage();
         }
-    }, [inView]);
+    }, [fetchNextPage, inView]);
 
     // Xử lý đọc tin nhắn
     useEffect(() => {
@@ -120,7 +118,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 userId: session?.user.id,
             });
         }
-    }, [lastMessage]);
+    }, [lastMessage, session?.user?.id, socketEmitor, conversation._id]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     useEffect(() => {
@@ -140,7 +138,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         return () => {
             observer.disconnect();
         };
-    }, [bottomRef.current]);
+    }, [showScrollDown]);
 
     useEffect(() => {
         setIsFind(false);

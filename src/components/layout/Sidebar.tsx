@@ -1,16 +1,16 @@
 'use client';
 import { navLink } from '@/constants/navLink';
+import { cn } from '@/lib/utils';
+import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import React from 'react';
-import { Tooltip } from '@mui/material';
 import { usePathname } from 'next/navigation';
 
 const Sidebar = () => {
     const { data: session } = useSession();
     const user = session?.user;
+    const path = usePathname();
 
     return (
         <aside className="no-scrollbar fixed left-0 top-[56px] h-full min-w-[280px] max-w-[360px] overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1 xl:min-w-[200px] lg:min-w-0 md:hidden">
@@ -39,7 +39,6 @@ const Sidebar = () => {
                 )}
             >
                 {navLink.map((link, index) => {
-                    const path = usePathname();
                     const isActived =
                         path === link.path ||
                         (path.includes(link.path) && link.path !== '/');

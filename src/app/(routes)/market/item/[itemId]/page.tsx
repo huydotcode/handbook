@@ -2,23 +2,21 @@ import Item from '@/app/(routes)/market/_components/Item';
 import SwiperImagesItem from '@/app/(routes)/market/_components/SwiperImagesItem';
 import { MessageAction } from '@/components/shared';
 import { Icons } from '@/components/ui';
+import { getItemById, getItemsBySeller } from '@/lib/actions/item.action';
 import { getAuthSession } from '@/lib/auth';
 import { formatMoney } from '@/utils/formatMoney';
 import Image from 'next/image';
-import { getItemById, getItemsBySeller } from '@/lib/actions/item.action';
 
 interface Props {
-    params: {
-        itemId: string;
-    };
+    params: Promise<{ itemId: string }>;
 }
 
 export default async function ItemPage({ params }: Props) {
     const session = await getAuthSession();
 
     if (!session) return null;
-
-    const item: IItem = await getItemById({ id: params.itemId });
+    const { itemId } = await params;
+    const item: IItem = await getItemById({ id: itemId });
     const itemsOther = await getItemsBySeller({
         seller: item.seller._id,
     });

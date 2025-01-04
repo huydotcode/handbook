@@ -8,14 +8,13 @@ import Header from '../_components/Header';
 import Sidebar from '../_components/admin/Sidebar';
 
 interface Props {
-    params: {
-        groupId: string;
-    };
+    params: Promise<{ groupId: string }>;
     children: React.ReactNode;
 }
 
-export async function generateMetadata({ params: { groupId } }: Props) {
+export async function generateMetadata({ params }: Props) {
     try {
+        const { groupId } = await params;
         const group = await getGroupByGroupId({ groupId });
 
         return {
@@ -33,10 +32,8 @@ export async function generateMetadata({ params: { groupId } }: Props) {
     };
 }
 
-const GroupLayout: React.FC<Props> = async ({
-    params: { groupId },
-    children,
-}) => {
+const GroupLayout: React.FC<Props> = async ({ params, children }) => {
+    const { groupId } = await params;
     const group = (await getGroupByGroupId({ groupId })) as IGroup;
     const conversations = (await getConversationsByGroupId({
         groupId: groupId,

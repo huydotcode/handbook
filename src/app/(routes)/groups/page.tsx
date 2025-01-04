@@ -5,9 +5,7 @@ import { getAuthSession } from '@/lib/auth';
 import React from 'react';
 import { Sidebar } from './_components';
 
-interface Props {}
-
-const GroupsPage: React.FC<Props> = async ({}) => {
+const GroupsPage = async () => {
     const session = await getAuthSession();
     if (!session) return null;
 

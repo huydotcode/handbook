@@ -143,6 +143,16 @@ const FormButton = React.forwardRef<
     );
 });
 
+Form.displayName = 'Form';
+FormTitle.displayName = 'FormTitle';
+FormGroup.displayName = 'FormGroup';
+FormInput.displayName = 'FormInput';
+FormLabel.displayName = 'FormLabel';
+FormError.displayName = 'FormError';
+FormButton.displayName = 'FormButton';
+FormSelect.displayName = 'FormSelect';
+FormTextArea.displayName = 'FormTextArea';
+
 export {
     Form,
     FormInput,

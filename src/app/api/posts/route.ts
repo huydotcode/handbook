@@ -1,19 +1,24 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = 'name avatar';
 
-export const GET = async (request: Request, response: Response) => {
-    const url = new URL(request.url);
+type Params = Promise<{ req: NextRequest }>;
 
-    const page = url.searchParams.get('page') || 1;
-    const pageSize = url.searchParams.get('pageSize') || 3;
-    const groupId = url.searchParams.get('groupId');
-    const userId = url.searchParams.get('userId');
-    const username = url.searchParams.get('username');
-    const type = url.searchParams.get('type');
+export const GET = async (
+    request: NextRequest,
+    segmentData: { params: Params }
+) => {
+    const searchParams = await request.nextUrl.searchParams;
+
+    const page = searchParams.get('page') || 1;
+    const pageSize = searchParams.get('pageSize') || 3;
+    const groupId = searchParams.get('groupId');
+    const userId = searchParams.get('userId');
+    const username = searchParams.get('username');
+    const type = searchParams.get('type');
 
     const query = {} as any;
 

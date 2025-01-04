@@ -3,17 +3,15 @@ import {
     getGroupByGroupId,
     getMembersByGroupId,
 } from '@/lib/actions/group.action';
-import React from 'react';
-
-interface Props {
-    params: {
-        groupId: string;
-    };
-}
 
 const MAX_MEMBERS = 6;
 
-const page: React.FC<Props> = async ({ params: { groupId } }) => {
+const GroupPage = async ({
+    params,
+}: {
+    params: Promise<{ groupId: string }>;
+}) => {
+    const { groupId } = await params;
     const group = (await getGroupByGroupId({ groupId })) as IGroup;
     const members = (await getMembersByGroupId({
         groupId,
@@ -84,4 +82,4 @@ const page: React.FC<Props> = async ({ params: { groupId } }) => {
         </div>
     );
 };
-export default page;
+export default GroupPage;

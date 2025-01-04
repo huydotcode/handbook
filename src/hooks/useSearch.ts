@@ -14,20 +14,23 @@ const useSearch = ({ fn, initialQuery = '', delay = 300 }: ISearch) => {
     const [isSearching, setIsSearching] = useState(false);
     const debounceValue = useDebounce(searchValue, delay);
 
-    const fetchSearchData = useCallback(async (value: string) => {
-        setIsSearching(true);
-        try {
-            const data = await fn(value);
-            setSearchResult(data);
-        } catch (error) {
-            logger({
-                message: 'Error fetching search data: ' + error,
-                type: 'error',
-            });
-        } finally {
-            setIsSearching(false);
-        }
-    }, []);
+    const fetchSearchData = useCallback(
+        async (value: string) => {
+            setIsSearching(true);
+            try {
+                const data = await fn(value);
+                setSearchResult(data);
+            } catch (error) {
+                logger({
+                    message: 'Error fetching search data: ' + error,
+                    type: 'error',
+                });
+            } finally {
+                setIsSearching(false);
+            }
+        },
+        [fn]
+    );
 
     useEffect(() => {
         if (debounceValue.trim()) {

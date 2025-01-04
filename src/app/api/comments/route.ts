@@ -1,8 +1,10 @@
 import { Comment } from '@/models';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (request: NextRequest, response: Response) => {
-    const searchParams = request.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
     const postId = searchParams.get('postId');
     const page = searchParams.get('page') || '1';
     const pageSize = searchParams.get('pageSize') || '5';
@@ -32,4 +34,4 @@ export const GET = async (request: NextRequest, response: Response) => {
             }
         );
     }
-};
+}

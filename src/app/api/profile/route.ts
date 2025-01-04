@@ -1,8 +1,10 @@
 import { Profile } from '@/models';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
-    const searchParams = request.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
     const userid = searchParams.get('userid');
 
     try {

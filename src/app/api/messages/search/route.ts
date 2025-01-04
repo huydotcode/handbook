@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDB from '@/services/mongoose';
 import { Message } from '@/models';
 
-export async function GET(req: NextRequest) {
-    const searchParams = req.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
     const search = searchParams.get('search');
     const conversationId = searchParams.get('conversationId');
 

@@ -130,7 +130,7 @@ function AppProvider({ children }: { children: React.ReactNode }) {
                 });
             }
         );
-    }, [socket, session?.user?.id]);
+    }, [socket, session?.user.id, queryClient]);
 
     return <>{children}</>;
 }

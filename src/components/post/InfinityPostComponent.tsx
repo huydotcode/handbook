@@ -68,7 +68,7 @@ const InfinityPostComponent: React.FC<Props> = ({
         if (!query.isFetching && inView) {
             query.fetchNextPage();
         }
-    }, [query.isFetching, inView]);
+    }, [query.isFetching, inView, query]);
 
     return (
         <>

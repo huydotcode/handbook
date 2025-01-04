@@ -1,18 +1,17 @@
 'use client';
+import { Icons } from '@/components/ui';
+import { useNotifications } from '@/context/AppContext';
+import { Badge } from '@mui/material';
 import { Popover } from 'antd';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import Button from '../../../ui/Button';
 import NotificationPopover from './NotificationPopover';
-import { Badge } from '@mui/material';
-import { Icons } from '@/components/ui';
-import { useNotifications } from '@/context/AppContext';
 
 interface Props {}
 
 const NavNotification: React.FC<Props> = ({}) => {
     const { data: session } = useSession();
-    if (!session) return null;
     const { data: notifications } = useNotifications(session?.user?.id);
     const [open, setOpen] = useState(false);
 

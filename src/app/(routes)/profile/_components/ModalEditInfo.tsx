@@ -139,7 +139,10 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                         >
                             {data &&
                                 data.map((item: any) => (
-                                    <option value={item.nameWithType}>
+                                    <option
+                                        key={item}
+                                        value={item.nameWithType}
+                                    >
                                         {item.nameWithType}
                                     </option>
                                 ))}

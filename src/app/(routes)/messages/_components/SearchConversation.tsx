@@ -15,7 +15,7 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
     // Xử lý với debounce value để lấy ra các cuộc trò chuyện
     useEffect(() => {
         setFilter(debounceValue);
-    }, [debounceValue]);
+    }, [debounceValue, setFilter]);
 
     return (
         <>

@@ -31,7 +31,7 @@ const ChatHeader: React.FC<Props> = ({
                 return currentRoom.participants[0];
             }
         }
-    }, [currentRoom]);
+    }, [currentRoom, session?.user.id]);
 
     const { breakpoint } = useBreakpoint();
 
@@ -41,7 +41,7 @@ const ChatHeader: React.FC<Props> = ({
         } else {
             return partner?.name;
         }
-    }, [currentRoom]);
+    }, [currentRoom.group, partner?.name]);
 
     const avatar = useMemo(() => {
         if (currentRoom.group) {
@@ -49,7 +49,7 @@ const ChatHeader: React.FC<Props> = ({
         } else {
             return partner?.avatar;
         }
-    }, [currentRoom]);
+    }, [currentRoom.group, partner?.avatar]);
 
     return (
         <>

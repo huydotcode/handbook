@@ -1,26 +1,15 @@
-'use client';
 import { Post } from '@/components/post';
 import { getPostByPostId } from '@/lib/actions/post.action';
-import { getPostKey } from '@/lib/queryKey';
-import { useQuery } from '@tanstack/react-query';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import React from 'react';
 
 interface Props {
-    params: {
-        postId: string;
-    };
+    params: Promise<{ postId: string }>;
 }
 
-const PostPage: React.FC<Props> = ({ params: { postId } }) => {
-    const { data: post } = useQuery<IPost>({
-        queryKey: getPostKey(postId),
-        queryFn: async () => {
-            const post = await getPostByPostId({ postId });
-            return post;
-        },
-    });
-
+const PostPage: React.FC<Props> = async ({ params }) => {
+    const { postId } = await params;
+    const post = await getPostByPostId({ postId });
     if (!post) notFound();
 
     return (

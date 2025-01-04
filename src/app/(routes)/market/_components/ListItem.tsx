@@ -43,7 +43,7 @@ const ListItem: React.FC<Props> = () => {
         if (inView) {
             fetchNextPage();
         }
-    }, [inView]);
+    }, [inView, fetchNextPage]);
 
     return (
         <div

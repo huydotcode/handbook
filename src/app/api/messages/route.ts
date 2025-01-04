@@ -1,10 +1,13 @@
 import { Message } from '@/models';
+import { NextRequest } from 'next/server';
 
-export const GET = async (request: Request, response: Response) => {
-    const url = new URL(request.url);
-    const conversationId = url.searchParams.get('conversationId');
-    const page = url.searchParams.get('page') || 1;
-    const pageSize = url.searchParams.get('pageSize') || 10;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
+    const conversationId = searchParams.get('conversationId');
+    const page = searchParams.get('page') || 1;
+    const pageSize = searchParams.get('pageSize') || 10;
 
     try {
         const messages = await Message.find({
@@ -21,4 +24,4 @@ export const GET = async (request: Request, response: Response) => {
     } catch (error) {
         return new Response(`Internal server error ${error}`, { status: 500 });
     }
-};
+}

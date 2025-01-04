@@ -2,13 +2,16 @@ import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 import bcrypt from 'bcrypt';
+import { NextRequest } from 'next/server';
 
 const saltRounds = 10;
 
-export const POST = async (req: Request, res: Response) => {
-    const request = await req.json();
+type Params = Promise<{ req: Request }>;
 
-    const { email, name, password, repassword, username } = request;
+export async function POST(req: Request, segmentData: { params: Params }) {
+    const request = await req.json();
+    const { email, username, name, password, repassword, image } =
+        request as any;
 
     try {
         await connectToDB();
@@ -45,7 +48,7 @@ export const POST = async (req: Request, res: Response) => {
             email: email,
             username: username,
             password: hashPassword,
-            avatar: request.image || '/assets/img/user-profile.jpg',
+            avatar: image || '/assets/img/user-profile.jpg',
         });
 
         const newProfile = await new Profile({
@@ -79,4 +82,4 @@ export const POST = async (req: Request, res: Response) => {
             }
         );
     }
-};
+}

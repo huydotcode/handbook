@@ -4,12 +4,11 @@ import React from 'react';
 import Infomation from '../_components/Infomation';
 
 interface Props {
-    params: {
-        groupId: string;
-    };
+    params: Promise<{ groupId: string }>;
 }
 
-const page: React.FC<Props> = async ({ params: { groupId } }) => {
+const page: React.FC<Props> = async ({ params }) => {
+    const { groupId } = await params;
     const group = await getGroupByGroupId({ groupId });
 
     if (!group) return null;

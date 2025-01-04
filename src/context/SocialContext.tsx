@@ -123,7 +123,7 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
                 userId: session?.user.id,
             });
         });
-    }, [conversations, session?.user?.id]);
+    }, [conversations, session?.user.id, socketEmitor]);
 
     return <>{children}</>;
 }

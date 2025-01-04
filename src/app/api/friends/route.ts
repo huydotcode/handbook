@@ -3,8 +3,10 @@ import { User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (req: NextRequest) => {
-    const searchParams = req.nextUrl.searchParams;
+type Params = Promise<{ req: NextRequest }>;
+
+export async function GET(req: NextRequest, segmentData: { params: Params }) {
+    const searchParams = await req.nextUrl.searchParams;
     const userId = searchParams.get('userId');
     const page = searchParams.get('page') || '1';
     const pageSize = searchParams.get('pageSize') || '10';
@@ -26,4 +28,4 @@ export const GET = async (req: NextRequest) => {
             }
         );
     }
-};
+}

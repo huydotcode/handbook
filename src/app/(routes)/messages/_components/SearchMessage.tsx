@@ -1,13 +1,11 @@
 'use client';
+import Message from '@/app/(routes)/messages/_components/Message';
 import { Button, Icons } from '@/components/ui';
+import { FormInput } from '@/components/ui/Form';
+import useBreakpoint from '@/hooks/useBreakpoint';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Message from '@/app/(routes)/messages/_components/Message';
-import { FormError, FormInput } from '@/components/ui/Form';
-import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { getMessagesKey } from '@/lib/queryKey';
-import useBreakpoint from '@/hooks/useBreakpoint';
 import SideHeader from './SideHeader';
 
 interface Props {
@@ -109,6 +107,7 @@ const SearchMessage: React.FC<Props> = ({
 
                         {searchMessages.map((message) => (
                             <Message
+                                key={message._id}
                                 data={message}
                                 messages={searchMessages}
                                 handleClick={() => {

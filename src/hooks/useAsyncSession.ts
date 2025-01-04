@@ -37,7 +37,7 @@ export default function useAsyncSession({ fn, setState, agrs }: Args): State {
                 setLoading(false);
             }
         })();
-    }, [session?.user.id]);
+    }, [agrs, fn, session?.user.id, setState]);
 
     return { data, loading };
 }

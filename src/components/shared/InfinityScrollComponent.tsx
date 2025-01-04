@@ -41,14 +41,14 @@ const InfinityScrollComponent: React.FC<Props> = ({
         if (inView && hasMore) {
             fetchMore();
         }
-    }, [inView]);
+    }, [fetchMore, hasMore, inView]);
 
     useEffect(() => {
         if (firstRender) {
             setFirstRender(false);
             return;
         }
-    }, []);
+    }, [firstRender]);
 
     return (
         <>
