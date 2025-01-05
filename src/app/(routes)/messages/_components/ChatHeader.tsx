@@ -1,8 +1,7 @@
 'use client';
 import { Avatar, Button, Icons } from '@/components/ui';
-import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { splitName } from '@/utils/splitName';
 import { useRouter } from 'next/navigation';

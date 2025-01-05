@@ -5,9 +5,8 @@ import { useLastMessage } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { splitName } from '@/utils/splitName';
-import TimeConvert, { TimeAgoConverted } from '@/utils/timeConvert';
 
 interface Props {
     data: IConversation;

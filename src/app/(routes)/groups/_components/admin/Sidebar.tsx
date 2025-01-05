@@ -1,10 +1,8 @@
 'use client';
 import { Avatar, Button, Icons, Modal } from '@/components/ui';
-import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
 import { createConversation } from '@/lib/actions/conversation.action';
 import logger from '@/utils/logger';
-import TimeAgoConverted from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
