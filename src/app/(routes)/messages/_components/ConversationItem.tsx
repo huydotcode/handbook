@@ -125,9 +125,9 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                                 session?.user.id,
                                         })}
                                     >
-                                        <TimeAgoConverted
-                                            time={lastMessage.createdAt}
-                                        />
+                                        {/*<TimeAgoConverted*/}
+                                        {/*    time={lastMessage.createdAt}*/}
+                                        {/*/>*/}
                                     </span>
                                 )}
                             </div>

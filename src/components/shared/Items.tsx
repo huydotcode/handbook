@@ -198,10 +198,10 @@ const Items = {
 
                     <p className="text-xs text-secondary-1 lg:hidden">
                         Lần hoạt động gần nhất:
-                        <TimeAgoConverted
-                            className=""
-                            time={group.lastActivity}
-                        />
+                        {/*<TimeAgoConverted*/}
+                        {/*    className=""*/}
+                        {/*    time={group.lastActivity}*/}
+                        {/*/>*/}
                     </p>
                 </div>
             </Button>

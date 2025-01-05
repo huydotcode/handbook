@@ -158,10 +158,10 @@ const Message: React.FC<Props> = ({
                             'right-0': !isOwnMsg,
                         })}
                     >
-                        <TimeAgoConverted
-                            time={msg.createdAt}
-                            textAfter={'trước'}
-                        />
+                        {/*<TimeAgoConverted*/}
+                        {/*    time={msg.createdAt}*/}
+                        {/*    textAfter={'trước'}*/}
+                        {/*/>*/}
                     </div>
                 )}
 

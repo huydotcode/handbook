@@ -95,16 +95,17 @@ const ChatHeader: React.FC<Props> = ({
                                     {partner.isOnline ? (
                                         'Đang hoạt động'
                                     ) : (
-                                        <TimeAgoConverted
-                                            time={partner.lastAccessed}
-                                            className="text-xs"
-                                            textBefore={
-                                                breakpoint == 'sm'
-                                                    ? 'Online'
-                                                    : 'Hoạt động'
-                                            }
-                                            textAfter=" trước"
-                                        />
+                                        <></>
+                                        // <TimeAgoConverted
+                                        //     time={partner.lastAccessed}
+                                        //     className="text-xs"
+                                        //     textBefore={
+                                        //         breakpoint == 'sm'
+                                        //             ? 'Online'
+                                        //             : 'Hoạt động'
+                                        //     }
+                                        //     textAfter=" trước"
+                                        // />
                                     )}
                                 </span>
                             </>

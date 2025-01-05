@@ -87,10 +87,10 @@ const Post: React.FC<Props> = ({ data: post }) => {
                                 </Link>
                             )}
 
-                            <TimeAgoConverted
-                                className="w-full text-xs text-secondary-1"
-                                time={post.createdAt}
-                            />
+                            {/*<TimeAgoConverted*/}
+                            {/*    className="w-full text-xs text-secondary-1"*/}
+                            {/*    time={post.createdAt}*/}
+                            {/*/>*/}
                         </div>
                     </div>
 

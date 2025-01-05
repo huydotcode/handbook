@@ -90,9 +90,9 @@ const Sidebar: React.FC<Props> = ({
 
                             <p className="text-xs text-secondary-1 lg:hidden">
                                 Lần hoạt động gần nhất:
-                                <TimeAgoConverted
-                                    time={currentGroup.lastActivity}
-                                />
+                                {/*<TimeAgoConverted*/}
+                                {/*    time={currentGroup.lastActivity}*/}
+                                {/*/>*/}
                             </p>
                         </div>
                     </div>
