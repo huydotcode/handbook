@@ -3,7 +3,7 @@ import { SlideShow } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { removeImage } from '@/lib/actions/image.action';
 
 interface Props {
@@ -39,7 +39,7 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
                                         'min-h-[200px]': !isPhotosPage,
                                     }
                                 )}
-                                key={index}
+                                key={picture._id}
                                 onClick={() => {
                                     setShowSlide(true);
                                     setIndexPicture(index);

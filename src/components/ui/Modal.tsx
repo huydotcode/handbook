@@ -1,8 +1,9 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Fade, Modal as ModalMui } from '@mui/material';
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     className?: string;

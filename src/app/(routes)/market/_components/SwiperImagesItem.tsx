@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Keyboard, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import { Swiper as SwiperType } from 'swiper';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     images: IImage[];

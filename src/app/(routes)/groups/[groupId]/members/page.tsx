@@ -1,8 +1,9 @@
-import { Avatar, Button } from '@/components/ui';
+import { Avatar } from '@/components/ui';
 import {
     getGroupByGroupId,
     getMembersByGroupId,
 } from '@/lib/actions/group.action';
+import { Button } from '@/components/ui/Button';
 
 const MAX_MEMBERS = 6;
 

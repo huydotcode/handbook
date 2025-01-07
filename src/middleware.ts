@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req });
 
     if (!token) {
-        return NextResponse.redirect(new URL('/auth', req.nextUrl));
+        return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
     }
 
     return NextResponse.next();

@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface CollapseProps {
     className?: string;

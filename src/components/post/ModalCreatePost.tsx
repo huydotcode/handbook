@@ -15,11 +15,12 @@ import { toast } from 'react-hot-toast';
 
 import postAudience from '@/constants/postAudience.constant';
 import { useSession } from 'next-auth/react';
-import Button from '../ui/Button';
 import Icons from '../ui/Icons';
 import TextEditor from '../ui/TextEditor';
 import AddToPost from './AddToPost';
 import Photos from './Photos';
+import { Button } from '@/components/ui/Button';
+
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -99,6 +100,8 @@ const ModalCreatePost: React.FC<Props> = ({
                             <Button
                                 className="bg-secondary-1 text-2xl"
                                 onClick={() => setShow(false)}
+                                variant={'secondary'}
+                                size={'sm'}
                             >
                                 <Icons.Close className="text-primary-1 dark:text-dark-primary-1" />
                             </Button>

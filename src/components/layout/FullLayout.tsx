@@ -10,7 +10,7 @@ interface Props {
 
 const FullLayout: React.FC<Props> = ({ className, children }) => {
     return (
-        <div className={cn('relative', className)}>
+        <div className={cn('w-screen', className)}>
             <Navbar />
 
             <main className={'bg-primary-1 dark:bg-dark-primary-1'}>

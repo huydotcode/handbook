@@ -2,7 +2,6 @@ import { navGroup } from '@/constants/navLink';
 import Image from 'next/image';
 import React from 'react';
 import { TabItem } from '@/components/shared';
-import { Button } from '@/components/ui';
 import Action from './Action';
 
 interface Props {

@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import SearchMarket from './SearchMarket';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { IconsArray } from '@/components/ui/Icons';
 import { useCategories } from '@/context/AppContext';
 

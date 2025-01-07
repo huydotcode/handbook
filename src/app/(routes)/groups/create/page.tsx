@@ -1,5 +1,5 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 
 import { createGroup } from '@/lib/actions/group.action';
 import { getFriendsByUserId } from '@/lib/actions/user.action';
@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {}
 

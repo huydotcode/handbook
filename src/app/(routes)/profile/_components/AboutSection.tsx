@@ -1,5 +1,5 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import DOMPurify from 'dompurify';
 import { useSession } from 'next-auth/react';
@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import ModalEditBio from './ModalEditBio';
 import ModalEditInfo from './ModalEditInfo';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     profile: IProfile;
@@ -49,21 +50,13 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
         >
             <article className={cn('p-2', isAboutPage && 'w-[30%] border-r')}>
                 <h5 className="text-xl font-bold">Giới thiệu</h5>
-
-                {DOMPurify.sanitize && (
-                    <p
-                        className="text-sm"
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(bio),
-                        }}
-                    />
-                )}
+                <p className="text-sm">{bio}</p>
 
                 {canEdit && (
                     <Button
                         className="mt-2 w-full"
                         variant="secondary"
-                        size="small"
+                        size="sm"
                         onClick={() => toggleModal('bio')}
                     >
                         {bio.length > 0 ? 'Sửa tiểu sử' : 'Thêm tiểu sử'}

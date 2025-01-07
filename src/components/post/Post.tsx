@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { ActionPost, FooterPost, PostContent } from '.';
 import { Avatar } from '../ui';
+import { timeConvert } from '@/utils/timeConvert';
 
 interface Props {
     data: IPost;
@@ -86,10 +87,9 @@ const Post: React.FC<Props> = ({ data: post }) => {
                                 </Link>
                             )}
 
-                            {/*<TimeAgoConverted*/}
-                            {/*    className="w-full text-xs text-secondary-1"*/}
-                            {/*    time={post.createdAt}*/}
-                            {/*/>*/}
+                            <p className="mt-1 w-full text-xs text-secondary-1">
+                                {timeConvert(post.createdAt.toString())}
+                            </p>
                         </div>
                     </div>
 

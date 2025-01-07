@@ -1,4 +1,5 @@
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     handleClickBack: () => void;

@@ -1,5 +1,6 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useLastMessage } from '@/context/SocialContext';
 
 import { cn } from '@/lib/utils';
@@ -36,11 +37,12 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     return (
         <Button
             className={cn(
-                'relative mx-4 flex justify-between rounded-xl px-4 py-2 shadow-none lg:justify-center',
+                'relative mx-4 flex justify-between px-4 shadow-none lg:justify-center',
                 isSelect && 'bg-primary-1'
             )}
             href={`/messages/${conversation._id}`}
             key={conversation._id}
+            size={'2xl'}
         >
             <div className="relative h-8 w-8">
                 <div className="h-8 w-8">
@@ -69,7 +71,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
 
             <div className="flex flex-1 flex-col lg:hidden sm:flex">
                 <div className="flex items-center justify-between">
-                    <h3 className="ml-2 whitespace-nowrap text-sm font-bold">
+                    <h3 className="ml-2 whitespace-nowrap text-sm font-bold text-primary-1 dark:text-dark-primary-1">
                         {title}
                     </h3>
                 </div>

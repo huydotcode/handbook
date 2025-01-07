@@ -1,12 +1,13 @@
-import { Button, Modal } from '@/components/ui';
+import { Modal } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { updateBio } from '@/lib/actions/profile.action';
 import logger from '@/utils/logger';
-import { TextareaAutosize } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
     show: boolean;
@@ -61,10 +62,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
             handleClose={handleClose}
         >
             <form onSubmit={handleSubmitBio(changeBio)}>
-                <TextareaAutosize
-                    className=" mt-2 w-full resize-none rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
-                    spellCheck={false}
-                    autoComplete="off"
+                <Textarea
                     placeholder="Nhập tiểu sử"
                     {...registerBio('bio', {
                         maxLength: 300,
@@ -77,7 +75,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
 
                 <Button
                     className={`mt-2 w-full ${!isSubmitting && ''}`}
-                    size={'small'}
+                    size={'sm'}
                     type="submit"
                     variant={'primary'}
                 >

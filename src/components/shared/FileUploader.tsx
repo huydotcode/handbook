@@ -1,14 +1,14 @@
 import React, {
     ChangeEvent,
     DragEventHandler,
-    FormEvent,
     FormEventHandler,
     useCallback,
     useState,
 } from 'react';
 import Image from 'next/image';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     className?: string;

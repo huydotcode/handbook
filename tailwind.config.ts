@@ -8,10 +8,10 @@ module.exports = {
     theme: {
         extend: {
             width: {
-                120: '30rem',
-                135: '33.75rem',
-                140: '35rem',
-                150: '36rem',
+                '120': '30rem',
+                '135': '33.75rem',
+                '140': '35rem',
+                '150': '36rem',
                 container: 'var(--container-width)',
             },
             textColor: {
@@ -26,17 +26,54 @@ module.exports = {
                 'primary-500': '#877EFF',
                 'secondary-1': 'var(--secondary-1)',
                 'secondary-2': 'var(--secondary-2)',
-
                 'background-1': 'var(--background-1)',
                 blue: 'var(--primary-2-blue)',
-
                 skeleton: 'var(--skeleton)',
-
                 dark: {
                     'primary-1': 'var(--dark-primary-1)',
                     'secondary-1': 'var(--dark-secondary-1)',
                     'secondary-2': 'var(--dark-secondary-2)',
                     'background-1': 'var(--dark-background-1)',
+                },
+                background: 'hsl(var(--background))',
+                foreground: 'hsl(var(--foreground))',
+                card: {
+                    DEFAULT: 'hsl(var(--card))',
+                    foreground: 'hsl(var(--card-foreground))',
+                },
+                popover: {
+                    DEFAULT: 'hsl(var(--popover))',
+                    foreground: 'hsl(var(--popover-foreground))',
+                },
+                primary: {
+                    DEFAULT: 'hsl(var(--primary))',
+                    foreground: 'hsl(var(--primary-foreground))',
+                },
+                secondary: {
+                    DEFAULT: 'hsl(var(--secondary))',
+                    foreground: 'hsl(var(--secondary-foreground))',
+                },
+                muted: {
+                    DEFAULT: 'hsl(var(--muted))',
+                    foreground: 'hsl(var(--muted-foreground))',
+                },
+                accent: {
+                    DEFAULT: 'hsl(var(--accent))',
+                    foreground: 'hsl(var(--accent-foreground))',
+                },
+                destructive: {
+                    DEFAULT: 'hsl(var(--destructive))',
+                    foreground: 'hsl(var(--destructive-foreground))',
+                },
+                border: 'hsl(var(--border))',
+                input: 'hsl(var(--input))',
+                ring: 'hsl(var(--ring))',
+                chart: {
+                    '1': 'hsl(var(--chart-1))',
+                    '2': 'hsl(var(--chart-2))',
+                    '3': 'hsl(var(--chart-3))',
+                    '4': 'hsl(var(--chart-4))',
+                    '5': 'hsl(var(--chart-5))',
                 },
             },
             backgroundColor: {
@@ -46,18 +83,20 @@ module.exports = {
                 'hover-warning': 'var(--hover-warning)',
                 'hover-secondary': 'var(--hover-secondary)',
                 'hover-secondary-dark': 'var(--hover-secondary-dark)',
-
                 dark: {
                     'hover-1': 'var(--dark-hover-1)',
                     'hover-2': 'var(--dark-hover-2)',
                 },
-
                 warning: 'var(--warning)',
             },
             keyframes: {
                 skeleton: {
-                    '0%': { opacity: 0.25 },
-                    '100%': { opacity: 1 },
+                    '0%': {
+                        opacity: 0.25,
+                    },
+                    '100%': {
+                        opacity: 1,
+                    },
                 },
             },
             animation: {
@@ -74,13 +113,23 @@ module.exports = {
             },
         },
         screens: {
-            '2xl': { max: '1535px' },
-            xl: { max: '1200px' },
-            lg: { max: '992px' },
-            md: { max: '768px' },
-            sm: { max: '639px' },
+            '2xl': {
+                max: '1535px',
+            },
+            xl: {
+                max: '1200px',
+            },
+            lg: {
+                max: '992px',
+            },
+            md: {
+                max: '768px',
+            },
+            sm: {
+                max: '639px',
+            },
         },
     },
-    plugins: [],
-    darkMode: 'class',
+    plugins: [require('tailwindcss-animate')],
+    darkMode: ['class'],
 };

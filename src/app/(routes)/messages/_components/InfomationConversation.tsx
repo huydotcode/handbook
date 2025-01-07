@@ -1,10 +1,10 @@
 import { Items } from '@/components/shared';
-import { Avatar, Button, Collapse, Icons, SlideShow } from '@/components/ui';
-import { Tooltip } from '@mui/material';
+import { Avatar, Collapse, Icons, SlideShow } from '@/components/ui';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
 import SideHeader from './SideHeader';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     conversation: IConversation;

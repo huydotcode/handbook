@@ -1,10 +1,12 @@
 'use client';
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSession } from 'next-auth/react';
 import React, { useMemo } from 'react';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { splitName } from '@/utils/splitName';
 import { useRouter } from 'next/navigation';
+import { timeConvert } from '@/utils/timeConvert';
 
 interface Props {
     currentRoom: IConversation;
@@ -94,17 +96,12 @@ const ChatHeader: React.FC<Props> = ({
                                     {partner.isOnline ? (
                                         'Đang hoạt động'
                                     ) : (
-                                        <></>
-                                        // <TimeAgoConverted
-                                        //     time={partner.lastAccessed}
-                                        //     className="text-xs"
-                                        //     textBefore={
-                                        //         breakpoint == 'sm'
-                                        //             ? 'Online'
-                                        //             : 'Hoạt động'
-                                        //     }
-                                        //     textAfter=" trước"
-                                        // />
+                                        <>
+                                            Hoạt động{' '}
+                                            {timeConvert(
+                                                partner.lastAccessed.toString()
+                                            )}
+                                        </>
                                     )}
                                 </span>
                             </>

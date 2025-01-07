@@ -1,14 +1,18 @@
 'use client';
-import { Items } from '@/components/shared';
 import { Icons } from '@/components/ui';
 import { useConversations, useFriends } from '@/context/SocialContext';
-import { getConversationsKey, getFriendsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { Session } from 'next-auth';
-import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/Button';
+import Image from 'next/image';
 
 interface Props {
     className?: string;
@@ -17,7 +21,6 @@ interface Props {
 
 const FriendList: React.FC<Props> = ({ session, className }) => {
     const path = usePathname();
-    const queryClient = useQueryClient();
 
     const { data: conversations } = useConversations(session?.user.id);
     const { data: friends } = useFriends(session?.user.id);
@@ -43,7 +46,7 @@ const FriendList: React.FC<Props> = ({ session, className }) => {
                     </div>
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-2 flex flex-col">
                     {friends &&
                         friends.map((friend) => {
                             const conversation =
@@ -62,11 +65,64 @@ const FriendList: React.FC<Props> = ({ session, className }) => {
                             if (!conversation) return null;
 
                             return (
-                                <Items.Friend
-                                    key={friend._id}
-                                    data={friend}
-                                    conversation={conversation}
-                                />
+                                <DropdownMenu key={friend._id}>
+                                    <DropdownMenuTrigger asChild={true}>
+                                        <Button
+                                            variant={'custom'}
+                                            className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
+                                            key={friend._id}
+                                        >
+                                            <div className="flex items-center lg:h-8 lg:w-8">
+                                                <Image
+                                                    className="rounded-full"
+                                                    src={friend.avatar || ''}
+                                                    alt={friend.name || ''}
+                                                    width={32}
+                                                    height={32}
+                                                />
+
+                                                <span className="ml-2 text-xs lg:hidden">
+                                                    {friend.name}
+                                                </span>
+                                            </div>
+
+                                            <span className="lg:hidden">
+                                                {friend.isOnline && (
+                                                    <Icons.Circle className="text-sm text-primary-2" />
+                                                )}
+                                            </span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent align={'start'}>
+                                        <DropdownMenuItem className={'p-0'}>
+                                            <Button
+                                                className={
+                                                    'w-full justify-start'
+                                                }
+                                                variant={'ghost'}
+                                                size={'xs'}
+                                                href={`/profile/${friend._id}`}
+                                            >
+                                                <Icons.Users />
+                                                Trang cá nhân
+                                            </Button>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className={'p-0'}>
+                                            <Button
+                                                className={
+                                                    'w-full justify-start'
+                                                }
+                                                variant={'ghost'}
+                                                size={'xs'}
+                                                href={`/messages/${conversation._id}`}
+                                            >
+                                                <Icons.Message />
+                                                Nhắn tin
+                                            </Button>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             );
                         })}
                 </div>

@@ -1,8 +1,9 @@
-import { Avatar, Button } from '@/components/ui';
+import { Avatar } from '@/components/ui';
 import { getProfilePicturesAction } from '@/lib/actions/profile.action';
 import { getFriendsByUserId } from '@/lib/actions/user.action';
 import React from 'react';
 import { PhotosSection } from '../../_components';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     params: Promise<{ userId: string }>;
@@ -23,13 +24,13 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
             <section className="relative my-3 w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                 <h5 className="text-xl font-bold">Bạn bè</h5>
                 <article>
-                    <ul className="mt-2 grid grid-cols-2 gap-2">
+                    <ul className="mt-2 grid grid-cols-4 gap-2">
                         {friends.map((friend) => {
                             return (
                                 <Button
-                                    href={`/profile/${friend._id}`}
-                                    className="justify-start border"
+                                    className="h-14 justify-start border"
                                     key={friend._id}
+                                    href={`/profile/${friend._id}`}
                                 >
                                     <Avatar
                                         className="mr-2"
@@ -37,6 +38,7 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                                         height={42}
                                         imgSrc={friend.avatar}
                                         userUrl={friend._id}
+                                        onlyImage={true}
                                     />
 
                                     <span>{friend.name}</span>

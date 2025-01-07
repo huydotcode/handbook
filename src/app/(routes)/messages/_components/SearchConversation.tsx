@@ -1,6 +1,5 @@
 import { Icons, Modal } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface Props {

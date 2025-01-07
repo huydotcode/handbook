@@ -3,9 +3,9 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '../ui';
 import ChatHeader from './ChatHeader';
 import InputMessage from './InputMessage';
+import { Button } from '@/components/ui/Button';
 
 interface IFormData {
     text: string;

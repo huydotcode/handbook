@@ -1,5 +1,4 @@
 export { default as Avatar } from './Avatar';
-export { default as Button } from './Button';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as DarkmodeButton } from './DarkmodeButton';
 export { default as Icons } from './Icons';

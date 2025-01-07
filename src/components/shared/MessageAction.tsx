@@ -1,17 +1,16 @@
 'use client';
-import { Button } from '@/components/ui';
 import { useSocket } from '@/context';
 import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
-    className?: string;
     messageTo: string;
 }
 
-const MessageAction = ({ className, messageTo }: Props) => {
+const MessageAction = ({ messageTo }: Props) => {
     const { data: session } = useSession();
     const router = useRouter();
     const { socketEmitor } = useSocket();
@@ -45,7 +44,14 @@ const MessageAction = ({ className, messageTo }: Props) => {
     };
 
     return (
-        <Button className={className} onClick={handleClick} variant={'primary'}>
+        <Button
+            className={
+                'min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1'
+            }
+            onClick={handleClick}
+            variant={'primary'}
+            size={'md'}
+        >
             Nhắn tin
         </Button>
     );

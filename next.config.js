@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
-    swcMinify: false,
     images: {
         remotePatterns: [
             {
@@ -24,7 +23,6 @@ const nextConfig = {
             },
         ],
     },
-    swcMinify: true,
 };
 
 module.exports = nextConfig;

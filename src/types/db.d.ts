@@ -19,6 +19,15 @@ interface IComment {
     updatedAt: Date;
 }
 
+interface ILocation {
+    _id: string;
+    name: string;
+    slug: string;
+    type: string;
+    nameWithType: string;
+    code: string;
+}
+
 interface IImage {
     _id: string;
     publicId: string;

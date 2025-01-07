@@ -1,17 +1,24 @@
 'use client';
-import { Avatar, Button, Icons, SlideShow } from '@/components/ui';
+import { Avatar, Icons, SlideShow } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { invalidateMessages } from '@/lib/query';
 import { cn } from '@/lib/utils';
-import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
-import { Tooltip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import { timeConvert } from '@/utils/timeConvert';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { TooltipArrow } from '@radix-ui/react-tooltip';
 
 interface Props {
     data: IMessage;
@@ -60,7 +67,9 @@ const Message: React.FC<Props> = ({
     };
 
     // Xử lý click vào ảnh
-    const handleClickImage = (url: string, index: number) => {
+    const handleClickImage = (url: string) => {
+        const index = images.findIndex((img) => img.url === url);
+
         setStartIndex(() => {
             return index;
         });
@@ -86,6 +95,45 @@ const Message: React.FC<Props> = ({
         }
     };
 
+    const msgTextContent = () => {
+        return (
+            <>
+                {msg.text.split(' ').map((text, index) => {
+                    // Kểm tra url
+                    if (text.match(urlRegex)) {
+                        return (
+                            <a
+                                key={index}
+                                href={text}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={cn('underline', {
+                                    'text-primary-1': isOwnMsg,
+                                    'text-primary-2 dark:text-dark-primary-1':
+                                        !isOwnMsg,
+                                    'text-yellow-300': isFindMessage,
+                                })}
+                            >
+                                {text + ' '}
+                            </a>
+                        );
+                    } else {
+                        return (
+                            <span
+                                className={cn({
+                                    'font-bold text-yellow-400': isFindMessage,
+                                })}
+                                key={index}
+                            >
+                                {text + ' '}
+                            </span>
+                        );
+                    }
+                })}
+            </>
+        );
+    };
+
     const createMenuMessages = () => {
         return (
             <div
@@ -94,7 +142,7 @@ const Message: React.FC<Props> = ({
             >
                 <Button
                     variant="text"
-                    size="small"
+                    size="sm"
                     type="submit"
                     onClick={handleDeleteMsg}
                 >
@@ -145,11 +193,9 @@ const Message: React.FC<Props> = ({
             <div
                 className={cn('flex', {
                     'flex-row-reverse': isOwnMsg,
-                    '': !isOwnMsg,
                     'w-full items-center': !msg.conversation.group,
                 })}
             >
-                {/* Time */}
                 {isSearchMessage && (
                     <div
                         className={cn('absolute text-xs text-secondary-1', {
@@ -157,14 +203,10 @@ const Message: React.FC<Props> = ({
                             'right-0': !isOwnMsg,
                         })}
                     >
-                        {/*<TimeAgoConverted*/}
-                        {/*    time={msg.createdAt}*/}
-                        {/*    textAfter={'trước'}*/}
-                        {/*/>*/}
+                        {timeConvert(msg.createdAt.toString())}
                     </div>
                 )}
 
-                {/* Avatar */}
                 {msg.conversation.group && (
                     <div
                         className={cn(
@@ -207,7 +249,7 @@ const Message: React.FC<Props> = ({
                                 <div
                                     key={index}
                                     className={cn(
-                                        'relative my-1 max-h-[70vh] max-w-[50%] cursor-pointer object-cover shadow-md md:max-w-[70%]',
+                                        'relative my-1 cursor-pointer object-cover shadow-md',
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
@@ -217,27 +259,23 @@ const Message: React.FC<Props> = ({
                                 >
                                     <Image
                                         onClick={() => {
-                                            handleClickImage(img.url, index);
+                                            handleClickImage(img.url);
                                         }}
                                         src={img.url}
                                         alt="image"
-                                        fill
-                                        quality={100}
+                                        width={
+                                            img.width > 200 ? 200 : img.width
+                                        }
+                                        height={img.height}
                                     />
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    <Tooltip
-                        title={
-                            'Gửi lúc ' +
-                            FormatDate.formatISODateToTime(msg.createdAt)
-                        }
-                        arrow={true}
-                    >
-                        <>
-                            {msg.text.length > 0 && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
                                 <div
                                     className={cn(
                                         'relative flex max-w-[70%] items-center px-4 py-2 text-xs',
@@ -249,75 +287,50 @@ const Message: React.FC<Props> = ({
                                             'border-4 border-yellow-300':
                                                 isFindMessage,
                                             'cursor-pointer': isSearchMessage,
+                                            'bg-transparent':
+                                                msg.text.length === 0,
                                         }
                                     )}
-                                    onClick={() => {
-                                        handleClickContent();
-                                        if (handleClick) {
-                                            handleClick();
-                                        }
-                                    }}
                                 >
-                                    {showMenu &&
-                                        isOwnMsg &&
-                                        !isSearchMessage &&
-                                        createMenuMessages()}
+                                    {msg.text.trim().length > 0 && (
+                                        <div
+                                            onClick={() => {
+                                                handleClickContent();
+                                                if (handleClick) {
+                                                    handleClick();
+                                                }
+                                            }}
+                                        >
+                                            {showMenu &&
+                                                isOwnMsg &&
+                                                !isSearchMessage &&
+                                                createMenuMessages()}
 
-                                    <div className="flex flex-col">
-                                        <p>
-                                            {msg.text
-                                                .split(' ')
-                                                .map((text, index) => {
-                                                    // Kểm tra url
-                                                    if (text.match(urlRegex)) {
-                                                        return (
-                                                            <a
-                                                                key={index}
-                                                                href={text}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className={cn(
-                                                                    'underline',
-                                                                    {
-                                                                        'text-primary-1':
-                                                                            isOwnMsg,
-                                                                        'text-primary-2 dark:text-dark-primary-1':
-                                                                            !isOwnMsg,
-                                                                        'text-yellow-300':
-                                                                            isFindMessage,
-                                                                    }
-                                                                )}
-                                                            >
-                                                                {text + ' '}
-                                                            </a>
-                                                        );
-                                                    } else {
-                                                        return (
-                                                            <span
-                                                                className={cn({
-                                                                    'font-bold text-yellow-400':
-                                                                        isFindMessage,
-                                                                })}
-                                                                key={index}
-                                                            >
-                                                                {text + ' '}
-                                                            </span>
-                                                        );
-                                                    }
-                                                })}
-                                        </p>
-                                    </div>
+                                            <div className="flex flex-col">
+                                                <p>{msgTextContent()}</p>
+                                            </div>
+
+                                            {index == 0 &&
+                                                !isSearchMessage &&
+                                                msg.sender._id ===
+                                                    session?.user.id && (
+                                                    <span className="text-xs text-secondary-1">
+                                                        {msg.isRead && 'Đã xem'}
+                                                    </span>
+                                                )}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                            {index == 0 &&
-                                !isSearchMessage &&
-                                msg.sender._id === session?.user.id && (
-                                    <span className="text-xs text-secondary-1">
-                                        {msg.isRead && 'Đã xem'}
-                                    </span>
-                                )}
-                        </>
-                    </Tooltip>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <TooltipArrow className={'fill-white'} />
+                                <div className="flex items-center justify-center">
+                                    Đã gửi{' '}
+                                    {timeConvert(msg.createdAt.toString())}
+                                </div>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             </div>
 

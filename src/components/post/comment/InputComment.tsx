@@ -1,6 +1,6 @@
-import { TextareaAutosize } from '@mui/material';
 import { KeyboardEventHandler } from 'react';
 import { UseFormRegister } from 'react-hook-form';
+import { Textarea } from '@/components/ui/textarea';
 
 type IFormData = {
     text: string;
@@ -23,8 +23,8 @@ const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {
     };
 
     return (
-        <TextareaAutosize
-            className="dark:placeholder: h-10 w-[calc(100%-40px)] flex-1 cursor-text resize-none overflow-y-scroll rounded-l-xl bg-transparent p-2 pt-[9px] text-start text-sm outline-none"
+        <Textarea
+            className="dark:placeholder: h-10 min-h-0 w-[calc(100%-40px)] flex-1 cursor-text resize-none overflow-y-scroll rounded-l-xl bg-transparent p-2 pt-[9px] text-start text-sm outline-none"
             placeholder={placeholder || 'Viết bình luận...'}
             spellCheck={false}
             autoComplete="off"
@@ -33,7 +33,7 @@ const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {
                 required: true,
                 validate: (value) => value.trim() !== '',
             })}
-        ></TextareaAutosize>
+        ></Textarea>
     );
 };
 export default InputComment;

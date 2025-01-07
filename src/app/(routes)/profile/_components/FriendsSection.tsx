@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import React from 'react';
@@ -18,29 +18,28 @@ const FriendsSection: React.FC<Props> = ({ className, friends }) => {
         >
             <h5 className="text-xl font-bold">Bạn bè</h5>
 
-            <div className="mt-2 grid grid-cols-5 gap-2">
+            <div className="mt-2 grid grid-cols-3 gap-2">
                 {friends.slice(0, 5).map((friend: IFriend) => {
                     const name = friend.name.split(' ').filter((s) => s != '')[
                         friend.name.split(' ').filter((s) => s != '').length - 1
                     ];
 
                     return (
-                        <>
-                            <Button
-                                href={`/profile/${friend._id}`}
-                                className="flex-col"
-                                key={friend._id}
-                            >
-                                <Avatar
-                                    width={42}
-                                    height={42}
-                                    imgSrc={friend.avatar}
-                                    userUrl={friend._id}
-                                />
+                        <Button
+                            href={`/profile/${friend._id}`}
+                            className="h-20 flex-col"
+                            key={friend._id}
+                        >
+                            <Avatar
+                                width={42}
+                                height={42}
+                                imgSrc={friend.avatar}
+                                userUrl={friend._id}
+                                onlyImage={true}
+                            />
 
-                                <span>{name}</span>
-                            </Button>
-                        </>
+                            <span>{name}</span>
+                        </Button>
                     );
                 })}
             </div>

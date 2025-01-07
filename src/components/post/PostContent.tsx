@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import Button from '../ui/Button';
 import PhotoGrid from './PhotoGrid';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     post: IPost;

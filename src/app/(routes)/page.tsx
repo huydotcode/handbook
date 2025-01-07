@@ -1,7 +1,13 @@
 import { FriendSection, Sidebar } from '@/components/layout';
 import { InfinityPostComponent } from '@/components/post';
+import { getAuthSession } from '@/lib/auth';
+import { Loading } from '@/components/ui';
 
-const HomePage = () => {
+const HomePage = async () => {
+    const session = await getAuthSession();
+
+    if (!session) return <Loading fullScreen={true} overlay={true} />;
+
     return (
         <div className="relative top-[56px] mx-auto min-h-[calc(100vh-56px)] w-[1200px] max-w-screen md:w-screen">
             <Sidebar />
@@ -10,7 +16,7 @@ const HomePage = () => {
                 <InfinityPostComponent />
             </div>
 
-            <FriendSection />
+            <FriendSection session={session} />
         </div>
     );
 };

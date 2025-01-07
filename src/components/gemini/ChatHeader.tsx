@@ -1,6 +1,7 @@
 'use client';
-import { Avatar, Button } from '@/components/ui';
+import { Avatar } from '@/components/ui';
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     setOpenChat: React.Dispatch<React.SetStateAction<boolean>>;

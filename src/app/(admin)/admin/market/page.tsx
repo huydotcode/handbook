@@ -2,12 +2,11 @@
 import React from 'react';
 import {
     Form,
-    FormButton,
-    FormGroup,
-    FormInput,
+    FormControl,
+    FormField,
+    FormItem,
     FormLabel,
-    FormSelect,
-    FormTitle,
+    FormMessage,
 } from '@/components/ui/Form';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
@@ -15,6 +14,8 @@ import toast from 'react-hot-toast';
 import { IconsArray } from '@/components/ui/Icons';
 import { createCategory, getCategories } from '@/lib/actions/category.action';
 import { getCategoriesKey } from '@/lib/queryKey';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 interface CategoryForm {
     name: string;
@@ -31,7 +32,7 @@ const CategoryPage: React.FC = () => {
         },
     });
 
-    const { handleSubmit, register, formState } = useForm<CategoryForm>({
+    const form = useForm<CategoryForm>({
         defaultValues: {
             name: '',
             description: '',
@@ -39,6 +40,7 @@ const CategoryPage: React.FC = () => {
             icon: '',
         },
     });
+    const { handleSubmit, register, formState } = form;
 
     const onSubmit = async (data: CategoryForm) => {
         try {
@@ -76,61 +78,82 @@ const CategoryPage: React.FC = () => {
                 })}
             </div>
 
-            <Form
-                className={'mx-auto my-2 max-w-[500px] rounded-xl border p-4'}
-                onSubmit={handleSubmit(onSubmit)}
-            >
-                <FormTitle>Create Category</FormTitle>
-
-                <FormGroup>
-                    <FormLabel>Name</FormLabel>
-                    <FormInput
-                        {...register('name', { required: 'Name is required' })}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>Description</FormLabel>
-                    <FormInput
-                        {...register('description', {
-                            required: 'Description is required',
-                        })}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>Slug</FormLabel>
-                    <FormInput
-                        {...register('slug', { required: 'Slug is required' })}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel>Icon</FormLabel>
-                    <FormSelect {...register('icon')}>
-                        <option value="">Select Icon</option>
-                        {IconsArray.sort((a, b) =>
-                            a.name.localeCompare(b.name)
-                        ).map((icon) => {
-                            const Icon = icon.icon;
-
-                            return (
-                                <option key={icon.name} value={icon.name}>
-                                    <Icon className="mr-2" />
-                                    {icon.name}
-                                </option>
-                            );
-                        })}
-                    </FormSelect>
-                </FormGroup>
-
-                <FormButton
-                    className={'mx-auto mt-2'}
-                    type="submit"
-                    disabled={formState.isSubmitting}
+            <Form {...form}>
+                <form
+                    className={
+                        'mx-auto my-2 max-w-[500px] rounded-xl border p-4'
+                    }
+                    onSubmit={handleSubmit(onSubmit)}
                 >
-                    Submit
-                </FormButton>
+                    <h1 className="text-xl font-bold">Create Category</h1>
+
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Description"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="slug"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Slug</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Slug" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="icon"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Icon</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Icon" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button
+                        className={'mx-auto mt-2'}
+                        type="submit"
+                        disabled={formState.isSubmitting}
+                    >
+                        Submit
+                    </Button>
+                </form>
             </Form>
         </div>
     );

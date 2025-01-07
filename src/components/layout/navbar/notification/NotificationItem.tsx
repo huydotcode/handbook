@@ -1,5 +1,4 @@
 'use client';
-import { Button } from '@/components/ui';
 import Avatar from '@/components/ui/Avatar';
 import Icons from '@/components/ui/Icons';
 import { useSocket } from '@/context';
@@ -17,6 +16,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     data: INotification;
@@ -166,16 +166,12 @@ const NotificationItem: React.FC<Props> = ({
                             <Button
                                 className="mr-2"
                                 variant={'primary'}
-                                size={'small'}
+                                size={'sm'}
                                 onClick={handleAcceptFriend}
                             >
                                 {showMessage ? 'Chấp nhận' : <Icons.Tick />}
                             </Button>
-                            <Button
-                                className=""
-                                size={'small'}
-                                onClick={handleDeclineFriend}
-                            >
+                            <Button size={'sm'} onClick={handleDeclineFriend}>
                                 {showMessage ? 'Từ chối' : <Icons.Close />}
                             </Button>
                         </div>

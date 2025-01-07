@@ -1,5 +1,5 @@
 'use client';
-import { Button, ConfirmModal } from '@/components/ui';
+import { ConfirmModal } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
 import { deleteGroup, leaveGroup } from '@/lib/actions/group.action';
 
@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     group: IGroup;
@@ -78,7 +79,7 @@ const Action: React.FC<Props> = ({ group }) => {
                 <Button
                     className={'h-12 min-w-[48px]'}
                     variant={'secondary'}
-                    size={'medium'}
+                    size={'md'}
                     onClick={isJoinGroup ? handleOutGroup : handleJoinGroup}
                 >
                     <span>
@@ -97,7 +98,7 @@ const Action: React.FC<Props> = ({ group }) => {
                 <Button
                     className={'ml-2 h-12 min-w-[48px]'}
                     variant={'warning'}
-                    size={'medium'}
+                    size={'md'}
                     onClick={() => setOpenModalDelete(true)}
                 >
                     <span>

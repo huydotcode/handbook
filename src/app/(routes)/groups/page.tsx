@@ -1,9 +1,9 @@
 import { InfinityPostComponent } from '@/components/post';
-import { Button } from '@/components/ui';
 import { getGroupsByUserId } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
 import React from 'react';
 import { Sidebar } from './_components';
+import { Button } from '@/components/ui/Button';
 
 const GroupsPage = async () => {
     const session = await getAuthSession();

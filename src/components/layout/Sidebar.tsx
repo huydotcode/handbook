@@ -1,11 +1,16 @@
 'use client';
 import { navLink } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
-import { Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const Sidebar = () => {
     const { data: session } = useSession();
@@ -50,31 +55,28 @@ const Sidebar = () => {
                         return null;
 
                     return (
-                        <Tooltip title={link.name} key={link.name}>
-                            <li
-                                key={index}
+                        <li
+                            key={link.name}
+                            className={cn(
+                                `flex w-full cursor-pointer items-center rounded-xl p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`
+                            )}
+                        >
+                            <Link
                                 className={cn(
-                                    `flex w-full cursor-pointer items-center rounded-xl p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`
+                                    'flex h-full w-full items-center justify-start dark:text-dark-primary-1',
+                                    {
+                                        'text-blue dark:text-blue': isActived,
+                                    }
                                 )}
+                                href={link.path || '/'}
                             >
-                                <Link
-                                    className={cn(
-                                        'flex h-full w-full items-center justify-start dark:text-dark-primary-1',
-                                        {
-                                            'text-blue dark:text-blue':
-                                                isActived,
-                                        }
-                                    )}
-                                    href={link.path || '/'}
-                                >
-                                    <Icon />
+                                <Icon />
 
-                                    <span className="ml-2 text-xs lg:hidden">
-                                        {link.name}
-                                    </span>
-                                </Link>
-                            </li>
-                        </Tooltip>
+                                <span className="ml-2 text-xs lg:hidden">
+                                    {link.name}
+                                </span>
+                            </Link>
+                        </li>
                     );
                 })}
             </ul>

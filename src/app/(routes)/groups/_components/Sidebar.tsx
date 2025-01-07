@@ -1,8 +1,10 @@
 'use client';
 import { Items } from '@/components/shared';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import React from 'react';
 import FixedSidebar from '@/components/layout/FixedSidebar';
+import { Button } from '@/components/ui/Button';
+
 interface Props {
     groups: IGroup[];
 }

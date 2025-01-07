@@ -8,8 +8,8 @@ import { Collapse } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Button from '../../ui/Button';
 import Icons from '../../ui/Icons';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     className?: string;
@@ -125,7 +125,7 @@ const Searchbar: React.FC<Props> = ({ className }) => {
             <Collapse in={showModal}>
                 <div
                     className={
-                        'fixed left-0 top-0 z-10 min-h-[200px] rounded-b-xl bg-secondary-1 p-1 pl-5 shadow-md dark:bg-dark-secondary-1'
+                        'fixed left-0 top-0 z-10 min-h-[200px] max-w-[30vw] rounded-b-xl bg-secondary-1 p-1 pl-5 shadow-md dark:bg-dark-secondary-1 md:max-w-screen'
                     }
                 >
                     <div

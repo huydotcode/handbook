@@ -1,8 +1,7 @@
 'use client';
 import { ReadMoreParagraph } from '@/components/shared';
-import { Button } from '@/components/ui';
-import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     group: IGroup;

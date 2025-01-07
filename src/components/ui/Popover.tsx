@@ -1,81 +1,31 @@
-'use client';
-import { Menu } from '@mui/material';
-import { useTheme } from 'next-themes';
-import React, { FC, useState } from 'react';
+"use client"
 
-interface Props {
-    open: boolean;
-    anchorEl: HTMLElement | null;
-    children: React.ReactNode;
-    handleClose: () => void;
-    positionArrow?: number;
-    setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
-}
+import * as React from "react"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
 
-export const usePopover = () => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const handleShow = (event: any) => {
-        setAnchorEl(event.currentTarget);
-    };
+import { cn } from "@/lib/utils"
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+const Popover = PopoverPrimitive.Root
 
-    return { open, setAnchorEl, anchorEl, handleShow, handleClose };
-};
+const PopoverTrigger = PopoverPrimitive.Trigger
 
-const Popover: FC<Props> = ({
-    anchorEl,
-    open,
-    handleClose,
-    children,
-    positionArrow,
-}) => {
-    const { theme } = useTheme();
+const PopoverContent = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+  <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Content
+      ref={ref}
+      align={align}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className
+      )}
+      {...props}
+    />
+  </PopoverPrimitive.Portal>
+))
+PopoverContent.displayName = PopoverPrimitive.Content.displayName
 
-    const PaperProps = {
-        elevation: 0,
-        sx: {
-            backgroundColor: theme === 'light' ? 'white' : '#242526',
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            borderRadius: 3,
-            padding: 1,
-            '& .MuiAvatar-root': {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
-            },
-            '&:before': {
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                top: 0,
-                right: positionArrow || 16,
-                width: 10,
-                height: 10,
-                bgcolor: theme === 'light' ? 'background.paper' : '#242526',
-                transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
-            },
-        },
-    };
-
-    return (
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            PaperProps={PaperProps}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        >
-            {children}
-        </Menu>
-    );
-};
-export default Popover;
+export { Popover, PopoverTrigger, PopoverContent }

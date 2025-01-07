@@ -1,12 +1,14 @@
 'use client';
 import Message from '@/app/(routes)/messages/_components/Message';
-import { Button, Icons } from '@/components/ui';
-import { FormInput } from '@/components/ui/Form';
+import { Icons } from '@/components/ui';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import SideHeader from './SideHeader';
+import { Button } from '@/components/ui/Button';
+import { Form, FormField } from '@/components/ui/Form';
+import { Input } from '@/components/ui/Input';
 
 interface Props {
     openSearch: boolean;
@@ -25,11 +27,12 @@ const SearchMessage: React.FC<Props> = ({
 }) => {
     const router = useRouter();
 
-    const { handleSubmit, register, reset, formState } = useForm<FormValues>({
+    const form = useForm<FormValues>({
         defaultValues: {
             search: '',
         },
     });
+    const { handleSubmit, register, reset, formState } = form;
     const [searchMessages, setSearchMessages] = useState<IMessage[]>([]);
 
     const onSubmit = async (data: FormValues) => {
@@ -61,38 +64,45 @@ const SearchMessage: React.FC<Props> = ({
                 />
 
                 <div className="mt-2 flex flex-col px-4">
-                    <form
-                        className={
-                            'flex items-center rounded-xl border bg-primary-1 px-2 dark:bg-dark-secondary-1'
-                        }
-                        onSubmit={handleSubmit(onSubmit)}
-                    >
-                        <Icons.Search size={32} />
-                        <FormInput
-                            {...register('search', {
-                                required: 'Vui lòng nhập từ khóa',
-                            })}
-                            placeholder={'Enter để tìm'}
-                            className="mt-0 w-full bg-transparent text-sm"
-                        />
-
-                        <Button
-                            type={'submit'}
-                            variant={'default'}
-                            border={false}
-                        ></Button>
-
-                        <Button
-                            onClick={() => {
-                                reset();
-                                setSearchMessages([]);
-                            }}
-                            variant={'default'}
-                            border={false}
+                    <Form {...form}>
+                        <form
+                            className={
+                                'flex items-center rounded-xl border bg-primary-1 px-2 dark:bg-dark-secondary-1'
+                            }
+                            onSubmit={handleSubmit(onSubmit)}
                         >
-                            <Icons.Close size={18} />
-                        </Button>
-                    </form>
+                            <Icons.Search size={32} />
+                            <FormField
+                                control={form.control}
+                                name={'search'}
+                                render={({ field }) => (
+                                    <Input
+                                        className={
+                                            'text-sm placeholder:text-xs placeholder:text-secondary-1'
+                                        }
+                                        placeholder="Tìm kiếm tin nhắn"
+                                        {...field}
+                                    />
+                                )}
+                            />
+
+                            <Button
+                                type={'submit'}
+                                className={'hidden'}
+                            ></Button>
+
+                            <Button
+                                onClick={() => {
+                                    reset();
+                                    setSearchMessages([]);
+                                }}
+                                variant={'text'}
+                                size={'xs'}
+                            >
+                                <Icons.Close size={18} />
+                            </Button>
+                        </form>
+                    </Form>
 
                     <h5 className={'mt-2 text-xs text-secondary-1'}>
                         Kết quả: {searchMessages.length} tin nhắn

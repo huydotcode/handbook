@@ -3,15 +3,17 @@ import { FixedSidebar } from '@/components/layout';
 import React from 'react';
 import FriendList from './FriendList';
 import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 
-interface Props {}
+interface Props {
+    session: Session;
+}
 
-const FriendSection: React.FC<Props> = () => {
-    const { data: session } = useSession();
+const FriendSection: React.FC<Props> = ({ session }) => {
     return (
         <FixedSidebar direction={'right'} hideOnMobile>
             <div className="relative h-full w-full">
-                {session && <FriendList session={session} />}
+                <FriendList session={session} />
             </div>
         </FixedSidebar>
     );

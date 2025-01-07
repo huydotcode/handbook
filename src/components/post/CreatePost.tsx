@@ -13,7 +13,6 @@ import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ModalCreatePost } from '.';
-import { HOME_POSTS } from './InfinityPostComponent';
 import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
@@ -75,7 +74,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
                 groupId: groupId,
             })) as IPost;
 
-            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+            await queryClient.invalidateQueries({ queryKey: getPostsKey() });
         } catch (error: any) {
             logger({
                 message: 'Error send post' + error,
@@ -122,13 +121,15 @@ const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
                         className="h-10 w-10"
                         href={`/profile/${session?.user.id}`}
                     >
-                        <Image
-                            className="h-full w-full rounded-full object-cover"
-                            width={40}
-                            height={40}
-                            src={session?.user.image || ''}
-                            alt={session?.user.name || ''}
-                        />
+                        {session?.user && (
+                            <Image
+                                className="h-full w-full rounded-full object-cover"
+                                width={40}
+                                height={40}
+                                src={session.user.image || ''}
+                                alt={session.user.name || ''}
+                            />
+                        )}
                     </Link>
                     <div
                         className="ml-3 flex h-10 flex-1 cursor-text items-center rounded-xl bg-primary-1 px-3 dark:bg-dark-secondary-2"

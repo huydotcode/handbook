@@ -1,17 +1,22 @@
 'use client';
 import Link from 'next/link';
-import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import DarkmodeButton from '../../ui/DarkmodeButton';
 import Icons from '../../ui/Icons';
-import NavUser from './NavUser';
 import NavNotification from './notification/NavNotification';
 import Searchbar from './Searchbar';
 import { navLink } from '@/constants/navLink';
 import { usePathname } from 'next/navigation';
-import { Tooltip } from '@mui/material';
+import { Button } from '@/components/ui/Button';
+import NavUser from '@/components/layout/navbar/NavUser';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -55,14 +60,14 @@ const Navbar = () => {
                     <div className="ml-2 hidden md:block">
                         <Button
                             onClick={() => setShowPages((prev) => !prev)}
-                            size={'medium'}
+                            size={'md'}
+                            variant={'ghost'}
                             ref={menuButtonRef}
                         >
                             <Icons.Menu />
                         </Button>
                     </div>
                 </div>
-
                 <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
                     <ul
                         className={
@@ -85,34 +90,42 @@ const Navbar = () => {
                             };
 
                             return (
-                                <Tooltip key={index} title={link.name}>
-                                    <li
-                                        className={cn(
-                                            `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
-                                            {
-                                                'border-b-4 border-b-blue':
-                                                    isActived,
-                                            }
-                                        )}
-                                    >
-                                        <Link
-                                            className={cn(
-                                                'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
-                                                {
-                                                    'text-blue dark:text-blue':
-                                                        isActived,
-                                                }
-                                            )}
-                                            href={link.path || '/'}
-                                        >
-                                            <Icon />
+                                <TooltipProvider key={link.name}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <li
+                                                className={cn(
+                                                    `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
+                                                    {
+                                                        'border-b-4 border-b-blue':
+                                                            isActived,
+                                                    }
+                                                )}
+                                            >
+                                                <Link
+                                                    className={cn(
+                                                        'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
+                                                        {
+                                                            'text-blue dark:text-blue':
+                                                                isActived,
+                                                        }
+                                                    )}
+                                                    href={link.path || '/'}
+                                                >
+                                                    <Icon />
 
-                                            <span className="ml-2 hidden text-xs md:block">
-                                                {link.name}
-                                            </span>
-                                        </Link>
-                                    </li>
-                                </Tooltip>
+                                                    <span className="ml-2 hidden text-xs md:block">
+                                                        {link.name}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        </TooltipTrigger>
+
+                                        <TooltipContent>
+                                            link.name
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             );
                         })}
                     </ul>
@@ -140,40 +153,46 @@ const Navbar = () => {
                             };
 
                             return (
-                                <Tooltip key={link.name} title={link.name}>
-                                    <li
-                                        key={index}
-                                        className={cn(
-                                            `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
-                                            {
-                                                'border-b-4 border-b-blue':
-                                                    isActived,
-                                            }
-                                        )}
-                                    >
-                                        <Link
-                                            className={cn(
-                                                'flex w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
-                                                {
-                                                    'text-blue dark:text-blue':
-                                                        isActived,
-                                                }
-                                            )}
-                                            href={link.path || '/'}
-                                        >
-                                            <Icon />
+                                <TooltipProvider key={link.name}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <li
+                                                key={index}
+                                                className={cn(
+                                                    `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
+                                                    {
+                                                        'border-b-4 border-b-blue':
+                                                            isActived,
+                                                    }
+                                                )}
+                                            >
+                                                <Link
+                                                    className={cn(
+                                                        'flex w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
+                                                        {
+                                                            'text-blue dark:text-blue':
+                                                                isActived,
+                                                        }
+                                                    )}
+                                                    href={link.path || '/'}
+                                                >
+                                                    <Icon />
 
-                                            <span className="ml-2 hidden text-xs md:block">
-                                                {link.name}
-                                            </span>
-                                        </Link>
-                                    </li>
-                                </Tooltip>
+                                                    <span className="ml-2 hidden text-xs md:block">
+                                                        {link.name}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            {link.name}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             );
                         })}
                     </ul>
                 )}
-
                 <div className="flex h-full w-1/4 items-center justify-end md:w-1/2">
                     <div className="relative mr-4 flex items-center">
                         <DarkmodeButton />
@@ -182,7 +201,7 @@ const Navbar = () => {
                         {session?.user && <NavNotification />}
                     </div>
                     <div className="flex h-full items-center">
-                        <NavUser />
+                        {session?.user && <NavUser />}
                     </div>
                 </div>
             </div>

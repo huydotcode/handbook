@@ -1,8 +1,9 @@
 'use client';
 import { Modal } from '@mui/material';
 import React, { FormEventHandler } from 'react';
-import { Button } from '@/components/ui';
+
 import Icons from './Icons';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     open: boolean;

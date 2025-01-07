@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React from 'react';
 import { formatMoney } from '@/utils/formatMoney';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     data: IItem;

@@ -1,7 +1,7 @@
 @use 'tailwindcss/base';
 @use 'tailwindcss/components';
 @use 'tailwindcss/utilities';
-@use '_variables.scss';
+@use 'variables';
 @use 'ui.scss';
 
 @layer base {

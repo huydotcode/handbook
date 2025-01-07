@@ -1,8 +1,8 @@
 'use client';
-import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     id: string;

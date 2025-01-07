@@ -1,6 +1,7 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';

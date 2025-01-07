@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import Icons from '@/components/ui/Icons';
 import { useSocket } from '@/context';
 import { useRequests } from '@/context/AppContext';
@@ -169,10 +169,11 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="h-full min-w-[48px] md:h-full md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
+            className="min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
             variant={
                 isFriend ? 'secondary' : !isRequest ? 'primary' : 'secondary'
             }
+            size={'md'}
             onClick={handleAddFriend}
             disabled={isPending}
         >

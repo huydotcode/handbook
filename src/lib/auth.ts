@@ -4,7 +4,7 @@ import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
 import logger from '@/utils/logger';
 
 import bcrypt from 'bcrypt';
-import { NextAuthOptions, RequestInternal } from 'next-auth';
+import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
@@ -75,7 +75,6 @@ export const authOptions: NextAuthOptions = {
                     await connectToDB();
 
                     const user = await User.findOne({ email });
-
                     if (user) {
                         const isMatch = user.comparePassword(password);
                         if (!isMatch) return null;

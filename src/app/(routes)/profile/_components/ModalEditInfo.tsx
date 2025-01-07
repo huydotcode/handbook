@@ -1,13 +1,14 @@
-import { Button, Modal } from '@/components/ui';
+import { Modal } from '@/components/ui';
 import { getLocations, updateInfo } from '@/lib/actions/profile.action';
 import { getLocationsKey } from '@/lib/queryKey';
 import logger from '@/utils/logger';
-import { TextareaAutosize } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
     profile: IProfile;
@@ -23,7 +24,7 @@ type FormInfo = {
 };
 
 const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
-    const { data } = useQuery({
+    const { data } = useQuery<ILocation[]>({
         queryKey: getLocationsKey(),
         queryFn: async () => {
             const locations = await getLocations();
@@ -82,9 +83,8 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             Nơi làm việc
                         </label>
 
-                        <TextareaAutosize
+                        <Textarea
                             id="work"
-                            className="mt-2 w-full resize-none rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
                             spellCheck={false}
                             autoComplete="off"
                             placeholder="Nhập nơi làm việc..."
@@ -107,9 +107,8 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             Từng học tại
                         </label>
 
-                        <TextareaAutosize
+                        <Textarea
                             id="education"
-                            className="mt-2 w-full resize-none rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1"
                             spellCheck={false}
                             autoComplete="off"
                             placeholder="Nhập nơi từng học..."
@@ -138,9 +137,9 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             {...register('location')}
                         >
                             {data &&
-                                data.map((item: any) => (
+                                data.map((item) => (
                                     <option
-                                        key={item}
+                                        key={item._id}
                                         value={item.nameWithType}
                                     >
                                         {item.nameWithType}
@@ -182,7 +181,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
 
                     <Button
                         className={`mt-2 w-full ${!isSubmitting && ''}`}
-                        size={'small'}
+                        size={'sm'}
                         type="submit"
                         variant={'primary'}
                         disabled={isSubmitting}
@@ -193,7 +192,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
 
                 <Button
                     className={`mt-2 w-full ${!isSubmitting && ''}`}
-                    size={'small'}
+                    size={'sm'}
                     onClick={handleClose}
                     variant={'secondary'}
                 >

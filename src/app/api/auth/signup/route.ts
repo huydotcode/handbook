@@ -72,7 +72,7 @@ export async function POST(req: Request, segmentData: { params: Params }) {
         );
     } catch (error) {
         logger({
-            message: 'Error signup Route' + error,
+            message: 'Error sign-up Route' + error,
             type: 'error',
         });
         return new Response(

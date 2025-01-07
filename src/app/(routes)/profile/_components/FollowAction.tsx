@@ -1,11 +1,11 @@
 'use client';
-import { Button } from '@/components/ui';
 import { follow, unfollow } from '@/lib/actions/user.action';
 import { getFollowersKey, getRequestsKey } from '@/lib/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     userId: string;
@@ -80,9 +80,9 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="h-12 min-w-[48px] md:h-full md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
+            className="min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
             variant={isFollow ? 'secondary' : 'primary'}
-            size="medium"
+            size="md"
             onClick={handleFollowClick}
         >
             {isFollow ? 'Đang Follow' : 'Theo dõi'}

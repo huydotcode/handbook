@@ -1,31 +1,13 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { Tooltip } from '@mui/material';
-import type { MenuProps } from 'antd';
-import { Dropdown } from 'antd';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/Button';
+import { timeConvert } from '@/utils/timeConvert';
 
 interface Link {
     name: string;
     path: string;
     icon: React.ReactNode;
-}
-
-interface FriendItem {
-    data: IFriend;
-    conversation: IConversation;
-}
-
-interface NavItem {
-    className?: string;
-    link: Link;
-    onlyIcon?: boolean;
-    index: number;
-    handleClose?: () => void;
 }
 
 interface UserItem {
@@ -52,7 +34,6 @@ const Items = {
                 onClick={() => {
                     if (handleHideModal) handleHideModal();
                 }}
-                border={false}
                 variant={'default'}
                 href={`/profile/${_id}`}
             >
@@ -68,109 +49,6 @@ const Items = {
                     {name}
                 </p>
             </Button>
-        );
-    },
-    Friend: (props: FriendItem) => {
-        const { data: friend, conversation } = props;
-        const { data: session } = useSession();
-        const isOnline = friend.isOnline;
-
-        if (!session) return null;
-
-        const items: MenuProps['items'] = [
-            {
-                key: '1',
-                label: (
-                    <Link href={`/profile/${friend._id}`}>Trang cá nhân</Link>
-                ),
-                icon: <Icons.Users />,
-            },
-            {
-                key: '2',
-                label: (
-                    <Link href={`/messages/${conversation?._id}`}>
-                        Nhắn tin
-                    </Link>
-                ),
-                icon: <Icons.Message />,
-            },
-        ];
-
-        return (
-            <Dropdown
-                trigger={['click', 'hover']}
-                menu={{ items }}
-                placement="bottom"
-                autoFocus
-            >
-                <Button
-                    variant={'custom'}
-                    className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
-                    key={friend._id}
-                >
-                    <div className="flex items-center lg:h-8 lg:w-8">
-                        <Image
-                            className="rounded-full"
-                            src={friend.avatar || ''}
-                            alt={friend.name || ''}
-                            width={32}
-                            height={32}
-                        />
-
-                        <span className="ml-2 text-xs lg:hidden">
-                            {friend.name}
-                        </span>
-                    </div>
-
-                    <span className="lg:hidden">
-                        {isOnline && (
-                            <Icons.Circle className="text-sm text-primary-2" />
-                        )}
-                    </span>
-                </Button>
-            </Dropdown>
-        );
-    },
-    Nav: (props: NavItem) => {
-        const { index, link, className, handleClose } = props;
-        const path = usePathname();
-        const isActived =
-            path === link.path ||
-            (path.includes(link.path) && link.path !== '/');
-        const Icon = () => {
-            return link.icon;
-        };
-
-        return (
-            <Tooltip title={link.name}>
-                <li
-                    key={index}
-                    className={cn(
-                        `flex flex-1 cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
-                        {
-                            'border-b-4 border-b-blue': isActived,
-                        },
-                        className
-                    )}
-                    onClick={handleClose}
-                >
-                    <Link
-                        className={cn(
-                            'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
-                            {
-                                'text-blue dark:text-blue': isActived,
-                            }
-                        )}
-                        href={link.path || '/'}
-                    >
-                        <Icon />
-
-                        <span className="ml-2 hidden text-xs md:block">
-                            {link.name}
-                        </span>
-                    </Link>
-                </li>
-            </Tooltip>
         );
     },
     Group: (props: GroupItem) => {
@@ -196,11 +74,7 @@ const Items = {
                     </p>
 
                     <p className="text-xs text-secondary-1 lg:hidden">
-                        Lần hoạt động gần nhất:
-                        {/*<TimeAgoConverted*/}
-                        {/*    className=""*/}
-                        {/*    time={group.lastActivity}*/}
-                        {/*/>*/}
+                        Lần hoạt động gần nhất: {timeConvert(group.lastActive)}
                     </p>
                 </div>
             </Button>

@@ -1,11 +1,9 @@
 'use client';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { deletePost } from '@/lib/actions/post.action';
-import logger from '@/utils/logger';
 import { Fade, Modal } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { FormEventHandler, useState } from 'react';
-import { HOME_POSTS } from '../InfinityPostComponent';
 import toast from 'react-hot-toast';
 import { getPostsKey } from '@/lib/queryKey';
 

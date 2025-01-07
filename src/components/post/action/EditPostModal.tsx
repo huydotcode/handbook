@@ -3,7 +3,8 @@ import { useSession } from 'next-auth/react';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Avatar, Button, Modal, TextEditor } from '@/components/ui';
+import { Avatar, Modal, TextEditor } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import postAudience from '@/constants/postAudience.constant';
 import { editPost } from '@/lib/actions/post.action';
 import { getPostsKey } from '@/lib/queryKey';

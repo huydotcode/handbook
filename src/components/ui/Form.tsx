@@ -1,166 +1,181 @@
-import React from 'react';
-import Button from './Button';
+'use client';
+import * as React from 'react';
+import * as LabelPrimitive from '@radix-ui/react-label';
+import { Slot } from '@radix-ui/react-slot';
+import {
+    Controller,
+    ControllerProps,
+    FieldPath,
+    FieldValues,
+    FormProvider,
+    useFormContext,
+} from 'react-hook-form';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
-interface FormProps {
-    children: React.ReactNode;
-}
+const Form = FormProvider;
 
-const Form = React.forwardRef<
-    HTMLFormElement,
-    React.FormHTMLAttributes<HTMLFormElement>
->((props, ref) => {
+type FormFieldContextValue<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+    name: TName;
+};
+
+const FormFieldContext = React.createContext<FormFieldContextValue>(
+    {} as FormFieldContextValue
+);
+
+const FormField = <
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+    ...props
+}: ControllerProps<TFieldValues, TName>) => {
     return (
-        <form
-            {...props}
-            ref={ref}
-            className={cn(
-                'flex w-full flex-col rounded-xl border border-primary-1  px-6 py-4 dark:bg-dark-secondary-2',
-                props.className
-            )}
-        >
-            {props.children}
-        </form>
+        <FormFieldContext.Provider value={{ name: props.name }}>
+            <Controller {...props} />
+        </FormFieldContext.Provider>
     );
-});
+};
 
-const FormTitle = React.forwardRef<
-    HTMLHeadingElement,
-    React.HTMLAttributes<HTMLHeadingElement>
->((props, ref) => {
-    return (
-        <h1
-            {...props}
-            className={cn(
-                'mb-2 text-center text-2xl font-bold',
-                props.className
-            )}
-            ref={ref}
-        />
-    );
-});
+const useFormField = () => {
+    const fieldContext = React.useContext(FormFieldContext);
+    const itemContext = React.useContext(FormItemContext);
+    const { getFieldState, formState } = useFormContext();
 
-const FormGroup = React.forwardRef<
+    const fieldState = getFieldState(fieldContext.name, formState);
+
+    if (!fieldContext) {
+        throw new Error('useFormField should be used within <FormField>');
+    }
+
+    const { id } = itemContext;
+
+    return {
+        id,
+        name: fieldContext.name,
+        formItemId: `${id}-form-item`,
+        formDescriptionId: `${id}-form-item-description`,
+        formMessageId: `${id}-form-item-message`,
+        ...fieldState,
+    };
+};
+
+type FormItemContextValue = {
+    id: string;
+};
+
+const FormItemContext = React.createContext<FormItemContextValue>(
+    {} as FormItemContextValue
+);
+
+const FormItem = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement>
->((props, ref) => {
-    return (
-        <div
-            {...props}
-            className={cn('mb-2 w-full', props.className)}
-            ref={ref}
-        />
-    );
-});
+>(({ className, ...props }, ref) => {
+    const id = React.useId();
 
-const FormInput = React.forwardRef<
-    HTMLInputElement,
-    React.InputHTMLAttributes<HTMLInputElement>
->((props, ref) => {
     return (
-        <input
-            {...props}
-            ref={ref}
-            className={cn(
-                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
-                props.className
-            )}
-        />
+        <FormItemContext.Provider value={{ id }}>
+            <div ref={ref} className={cn('space-y-2', className)} {...props} />
+        </FormItemContext.Provider>
     );
 });
-
-const FormSelect = React.forwardRef<
-    HTMLSelectElement,
-    React.SelectHTMLAttributes<HTMLSelectElement>
->((props, ref) => {
-    return (
-        <select
-            {...props}
-            ref={ref}
-            className={cn(
-                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
-                props.className
-            )}
-        />
-    );
-});
+FormItem.displayName = 'FormItem';
 
 const FormLabel = React.forwardRef<
-    HTMLLabelElement,
-    React.LabelHTMLAttributes<HTMLLabelElement>
->((props, ref) => {
+    React.ElementRef<typeof LabelPrimitive.Root>,
+    React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => {
+    const { error, formItemId } = useFormField();
+
     return (
-        <label
-            {...props}
-            className={cn('text-sm', props.className)}
+        <Label
             ref={ref}
+            className={cn(error && 'text-destructive', className)}
+            htmlFor={formItemId}
+            {...props}
         />
     );
 });
+FormLabel.displayName = 'FormLabel';
 
-const FormError = React.forwardRef<
+const FormControl = React.forwardRef<
+    React.ElementRef<typeof Slot>,
+    React.ComponentPropsWithoutRef<typeof Slot>
+>(({ ...props }, ref) => {
+    const { error, formItemId, formDescriptionId, formMessageId } =
+        useFormField();
+
+    return (
+        <Slot
+            ref={ref}
+            id={formItemId}
+            aria-describedby={
+                !error
+                    ? `${formDescriptionId}`
+                    : `${formDescriptionId} ${formMessageId}`
+            }
+            aria-invalid={!!error}
+            {...props}
+        />
+    );
+});
+FormControl.displayName = 'FormControl';
+
+const FormDescription = React.forwardRef<
     HTMLParagraphElement,
     React.HTMLAttributes<HTMLParagraphElement>
->((props, ref) => {
+>(({ className, ...props }, ref) => {
+    const { formDescriptionId } = useFormField();
+
     return (
         <p
-            {...props}
             ref={ref}
-            className={cn('text-red-500', props.className)}
+            id={formDescriptionId}
+            className={cn('text-sm text-muted-foreground', className)}
+            {...props}
         />
     );
 });
+FormDescription.displayName = 'FormDescription';
 
-const FormTextArea = React.forwardRef<
-    HTMLTextAreaElement,
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>
->((props, ref) => {
+const FormMessage = React.forwardRef<
+    HTMLParagraphElement,
+    React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => {
+    const { error, formMessageId } = useFormField();
+    const body = error ? String(error?.message) : children;
+
+    if (!body) {
+        return null;
+    }
+
     return (
-        <textarea
-            {...props}
+        <p
             ref={ref}
+            id={formMessageId}
             className={cn(
-                'mt-2 w-full rounded-xl bg-primary-1 p-2 focus:border-none focus:outline-none dark:bg-dark-secondary-1',
-                props.className
+                'text-sm font-medium text-destructive',
+                error && 'text-warning',
+                className
             )}
-        />
-    );
-});
-
-const FormButton = React.forwardRef<
-    HTMLButtonElement,
-    React.ButtonHTMLAttributes<HTMLButtonElement>
->((props, ref) => {
-    return (
-        <Button
             {...props}
-            className={cn('mt-2', props.className)}
-            variant={'primary'}
-            type={'submit'}
         >
-            {props.children}
-        </Button>
+            {body}
+        </p>
     );
 });
-
-Form.displayName = 'Form';
-FormTitle.displayName = 'FormTitle';
-FormGroup.displayName = 'FormGroup';
-FormInput.displayName = 'FormInput';
-FormLabel.displayName = 'FormLabel';
-FormError.displayName = 'FormError';
-FormButton.displayName = 'FormButton';
-FormSelect.displayName = 'FormSelect';
-FormTextArea.displayName = 'FormTextArea';
+FormMessage.displayName = 'FormMessage';
 
 export {
+    useFormField,
     Form,
-    FormInput,
+    FormItem,
     FormLabel,
-    FormError,
-    FormButton,
-    FormGroup,
-    FormTitle,
-    FormSelect,
-    FormTextArea,
+    FormControl,
+    FormDescription,
+    FormMessage,
+    FormField,
 };

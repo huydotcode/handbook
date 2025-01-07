@@ -1,8 +1,9 @@
 'use client';
-import { Button, Icons } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface IFormData {
     text: string;

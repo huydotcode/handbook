@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons, Modal } from '@/components/ui';
+import { Avatar, Icons, Modal } from '@/components/ui';
 import { useSocket } from '@/context';
 import { createConversation } from '@/lib/actions/conversation.action';
 import logger from '@/utils/logger';
@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     group: IGroup;

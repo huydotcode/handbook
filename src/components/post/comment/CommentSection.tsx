@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Button, Icons, Loading } from '@/components/ui';
+import { Avatar, Icons, Loading } from '@/components/ui';
 import { getCommentsByPostId, sendComment } from '@/lib/actions/comment.action';
 import { getCommentsKey } from '@/lib/queryKey';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +9,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import Comment from './CommentItem';
 import InputComment from './InputComment';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     postId: string;

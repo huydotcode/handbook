@@ -42,23 +42,20 @@ const TextEditor: React.FC<Props> = React.forwardRef(function TextEditor(
     };
 
     return (
-        <>
-            <div className={className} onClick={handleFocus}>
-                <TextAreaAutosize
-                    autoComplete="off"
-                    ref={editorRef}
-                    value={value}
-                    onChange={handleChange}
-                    onKeyPress={handleKeyPress}
-                    className="no-scrollbar h-auto w-full resize-none bg-transparent outline-none"
-                    placeholder="Bạn đang nghĩ gì thế?"
-                    spellCheck={false}
-                    aria-label="Bạn đang nghĩ gì?"
-                    wrap="hard"
-                    rows={5}
-                />
-            </div>
-        </>
+        <div className={className} onClick={handleFocus}>
+            <TextAreaAutosize
+                autoComplete="off"
+                ref={editorRef}
+                value={value}
+                onChange={handleChange}
+                onKeyPress={handleKeyPress}
+                className="no-scrollbar h-auto w-full resize-none bg-transparent outline-none"
+                placeholder="Bạn đang nghĩ gì thế?"
+                spellCheck={false}
+                wrap="hard"
+                rows={5}
+            />
+        </div>
     );
 });
 

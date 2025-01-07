@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Avatar, Button, Icons } from '@/components/ui';
+import { Avatar, Icons } from '@/components/ui';
 import {
     deleteComment,
     getReplyComments,
@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import Comment from './CommentItem';
 import InputComment from './InputComment';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     parentId: string;
@@ -106,21 +107,19 @@ const ReplyComment: React.FC<Props> = ({
     return (
         <>
             <div className="mt-2 flex h-4 items-center">
-                {/* Trả lời */}
                 <Button
                     className="mr-2"
                     variant={'text'}
-                    size={'small'}
+                    size={'xs'}
                     onClick={handleShowReplyForm}
                 >
                     Trả lời
                 </Button>
 
-                {/* Xóa bình luận */}
                 {session?.user.id === authorId && (
                     <Button
                         variant={'text'}
-                        size={'small'}
+                        size={'xs'}
                         onClick={handleDeleteComment}
                     >
                         Xóa
@@ -161,7 +160,7 @@ const ReplyComment: React.FC<Props> = ({
                         <Button
                             className="w-8 rounded-t-md"
                             variant={'text'}
-                            size={'small'}
+                            size={'sm'}
                             onClick={handleShowReplyForm}
                         >
                             Hủy
@@ -175,7 +174,7 @@ const ReplyComment: React.FC<Props> = ({
                 <Button
                     className="w-fit"
                     variant={'text'}
-                    size={'small'}
+                    size={'sm'}
                     onClick={() => setShowReplyComments((prev) => !prev)}
                 >
                     Xem {replyComments.length} bình luận
@@ -191,7 +190,7 @@ const ReplyComment: React.FC<Props> = ({
                     {isHasLoadMore && (
                         <Button
                             variant={'text'}
-                            size={'small'}
+                            size={'sm'}
                             onClick={() => setPage((prev) => prev + 1)}
                         >
                             Xem thêm bình luận
