@@ -122,7 +122,7 @@ const Navbar = () => {
                                         </TooltipTrigger>
 
                                         <TooltipContent>
-                                            link.name
+                                            {link.name}
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
