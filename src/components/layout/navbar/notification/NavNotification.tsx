@@ -57,8 +57,8 @@ const NavNotification: React.FC<Props> = ({}) => {
                         )}
 
                         <Badge
-                            className="absolute bottom-0 right-0 bg-primary-2 px-1 py-0 text-xs font-light"
-                            variant={'default'}
+                            className="absolute bottom-0 right-0 px-1 py-0 text-xs font-light"
+                            variant={'secondary'}
                         >
                             {notifications.filter((n) => !n.isRead).length}
                         </Badge>

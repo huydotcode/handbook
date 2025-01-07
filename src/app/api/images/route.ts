@@ -45,3 +45,41 @@ export async function POST(request: Request) {
         });
     }
 }
+
+export async function DELETE(request: Request) {
+    const { publicId } = await request.json();
+
+    try {
+        const session = await getAuthSession();
+
+        if (!session?.user) {
+            return new Response('Chưa đăng nhập', {
+                status: 401,
+            });
+        }
+
+        const image = await Image.findOne({
+            publicId,
+            creator: session?.user.id,
+        });
+
+        if (!image) {
+            return new Response(null, {
+                status: 404,
+            });
+        }
+
+        await cloudinary.uploader.destroy(publicId);
+
+        await image.remove();
+
+        return new Response(null, {
+            status: 200,
+        });
+    } catch (error) {
+        console.error(error);
+        return new Response('Error when delete images' + error, {
+            status: 500,
+        });
+    }
+}

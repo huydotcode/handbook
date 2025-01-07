@@ -2,6 +2,14 @@ import { Icons } from '@/components/ui';
 import { useDebounce } from '@/hooks';
 import { cn } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
+import { Input } from '@/components/ui/Input';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface Props {
     showFull: boolean;
@@ -19,24 +27,44 @@ const SearchMarket: React.FC<Props> = ({ showFull, setShowFullSidebar }) => {
         <>
             <div
                 className={cn(
-                    'mt-2 flex w-full items-center rounded-xl bg-primary-1 px-2 py-1 dark:bg-dark-primary-1',
+                    'mt-2 flex w-full items-center rounded-xl bg-primary-1 px-2 dark:bg-dark-primary-1',
                     {
                         'md:justify-center md:py-2 md:text-xl': !showFull,
                     }
                 )}
             >
+                <Dialog>
+                    <DialogTrigger>
+                        <Icons.Search className={'hidden lg:block'} />
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Tìm kiếm mặt hàng</DialogTitle>
+                        </DialogHeader>
+
+                        <div className={'flex'}>
+                            <Input
+                                className="w-full border-none bg-primary-1 px-4 py-2 dark:bg-dark-primary-1 dark:placeholder:text-dark-primary-1"
+                                value={searchValue}
+                                placeholder="Tìm mặt hàng"
+                                onChange={(e) => {
+                                    setSearchValue(e.target.value);
+                                }}
+                            />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
                 <Icons.Search
+                    className={'lg:hidden'}
                     onClick={() => {
                         setShowFullSidebar((prev) => !prev);
                     }}
                 />
-                <input
+
+                <Input
                     className={cn(
-                        'border-none bg-transparent px-2 py-1 dark:placeholder:text-dark-primary-1',
-                        {
-                            'md:flex': showFull,
-                            'md:hidden': !showFull,
-                        }
+                        'bg-transparent text-sm dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden'
                     )}
                     value={searchValue}
                     placeholder="Tìm kiếm trên market"

@@ -1,6 +1,6 @@
 'use client';
 import Message from '@/app/(routes)/messages/_components/Message';
-import { Icons } from '@/components/ui';
+import { Icons, Loading } from '@/components/ui';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -34,12 +34,15 @@ const SearchMessage: React.FC<Props> = ({
     });
     const { handleSubmit, register, reset, formState } = form;
     const [searchMessages, setSearchMessages] = useState<IMessage[]>([]);
+    const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
 
     const onSubmit = async (data: FormValues) => {
         const { search } = data;
         const searchValue = search.trim().toLowerCase();
 
         if (!searchValue) return;
+
+        setSearchMessages([]);
 
         const res = await fetch(
             `/api/messages/search?search=${searchValue}&conversationId=${conversationId}`
@@ -78,7 +81,7 @@ const SearchMessage: React.FC<Props> = ({
                                 render={({ field }) => (
                                     <Input
                                         className={
-                                            'text-sm placeholder:text-xs placeholder:text-secondary-1'
+                                            'bg-transparent text-sm placeholder:text-xs placeholder:text-secondary-1'
                                         }
                                         placeholder="Tìm kiếm tin nhắn"
                                         {...field}
@@ -103,10 +106,17 @@ const SearchMessage: React.FC<Props> = ({
                             </Button>
                         </form>
                     </Form>
-
                     <h5 className={'mt-2 text-xs text-secondary-1'}>
                         Kết quả: {searchMessages.length} tin nhắn
                     </h5>
+
+                    {loadingSearch && (
+                        <Loading
+                            fullScreen
+                            overlay
+                            text={'Đang tìm tin nhắn'}
+                        />
+                    )}
 
                     <div className="mt-2 flex flex-col items-center">
                         {formState.isSubmitting && (
@@ -121,6 +131,8 @@ const SearchMessage: React.FC<Props> = ({
                                 data={message}
                                 messages={searchMessages}
                                 handleClick={() => {
+                                    setLoadingSearch(true);
+
                                     router.push(
                                         `/messages/${message.conversation._id}?findMessage=${message._id}`
                                     );
@@ -128,6 +140,8 @@ const SearchMessage: React.FC<Props> = ({
                                     if (breakpoint == 'sm') {
                                         setOpenSearch(false);
                                     }
+
+                                    setLoadingSearch(false);
                                 }}
                                 isSearchMessage
                             />

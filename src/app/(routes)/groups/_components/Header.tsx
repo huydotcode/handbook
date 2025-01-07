@@ -1,3 +1,4 @@
+'use client';
 import { navGroup } from '@/constants/navLink';
 import Image from 'next/image';
 import React from 'react';

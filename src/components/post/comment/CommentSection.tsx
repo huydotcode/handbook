@@ -60,7 +60,7 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
         register,
         reset,
         setFocus,
-        formState: { isLoading },
+        formState: { isLoading, isSubmitting },
     } = useForm<FormData>();
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -91,7 +91,6 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
 
     return (
         <>
-            {/* Form viết bình luận */}
             <div className="mb-2 mt-2 flex items-center">
                 <Avatar session={session} />
 
@@ -122,6 +121,8 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
                 </div>
             </div>
 
+            {isSubmitting && <Loading text={'Đang gửi bình luận'} />}
+
             {query.isLoading && <Loading text={'Đang tải bình luận'} />}
 
             {query.data?.pages.length === 0 ||
@@ -140,8 +141,9 @@ const CommentSection: React.FC<Props> = ({ postId }) => {
             ))}
             {query.hasNextPage && (
                 <Button
-                    className="my-2 justify-start p-0 text-xs text-secondary-1"
+                    className="text-secondary-1"
                     variant={'text'}
+                    size={'xs'}
                     onClick={() => query.fetchNextPage()}
                 >
                     Xem thêm bình luận

@@ -15,8 +15,8 @@ const Item: React.FC<Props> = ({ data: item }) => {
 
     return (
         <Button
-            variant={'custom'}
-            className="relative flex w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-1"
+            variant={'ghost'}
+            className="relative flex h-[300px] w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-1"
             key={item._id}
             href={`/market/item/${item._id}`}
         >
@@ -31,7 +31,7 @@ const Item: React.FC<Props> = ({ data: item }) => {
             </div>
 
             <div className={'mb-8 flex flex-col'}>
-                <span className="mt-1 text-xs">{item.name}</span>
+                <p className="mt-1 whitespace-pre-wrap text-xs">{item.name}</p>
 
                 <span className="text-xs text-secondary-1">
                     {item.location}

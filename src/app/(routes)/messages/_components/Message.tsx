@@ -180,6 +180,10 @@ const Message: React.FC<Props> = ({
         }
     }, [isLastMessage]);
 
+    useEffect(() => {
+        console.log(messages);
+    }, [messages]);
+
     return (
         <div
             id={msg._id}
@@ -249,7 +253,7 @@ const Message: React.FC<Props> = ({
                                 <div
                                     key={index}
                                     className={cn(
-                                        'relative my-1 cursor-pointer object-cover shadow-md',
+                                        `relative my-1 h-[${img.height}px] w-[${img.width}px] aspect-auto cursor-pointer shadow-md`,
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
@@ -263,10 +267,7 @@ const Message: React.FC<Props> = ({
                                         }}
                                         src={img.url}
                                         alt="image"
-                                        width={
-                                            img.width > 200 ? 200 : img.width
-                                        }
-                                        height={img.height}
+                                        fill
                                     />
                                 </div>
                             ))}

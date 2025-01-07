@@ -23,6 +23,7 @@ const TabItem: React.FC<Props> = ({ name, path, id, page }) => {
                 'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
                 isActived && 'text-primary-2 dark:text-primary-2'
             )}
+            variant={'ghost'}
         >
             <span className="text-sm font-semibold ">{name}</span>
             {isActived && (
