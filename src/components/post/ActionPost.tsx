@@ -37,7 +37,11 @@ const ActionPost: React.FC<Props> = ({ post }) => {
         <>
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button className=" shadow-none" variant={'event'}>
+                    <Button
+                        className=" shadow-none"
+                        variant={'ghost'}
+                        size={'sm'}
+                    >
                         <Icons.More className="text-3xl" />
                     </Button>
                 </PopoverTrigger>

@@ -23,6 +23,8 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
     const { data: requests } = useRequests(session?.user.id);
+    const { socketEmitor } = useSocket();
+    const { data: friends, refetch } = useFriends(session?.user.id);
 
     const { mutateAsync: sendRequest, isPending } = useMutation({
         mutationFn: async ({ receiverId }: { receiverId: string }) => {
@@ -41,9 +43,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 request: data,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getRequestsKey(session?.user.id),
-            });
+            refetch();
 
             toast.success('Gửi lời mời kết bạn thành công', {
                 id: 'sendRequest',
@@ -69,9 +69,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: getFriendsKey(session?.user.id),
-            });
+            refetch();
 
             toast.success('Hủy kết bạn thành công', {
                 id: 'unfriend',
@@ -85,9 +83,6 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
     });
-
-    const { socketEmitor } = useSocket();
-    const { data: friends, refetch } = useFriends(session?.user.id);
 
     const isRequest =
         requests &&
