@@ -74,7 +74,8 @@ const Items = {
                     </p>
 
                     <p className="text-xs text-secondary-1 lg:hidden">
-                        Lần hoạt động gần nhất: {timeConvert(group.lastActive)}
+                        Lần hoạt động gần nhất:{' '}
+                        {timeConvert(group.lastActivity.toString())}
                     </p>
                 </div>
             </Button>
