@@ -12,10 +12,11 @@ import {
 } from '@/components/ui/tooltip';
 
 const Sidebar: React.FC = () => {
+    const path = usePathname();
+
     return (
         <aside className="fixed left-0 top-[56px] h-screen w-[80px] bg-secondary-1">
             {navAdmin.map((item, index) => {
-                const path = usePathname();
                 const isActived =
                     path === item.path ||
                     (path.includes(item.path) && item.path !== '/');
