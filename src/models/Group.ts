@@ -8,7 +8,7 @@ interface GroupMember {
 interface IGroupModel {
     name: string;
     description: string;
-    avatar: string;
+    avatar: Schema.Types.ObjectId;
     members: GroupMember[];
     creator: Schema.Types.ObjectId;
     coverPhoto: string;
@@ -28,8 +28,9 @@ const GroupSchema = new Schema<IGroupModel>(
             required: true,
         },
         avatar: {
-            type: String,
-            default: '/assets/img/group-avatar.jpg',
+            type: Schema.Types.ObjectId,
+            ref: 'Image',
+            required: true,
         },
         creator: {
             type: Schema.Types.ObjectId,

@@ -13,7 +13,14 @@ export const GET = async (
         })
             .populate('participants')
             .populate('creator')
-            .populate('group');
+            .populate({
+                path: 'group',
+                populate: [
+                    { path: 'avatar' },
+                    { path: 'members.user' },
+                    { path: 'creator' },
+                ],
+            });
 
         if (!conversation) {
             return NextResponse.error();

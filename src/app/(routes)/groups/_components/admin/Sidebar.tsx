@@ -8,6 +8,9 @@ import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
+import { timeConvert } from '@/utils/timeConvert';
+import socketEvent from '@/constants/socketEvent.constant';
+import group from '@/models/Group';
 
 interface Props {
     group: IGroup;
@@ -24,13 +27,13 @@ const Sidebar: React.FC<Props> = ({
     conversations: initConversations,
 }) => {
     const { socket } = useSocket();
+    const { data: session } = useSession();
+
     const [showModalCreateConversation, setShowModalCreateConversation] =
         useState<boolean>(false);
-
     const [conversations, setConversations] =
         useState<IConversation[]>(initConversations);
 
-    const { data: session } = useSession();
     const canCreateConversation = useMemo(() => {
         return currentGroup.members.some(
             (member) =>
@@ -44,6 +47,8 @@ const Sidebar: React.FC<Props> = ({
         formState: { errors },
     } = useForm<FormData>();
 
+    const isCreator = currentGroup.creator._id === session?.user?.id;
+
     const createGroupConversation = async (data: FormData) => {
         if (!session) return toast.error('Chưa đăng nhập');
 
@@ -55,18 +60,22 @@ const Sidebar: React.FC<Props> = ({
                 ),
                 title: data.name,
                 groupId: currentGroup._id,
+                type: 'group',
             });
 
             if (newConversation) {
                 toast.success('Tạo cuộc hội thoại thành công!');
                 setShowModalCreateConversation(false);
                 setConversations([...conversations, newConversation]);
+
+                for (const mem of currentGroup.members) {
+                    socket?.emit(socketEvent.JOIN_ROOM, {
+                        roomId: newConversation._id,
+                        userId: mem.user._id,
+                    });
+                }
             }
         } catch (error) {
-            logger({
-                message: 'Error create group conversation in sidebar' + error,
-                type: 'error',
-            });
             toast.error(
                 'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'
             );
@@ -79,7 +88,10 @@ const Sidebar: React.FC<Props> = ({
                 <div className="flex h-full flex-col">
                     <div className="flex p-2">
                         <div className="relative h-8 w-8">
-                            <Avatar imgSrc={currentGroup.avatar} rounded="sm" />
+                            <Avatar
+                                imgSrc={currentGroup.avatar.url}
+                                rounded="sm"
+                            />
                         </div>
 
                         <div className="ml-2 flex flex-1 flex-col">
@@ -89,12 +101,23 @@ const Sidebar: React.FC<Props> = ({
 
                             <p className="text-xs text-secondary-1 lg:hidden">
                                 Lần hoạt động gần nhất:
-                                {/*<TimeAgoConverted*/}
-                                {/*    time={currentGroup.lastActivity}*/}
-                                {/*/>*/}
+                                {timeConvert(currentGroup.updatedAt.toString())}
                             </p>
                         </div>
                     </div>
+
+                    {isCreator && (
+                        <Button
+                            href={`/groups/${currentGroup._id}/manage/posts`}
+                            variant={'secondary'}
+                            size={'sm'}
+                        >
+                            <Icons.Posts />
+                            <span className={'md:hidden'}>
+                                Quản lý bài viết
+                            </span>
+                        </Button>
+                    )}
 
                     <div className="flex-1 p-2">
                         <h5 className="md:hidden">
@@ -106,7 +129,7 @@ const Sidebar: React.FC<Props> = ({
                                 <Button
                                     href={`/messages/${conversation._id}`}
                                     key={conversation._id}
-                                    className="flex items-center rounded-md bg-secondary-1 dark:bg-dark-secondary-2"
+                                    variant={'default'}
                                 >
                                     <div className="ml-2 flex flex-1 flex-col md:hidden">
                                         <p className="text-sm dark:text-dark-primary-1">

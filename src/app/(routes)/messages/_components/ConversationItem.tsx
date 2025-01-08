@@ -59,7 +59,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                 {conversation.group ? (
                                     <Avatar
                                         onlyImage
-                                        imgSrc={conversation.group.avatar}
+                                        imgSrc={conversation.group.avatar.url}
                                         alt={conversation.group.name}
                                     />
                                 ) : (

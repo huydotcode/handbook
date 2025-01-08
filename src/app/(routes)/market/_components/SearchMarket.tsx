@@ -10,6 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
     showFull: boolean;
@@ -52,6 +53,10 @@ const SearchMarket: React.FC<Props> = ({ showFull, setShowFullSidebar }) => {
                                 }}
                             />
                         </div>
+
+                        <Button variant={'primary'} size={'md'}>
+                            Tìm kiếm
+                        </Button>
                     </DialogContent>
                 </Dialog>
 
@@ -64,7 +69,7 @@ const SearchMarket: React.FC<Props> = ({ showFull, setShowFullSidebar }) => {
 
                 <Input
                     className={cn(
-                        'bg-transparent text-sm dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden'
+                        'bg-transparent text-sm dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 md:hidden'
                     )}
                     value={searchValue}
                     placeholder="Tìm kiếm trên market"

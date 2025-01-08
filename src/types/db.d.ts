@@ -45,8 +45,9 @@ interface IGroup {
     _id: string;
     name: string;
     description: string;
-    avatar: string;
+    avatar: IImage;
     members: {
+        _id: string;
         user: IUser;
         role: string;
     }[];
@@ -108,6 +109,7 @@ interface IPost {
     comments: IComment[];
     createdAt: Date;
     updatedAt: Date;
+    type: 'default' | 'group';
 }
 
 interface IUser {
@@ -155,6 +157,7 @@ interface IConversation {
     group?: IGroup;
     type: string;
     status: string;
+    avatar: IImage;
     createdAt: Date;
     updatedAt: Date;
 }

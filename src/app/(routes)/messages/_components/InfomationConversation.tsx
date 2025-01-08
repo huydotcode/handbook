@@ -48,7 +48,7 @@ const InfomationConversation: React.FC<Props> = ({
 
     const avatar = useMemo(() => {
         if (conversation.group) {
-            return conversation.group.avatar;
+            return conversation.group.avatar.url;
         } else {
             return partner?.avatar;
         }

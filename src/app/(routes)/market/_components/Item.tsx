@@ -16,7 +16,7 @@ const Item: React.FC<Props> = ({ data: item }) => {
     return (
         <Button
             variant={'ghost'}
-            className="relative flex h-[300px] w-full cursor-pointer flex-col items-start justify-start border hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-1"
+            className="relative flex h-[300px] w-full cursor-pointer flex-col items-start justify-start border bg-secondary-1 hover:bg-hover-1 dark:border-none dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1"
             key={item._id}
             href={`/market/item/${item._id}`}
         >

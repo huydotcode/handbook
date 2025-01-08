@@ -7,6 +7,7 @@ import {
     deleteConversation,
     getConversationsByGroupId,
 } from './conversation.action';
+import { Types } from 'mongoose';
 
 export const createGroup = async ({
     name,
@@ -57,19 +58,33 @@ export const createGroup = async ({
     }
 };
 
-export const getGroupsByUserId = async ({ userId }: { userId: string }) => {
+export const getGroupsByUserId = async ({
+    userId,
+    page,
+    pageSize,
+}: {
+    userId: string;
+    page: number;
+    pageSize: number;
+}) => {
     try {
         await connectToDB();
 
         const groups = await Group.find({
             members: {
                 $elemMatch: {
-                    user: userId,
+                    user: new Types.ObjectId(userId),
                 },
             },
-        });
+        })
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .populate('avatar')
+            .populate('creator')
+            .populate('members.user');
 
-        return JSON.parse(JSON.stringify(groups));
+        return JSON.parse(JSON.stringify(groups)) as IGroup[];
     } catch (error: any) {
         throw new Error(error);
     }
@@ -89,6 +104,7 @@ export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
         }
 
         const group = await Group.findById(groupId)
+            .populate('avatar')
             .populate('members.user')
             .populate('creator');
 
@@ -111,7 +127,10 @@ export const getMembersByGroupId = async ({ groupId }: { groupId: string }) => {
         }
 
         // lấy thông tin các thành viên từ field members
-        const group = await Group.findById(groupId).populate('members.user');
+        const group = await Group.findById(groupId)
+            .populate('avatar')
+            .populate('members.user')
+            .populate('creator');
 
         return JSON.parse(JSON.stringify(group.members));
     } catch (error: any) {

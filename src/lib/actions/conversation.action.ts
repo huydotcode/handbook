@@ -116,12 +116,14 @@ export const createConversation = async ({
     status = 'active',
     title,
     groupId = null,
+    type = 'private',
 }: {
     participantsUserId: string[];
     creator: string;
     title?: string;
     status?: string;
     groupId?: string | null;
+    type?: string;
 }) => {
     try {
         await connectToDB();
@@ -135,6 +137,7 @@ export const createConversation = async ({
             participants: participantsUserId,
             status,
             group: groupId,
+            type,
         });
 
         await newConversation.save();

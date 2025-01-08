@@ -4,6 +4,7 @@ import {
     getMembersByGroupId,
 } from '@/lib/actions/group.action';
 import { Button } from '@/components/ui/Button';
+import { splitName } from '@/utils/splitName';
 
 const MAX_MEMBERS = 6;
 
@@ -32,14 +33,15 @@ const GroupPage = async ({
                                 href={`/profile/${member.user._id}`}
                                 className="justify-start"
                                 key={member._id}
-                                variant={'text'}
+                                variant={'outline'}
+                                size={'lg'}
                             >
                                 <Avatar
                                     className="mr-2"
-                                    width={42}
-                                    height={42}
+                                    onlyImage
+                                    width={32}
+                                    height={32}
                                     imgSrc={member.user.avatar}
-                                    userUrl={member.user._id}
                                 />
 
                                 <span>{member.user.name}</span>
@@ -50,7 +52,7 @@ const GroupPage = async ({
 
             <div className="mt-2">
                 <h1 className="text-sm font-bold">Thành viên</h1>
-                <div className="mt-2">
+                <div className="mt-2 grid grid-cols-4 gap-2 lg:grid-cols-3 md:grid-cols-2">
                     {members
                         .filter((m) => m.role == 'member')
                         .slice(0, MAX_MEMBERS)
@@ -59,17 +61,21 @@ const GroupPage = async ({
                                 href={`/profile/${member.user._id}`}
                                 className="justify-start"
                                 key={member._id}
-                                variant={'text'}
+                                variant={'outline'}
+                                size={'md'}
                             >
                                 <Avatar
+                                    onlyImage
                                     className="mr-2"
-                                    width={42}
-                                    height={42}
+                                    width={32}
+                                    height={32}
                                     imgSrc={member.user.avatar}
-                                    userUrl={member.user._id}
                                 />
 
-                                <span>{member.user.name}</span>
+                                <span>
+                                    {splitName(member.user.name).firstName}{' '}
+                                    {splitName(member.user.name).lastName}
+                                </span>
                             </Button>
                         ))}
 

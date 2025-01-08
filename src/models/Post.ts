@@ -9,6 +9,7 @@ interface IPostModel {
     shares: Types.ObjectId[];
     group: Types.ObjectId;
     comments: Types.ObjectId[];
+    type: string;
     status: string;
 }
 
@@ -46,6 +47,11 @@ const PostSchema = new Schema<IPostModel>(
                 default: [],
             },
         ],
+        type: {
+            type: String,
+            default: 'default',
+            enum: ['default', 'group'],
+        },
         status: {
             type: String,
             default: 'active',

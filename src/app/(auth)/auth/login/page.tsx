@@ -117,9 +117,12 @@ const LoginPage = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>Email của bạn</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Email" {...field} />
+                                        <Input
+                                            placeholder="Email của bạn"
+                                            {...field}
+                                        />
                                     </FormControl>
 
                                     <FormMessage />
@@ -132,11 +135,11 @@ const LoginPage = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>Mật khẩu</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="password"
-                                            placeholder="Password"
+                                            placeholder="Mật khẩu của bạn"
                                             {...field}
                                         />
                                     </FormControl>

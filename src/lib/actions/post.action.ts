@@ -2,18 +2,26 @@
 import { Comment, Group, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
+import { revalidatePath } from 'next/cache';
 
 const POPULATE_USER = 'name username avatar friends';
-const POPULATE_GROUP = 'name avatar members';
+const POPULATE_GROUP = {
+    path: 'group',
+    populate: [
+        { path: 'avatar' },
+        { path: 'members.user' },
+        { path: 'creator' },
+    ],
+};
 
 export const getNewFeedPosts = async ({
     groupId,
     page,
     pageSize,
-    path,
     type,
     userId,
     username,
+    isManage = false,
 }: {
     page: string;
     pageSize: string;
@@ -21,8 +29,17 @@ export const getNewFeedPosts = async ({
     userId?: string;
     username?: string;
     type?: string;
-    path?: string;
+    isManage?: boolean;
 }) => {
+    console.log('getNewFeedPosts', {
+        groupId,
+        page,
+        pageSize,
+        type,
+        userId,
+        username,
+        isManage,
+    });
     try {
         await connectToDB();
 
@@ -34,7 +51,7 @@ export const getNewFeedPosts = async ({
             userId === session?.user.id || username === session?.user.username;
 
         // Kiểm tra xem có phải là user hiện tại không
-        if (userId !== 'undefined' && userId) {
+        if (userId !== 'undefined' && userId && type !== 'group') {
             query.author = isCurrentUser ? session?.user.id : userId;
         } else if (username !== 'undefined') {
             const user = await User.findOne({ username });
@@ -48,20 +65,35 @@ export const getNewFeedPosts = async ({
             : 'public';
 
         if (type === 'group') {
+            query.type = 'group';
+
             if (groupId !== 'undefined') {
                 query.group = groupId;
             } else {
                 const groupsHasJoin = await Group.find({
                     members: { $elemMatch: { user: session?.user.id } },
                 }).distinct('_id');
-                query.group = { $in: groupsHasJoin };
+
+                if (groupsHasJoin.length === 0) {
+                    query.group = null;
+                } else {
+                    query.group = { $in: groupsHasJoin };
+                }
             }
+        } else {
+            query.type = 'default';
+        }
+
+        if (isManage) {
+            query.status = 'pending';
+        } else {
+            query.status = 'active';
         }
 
         let posts = await Post.find(query)
             .populate('author', POPULATE_USER)
             .populate('images')
-            .populate('group', POPULATE_GROUP)
+            .populate(POPULATE_GROUP)
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER)
             .populate({
@@ -73,19 +105,27 @@ export const getNewFeedPosts = async ({
             .sort({ createdAt: -1 });
 
         // Filter posts by privacy settings
-        posts = posts.filter((post) => {
-            if (post.group) {
-                return post.group.members.some(
-                    (member: any) => member.user === session?.user.id
-                );
-            } else if (post.option === 'friends') {
-                return (
-                    post.author.friends.includes(session?.user.id) ||
-                    post.author._id.equals(session?.user.id)
-                );
-            }
-            return true;
-        });
+        if (posts.length > 0) {
+            posts = posts.filter((post) => {
+                if (post.group && isManage) {
+                    return (
+                        post.group.creator._id.toString() === session?.user.id
+                    );
+                }
+
+                if (post.group) {
+                    return post.group.members.some(
+                        (member: any) => member.user === session?.user.id
+                    );
+                } else if (post.option === 'friends') {
+                    return (
+                        post.author.friends.includes(session?.user.id) ||
+                        post.author._id.equals(session?.user.id)
+                    );
+                }
+                return true;
+            });
+        }
 
         return JSON.parse(JSON.stringify(posts));
     } catch (error: any) {
@@ -122,11 +162,13 @@ export const createPost = async ({
     images,
     option,
     groupId = null,
+    type = 'default',
 }: {
     content: string;
     images: any[];
     option: string;
     groupId?: string | null;
+    type?: string;
 }) => {
     const session = await getAuthSession();
     if (!session) return;
@@ -141,6 +183,7 @@ export const createPost = async ({
             author: session.user.id,
             group: groupId,
             status: groupId ? 'pending' : 'active',
+            type,
         });
         await newPost.save();
 
@@ -219,6 +262,31 @@ export const deletePost = async ({ postId }: { postId: string }) => {
         await connectToDB();
         await Post.findByIdAndDelete(postId);
         await Comment.deleteMany({ postId: postId });
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const updateStatusPost = async ({
+    postId,
+    status,
+    path,
+}: {
+    postId: string;
+    status: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+
+        if (status === 'active') {
+            await Post.updateOne({ _id: postId }, { status });
+        } else {
+            await Post.findByIdAndDelete(postId);
+            await Comment.deleteMany({ postId: postId });
+        }
+
+        revalidatePath(path);
     } catch (error: any) {
         throw new Error(error);
     }

@@ -28,7 +28,14 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
         })
             .populate('participants', POPULATE_USER)
             .populate('creator', POPULATE_USER)
-            .populate('group');
+            .populate({
+                path: 'group',
+                populate: [
+                    { path: 'avatar' },
+                    { path: 'members.user' },
+                    { path: 'creator' },
+                ],
+            });
 
         return NextResponse.json(conversations, { status: 200 });
     } catch (error) {

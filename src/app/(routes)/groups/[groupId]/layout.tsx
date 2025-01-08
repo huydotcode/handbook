@@ -48,14 +48,14 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
     const isMember = group.members.some(
         (mem) => mem.user._id === session.user.id
     );
-    if (!isMember) return redirect('/groups');
+    if (!isMember && group.type == 'private') return redirect('/groups');
 
     return (
         <div>
             <Sidebar group={group} conversations={conversations} />
 
-            <div className="first-letter: ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
-                <div className="w-full">
+            <div className="ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
+                <div className="mx-auto w-full max-w-[1000px]">
                     <Header group={group} />
 
                     <main className="mt-4 min-h-[150vh]">{children}</main>

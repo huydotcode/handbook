@@ -6,6 +6,7 @@ interface IConversationModel {
     participants: Types.ObjectId[];
     group: Types.ObjectId;
     lastMessage: Types.ObjectId;
+    avatar: Types.ObjectId;
     type: string;
     status: string;
     createdAt: Date;
@@ -26,6 +27,11 @@ const ConversationModel = new Schema<IConversationModel>(
             ref: 'Message',
             required: false,
             default: null,
+        },
+        avatar: {
+            type: Schema.Types.ObjectId,
+            ref: 'Image',
+            required: false,
         },
         type: { type: String, default: 'private', enum: ['private', 'group'] },
         group: {

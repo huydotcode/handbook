@@ -78,13 +78,11 @@ const Action: React.FC<Props> = ({ group }) => {
             {!isCreator && (
                 <Button
                     className={'h-12 min-w-[48px]'}
-                    variant={'secondary'}
-                    size={'md'}
+                    variant={isJoinGroup ? 'warning' : 'primary'}
+                    size={'sm'}
                     onClick={isJoinGroup ? handleOutGroup : handleJoinGroup}
                 >
-                    <span>
-                        {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
-                    </span>
+                    {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
 
                     <p className="ml-2 md:hidden">
                         {isRequest && 'Đã gửi lời tham gia nhóm'}
@@ -101,9 +99,7 @@ const Action: React.FC<Props> = ({ group }) => {
                     size={'md'}
                     onClick={() => setOpenModalDelete(true)}
                 >
-                    <span>
-                        <Icons.Delete />
-                    </span>
+                    <Icons.Delete />
                 </Button>
             )}
 

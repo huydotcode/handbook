@@ -17,10 +17,10 @@ import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
     groupId?: string;
-    type?: 'home' | 'profile' | 'group';
+    type?: 'default' | 'profile' | 'group';
 }
 
-const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
+const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
 
@@ -31,6 +31,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
     const [photos, setPhotos] = useState<any[]>([]);
     const form = useForm<IPostFormData>({
         defaultValues: {
+            content: '',
             option: 'public',
             files: [],
         },
@@ -72,6 +73,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
                 option: option,
                 images: imagesId,
                 groupId: groupId,
+                type,
             })) as IPost;
 
             await queryClient.invalidateQueries({ queryKey: getPostsKey() });
@@ -91,7 +93,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'home' }) => {
                 sendPost(data),
                 {
                     loading: 'Bài viết đang được đăng...!',
-                    success: 'Đăng bài thành công!',
+                    success: 'Đăng bài đang chờ kiểm duyệt!',
                     error: 'Đã có lỗi xảy ra khi đăng bài!',
                 },
                 {

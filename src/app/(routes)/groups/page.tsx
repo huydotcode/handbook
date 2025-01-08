@@ -1,39 +1,17 @@
 import { InfinityPostComponent } from '@/components/post';
-import { getGroupsByUserId } from '@/lib/actions/group.action';
-import { getAuthSession } from '@/lib/auth';
 import React from 'react';
 import { Sidebar } from './_components';
-import { Button } from '@/components/ui/Button';
 
 const GroupsPage = async () => {
-    const session = await getAuthSession();
-    if (!session) return null;
-
-    const groups = (await getGroupsByUserId({
-        userId: session.user.id,
-    })) as IGroup[];
-
     return (
         <div>
-            <Sidebar groups={groups} />
-            <div className="ml-[360px] mt-[56px] min-h-screen bg-secondary-1">
-                {groups.length > 0 ? (
-                    <InfinityPostComponent
-                        className="mt-4"
-                        title="Hoạt động gần đây"
-                        type="group"
-                    />
-                ) : (
-                    <div className="mt-2 flex items-center justify-center">
-                        <p className="mr-2 text-secondary-1">
-                            Bạn chưa tham gia nhóm nào
-                        </p>
-
-                        <Button href="groups/explore" variant={'text'}>
-                            Tìm nhóm
-                        </Button>
-                    </div>
-                )}
+            <Sidebar />
+            <div className="ml-[400px] mt-[56px] min-h-[calc(100vh-56px)] bg-primary-1 dark:bg-dark-primary-1 lg:ml-[80px]">
+                <InfinityPostComponent
+                    className="mx-auto mt-4 max-w-[700px] xl:max-w-[600px] lg:max-w-[600px] md:mx-2"
+                    title="Hoạt động gần đây"
+                    type="group"
+                />
             </div>
         </div>
     );

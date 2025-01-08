@@ -11,7 +11,6 @@ import {
 } from 'react-hook-form';
 
 import { Fade, Modal } from '@mui/material';
-import { toast } from 'react-hot-toast';
 
 import postAudience from '@/constants/postAudience.constant';
 import { useSession } from 'next-auth/react';
@@ -20,6 +19,8 @@ import TextEditor from '../ui/TextEditor';
 import AddToPost from './AddToPost';
 import Photos from './Photos';
 import { Button } from '@/components/ui/Button';
+import { convertFilesToBase64 } from '@/utils/downloadFile';
+import toast from 'react-hot-toast';
 
 interface Props {
     show: boolean;
@@ -51,29 +52,18 @@ const ModalCreatePost: React.FC<Props> = ({
     const { data: session } = useSession();
 
     // Xử lý thay đổi ảnh
-    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (fileList) {
             const files: File[] = Array.from(fileList);
-            files.forEach((file) => {
-                if (!file) {
-                    toast.error('Có lỗi trong quá trình đăng tải ảnh!');
-                    return;
-                }
 
-                if (!file.type.includes('image')) {
-                    toast.error('Sai định dạng! Vui lòng upload ảnh');
-                    return;
-                }
+            try {
+                const base64Files = await convertFilesToBase64(files);
 
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    const result = reader.result as string;
-
-                    setPhotos((prev) => [...prev, result]);
-                };
-            });
+                setPhotos((prev) => [...prev, ...base64Files]);
+            } catch (error: any) {
+                toast.error(error);
+            }
 
             form.setValue('files', files);
         }

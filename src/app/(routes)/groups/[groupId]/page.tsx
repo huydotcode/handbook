@@ -9,14 +9,14 @@ interface Props {
 
 const page: React.FC<Props> = async ({ params }) => {
     const { groupId } = await params;
-    const group = await getGroupByGroupId({ groupId });
+    const group = (await getGroupByGroupId({ groupId })) as IGroup;
 
     if (!group) return null;
 
     return (
         <div className="flex justify-between lg:flex-col-reverse">
             <div className="mr-4 flex flex-1 lg:mt-4 md:mr-0 md:mt-2 md:w-full">
-                <InfinityPostComponent groupId={groupId} type="group" />
+                <InfinityPostComponent groupId={group._id} type="group" />
             </div>
 
             <Infomation group={group} />

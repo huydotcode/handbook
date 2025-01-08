@@ -11,7 +11,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'rounded-xl shadow-md text-primary-foreground hover:bg-hover-1 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
+                    'rounded-xl shadow-md text-primary-1 hover:bg-hover-1 dark:bg-dark-secondary-1 dark:hover:bg-dark-hover-1',
                 primary:
                     'bg-primary-2 rounded-xl text-white hover:bg-hover-blue',
                 destructive:

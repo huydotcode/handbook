@@ -3,6 +3,14 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { timeConvert } from '@/utils/timeConvert';
+import { Avatar } from '@/components/ui';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { TooltipArrow, TooltipPortal } from '@radix-ui/react-tooltip';
 
 interface Link {
     name: string;
@@ -53,32 +61,51 @@ const Items = {
     },
     Group: (props: GroupItem) => {
         const { data: group } = props;
+
         return (
-            <Button
-                className="mb-2 w-full justify-start"
-                variant={'default'}
-                href={`/groups/${group._id}`}
-            >
-                <div className="relative h-8 w-8">
-                    <Image
-                        className="overflow-hidden rounded-full object-cover"
-                        src={group.avatar || ''}
-                        alt={group.name || ''}
-                        fill
-                    />
-                </div>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            className="mb-2 flex h-14 w-full items-center justify-start md:h-10"
+                            variant={'default'}
+                            href={`/groups/${group._id}`}
+                        >
+                            <Avatar
+                                onlyImage
+                                imgSrc={group.avatar.url}
+                                alt={group.name}
+                                width={32}
+                                height={32}
+                            />
 
-                <div className="ml-2 flex flex-1 flex-col">
-                    <p className="text-sm dark:text-dark-primary-1 md:hidden">
-                        {group.name}
-                    </p>
+                            <div className="ml-2 flex flex-1 flex-col">
+                                <p className="text-sm dark:text-dark-primary-1 lg:hidden">
+                                    {group.name}
+                                </p>
 
-                    <p className="text-xs text-secondary-1 lg:hidden">
-                        Lần hoạt động gần nhất:{' '}
-                        {timeConvert(group.lastActivity.toString())}
-                    </p>
-                </div>
-            </Button>
+                                <p className="text-xs text-secondary-1 lg:hidden">
+                                    Lần hoạt động gần nhất:{' '}
+                                    {timeConvert(group.lastActivity.toString())}
+                                </p>
+                            </div>
+                        </Button>
+                    </TooltipTrigger>
+
+                    <TooltipContent>
+                        <div className="flex flex-col">
+                            <p className="text-sm dark:text-dark-primary-1">
+                                {group.name}
+                            </p>
+
+                            <p className="text-xs text-secondary-1">
+                                Lần hoạt động gần nhất:{' '}
+                                {timeConvert(group.lastActivity.toString())}
+                            </p>
+                        </div>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         );
     },
 };

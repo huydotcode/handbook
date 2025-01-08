@@ -1,9 +1,18 @@
 import { getAuthSession } from '@/lib/auth';
 import { Group, Post, User } from '@/models';
 import { NextRequest, NextResponse } from 'next/server';
+import connectToDB from '@/services/mongoose';
+import { Types } from 'mongoose';
 
 const POPULATE_USER = 'name username avatar friends';
-const POPULATE_GROUP = 'name avatar';
+const POPULATE_GROUP = {
+    path: 'group',
+    populate: [
+        { path: 'avatar' },
+        { path: 'members.user' },
+        { path: 'creator' },
+    ],
+};
 
 type Params = Promise<{ req: NextRequest }>;
 
@@ -19,89 +28,84 @@ export const GET = async (
     const userId = searchParams.get('userId');
     const username = searchParams.get('username');
     const type = searchParams.get('type');
+    const isManage = searchParams.get('isManage') === 'true';
 
-    const query = {} as any;
-
-    const session = await getAuthSession();
-
-    if (userId !== 'undefined' || username !== 'undefined') {
-        // Kiểm tra xem có phải là user đang đăng nhập không
-        if (userId == session?.user.id || username == session?.user.username) {
-            query.author = session?.user.id;
-            query.option = {
-                $in: ['public', 'private'],
-            };
-        } else {
-            query.option = 'public';
-
-            if (userId !== 'undefined' && userId) {
-                query.author = userId;
-            } else {
-                const user = await User.findOne({ username });
-                if (user) {
-                    query.author = user.id;
-                }
-            }
-        }
-    }
-
-    // Lấy những bài post trong group của user đang tham gia
-    if (type == 'group' && groupId == 'undefined') {
-        // Lấy những group mà user đang tham gia
-        let groupsHasJoin = await Group.find({
-            members: {
-                $elemMatch: {
-                    user: {
-                        $eq: session?.user.id,
-                    },
-                },
-            },
-        });
-
-        groupsHasJoin = groupsHasJoin.flatMap((group) => group._id);
-
-        query.group = {
-            $in: groupsHasJoin,
-        };
-    } else {
-        if (groupId !== 'undefined') {
-            query.group = groupId;
-        }
-    }
+    console.log({
+        page,
+        pageSize,
+        groupId,
+        userId,
+        username,
+        type,
+        isManage,
+    });
 
     try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        const query: any = {};
+
+        // Kiểm tra xem có phải là user hiện tại không
+        const isCurrentUser =
+            userId === session?.user.id || username === session?.user.username;
+
+        // Kiểm tra xem có phải là user hiện tại không
+        if (userId !== 'undefined' && userId && type !== 'group') {
+            query.author = isCurrentUser ? session?.user.id : userId;
+        } else if (username !== 'undefined') {
+            const user = await User.findOne({ username });
+            if (user) {
+                query.author = user.id;
+            }
+        }
+
+        query.option = isCurrentUser
+            ? { $in: ['public', 'private'] }
+            : 'public';
+
+        if (type === 'group') {
+            query.type = 'group';
+
+            if (groupId !== 'undefined' && groupId) {
+                query.group = new Types.ObjectId(groupId);
+            } else {
+                const groupsHasJoin = await Group.find({
+                    members: { $elemMatch: { user: session?.user.id } },
+                }).distinct('_id');
+
+                if (groupsHasJoin.length === 0) {
+                    query.group = null;
+                } else {
+                    query.group = { $in: groupsHasJoin };
+                }
+            }
+        } else {
+            query.type = 'default';
+        }
+
+        query.status = isManage ? 'pending' : 'active';
+
+        console.log('query', query);
+
         let posts = await Post.find(query)
             .populate('author', POPULATE_USER)
             .populate('images')
-            .populate('group', POPULATE_GROUP)
+            .populate(POPULATE_GROUP)
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER)
             .populate({
                 path: 'comments',
-                populate: {
-                    path: 'author',
-                    select: POPULATE_USER,
-                },
+                populate: { path: 'author', select: POPULATE_USER },
             })
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 });
 
-        // Nếu là chế độ chỉ bạn bè thì kiểm tra xem có phải là bạn bè không
-        posts = posts.filter((post) => {
-            if (post.option == 'friends') {
-                if (post.author.friends.includes(session?.user.id)) {
-                    return post;
-                }
-            } else {
-                return post;
-            }
-        });
-
         return NextResponse.json(posts, {
             status: 200,
         });
     } catch (error) {
-        return new Response('Error', { status: 500 });
+        return new Response(`Error get posts ` + error, { status: 500 });
     }
 };

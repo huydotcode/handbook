@@ -180,10 +180,6 @@ const Message: React.FC<Props> = ({
         }
     }, [isLastMessage]);
 
-    useEffect(() => {
-        console.log(messages);
-    }, [messages]);
-
     return (
         <div
             id={msg._id}
@@ -195,7 +191,7 @@ const Message: React.FC<Props> = ({
             ref={messageRef}
         >
             <div
-                className={cn('flex', {
+                className={cn('flex w-full', {
                     'flex-row-reverse': isOwnMsg,
                     'w-full items-center': !msg.conversation.group,
                 })}
@@ -250,26 +246,24 @@ const Message: React.FC<Props> = ({
                             })}
                         >
                             {msg.images.map((img, index) => (
-                                <div
-                                    key={index}
+                                <Image
+                                    key={img._id}
                                     className={cn(
-                                        `relative my-1 h-[${img.height}px] w-[${img.width}px] aspect-auto cursor-pointer shadow-md`,
+                                        'max-w-[30vw] cursor-pointer',
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
                                                 !isOwnMsg,
                                         }
                                     )}
-                                >
-                                    <Image
-                                        onClick={() => {
-                                            handleClickImage(img.url);
-                                        }}
-                                        src={img.url}
-                                        alt="image"
-                                        fill
-                                    />
-                                </div>
+                                    onClick={() => {
+                                        handleClickImage(img.url);
+                                    }}
+                                    src={img.url}
+                                    alt="image"
+                                    width={img.width}
+                                    height={img.height}
+                                />
                             ))}
                         </div>
                     )}
@@ -310,19 +304,19 @@ const Message: React.FC<Props> = ({
                                             <div className="flex flex-col">
                                                 <p>{msgTextContent()}</p>
                                             </div>
-
-                                            {index == 0 &&
-                                                !isSearchMessage &&
-                                                msg.sender._id ===
-                                                    session?.user.id && (
-                                                    <span className="text-xs text-secondary-1">
-                                                        {msg.isRead && 'Đã xem'}
-                                                    </span>
-                                                )}
                                         </div>
                                     )}
                                 </div>
                             </TooltipTrigger>
+
+                            {index == 0 &&
+                                !isSearchMessage &&
+                                msg.sender._id === session?.user.id && (
+                                    <span className="text-xs text-secondary-1">
+                                        {msg.isRead && 'Đã xem'}
+                                    </span>
+                                )}
+
                             <TooltipContent>
                                 <TooltipArrow className={'fill-white'} />
                                 <div className="flex items-center justify-center">

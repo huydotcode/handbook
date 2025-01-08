@@ -46,7 +46,7 @@ const ChatHeader: React.FC<Props> = ({
 
     const avatar = useMemo(() => {
         if (currentRoom.group) {
-            return currentRoom.group.avatar;
+            return currentRoom.group.avatar.url;
         } else {
             return partner?.avatar;
         }

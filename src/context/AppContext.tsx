@@ -51,7 +51,7 @@ export const useNotifications = (userId: string | undefined) =>
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
-
+        refetchOnMount: false,
         retry: false,
     });
 
