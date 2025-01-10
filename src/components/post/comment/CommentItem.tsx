@@ -145,7 +145,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                     <div className="relative w-fit break-all rounded-xl bg-primary-1 px-4 py-1 text-sm dark:bg-dark-secondary-2">
                         <Link
                             href={`/profile/${comment.author._id}`}
-                            className="mb-1 p-0 text-xs font-bold hover:underline"
+                            className="mb-1 p-0 text-xs font-bold hover:underline dark:text-dark-primary-1"
                         >
                             {comment.author.name}
                         </Link>
