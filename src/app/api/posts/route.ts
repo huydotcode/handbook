@@ -20,7 +20,7 @@ export const GET = async (
     request: NextRequest,
     segmentData: { params: Params }
 ) => {
-    const searchParams = await request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
 
     const page = searchParams.get('page') || 1;
     const pageSize = searchParams.get('pageSize') || 3;

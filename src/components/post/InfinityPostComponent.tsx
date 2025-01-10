@@ -8,6 +8,7 @@ import { useInView } from 'react-intersection-observer';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
 import { Button } from '@/components/ui/Button';
+import toast from 'react-hot-toast';
 
 interface Props {
     className?: string;
@@ -47,6 +48,7 @@ export const usePosts = ({
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
         },
+        select: (data) => data.pages.flatMap((page) => page),
         initialPageParam: 1,
         refetchInterval: 1000 * 60 * 5,
         refetchOnMount: false,
@@ -78,13 +80,19 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     useEffect(() => {
         if (!query.isFetching && inView) {
-            query.fetchNextPage();
+            (async () => {
+                try {
+                    await query.fetchNextPage();
+                } catch (error) {
+                    toast.error('Có lỗi xảy ra khi tải bài viết');
+                }
+            })();
         }
     }, [query.isFetching, inView, query]);
 
     return (
         <>
-            <div className={cn(className, 'w-full')}>
+            <div className={cn(className, 'relative w-full')}>
                 {title && <h5 className="mb-2 text-xl font-bold">{title}</h5>}
 
                 {isManage && (
@@ -103,19 +111,12 @@ const InfinityPostComponent: React.FC<Props> = ({
                     <CreatePost groupId={groupId} type="group" />
                 )}
 
-                {query.data?.pages.map((page, i) => (
-                    <div key={i}>
-                        {page.map((post: IPost) => (
-                            <Post
-                                data={post}
-                                key={post._id}
-                                isManage={isManage}
-                            />
-                        ))}
+                {query?.data &&
+                    query?.data.map((post: IPost) => (
+                        <Post data={post} key={post._id} isManage={isManage} />
+                    ))}
 
-                        <div className="py-2" ref={bottomRef}></div>
-                    </div>
-                ))}
+                <div className="absolute bottom-[800px]" ref={bottomRef}></div>
 
                 {query.isLoading && (
                     <div className="flex justify-center py-10">

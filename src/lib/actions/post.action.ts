@@ -126,7 +126,7 @@ export const getPostByPostId = async ({ postId }: { postId: string }) => {
 
         const post = await Post.findById(postId)
             .populate('author', POPULATE_USER)
-            .populate('group', POPULATE_GROUP)
+            .populate(POPULATE_GROUP)
             .populate('images')
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER);
