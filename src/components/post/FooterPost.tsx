@@ -4,7 +4,7 @@ import { Avatar, Icons, Loading } from '@/components/ui';
 import { useSession } from 'next-auth/react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import React, { useRef } from 'react';
+import React, { KeyboardEventHandler, useRef } from 'react';
 import { sendComment } from '@/lib/actions/comment.action';
 import { getCommentsKey, getPostKey } from '@/lib/queryKey';
 import toast from 'react-hot-toast';
@@ -97,6 +97,15 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         }
     };
 
+    const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            formRef.current?.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true })
+            );
+        }
+    };
+
     if (!session || !comments) return <Loading text={'Đang tải bình luận'} />;
 
     return (
@@ -114,7 +123,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
 
                     <div className="ml-2 flex-1">
                         <form
-                            className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
+                            className="flex w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
                             onSubmit={handleSubmit(onSubmitComment)}
                             ref={formRef}
                         >
@@ -125,14 +134,14 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                             />
 
                             <Button
-                                className="right-0 w-10 rounded-r-xl border-l-2 px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
+                                className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
                                 variant={'custom'}
                                 type="submit"
                             >
                                 {isLoading ? (
                                     <Icons.Loading className="animate-spin" />
                                 ) : (
-                                    <Icons.Send className="text-xl" />
+                                    <Icons.Send />
                                 )}
                             </Button>
                         </form>
