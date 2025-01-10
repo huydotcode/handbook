@@ -7,7 +7,7 @@ import { Avatar, Modal, TextEditor } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import postAudience from '@/constants/postAudience.constant';
 import { editPost } from '@/lib/actions/post.action';
-import { getPostsKey } from '@/lib/queryKey';
+import { getPostKey, getPostsKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { editPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
@@ -44,8 +44,10 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
         });
 
     const mutation = useMutation({
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: getPostKey(post._id),
+            });
         },
         mutationFn: onSubmit,
     });

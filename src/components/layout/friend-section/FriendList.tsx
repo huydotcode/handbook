@@ -13,6 +13,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface Props {
     className?: string;
@@ -25,11 +31,21 @@ const FriendList: React.FC<Props> = ({ session, className }) => {
     const { data: conversations } = useConversations(session?.user.id);
     const { data: friends } = useFriends(session?.user.id);
 
+    const privateConversations =
+        conversations?.filter(
+            (conversation) => conversation.type == 'private'
+        ) || [];
+
+    const groupConversations =
+        conversations?.filter(
+            (conversation) => conversation.type === 'group'
+        ) || [];
+
     return (
         <>
             <div
                 className={cn(
-                    'flex h-full w-full flex-col pl-2 pt-2 transition-all duration-500 dark:border-none',
+                    'flex h-full w-full flex-col pl-2 pt-2 transition-all duration-500 dark:border-none md:pl-0',
                     path !== '/' && 'bg-white dark:bg-dark-secondary-1'
                 )}
             >
@@ -46,85 +62,153 @@ const FriendList: React.FC<Props> = ({ session, className }) => {
                     </div>
                 </div>
 
-                <div className="mt-2 flex flex-col">
-                    {friends &&
-                        friends.map((friend) => {
-                            const conversation =
-                                conversations &&
-                                conversations.find((conversation) => {
-                                    const friendId = friend._id;
-                                    const userId = session?.user.id;
+                <div className="flex flex-col">
+                    {privateConversations &&
+                        privateConversations.map((conversation) => {
+                            const friend = conversation.participants.find(
+                                (part) => part._id !== session.user.id
+                            );
 
-                                    return conversation.participants.some(
-                                        (participant) =>
-                                            participant._id === friendId ||
-                                            participant._id === userId
-                                    );
-                                });
-
-                            if (!conversation) return null;
+                            if (!friend) return null;
 
                             return (
-                                <DropdownMenu key={friend._id}>
-                                    <DropdownMenuTrigger asChild={true}>
+                                <TooltipProvider key={conversation._id}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger
+                                                    asChild={true}
+                                                >
+                                                    <Button
+                                                        variant={'custom'}
+                                                        className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
+                                                    >
+                                                        <div className="flex items-center lg:h-8 lg:w-8">
+                                                            <Image
+                                                                className="rounded-full"
+                                                                src={
+                                                                    friend.avatar ||
+                                                                    ''
+                                                                }
+                                                                alt={
+                                                                    friend.name ||
+                                                                    ''
+                                                                }
+                                                                width={32}
+                                                                height={32}
+                                                            />
+
+                                                            <span className="ml-2 text-xs lg:hidden">
+                                                                {friend.name}
+                                                            </span>
+                                                        </div>
+
+                                                        <span className="lg:hidden">
+                                                            {friend.isOnline && (
+                                                                <Icons.Circle className="text-sm text-primary-2" />
+                                                            )}
+                                                        </span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+
+                                                <DropdownMenuContent
+                                                    align={'start'}
+                                                >
+                                                    <DropdownMenuItem
+                                                        className={'p-0'}
+                                                    >
+                                                        <Button
+                                                            className={
+                                                                'w-full justify-start'
+                                                            }
+                                                            variant={'ghost'}
+                                                            size={'xs'}
+                                                            href={`/profile/${friend._id}`}
+                                                        >
+                                                            <Icons.Users />
+                                                            Trang cá nhân
+                                                        </Button>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className={'p-0'}
+                                                    >
+                                                        <Button
+                                                            className={
+                                                                'w-full justify-start'
+                                                            }
+                                                            variant={'ghost'}
+                                                            size={'xs'}
+                                                            href={`/messages/${conversation._id}`}
+                                                        >
+                                                            <Icons.Message />
+                                                            Nhắn tin
+                                                        </Button>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <span>{friend.name}</span>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            );
+                        })}
+                </div>
+
+                <div className="mt-2 flex items-center justify-between px-2">
+                    <h1 className="text-md font-bold lg:hidden">
+                        Nhóm
+                        <span className="ml-2 text-sm text-secondary-1">
+                            {groupConversations.length}
+                        </span>
+                    </h1>
+
+                    <div className="hidden w-full items-center justify-center p-1 lg:flex">
+                        <Icons.Users />
+                    </div>
+                </div>
+
+                <div className="flex flex-col">
+                    {groupConversations.map((conversation) => {
+                        return (
+                            <TooltipProvider key={conversation._id}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
                                         <Button
-                                            variant={'custom'}
                                             className="flex w-full cursor-pointer items-center justify-between px-2 py-1 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
-                                            key={friend._id}
+                                            href={`/messages/${conversation._id}`}
                                         >
                                             <div className="flex items-center lg:h-8 lg:w-8">
                                                 <Image
                                                     className="rounded-full"
-                                                    src={friend.avatar || ''}
-                                                    alt={friend.name || ''}
+                                                    src={
+                                                        conversation?.avatar
+                                                            ?.url ||
+                                                        conversation?.group
+                                                            ?.avatar.url ||
+                                                        ''
+                                                    }
+                                                    alt={
+                                                        conversation.title || ''
+                                                    }
                                                     width={32}
                                                     height={32}
                                                 />
 
                                                 <span className="ml-2 text-xs lg:hidden">
-                                                    {friend.name}
+                                                    {conversation.title}
                                                 </span>
                                             </div>
-
-                                            <span className="lg:hidden">
-                                                {friend.isOnline && (
-                                                    <Icons.Circle className="text-sm text-primary-2" />
-                                                )}
-                                            </span>
                                         </Button>
-                                    </DropdownMenuTrigger>
-
-                                    <DropdownMenuContent align={'start'}>
-                                        <DropdownMenuItem className={'p-0'}>
-                                            <Button
-                                                className={
-                                                    'w-full justify-start'
-                                                }
-                                                variant={'ghost'}
-                                                size={'xs'}
-                                                href={`/profile/${friend._id}`}
-                                            >
-                                                <Icons.Users />
-                                                Trang cá nhân
-                                            </Button>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem className={'p-0'}>
-                                            <Button
-                                                className={
-                                                    'w-full justify-start'
-                                                }
-                                                variant={'ghost'}
-                                                size={'xs'}
-                                                href={`/messages/${conversation._id}`}
-                                            >
-                                                <Icons.Message />
-                                                Nhắn tin
-                                            </Button>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            );
-                        })}
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <span>{conversation?.title}</span>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        );
+                    })}
                 </div>
             </div>
         </>

@@ -9,6 +9,13 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
     }
 
+    // Kiểm tra nếu vào trang admin
+    if (req.nextUrl.pathname.startsWith('/admin')) {
+        if (token.role !== 'admin') {
+            return NextResponse.redirect(new URL('/', req.nextUrl));
+        }
+    }
+
     return NextResponse.next();
 }
 

@@ -7,6 +7,7 @@ import { Separator } from '@radix-ui/react-menu';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getGroupsByUserId } from '@/lib/actions/group.action';
 import { useSession } from 'next-auth/react';
+import { getGroupsKey } from '@/lib/queryKey';
 
 interface Props {}
 
@@ -14,7 +15,7 @@ const PAGE_SIZE = 10;
 
 export const useGroups = (userId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: ['groups', userId],
+        queryKey: getGroupsKey(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 

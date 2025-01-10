@@ -106,10 +106,11 @@ interface IPost {
     loves: IUser[];
     shares: IUser[];
     group: IGroup | null;
-    comments: IComment[];
+    comments_count: number;
     createdAt: Date;
     updatedAt: Date;
     type: 'default' | 'group';
+    status: 'active' | 'pending' | 'rejected';
 }
 
 interface IUser {

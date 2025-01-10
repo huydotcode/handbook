@@ -39,6 +39,8 @@ export const getNotificationsKey = (userId: string | undefined) => [
     userId,
 ];
 
+export const getGroupsKey = (userId: string | undefined) => ['groups', userId];
+
 /* Posts Key */
 export const getNewFeedPostsKey = (
     type: string | undefined,
@@ -52,6 +54,10 @@ export const getPostsKey = () => ['posts'];
 export const getCommentsKey = (postId: string | undefined) => [
     'comments',
     postId,
+];
+export const getReplyCommentsKey = (commentId: string | undefined) => [
+    'replyComments',
+    commentId,
 ];
 
 /* Other keys */

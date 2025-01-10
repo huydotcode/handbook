@@ -25,7 +25,7 @@ const DeletePostModal: React.FC<Props> = ({ postId, show, handleClose }) => {
                 postId,
             });
 
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: getPostsKey(),
             });
 

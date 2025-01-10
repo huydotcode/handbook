@@ -93,7 +93,10 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                 sendPost(data),
                 {
                     loading: 'Bài viết đang được đăng...!',
-                    success: 'Đăng bài đang chờ kiểm duyệt!',
+                    success:
+                        type == 'default'
+                            ? 'Đăng bài thành công!'
+                            : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
                     error: 'Đã có lỗi xảy ra khi đăng bài!',
                 },
                 {

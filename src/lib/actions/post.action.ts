@@ -31,15 +31,6 @@ export const getNewFeedPosts = async ({
     type?: string;
     isManage?: boolean;
 }) => {
-    console.log('getNewFeedPosts', {
-        groupId,
-        page,
-        pageSize,
-        type,
-        userId,
-        username,
-        isManage,
-    });
     try {
         await connectToDB();
 
@@ -96,10 +87,6 @@ export const getNewFeedPosts = async ({
             .populate(POPULATE_GROUP)
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER)
-            .populate({
-                path: 'comments',
-                populate: { path: 'author', select: POPULATE_USER },
-            })
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 });
@@ -142,14 +129,7 @@ export const getPostByPostId = async ({ postId }: { postId: string }) => {
             .populate('group', POPULATE_GROUP)
             .populate('images')
             .populate('loves', POPULATE_USER)
-            .populate('shares', POPULATE_USER)
-            .populate({
-                path: 'comments',
-                populate: {
-                    path: 'author',
-                    select: POPULATE_USER,
-                },
-            });
+            .populate('shares', POPULATE_USER);
 
         return JSON.parse(JSON.stringify(post));
     } catch (error: any) {

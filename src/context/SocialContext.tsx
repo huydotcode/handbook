@@ -50,6 +50,7 @@ export const useFriends = (userId: string | undefined) =>
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
         retry: false,
     });
 
@@ -66,6 +67,8 @@ export const useConversations = (userId: string | undefined) =>
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        retry: false,
     });
 
 export const useMessages = (conversationId: string | undefined) =>
@@ -93,6 +96,8 @@ export const useMessages = (conversationId: string | undefined) =>
         },
         refetchInterval: false,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        retry: false,
     });
 
 export const useLastMessage = (conversationId: string) =>

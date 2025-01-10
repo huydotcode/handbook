@@ -43,12 +43,12 @@ export const getCommentsByPostId = async ({
             post: postId,
             replyComment: null,
         })
-            .populate('author', 'name avatar username')
-            .populate('loves', 'name avatar username')
-            .populate('post')
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
-            .limit(pageSize);
+            .limit(pageSize)
+            .populate('author', 'name avatar username')
+            .populate('loves', 'name avatar username')
+            .populate('post');
 
         return JSON.parse(JSON.stringify(comments));
     } catch (error: any) {
@@ -133,9 +133,7 @@ export const sendComment = async ({
         await newComment.save();
 
         await Post.findByIdAndUpdate(postId, {
-            $push: {
-                comments: newComment._id,
-            },
+            $inc: { comments_count: 1 },
         });
 
         const comment = await getCommentByCommentId({
@@ -162,22 +160,28 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
 
         const comment = await Comment.findById(commentId);
 
-        const replyCommentsLength = await Comment.count({
-            parentId: commentId,
-        });
+        if (comment) {
+            const replyCommentsLength = await Comment.count({
+                parentId: commentId,
+            });
 
-        if (replyCommentsLength > 0) {
-            await Comment.updateMany(
-                {
-                    replyComment: commentId,
-                },
-                {
-                    $set: {
-                        replyComment: comment.replyComment,
+            if (replyCommentsLength > 0) {
+                await Comment.updateMany(
+                    {
+                        replyComment: commentId,
                     },
-                }
-            );
+                    {
+                        $set: {
+                            replyComment: comment.replyComment,
+                        },
+                    }
+                );
+            }
         }
+
+        await Post.findByIdAndUpdate(comment.post, {
+            $inc: { comments_count: -1 },
+        });
 
         await Comment.findByIdAndDelete(commentId);
     } catch (error) {

@@ -5,22 +5,21 @@ type Params = Promise<{ req: NextRequest }>;
 
 export async function GET(req: NextRequest, segmentData: { params: Params }) {
     const searchParams = await req.nextUrl.searchParams;
-    const postId = searchParams.get('postId');
+    const commentId = searchParams.get('commentId');
     const page = searchParams.get('page') || '1';
     const pageSize = searchParams.get('pageSize') || '5';
 
     try {
         const comments = await Comment.find({
-            post: postId,
-            replyComment: null,
+            replyComment: commentId,
         })
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
+            .sort({ createdAt: -1 })
             .populate('author')
             .populate('replyComment')
             .populate('post')
-            .populate('loves')
-            .sort({ createdAt: -1 });
+            .populate('loves');
 
         return NextResponse.json(comments, {
             status: 200,

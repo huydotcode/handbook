@@ -8,7 +8,7 @@ interface IPostModel {
     loves: Types.ObjectId[];
     shares: Types.ObjectId[];
     group: Types.ObjectId;
-    comments: Types.ObjectId[];
+    comments_count: number;
     type: string;
     status: string;
 }
@@ -40,13 +40,10 @@ const PostSchema = new Schema<IPostModel>(
             ref: 'Group',
             default: null,
         },
-        comments: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Comment',
-                default: [],
-            },
-        ],
+        comments_count: {
+            type: Number,
+            default: 0,
+        },
         type: {
             type: String,
             default: 'default',

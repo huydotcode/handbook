@@ -2,33 +2,52 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
-import { ActionPost, FooterPost, PostContent } from '.';
+import React, { useEffect, useState } from 'react';
+import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
 import { timeConvert } from '@/utils/timeConvert';
 import { Button } from '@/components/ui/Button';
-import { updateStatusPost } from '@/lib/actions/post.action';
+import { getPostByPostId, updateStatusPost } from '@/lib/actions/post.action';
 import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
-import { getNewFeedPostsKey } from '@/lib/queryKey';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getNewFeedPostsKey, getPostKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
+import PhotoGrid from '@/components/post/PhotoGrid';
+import SkeletonPost from '@/components/post/SkeletonPost';
 
 interface Props {
     data: IPost;
     isManage?: boolean;
 }
 
-const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
+const Post: React.FC<Props> = ({ data, isManage = false }) => {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const { data: post } = useQuery<IPost>({
+        queryKey: getPostKey(data._id),
+        queryFn: async () => {
+            const post = await getPostByPostId({ postId: data._id });
+            return post;
+        },
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchIntervalInBackground: false,
+        retry: 1,
+    });
     const queryClient = useQueryClient();
+    const [contentLength, setContentLength] = useState<number>(100);
 
+    const content = post?.text.slice(0, contentLength).replace(/\n/g, '<br/>');
     const showInPrivate =
+        post &&
         post.option === 'private' &&
         pathname !== `/profile/${post.author._id}` &&
         session?.user?.id !== post.author._id;
 
     const handleAcceptPost = async (accept: boolean) => {
+        if (!post) return;
+
         try {
             await updateStatusPost({
                 postId: post._id,
@@ -44,6 +63,10 @@ const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
                     undefined,
                     true
                 ),
+            });
+
+            await queryClient.invalidateQueries({
+                queryKey: getPostKey(post._id),
             });
 
             if (accept) {
@@ -62,11 +85,12 @@ const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
         }
     };
 
-    if (showInPrivate) return null;
+    if (!post) return <SkeletonPost />;
+    if (!showInPrivate && post.status != 'active') return null;
 
     return (
         <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
-            {/* <HeaderPost /> */}
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     {post.group ? (
@@ -80,7 +104,6 @@ const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
                                 rounded="md"
                             />
 
-                            {/* Avatar user */}
                             <Avatar
                                 className="absolute -bottom-1 -right-1 rounded-xl border border-white"
                                 imgSrc={post.author.avatar}
@@ -138,8 +161,6 @@ const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
                             </p>
                         </div>
                     </div>
-
-                    {/* Group */}
                 </div>
 
                 {session?.user && session.user.id === post.author._id && (
@@ -147,9 +168,37 @@ const Post: React.FC<Props> = ({ data: post, isManage = false }) => {
                 )}
             </div>
 
-            <PostContent post={post} />
-            {!isManage && <FooterPost post={post} />}
+            {/* Content */}
+            <main className="mb-2 mt-4 ">
+                <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{
+                        __html: content || '',
+                    }}
+                />
 
+                {post?.text.length > 100 && (
+                    <Button
+                        className="mt-1 p-0 text-xs hover:underline"
+                        variant={'custom'}
+                        onClick={() => {
+                            const newLength =
+                                contentLength === 100 ? post.text.length : 100;
+                            setContentLength(newLength);
+                        }}
+                    >
+                        {post?.text.length > 100 &&
+                            contentLength != post.text.length &&
+                            'Xem thêm'}
+                        {contentLength === post.text.length && 'Ẩn bớt'}
+                    </Button>
+                )}
+
+                {post.images.length > 0 && <PhotoGrid images={post.images} />}
+            </main>
+
+            {/* Footer */}
+            {!isManage && <FooterPost post={post} />}
             {isManage && (
                 <div className={'flex w-full justify-center gap-4'}>
                     <Button

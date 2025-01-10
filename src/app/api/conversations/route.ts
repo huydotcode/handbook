@@ -28,6 +28,8 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
         })
             .populate('participants', POPULATE_USER)
             .populate('creator', POPULATE_USER)
+            .populate('lastMessage')
+            .populate('avatar')
             .populate({
                 path: 'group',
                 populate: [

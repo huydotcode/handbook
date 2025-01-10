@@ -30,16 +30,6 @@ export const GET = async (
     const type = searchParams.get('type');
     const isManage = searchParams.get('isManage') === 'true';
 
-    console.log({
-        page,
-        pageSize,
-        groupId,
-        userId,
-        username,
-        type,
-        isManage,
-    });
-
     try {
         await connectToDB();
 
@@ -86,21 +76,15 @@ export const GET = async (
 
         query.status = isManage ? 'pending' : 'active';
 
-        console.log('query', query);
-
         let posts = await Post.find(query)
+            .skip((+page - 1) * +pageSize)
+            .limit(+pageSize)
+            .sort({ createdAt: -1 })
             .populate('author', POPULATE_USER)
             .populate('images')
             .populate(POPULATE_GROUP)
             .populate('loves', POPULATE_USER)
-            .populate('shares', POPULATE_USER)
-            .populate({
-                path: 'comments',
-                populate: { path: 'author', select: POPULATE_USER },
-            })
-            .skip((+page - 1) * +pageSize)
-            .limit(+pageSize)
-            .sort({ createdAt: -1 });
+            .populate('shares', POPULATE_USER);
 
         return NextResponse.json(posts, {
             status: 200,
