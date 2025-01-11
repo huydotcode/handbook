@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import logger from '@/utils/logger';
 import { getAuthSession } from './auth';
 import { Image } from '@/models';

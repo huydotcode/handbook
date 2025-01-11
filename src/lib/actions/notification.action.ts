@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import mongoose from 'mongoose';

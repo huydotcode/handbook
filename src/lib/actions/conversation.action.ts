@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import { Conversation } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';

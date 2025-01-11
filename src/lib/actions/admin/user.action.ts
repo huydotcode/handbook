@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import { Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';

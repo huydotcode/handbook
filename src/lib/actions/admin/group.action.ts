@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 
 import { Group } from '@/models';
 import connectToDB from '@/services/mongoose';

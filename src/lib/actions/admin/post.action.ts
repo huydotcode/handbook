@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import { Post } from '@/models';
 import logger from '@/utils/logger';
 import { revalidatePath } from 'next/cache';

@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import InputComment from '@/components/post/comment/InputComment';
 import { Button } from '@/components/ui/Button';
 import Comment from '@/components/post/comment/CommentItem';
+import SkeletonComment from '@/components/post/comment/SkeletonComment';
 
 interface Props {
     post: IPost;
@@ -106,7 +107,14 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         }
     };
 
-    if (!session || !comments) return <Loading text={'Đang tải bình luận'} />;
+    if (!session || !comments)
+        return (
+            <div className={'flex flex-col gap-4'}>
+                <SkeletonComment />
+                <SkeletonComment />
+                <SkeletonComment />
+            </div>
+        );
 
     return (
         <>
@@ -148,9 +156,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                     </div>
                 </div>
 
-                {isSubmitting && <Loading text={'Đang gửi bình luận'} />}
-
-                {isLoadingComments && <Loading text={'Đang tải bình luận'} />}
+                {isSubmitting || (isLoadingComments && <SkeletonComment />)}
 
                 {comments.length === 0 && (
                     <div className="text-center text-xs text-secondary-1">

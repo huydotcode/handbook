@@ -43,7 +43,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
     } catch (error) {
         return NextResponse.json(
             {
-                error: 'Internal server error',
+                error: 'Internal realtime-server error',
             },
             { status: 500 }
         );

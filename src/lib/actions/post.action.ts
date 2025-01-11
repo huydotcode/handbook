@@ -1,4 +1,4 @@
-'use server';
+'use realtime-server';
 import { Comment, Group, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';

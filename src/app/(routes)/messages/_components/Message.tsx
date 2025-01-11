@@ -109,7 +109,7 @@ const Message: React.FC<Props> = ({
                                 rel="noreferrer"
                                 className={cn('underline', {
                                     'text-primary-1': isOwnMsg,
-                                    'text-primary-2 dark:text-dark-primary-1':
+                                    'text-white dark:text-dark-primary-1':
                                         !isOwnMsg,
                                     'text-yellow-300': isFindMessage,
                                 })}

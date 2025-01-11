@@ -16,6 +16,7 @@ import {
     getPostKey,
     getReplyCommentsKey,
 } from '@/lib/queryKey';
+import SkeletonComment from '@/components/post/comment/SkeletonComment';
 
 interface Props {
     data: IComment;
@@ -181,7 +182,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                     {/* Form trả lời */}
 
                     {isLoadingReplyComments || !replyComments ? (
-                        <Loading text={'Đang tải bình luận'} />
+                        <SkeletonComment />
                     ) : (
                         <>
                             {replyComments.length > 0 && !showReplyComments && (
