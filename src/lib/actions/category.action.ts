@@ -1,4 +1,4 @@
-'use realtime-server';
+'use server';
 import { Category } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { checkAdmin } from '@/lib/checkAdmin';

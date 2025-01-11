@@ -1,4 +1,4 @@
-'use realtime-server';
+'use server';
 import { Image, Location, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';

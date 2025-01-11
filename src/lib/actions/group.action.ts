@@ -1,4 +1,4 @@
-'use realtime-server';
+'use server';
 import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
 import { Session } from 'next-auth';

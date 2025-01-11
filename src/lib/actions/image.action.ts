@@ -1,4 +1,4 @@
-'use realtime-server';
+'use server';
 import { getAuthSession } from '@/lib/auth';
 import { Image } from '@/models';
 import connectToDB from '@/services/mongoose';

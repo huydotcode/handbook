@@ -1,4 +1,4 @@
-'use realtime-server';
+'use server';
 import { getAuthSession } from '@/lib/auth';
 
 export const checkAdmin = async () => {

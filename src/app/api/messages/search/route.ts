@@ -28,6 +28,6 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
             status: 200,
         });
     } catch (error) {
-        throw new Error('Internal realtime-server error');
+        throw new Error('Internal server error');
     }
 }
