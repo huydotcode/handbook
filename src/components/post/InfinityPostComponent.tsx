@@ -41,7 +41,7 @@ export const usePosts = ({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username, isManage),
         queryFn: async ({ pageParam = 1 }) => {
             const res = await fetch(
-                `/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}&isManage=${isManage}`
+                `https://handbook-no8b5cljd-huydotcodes-projects.vercel.app/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}&isManage=${isManage}`
             );
             return await res.json();
         },

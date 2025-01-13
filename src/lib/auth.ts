@@ -74,11 +74,11 @@ export const authOptions: NextAuthOptions = {
 
                     await connectToDB();
 
-                    const user = await User.findOne({ email });
-                    if (user) {
-                        const isMatch = user.comparePassword(password);
-                        if (!isMatch) return null;
-                    }
+                    // const user = await User.findOne({ email });
+                    // if (user) {
+                    //     const isMatch = user.comparePassword(password);
+                    //     if (!isMatch) return null;
+                    // }
 
                     return await User.findOne({ email });
                 } catch (error) {
