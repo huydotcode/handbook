@@ -9,6 +9,7 @@ import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
 import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     className?: string;
@@ -40,10 +41,10 @@ export const usePosts = ({
     return useInfiniteQuery({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username, isManage),
         queryFn: async ({ pageParam = 1 }) => {
-            const res = await fetch(
-                `https://handbook-no8b5cljd-huydotcodes-projects.vercel.app/api/posts?page=${pageParam}&pageSize=${PAGE_SIZE}&groupId=${groupId}&userId=${userId}&username=${username}&type=${type}&isManage=${isManage}`
+            const res = await axiosInstance.get(
+                `/posts/new-feed?page=${pageParam}&pageSize=${PAGE_SIZE}`
             );
-            return await res.json();
+            return res.data;
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
