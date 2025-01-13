@@ -1,26 +1,24 @@
 import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwt } from './lib/jwt';
 
 export async function middleware(req: NextRequest) {
-    const token = await getToken({ req });
+    const token = req.cookies.get('next-auth.session-token');
 
     if (!token) {
         return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
     }
 
-    // Kiểm tra nếu vào trang admin
-    if (req.nextUrl.pathname.startsWith('/admin')) {
-        if (token.role !== 'admin') {
-            return NextResponse.redirect(new URL('/', req.nextUrl));
-        }
+    const tokenValue = token.value || '';
+
+    if (!tokenValue) {
+        return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
     }
 
     return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
-// '/:path*'
 export const config = {
     matcher: [
         '/',
