@@ -8,6 +8,7 @@ import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import { jwt } from './jwt';
 
 interface OAuthCredentials {
     iss: string;
@@ -55,8 +56,56 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt',
     },
     secret: process.env.JWT_SECRET,
+    cookies: {
+        sessionToken: {
+            name: 'next-auth.session-token',
+            options: {
+                httpOnly: true,
+                path: '/',
+            },
+        },
+    },
     jwt: {
         secret: process.env.JWT_SECRET,
+        encode: async ({ secret, token, maxAge, salt }) => {
+            console.log('encode');
+            /*
+                {
+                    secret: '0xLCQbkPJPNXlG0K5E4Q2sXFD+fhsQR+cV5UCzdkps=',
+                    token: {
+                        id: '65f98b41a1fb29ea5968a4ca',
+                        name: 'Ngô Nhựt Huy 1',
+                        email: 'ngonhuthuy@gmail.com',
+                        picture: '/assets/img/user-profile.jpg',
+                        role: 'user',
+                        username: 'ngonhuthuy'
+                    },
+                    maxAge: 2592000,
+                    salt: undefined
+                }
+            */
+            // console.log('encode result', jwt.sign(token));
+            return jwt.sign(token);
+        },
+        decode: async ({ secret, token, salt }) => {
+            console.log('decode');
+            if (!token) return null;
+            // console.log('decode result', jwt.verify(token));
+            /*
+            {
+                id: '65f98b41a1fb29ea5968a4ca',
+                name: 'Ngô Nhựt Huy 1',
+                email: 'ngonhuthuy@gmail.com',
+                picture: '/assets/img/user-profile.jpg',
+                role: 'user',
+                username: 'ngonhuthuy',
+                iat: 1736756401,
+                exp: 1736842801
+            }
+            */
+            return jwt.verify(token) as any;
+        },
+        maxAge: 60 * 60 * 24,
     },
     providers: [
         GoogleProvider({
@@ -69,16 +118,11 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
+                console.log('AUTHORIZE');
                 try {
                     const { email, password } = credentials;
 
                     await connectToDB();
-
-                    const user = await User.findOne({ email });
-                    if (user) {
-                        const isMatch = user.comparePassword(password);
-                        if (!isMatch) return null;
-                    }
 
                     return await User.findOne({ email });
                 } catch (error) {
@@ -90,7 +134,27 @@ export const authOptions: NextAuthOptions = {
     ],
 
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, account, profile, session, trigger }) {
+            console.log('JWT');
+
+            /*
+             token: {
+                id: '65f98b41a1fb29ea5968a4ca',
+                name: 'Ngô Nhựt Huy 1',
+                email: 'ngonhuthuy@gmail.com',
+                picture: '/assets/img/user-profile.jpg',
+                role: 'user',
+                username: 'ngonhuthuy',
+                iat: 1736756401,
+                exp: 1736842801
+            },
+            user: undefined,
+            account: undefined,
+            profile: undefined,
+            session: undefined,
+            trigger: undefined
+            */
+
             await connectToDB();
 
             if (!token.email) {
@@ -114,16 +178,24 @@ export const authOptions: NextAuthOptions = {
                 };
             }
 
+            /*
+                 name: 'Ngô Nhựt Huy 1',
+                email: 'ngonhuthuy@gmail.com',
+                picture: undefined,
+                sub: '65f98b41a1fb29ea5968a4ca'
+            */
+
             return {
                 id: userExists._id.toString(),
                 name: userExists.name,
                 email: userExists.email,
                 picture: userExists.avatar,
-                role: userExists.role || 'user',
+                role: userExists.role,
                 username: userExists.username,
             };
         },
-        async session({ session, token }) {
+        async session({ session, token, newSession, trigger, user }) {
+            console.log('SESSION');
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
@@ -139,6 +211,7 @@ export const authOptions: NextAuthOptions = {
             profile: oAuthCredentials,
             credentials: passwordcredentials,
         }) {
+            console.log('SIGN IN');
             try {
                 await connectToDB();
 
