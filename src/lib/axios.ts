@@ -18,4 +18,24 @@ const axiosInstance = axios.create({
     withCredentials: true,
 });
 
+axiosInstance.interceptors.request.use(
+    (config) => {
+        console.log({
+            config,
+        });
+        // Xử lý trước khi gửi request
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        // Xử lý lỗi khi gửi request
+        console.error('Request Error:', error);
+        return Promise.reject(error);
+    }
+);
+
 export default axiosInstance;

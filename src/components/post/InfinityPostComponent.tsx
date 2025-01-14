@@ -38,14 +38,15 @@ export const usePosts = ({
     type?: 'home' | 'profile' | 'group';
     isManage?: boolean;
 }) => {
+    const { data: session } = useSession();
+
     return useInfiniteQuery({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username, isManage),
         queryFn: async ({ pageParam = 1 }) => {
+            if (!session) return [];
+
             const res = await axiosInstance.get(
-                `/posts/new-feed?page=${pageParam}&pageSize=${PAGE_SIZE}`,
-                {
-                    withCredentials: true,
-                }
+                `/posts/new-feed?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
             );
             return res.data;
         },
@@ -57,6 +58,7 @@ export const usePosts = ({
         refetchInterval: 1000 * 60 * 5,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
+        enabled: !!session,
     });
 };
 
