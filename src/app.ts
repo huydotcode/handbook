@@ -5,6 +5,7 @@ import { connectToMongo } from './services/mongodb';
 import Post from './models/post.model';
 import User from './models/user.model';
 import cors from 'cors';
+import authMiddleware from './middlewares/auth-middleware';
 
 const morgan = require('morgan');
 
@@ -18,13 +19,13 @@ app.use(helmet());
 
 app.use(
     cors({
-        origin: '*',
+        origin: ['http://localhost:3000', 'https://handbookk.vercel.app'],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        allowedHeaders: 'Content-Type,Authorization',
+        credentials: true,
     })
 );
 app.use(morgan('dev'));
-app.use('/api/v1', apiRouter);
+app.use('/api/v1', authMiddleware, apiRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World 10.14');

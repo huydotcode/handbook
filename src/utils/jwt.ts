@@ -12,7 +12,7 @@ interface Payload {
 }
 
 export const jwt = {
-    sign: (payload: Payload) => {
+    sign: (payload: Payload): string => {
         return jwtWebToken.sign(
             payload,
             process.env.JWT_SECRET || 'my-secret',
@@ -21,7 +21,10 @@ export const jwt = {
             }
         );
     },
-    verify: (token: string) => {
-        return jwtWebToken.verify(token, process.env.JWT_SECRET || 'my-secret');
+    verify: (token: string): Payload => {
+        return jwtWebToken.verify(
+            token,
+            process.env.JWT_SECRET || 'my-secret'
+        ) as Payload;
     },
 };
