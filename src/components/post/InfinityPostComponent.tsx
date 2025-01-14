@@ -42,7 +42,10 @@ export const usePosts = ({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username, isManage),
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axiosInstance.get(
-                `/posts/new-feed?page=${pageParam}&pageSize=${PAGE_SIZE}`
+                `/posts/new-feed?page=${pageParam}&pageSize=${PAGE_SIZE}`,
+                {
+                    withCredentials: true,
+                }
             );
             return res.data;
         },
