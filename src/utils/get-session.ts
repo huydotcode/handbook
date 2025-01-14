@@ -16,7 +16,10 @@ export const getSession = async (req: Request) => {
     const cookies = req.headers.cookie;
     if (!cookies) return null;
 
-    const token = cookies.split(';')[2].split('=')[1];
+    const token = cookies
+        .split(';')
+        .filter((cookie) => cookie.includes('session-token'))[0]
+        .split('=')[1];
     if (!token) return null;
 
     const user = jwt.verify(token);
