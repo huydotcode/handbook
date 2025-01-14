@@ -1,10 +1,10 @@
 import Providers from '@/components/layout/Providers';
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+import { Be_Vietnam_Pro } from 'next/font/google';
 import '@/styles/globals.scss';
 import React from 'react';
 
-const font = Roboto({
+const font = Be_Vietnam_Pro({
     subsets: ['vietnamese'],
     weight: '400',
 });

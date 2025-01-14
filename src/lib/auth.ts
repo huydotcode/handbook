@@ -8,6 +8,7 @@ import { NextAuthOptions } from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import { jwt } from './actions/jwt';
 
 interface OAuthCredentials {
     iss: string;
@@ -57,6 +58,23 @@ export const authOptions: NextAuthOptions = {
     secret: process.env.JWT_SECRET,
     jwt: {
         secret: process.env.JWT_SECRET,
+        encode: async ({ secret, token, maxAge, salt }) => {
+            return jwt.sign(token);
+        },
+        decode: async ({ secret, salt, token }) => {
+            return jwt.verify(token || '') as any;
+        },
+    },
+    cookies: {
+        sessionToken: {
+            name: 'next-auth.session-token',
+            options: {
+                httpOnly: true,
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
+            },
+        },
     },
     providers: [
         GoogleProvider({
@@ -71,15 +89,7 @@ export const authOptions: NextAuthOptions = {
             authorize: async function (credentials: any) {
                 try {
                     const { email, password } = credentials;
-
                     await connectToDB();
-
-                    // const user = await User.findOne({ email });
-                    // if (user) {
-                    //     const isMatch = user.comparePassword(password);
-                    //     if (!isMatch) return null;
-                    // }
-
                     return await User.findOne({ email });
                 } catch (error) {
                     console.error('Authorization error:', error);
