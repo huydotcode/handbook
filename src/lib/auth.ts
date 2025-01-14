@@ -73,6 +73,7 @@ export const authOptions: NextAuthOptions = {
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'none',
+                domain: 'handbook-api.vercel.app',
             },
         },
     },
