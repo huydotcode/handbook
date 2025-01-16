@@ -128,7 +128,7 @@ const InfomationConversation: React.FC<Props> = ({
                 )}
 
                 <Collapse
-                    className={'mt-2 w-full bg-transparent'}
+                    className={'mt-2 w-full bg-transparent text-xs'}
                     items={items}
                 />
             </div>

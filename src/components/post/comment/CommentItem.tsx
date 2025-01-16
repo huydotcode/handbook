@@ -114,16 +114,18 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
             await deleteComment({ commentId: comment._id });
 
             await queryClient.invalidateQueries({
-                queryKey: getReplyCommentsKey(comment.replyComment._id),
+                queryKey: getCommentsKey(comment.post._id),
             });
 
             await queryClient.invalidateQueries({
                 queryKey: getPostKey(comment.post._id),
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getCommentsKey(comment.post._id),
-            });
+            if (comment.replyComment) {
+                await queryClient.invalidateQueries({
+                    queryKey: getReplyCommentsKey(comment.replyComment._id),
+                });
+            }
         } catch (error) {
             logger({
                 message: 'Error delete comment' + error,

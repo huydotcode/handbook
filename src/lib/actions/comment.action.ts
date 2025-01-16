@@ -2,6 +2,7 @@
 import { Comment, Post } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
+import mongoose from 'mongoose';
 import { getAuthSession } from '../auth';
 
 export const getCommentByCommentId = async ({
@@ -152,13 +153,21 @@ export const sendComment = async ({
 export const deleteComment = async ({ commentId }: { commentId: string }) => {
     if (!commentId) return;
 
+    const sessionMgs = await mongoose.startSession();
+
     try {
         await connectToDB();
 
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
+        sessionMgs.startTransaction();
+
         const comment = await Comment.findById(commentId);
+
+        await Post.findByIdAndUpdate(comment.post, {
+            $inc: { comments_count: -1 },
+        });
 
         if (comment) {
             const replyCommentsLength = await Comment.count({
@@ -179,12 +188,12 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
             }
         }
 
-        await Post.findByIdAndUpdate(comment.post, {
-            $inc: { comments_count: -1 },
-        });
-
         await Comment.findByIdAndDelete(commentId);
+
+        await sessionMgs.commitTransaction();
+        await sessionMgs.endSession();
     } catch (error) {
+        await sessionMgs.abortTransaction();
         throw new Error(`Error with delete comment: ${error}`);
     }
 };

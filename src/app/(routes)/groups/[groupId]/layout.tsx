@@ -48,7 +48,8 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
     const isMember = group.members.some(
         (mem) => mem.user._id === session.user.id
     );
-    if (!isMember && group.type == 'private') return redirect('/groups');
+    if (!isMember && group.type == 'private')
+        return redirect(`/groups/${groupId}/join`);
 
     return (
         <div>

@@ -16,7 +16,7 @@ interface Props {
     userId?: string;
     username?: string;
     groupId?: string;
-    type?: 'home' | 'profile' | 'group';
+    type?: 'new-feed' | 'profile' | 'group' | 'new-feed-group';
     title?: string;
     isManage?: boolean;
 }
@@ -29,13 +29,13 @@ export const usePosts = ({
     userId,
     groupId,
     username,
-    type = 'home',
+    type = 'new-feed',
     isManage = false,
 }: {
     userId?: string;
     groupId?: string;
     username?: string;
-    type?: 'home' | 'profile' | 'group';
+    type?: 'new-feed' | 'profile' | 'group' | 'new-feed-group';
     isManage?: boolean;
 }) => {
     const { data: session } = useSession();
@@ -45,10 +45,21 @@ export const usePosts = ({
         queryFn: async ({ pageParam = 1 }) => {
             if (!session) return [];
 
-            const res = await axiosInstance.get(
-                `/posts/new-feed?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
-            );
-            return res.data;
+            if (type == 'new-feed') {
+                const res = await axiosInstance.get(
+                    `/posts/${type}?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
+                );
+                return res.data;
+            }
+
+            if (type == 'new-feed-group') {
+                const res = await axiosInstance.get(
+                    `/posts/${type}?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
+                );
+                return res.data;
+            }
+
+            return [];
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
@@ -67,7 +78,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     userId,
     groupId,
     username,
-    type = 'home',
+    type = 'new-feed',
     title,
     isManage = false,
 }) => {
@@ -111,7 +122,9 @@ const InfinityPostComponent: React.FC<Props> = ({
                     </Button>
                 )}
 
-                {!isManage && type === 'home' && currentUser && <CreatePost />}
+                {!isManage && type === 'new-feed' && currentUser && (
+                    <CreatePost />
+                )}
                 {!isManage && isProfilePage && isCurrentUser && <CreatePost />}
                 {!isManage && isGroupPage && currentUser && groupId && (
                     <CreatePost groupId={groupId} type="group" />
@@ -141,9 +154,21 @@ const InfinityPostComponent: React.FC<Props> = ({
                 {!query.isLoading &&
                     !query.isFetchingNextPage &&
                     !query.hasNextPage && (
-                        <div className="pb-10 text-center">
-                            Bạn đã đọc hết bài của ngày hôm nay
-                        </div>
+                        <>
+                            {type == 'new-feed' ||
+                                (type == 'new-feed-group' && (
+                                    <div className="pb-10 text-center">
+                                        Bạn đã đọc hết bài của ngày hôm nay
+                                    </div>
+                                ))}
+
+                            {type == 'profile' ||
+                                (type == 'group' && (
+                                    <div className="pb-10 text-center">
+                                        Chưa có bài viết nào
+                                    </div>
+                                ))}
+                        </>
                     )}
             </div>
         </>

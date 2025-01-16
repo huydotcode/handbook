@@ -1,13 +1,14 @@
 'use server';
 import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Session } from 'next-auth';
 import { getAuthSession } from '../auth';
 import {
     deleteConversation,
     getConversationsByGroupId,
 } from './conversation.action';
-import { Types } from 'mongoose';
+import { User } from '@/models';
 
 export const createGroup = async ({
     name,
@@ -114,6 +115,33 @@ export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
     }
 };
 
+export const getRecommendGroups = async () => {
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+
+        const groups = await Group.find({
+            members: {
+                $not: {
+                    $elemMatch: {
+                        user: new Types.ObjectId(session?.user.id),
+                    },
+                },
+            },
+        })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate('avatar')
+            .populate('creator')
+            .populate('members.user');
+
+        return JSON.parse(JSON.stringify(groups)) as IGroup[];
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const getMembersByGroupId = async ({ groupId }: { groupId: string }) => {
     try {
         await connectToDB();
@@ -145,7 +173,14 @@ export const leaveGroup = async ({
     groupId: string;
     userId: string;
 }) => {
+    const session = await mongoose.startSession();
+
     try {
+        // Begin transaction
+        await connectToDB();
+
+        session.startTransaction();
+
         await Group.findByIdAndUpdate(groupId, {
             $pull: {
                 members: {
@@ -154,8 +189,22 @@ export const leaveGroup = async ({
             },
         });
 
+        await User.findByIdAndUpdate(userId, {
+            $pull: {
+                groups: groupId,
+            },
+        });
+
+        // Commit transaction
+        await session.commitTransaction();
+        session.endSession();
+
         return true;
     } catch (error: any) {
+        // Rollback transaction
+        await session.abortTransaction();
+        session.endSession();
+
         throw new Error(error);
     }
 };
@@ -192,6 +241,45 @@ export const deleteGroup = async ({ groupId }: { groupId: string }) => {
         });
 
         return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const joinGroup = async ({
+    groupId,
+    userId,
+}: {
+    groupId: string;
+    userId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Group.updateOne(
+            {
+                _id: groupId,
+            },
+            {
+                $push: {
+                    members: {
+                        user: userId,
+                        role: 'member',
+                    },
+                },
+            }
+        );
+
+        await User.updateOne(
+            {
+                _id: userId,
+            },
+            {
+                $push: {
+                    groups: groupId,
+                },
+            }
+        );
     } catch (error: any) {
         throw new Error(error);
     }

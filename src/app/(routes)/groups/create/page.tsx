@@ -39,6 +39,8 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
     const form = useForm<ICreateGroup>({
         defaultValues: {
             type: 'public',
+            description: '',
+            name: '',
         },
         resolver: zodResolver(createGroupValidation),
     });
@@ -78,14 +80,16 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
 
             const image = await uploadImages({ photos: [photo] });
 
-            const newGroup = await createGroup({
-                ...data,
-                avatar: image[0],
-                members,
-            });
+            if (image) {
+                const newGroup = await createGroup({
+                    ...data,
+                    avatar: image[0],
+                    members,
+                });
 
-            toast.success('Tạo nhóm thành công!');
-            router.push(`/groups/${newGroup._id}`);
+                toast.success('Tạo nhóm thành công!');
+                router.push(`/groups/${newGroup._id}`);
+            }
         } catch (error) {
             toast.error('Có lỗi xảy ra khi tạo nhóm, vui lòng thử lại!');
         }

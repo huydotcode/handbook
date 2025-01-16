@@ -4,12 +4,16 @@ import Image from 'next/image';
 import React from 'react';
 import { TabItem } from '@/components/shared';
 import Action from './Action';
+import { usePathname } from 'next/navigation';
 
 interface Props {
     group: IGroup;
 }
 
 const Header: React.FC<Props> = ({ group }) => {
+    const path = usePathname();
+    const isJoinPage = path.includes('join');
+
     return (
         <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-secondary-1">
             <div

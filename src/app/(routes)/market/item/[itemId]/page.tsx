@@ -1,11 +1,10 @@
-import Item from '@/app/(routes)/market/_components/Item';
-import SwiperImagesItem from '@/app/(routes)/market/_components/SwiperImagesItem';
 import { MessageAction } from '@/components/shared';
-import { Icons } from '@/components/ui';
 import { getItemById, getItemsBySeller } from '@/lib/actions/item.action';
 import { getAuthSession } from '@/lib/auth';
 import { formatMoney } from '@/utils/formatMoney';
 import Image from 'next/image';
+import Item from '../../_components/Item';
+import SwiperImagesItem from '../../_components/SwiperImagesItem';
 
 interface Props {
     params: Promise<{ itemId: string }>;
@@ -14,9 +13,9 @@ interface Props {
 export default async function ItemPage({ params }: Props) {
     const session = await getAuthSession();
 
-    if (!session) return null;
     const { itemId } = await params;
     const item: IItem = await getItemById({ id: itemId });
+
     const itemsOther = await getItemsBySeller({
         seller: item.seller._id,
     });
@@ -52,12 +51,12 @@ export default async function ItemPage({ params }: Props) {
                     </p>
 
                     <span className={'mt-2 flex items-center'}>
-                        <Icons.Location className={'h-4 w-4'} />
+                        {/* <Icons.Location className={'h-4 w-4'} /> */}
                         <p className={'ml-2 text-sm'}>{item.location}</p>
                     </span>
 
                     <span className={'mt-2 flex items-center'}>
-                        <Icons.Time className={'h-4 w-4'} />
+                        {/* <Icons.Time className={'h-4 w-4'} /> */}
                         <p className={'ml-2 text-sm'}>
                             Cập nhật: {new Date(item.updatedAt).toDateString()}
                         </p>

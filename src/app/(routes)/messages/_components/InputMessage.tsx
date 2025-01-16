@@ -196,7 +196,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                     <div className={'flex w-full items-center justify-between'}>
                         <input
                             {...register('text')}
-                            className="flex-1 bg-transparent px-4 py-2 md:w-[50px]"
+                            className="text-md flex-1 bg-transparent px-4 py-2 md:w-[50px]  "
                             type="text"
                             placeholder="Nhắn tin"
                             spellCheck={false}

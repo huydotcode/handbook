@@ -6,6 +6,8 @@ import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
+import { Button } from '../ui/Button';
+import { cn } from '@/lib/utils';
 
 interface Props {
     post: IPost;
@@ -72,24 +74,32 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
     };
 
     return (
-        <div className="like-container mr-2 flex items-center">
+        <Button
+            className="like-container mr-2 flex flex-1 items-center"
+            variant={'ghost'}
+            onClick={() => mutation.mutate()}
+        >
             <div className="con-like">
                 <input
                     className="like"
                     type="checkbox"
                     title="like"
                     checked={isReacted ? true : false}
-                    onChange={() => mutation.mutate()}
+                    onChange={() => {}}
                 />
-                <div className="checkmark">
+                <div className="checkmark flex">
                     <Icons.Heart />
                 </div>
             </div>
 
-            <span className="ml-1 mr-2 min-w-[10px] text-sm">
-                {convertNumberToChar(loves.length)}
+            <span
+                className={cn('ml-1 mr-2 min-w-[10px] text-sm', {
+                    'text-red-500': isReacted,
+                })}
+            >
+                Yêu thích
             </span>
-        </div>
+        </Button>
     );
 };
 export default ReactionPost;

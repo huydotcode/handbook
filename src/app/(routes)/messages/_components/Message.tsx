@@ -19,6 +19,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
+import Link from 'next/link';
 
 interface Props {
     data: IMessage;
@@ -102,20 +103,20 @@ const Message: React.FC<Props> = ({
                     // Kểm tra url
                     if (text.match(urlRegex)) {
                         return (
-                            <a
+                            <Link
                                 key={index}
                                 href={text}
                                 target="_blank"
                                 rel="noreferrer"
                                 className={cn('underline', {
-                                    'text-primary-1': isOwnMsg,
-                                    'text-white dark:text-dark-primary-1':
+                                    'text-white': isOwnMsg,
+                                    'text-primary-1 dark:text-dark-primary-1':
                                         !isOwnMsg,
                                     'text-yellow-300': isFindMessage,
                                 })}
                             >
                                 {text + ' '}
-                            </a>
+                            </Link>
                         );
                     } else {
                         return (
@@ -245,7 +246,7 @@ const Message: React.FC<Props> = ({
                                 'items-start': !isOwnMsg,
                             })}
                         >
-                            {msg.images.map((img, index) => (
+                            {msg.images.map((img) => (
                                 <Image
                                     key={img._id}
                                     className={cn(

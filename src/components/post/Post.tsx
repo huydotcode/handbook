@@ -179,7 +179,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
 
                 {post?.text.length > 100 && (
                     <Button
-                        className="mt-1 p-0 text-xs hover:underline"
+                        className="mt-1 h-fit p-0 text-xs text-secondary-1 hover:underline"
                         variant={'custom'}
                         onClick={() => {
                             const newLength =

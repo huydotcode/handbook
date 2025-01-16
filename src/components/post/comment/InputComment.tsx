@@ -9,31 +9,23 @@ type IFormData = {
 interface Props {
     placeholder?: string;
     register: UseFormRegister<IFormData>;
-    formRef: React.RefObject<HTMLFormElement | null>;
+    inputRef?: React.RefObject<HTMLTextAreaElement | null>;
 }
 
-const InputComment: React.FC<Props> = ({ placeholder, register, formRef }) => {
-    const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            formRef.current?.dispatchEvent(
-                new Event('submit', { cancelable: true, bubbles: true })
-            );
-        }
-    };
-
+const InputComment: React.FC<Props> = ({ placeholder, register, inputRef }) => {
     return (
         <Textarea
-            className="dark:placeholder: h-10 min-h-0 w-[calc(100%-40px)] flex-1 cursor-text resize-none overflow-y-scroll rounded-l-xl rounded-r-none bg-transparent p-2 pt-[9px] text-start text-sm outline-none"
+            className="cursor-text overflow-auto rounded-l-xl rounded-r-none bg-transparent p-2 text-start text-sm outline-none"
             placeholder={placeholder || 'Viết bình luận...'}
+            // ref={inputRef}
             spellCheck={false}
             autoComplete="off"
-            onKeyPress={handleKeyPress}
+            // onKeyPress={handleKeyPress}
             {...register('text', {
                 required: true,
                 validate: (value) => value.trim() !== '',
             })}
-        ></Textarea>
+        />
     );
 };
 export default InputComment;

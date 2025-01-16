@@ -125,6 +125,7 @@ interface IUser {
     locale: string;
 
     friends: IUser[];
+    groups: IGroup[];
     followersCount: number;
 
     isOnline: boolean;
@@ -197,6 +198,14 @@ interface IItem {
         name: string;
         value: string;
     }[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface ISavedPost {
+    _id: string;
+    userId: IUser;
+    posts: IPost[];
     createdAt: Date;
     updatedAt: Date;
 }

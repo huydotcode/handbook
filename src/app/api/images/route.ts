@@ -40,9 +40,15 @@ export async function POST(request: Request) {
         });
     } catch (error) {
         console.error(error);
-        return new Response('Error when upload images' + error, {
-            status: 500,
-        });
+        return NextResponse.json(
+            {
+                message: 'Error when upload image',
+                error,
+            },
+            {
+                status: 500,
+            }
+        );
     }
 }
 

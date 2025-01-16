@@ -1,32 +1,33 @@
 'use client';
 import { ConfirmModal } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
-import { deleteGroup, leaveGroup } from '@/lib/actions/group.action';
+import { deleteGroup, joinGroup, leaveGroup } from '@/lib/actions/group.action';
 
+import { Button } from '@/components/ui/Button';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
 
 interface Props {
     group: IGroup;
 }
 
 const Action: React.FC<Props> = ({ group }) => {
-    const [isRequest, setIsRequest] = useState<boolean>(false);
-    const isJoinGroup = true;
-
     const { data: session } = useSession();
     const router = useRouter();
     const groupId = group._id;
 
+    const [isRequest, setIsRequest] = useState<boolean>(false);
+    const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+
+    const isJoinGroup = group.members.some(
+        (member) => member.user._id == session?.user?.id
+    );
     const isCreator = useMemo(() => {
         return group.creator._id == session?.user?.id;
     }, [group.creator._id, session?.user?.id]);
-
-    const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
     const handleJoinGroup: FormEventHandler = async (e) => {
         if (isRequest) return;
@@ -34,6 +35,10 @@ const Action: React.FC<Props> = ({ group }) => {
         e.preventDefault();
 
         try {
+            await joinGroup({
+                userId: session?.user?.id as string,
+                groupId: groupId,
+            });
         } catch (error) {
             logger({
                 message: 'Error handle add friend' + error,
@@ -51,9 +56,8 @@ const Action: React.FC<Props> = ({ group }) => {
                 groupId: groupId,
                 userId: session?.user?.id as string,
             });
+            toast.success('Đã rời khỏi nhóm');
             router.push('/groups');
-
-            toast.success('Đã hủy kết bạn');
         } catch (error) {
             logger({
                 message: 'Error handle remove friend' + error,

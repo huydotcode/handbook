@@ -1,4 +1,5 @@
 import { Schema, model, models } from 'mongoose';
+import Post from './Post';
 
 interface GroupMember {
     user: Schema.Types.ObjectId;
@@ -75,6 +76,15 @@ const GroupSchema = new Schema<IGroupModel>(
 GroupSchema.index({ name: 1 }); // Index for name
 GroupSchema.index({ creator: 1 }); // Index for creator
 GroupSchema.index({ 'members.user': 1 }); // Index for members
+
+GroupSchema.pre(
+    'deleteOne',
+    { document: false, query: true },
+    async function () {
+        // Xóa tất cả các bài viết của nhóm
+        await Post.deleteMany({ group: this.getFilter()['_id'] });
+    }
+);
 
 const Group = models.Group || model<IGroupModel>('Group', GroupSchema);
 export default Group;

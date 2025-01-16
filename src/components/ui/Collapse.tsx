@@ -31,10 +31,10 @@ const Collapse: React.FC<CollapseProps> = ({ className, items }) => {
                 <div key={item.key} className="mb-2">
                     <Button
                         className="w-full justify-between"
-                        variant="event"
+                        variant="default"
                         onClick={() => onActiveChange(item.key)}
                     >
-                        <span>{item.label}</span>
+                        <span className="text-xs font-bold">{item.label}</span>
                         <span>
                             {activeKey.includes(item.key) ? (
                                 <Icons.ArrowUp className="h-4 w-4" />
