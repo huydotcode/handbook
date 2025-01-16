@@ -41,37 +41,19 @@ class PostController {
     ): Promise<void> {
         const sessionUser = await getSession(req);
 
-        /*
-            {
-                id: '65f98b41a1fb29ea5968a4ca',
-                name: 'Ngô Nhựt Huy 1',
-                email: 'ngonhuthuy@gmail.com',
-                picture: '/assets/img/user-profile.jpg',
-                role: 'user',
-                username: 'ngonhuthuy',
-                iat: 1736822919,
-                exp: 1736909319
-            }
-        */
-
-        if (!sessionUser) {
-            res.status(401).json({
-                message: 'Unauthorized',
-            });
-            return;
-        }
-
         try {
-            const user = await User.findById(sessionUser.id);
-
+            const user_id = req.query.user_id as string;
+            const user = await User.findById(sessionUser?.id).populate(
+                POPULATE_USER
+            );
             const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 3;
+            const page_size = parseInt(req.query.page_size as string) || 3;
 
             const posts = await Post.find({
                 $or: [
                     {
-                        author: {
-                            $in: user.friends,
+                        user: {
+                            $in: user?.friends,
                         },
                     },
                     {
@@ -80,8 +62,35 @@ class PostController {
                 ],
             })
                 .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * pageSize)
-                .limit(pageSize);
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ROUTE: GET /api/v1/posts/new-feed-group
+    public async getNewFeedGroupPosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const user_id = req.query.user_id as string;
+            const user = await User.findById(user_id).populate(POPULATE_USER);
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                group: {
+                    $in: user?.groups,
+                },
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
 
             res.status(200).json(posts);
         } catch (error) {

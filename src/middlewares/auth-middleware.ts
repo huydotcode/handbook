@@ -6,13 +6,13 @@ export default async function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
-    const user = await getSession(req);
+    // const user = await getSession(req);
 
-    if (!user) {
-        res.status(401).json({
-            message: 'Unauthorized',
-        });
-    }
+    // if (!user) {
+    //     res.status(401).json({
+    //         message: 'Unauthorized',
+    //     });
+    // }
 
     next();
 }

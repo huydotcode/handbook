@@ -20,6 +20,7 @@ interface IUserModel {
     familyName: string;
     locale: string;
     friends: Types.ObjectId[];
+    groups: Types.ObjectId[];
     followersCount: number;
     isOnline: boolean;
     isBlocked: boolean;
@@ -64,6 +65,7 @@ const UserSchema = new Schema<IUserModel>(
         familyName: String,
         locale: String,
         friends: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+        groups: [{ type: Schema.Types.ObjectId, ref: 'group' }],
         followersCount: {
             type: Number,
             default: 0,
