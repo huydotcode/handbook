@@ -51,6 +51,10 @@ export const getNewFeedPostsKey = (
 ) => ['posts', type, userId, groupId, username, isManage];
 export const getPostKey = (postId: string | undefined) => ['post', postId];
 export const getPostsKey = () => ['posts'];
+export const getSavedPostsKey = (userId: string | undefined) => [
+    'savedPosts',
+    userId,
+];
 export const getCommentsKey = (postId: string | undefined) => [
     'comments',
     postId,

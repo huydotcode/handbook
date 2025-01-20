@@ -3,6 +3,7 @@ import { Comment, Group, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import { revalidatePath } from 'next/cache';
+import SavedPost from '@/models/SavedPost';
 
 const POPULATE_USER = 'name username avatar friends';
 const POPULATE_GROUP = {
@@ -267,6 +268,60 @@ export const updateStatusPost = async ({
         }
 
         revalidatePath(path);
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const savePost = async ({ postId }: { postId: string }) => {
+    try {
+        const session = await getAuthSession();
+        if (!session) return;
+
+        await connectToDB();
+
+        const savedPost = await SavedPost.findOne({
+            userId: session.user.id,
+        });
+
+        if (!savedPost) {
+            const newSavedPost = new SavedPost({
+                userId: session.user.id,
+                posts: [postId],
+            });
+            await newSavedPost.save();
+        }
+
+        if (savedPost) {
+            savedPost.posts.push(postId);
+            await savedPost.save();
+        }
+
+        return JSON.parse(JSON.stringify(savedPost));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const unsavePost = async ({ postId }: { postId: string }) => {
+    try {
+        const session = await getAuthSession();
+        if (!session) return;
+
+        await connectToDB();
+
+        const savedPost = await SavedPost.findOne({
+            userId: session.user.id,
+        });
+
+        if (savedPost) {
+            savedPost.posts = savedPost.posts.filter(
+                (p: any) => p.toString() !== postId
+            );
+            await savedPost.save();
+        }
+
+        return JSON.parse(JSON.stringify(savedPost));
     } catch (error: any) {
         throw new Error(error);
     }

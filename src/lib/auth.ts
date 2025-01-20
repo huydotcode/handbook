@@ -59,9 +59,11 @@ export const authOptions: NextAuthOptions = {
     jwt: {
         secret: process.env.JWT_SECRET,
         encode: async ({ secret, token, maxAge, salt }) => {
+            console.log('encode');
             return jwt.sign(token);
         },
         decode: async ({ secret, salt, token }) => {
+            console.log('decode');
             return jwt.verify(token || '') as any;
         },
     },
@@ -88,6 +90,7 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
+                console.log('authorize');
                 try {
                     const { email, password } = credentials;
                     await connectToDB();
@@ -102,6 +105,7 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async jwt({ token, user }) {
+            console.log('jwt');
             await connectToDB();
 
             if (!token.email) {
@@ -111,10 +115,6 @@ export const authOptions: NextAuthOptions = {
             const userExists = await User.findOne({ email: token.email });
 
             if (!userExists) {
-                logger({
-                    message: 'Error user exists',
-                    type: 'error',
-                });
                 return {
                     id: '',
                     name: '',
@@ -135,6 +135,7 @@ export const authOptions: NextAuthOptions = {
             };
         },
         async session({ session, token }) {
+            console.log('session');
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
@@ -150,6 +151,7 @@ export const authOptions: NextAuthOptions = {
             profile: oAuthCredentials,
             credentials: passwordcredentials,
         }) {
+            console.log('signin');
             try {
                 await connectToDB();
 

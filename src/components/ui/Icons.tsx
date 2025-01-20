@@ -18,6 +18,7 @@ import {
     FaUsers,
 } from 'react-icons/fa';
 import {
+    FaBookmark,
     FaCar,
     FaDownload,
     FaEye,
@@ -197,6 +198,7 @@ const Icons = {
     Laptop: (props: IconProps) => <IoMdLaptop {...props} />,
     Time: (props: IconProps) => <IoTime {...props} />,
     Download: (props: IconProps) => <FaDownload {...props} />,
+    Bookmark: (props: IconProps) => <FaBookmark {...props} />,
 };
 
 export const IconsArray = [

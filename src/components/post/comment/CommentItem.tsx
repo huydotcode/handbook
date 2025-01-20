@@ -1,22 +1,23 @@
 'use client';
-import { Avatar, Icons, Loading } from '@/components/ui';
-import React, { useRef, useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { useSession } from 'next-auth/react';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { deleteComment, sendComment } from '@/lib/actions/comment.action';
-import logger from '@/utils/logger';
-import toast from 'react-hot-toast';
-import InputComment from '@/components/post/comment/InputComment';
 import { Comment } from '@/components/post';
+import SkeletonComment from '@/components/post/comment/SkeletonComment';
+import { Avatar, Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Form, FormControl } from '@/components/ui/Form';
+import { Textarea } from '@/components/ui/textarea';
+import { deleteComment, sendComment } from '@/lib/actions/comment.action';
 import {
     getCommentsKey,
     getPostKey,
     getReplyCommentsKey,
 } from '@/lib/queryKey';
-import SkeletonComment from '@/components/post/comment/SkeletonComment';
+import logger from '@/utils/logger';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import React, { useRef, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 interface Props {
     data: IComment;
@@ -72,7 +73,12 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
 
     // Form trả lời
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
-    const { register, handleSubmit, formState, reset } = useForm<FormData>();
+    const form = useForm<FormData>({
+        defaultValues: {
+            text: '',
+        },
+    });
+    const { register, handleSubmit, formState, reset } = form;
     const formRef = useRef<HTMLFormElement>(null);
 
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
@@ -132,6 +138,20 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                 type: 'error',
             });
             toast.error('Có lỗi xảy ra khi xóa bình luận');
+        }
+    };
+
+    // Handle key down submit form when Enter
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Nếu Shift + Enter thì xuống dòng
+        if (e.key === 'Enter' && e.shiftKey) return;
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            formRef.current?.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true })
+            );
         }
     };
 
@@ -227,29 +247,46 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                             <Avatar session={session} />
 
                             <div className="ml-2 flex w-full flex-col">
-                                <form
-                                    ref={formRef}
-                                    className="flex w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
-                                    onSubmit={handleSubmit(sendReplyComment)}
-                                >
-                                    <InputComment
-                                        formRef={formRef}
-                                        register={register}
-                                        placeholder="Viết bình luận..."
-                                    />
-
-                                    <Button
-                                        className="right-0 z-10 w-10 rounded-r-xl border-l-2 bg-transparent px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
-                                        variant={'custom'}
-                                        type="submit"
-                                    >
-                                        {formState.isSubmitting ? (
-                                            <Icons.Loading className="animate-spin" />
-                                        ) : (
-                                            <Icons.Send />
+                                <Form {...form}>
+                                    <form
+                                        className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
+                                        onSubmit={handleSubmit(
+                                            sendReplyComment
                                         )}
-                                    </Button>
-                                </form>
+                                        ref={formRef}
+                                    >
+                                        <Controller
+                                            control={form.control}
+                                            name="text"
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Textarea
+                                                        {...field}
+                                                        className="cursor-text overflow-auto rounded-l-xl rounded-r-none bg-transparent p-2 text-start text-sm outline-none"
+                                                        placeholder="Viết bình luận..."
+                                                        spellCheck={false}
+                                                        autoComplete="off"
+                                                        onKeyDown={
+                                                            handleKeyDown
+                                                        }
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+
+                                        <Button
+                                            className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
+                                            variant={'custom'}
+                                            type="submit"
+                                        >
+                                            {formState.isLoading ? (
+                                                <Icons.Loading className="animate-spin" />
+                                            ) : (
+                                                <Icons.Send />
+                                            )}
+                                        </Button>
+                                    </form>
+                                </Form>
 
                                 <Button
                                     className="w-8 rounded-t-md"

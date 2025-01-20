@@ -1,5 +1,5 @@
 'use client';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { sendReaction } from '@/lib/actions/post.action';
 import logger from '@/utils/logger';
@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
 import { Button } from '../ui/Button';
 import { cn } from '@/lib/utils';
+import { getPostKey } from '@/lib/queryKey';
 
 interface Props {
     post: IPost;
@@ -16,6 +17,7 @@ interface Props {
 const ReactionPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
+    const queryClient = useQueryClient();
 
     const isReacted = React.useMemo(
         () => loves.find((r) => r === session?.user.id),
@@ -42,6 +44,10 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
 
                 await sendReaction({
                     postId: post._id,
+                });
+
+                queryClient.invalidateQueries({
+                    queryKey: getPostKey(post._id),
                 });
             } catch (error: any) {
                 logger({

@@ -100,8 +100,8 @@ const Message: React.FC<Props> = ({
         return (
             <>
                 {msg.text.split(' ').map((text, index) => {
-                    // Kểm tra url
-                    if (text.match(urlRegex)) {
+                    // Kểm tra url ( hoặc dạng /posts/postId)
+                    if (text.match(urlRegex) || text.match(/\/posts\/\w+/)) {
                         return (
                             <Link
                                 key={index}

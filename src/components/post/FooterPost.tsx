@@ -1,17 +1,28 @@
 'use client';
 import { ReactionPost } from '@/components/post';
-import { Avatar, Icons, Loading, Modal } from '@/components/ui';
-import { useSession } from 'next-auth/react';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import React, { KeyboardEventHandler, useRef, useState } from 'react';
-import { sendComment } from '@/lib/actions/comment.action';
-import { getCommentsKey, getPostKey } from '@/lib/queryKey';
-import toast from 'react-hot-toast';
-import InputComment from '@/components/post/comment/InputComment';
-import { Button } from '@/components/ui/Button';
 import Comment from '@/components/post/comment/CommentItem';
 import SkeletonComment from '@/components/post/comment/SkeletonComment';
+import { Avatar, Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { useSocket } from '@/context';
+import { useFriends } from '@/context/SocialContext';
+import { usePreventMultiClick } from '@/hooks/usePreventMultiClick';
+import { sendComment } from '@/lib/actions/comment.action';
+import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
+import { sendMessage } from '@/lib/actions/message.action';
+import { savePost, unsavePost } from '@/lib/actions/post.action';
+import { getCommentsKey, getPostKey, getSavedPostsKey } from '@/lib/queryKey';
+import { cn } from '@/lib/utils';
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import React, { KeyboardEventHandler, useRef, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import {
     Dialog,
     DialogClose,
@@ -20,10 +31,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '../ui/dialog';
-import { useFriends } from '@/context/SocialContext';
-import { sendMessage } from '@/lib/actions/message.action';
-import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
-import { useSocket } from '@/context';
+import { Form, FormControl } from '../ui/Form';
+import { Textarea } from '../ui/textarea';
 
 interface Props {
     post: IPost;
@@ -34,6 +43,7 @@ type FormData = {
 };
 
 const BASE_URL = 'https://handbookk.vercel.app';
+const PAGE_SIZE = 3;
 
 const ShareModal: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
@@ -88,13 +98,14 @@ const ShareModal: React.FC<Props> = ({ post }) => {
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle asChild>
                         <div className="flex items-center gap-2">
                             <Icons.Share className="text-xl" />
                             <span>Chia sẻ bài của {post.author.name}</span>
                         </div>
-                        <DialogClose />
                     </DialogTitle>
+
+                    <DialogClose />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-2">
@@ -150,7 +161,22 @@ const ShareModal: React.FC<Props> = ({ post }) => {
     );
 };
 
-const PAGE_SIZE = 3;
+export const useSavedPosts = (userId: string | undefined) =>
+    useQuery<ISavedPost[]>({
+        queryKey: getSavedPostsKey(userId),
+        queryFn: async () => {
+            if (!userId) return [];
+
+            const res = await fetch(`/api/saved-posts?user_id=${userId}`);
+            const savedPosts = await res.json();
+
+            return savedPosts;
+        },
+        enabled: !!userId,
+        refetchOnWindowFocus: false,
+        refetchInterval: false,
+        retry: false,
+    });
 
 export const useComments = (postId: string | undefined) =>
     useInfiniteQuery({
@@ -181,6 +207,76 @@ export const useComments = (postId: string | undefined) =>
         retry: false,
     });
 
+const SavePost: React.FC<Props> = ({ post }) => {
+    const { countClick, handleClick, canClick } = usePreventMultiClick({
+        message: 'Bạn thao tác quá nhanh, vui lòng thử lại sau 5s!',
+    });
+    const { data: session } = useSession();
+    const queryClient = useQueryClient();
+
+    const { data: savedPosts, isLoading } = useSavedPosts(session?.user.id);
+    const isSaved = savedPosts?.some((p) => p.posts.includes(post._id));
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: handleSave,
+        mutationKey: ['savePost', post._id],
+    });
+
+    async function handleSave() {
+        handleClick();
+
+        if (!canClick) return;
+        if (!session?.user) return;
+
+        console.log('handle save');
+
+        try {
+            if (isSaved) {
+                await unsavePost({ postId: post._id });
+            } else {
+                await savePost({ postId: post._id });
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: getSavedPostsKey(session?.user.id),
+            });
+
+            await queryClient.invalidateQueries({
+                queryKey: getPostKey(post._id),
+            });
+        } catch (error) {
+            toast.error('Không thể lưu bài viết!', {
+                position: 'bottom-left',
+            });
+        }
+    }
+
+    return (
+        <Button
+            onClick={() => mutate()}
+            className="flex flex-1 items-center gap-1"
+            variant={'ghost'}
+        >
+            {!isLoading && !isPending && (
+                <Icons.Bookmark
+                    className={cn('text-xl', {
+                        'text-yellow-300': isSaved,
+                    })}
+                />
+            )}
+            <span className={cn('', { 'text-yellow-300': isSaved })}>
+                {isPending || isLoading ? (
+                    <Icons.Loading className="text-xl text-yellow-300" />
+                ) : isSaved ? (
+                    'Đã lưu'
+                ) : (
+                    'Lưu'
+                )}
+            </span>
+        </Button>
+    );
+};
+
 const FooterPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
@@ -191,21 +287,24 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         fetchNextPage,
     } = useComments(post._id);
 
+    const form = useForm<FormData>();
     const {
         handleSubmit,
-        register,
         reset,
         setFocus,
-        formState: { isLoading, isSubmitting },
-    } = useForm<FormData>();
+        formState: { isLoading },
+        setValue,
+    } = form;
     const formRef = useRef<HTMLFormElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
     // Gửi bình luận
     const onSubmitComment: SubmitHandler<FormData> = async (data) => {
+        const { text } = data;
+        if (!text || text.trim().length === 0) return;
+
         reset();
         setFocus('text');
-        const { text } = data;
 
         try {
             await sendComment({
@@ -221,6 +320,8 @@ const FooterPost: React.FC<Props> = ({ post }) => {
             await queryClient.invalidateQueries({
                 queryKey: getCommentsKey(post._id),
             });
+
+            setValue('text', '');
         } catch (error: any) {
             toast.error('Không thể gửi bình luận!', {
                 position: 'bottom-left',
@@ -228,9 +329,13 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         }
     };
 
-    const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Nếu Shift + Enter thì xuống dòng
+        if (e.key === 'Enter' && e.shiftKey) return;
+
+        if (e.key === 'Enter') {
             e.preventDefault();
+
             formRef.current?.dispatchEvent(
                 new Event('submit', { cancelable: true, bubbles: true })
             );
@@ -249,11 +354,11 @@ const FooterPost: React.FC<Props> = ({ post }) => {
     return (
         <>
             <div className="mt-2">
-                <div className="relative flex w-full justify-end gap-2 border-b-2 py-2">
+                <div className="relative flex w-full justify-end gap-2 py-2">
                     <div className="flex items-center">
                         <Icons.Heart2 className="text-xl text-red-400" />
                         <span className="text-md ml-1">
-                            {post.comments_count}
+                            {post.loves.length}
                         </span>
                     </div>
 
@@ -265,55 +370,57 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                     </div>
                 </div>
 
-                <div className="mt-1 flex items-center justify-between">
+                <div className="mt-1 flex items-center justify-between border-y-2 py-1">
                     <ReactionPost post={post} />
 
-                    <Button
-                        className="flex-1"
-                        variant={'ghost'}
-                        onClick={() => formRef.current?.focus()}
-                    >
-                        <Icons.Comment className="text-xl" />
-                        <span className="ml-1 mr-2 min-w-[10px] text-sm">
-                            Bình luận
-                        </span>
-                    </Button>
-
                     <ShareModal post={post} />
+
+                    <SavePost post={post} />
                 </div>
 
                 <div className="mb-2 mt-2 flex items-center">
                     <Avatar session={session} />
 
                     <div className="ml-2 flex-1">
-                        <form
-                            className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
-                            onSubmit={handleSubmit(onSubmitComment)}
-                            ref={formRef}
-                        >
-                            <InputComment
-                                register={register}
-                                placeholder="Viết bình luận..."
-                                // formRef={formRef}
-                                inputRef={inputRef}
-                            />
-
-                            <Button
-                                className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
-                                variant={'custom'}
-                                type="submit"
+                        <Form {...form}>
+                            <form
+                                className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
+                                onSubmit={handleSubmit(onSubmitComment)}
+                                ref={formRef}
                             >
-                                {isLoading ? (
-                                    <Icons.Loading className="animate-spin" />
-                                ) : (
-                                    <Icons.Send />
-                                )}
-                            </Button>
-                        </form>
+                                <Controller
+                                    control={form.control}
+                                    name="text"
+                                    render={({ field }) => (
+                                        <FormControl>
+                                            <Textarea
+                                                {...field}
+                                                ref={inputRef}
+                                                className="cursor-text rounded-l-xl rounded-r-none bg-transparent p-2 text-start text-sm outline-none"
+                                                placeholder="Viết bình luận..."
+                                                spellCheck={false}
+                                                autoComplete="off"
+                                                onKeyDown={handleKeyDown}
+                                            />
+                                        </FormControl>
+                                    )}
+                                />
+
+                                <Button
+                                    className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
+                                    variant={'custom'}
+                                    type="submit"
+                                >
+                                    {isLoading ? (
+                                        <Icons.Loading className="animate-spin" />
+                                    ) : (
+                                        <Icons.Send />
+                                    )}
+                                </Button>
+                            </form>
+                        </Form>
                     </div>
                 </div>
-
-                {isSubmitting || (isLoadingComments && <SkeletonComment />)}
 
                 {comments.length === 0 && (
                     <div className="text-center text-xs text-secondary-1">
