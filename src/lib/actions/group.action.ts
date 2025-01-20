@@ -115,17 +115,15 @@ export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
     }
 };
 
-export const getRecommendGroups = async () => {
+export const getRecommendGroups = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
-
-        const session = await getAuthSession();
 
         const groups = await Group.find({
             members: {
                 $not: {
                     $elemMatch: {
-                        user: new Types.ObjectId(session?.user.id),
+                        user: new Types.ObjectId(userId),
                     },
                 },
             },

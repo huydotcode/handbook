@@ -1,11 +1,10 @@
 import { FriendSection, Sidebar } from '@/components/layout';
 import { InfinityPostComponent } from '@/components/post';
-import { Loading } from '@/components/ui';
 import { getAuthSession } from '@/lib/auth';
 
 const HomePage = async () => {
     const session = await getAuthSession();
-    if (!session) return <Loading fullScreen={true} overlay={true} />;
+    if (!session) return null;
 
     return (
         <div className="relative top-[56px] mx-auto min-h-[calc(100vh-56px)] w-[1200px] max-w-screen md:w-screen">

@@ -1,25 +1,26 @@
 import { InfinityPostComponent } from '@/components/post';
-import React from 'react';
-import { Sidebar } from './_components';
 import { getRecommendGroups } from '@/lib/actions/group.action';
-import Image from 'next/image';
+import { getAuthSession } from '@/lib/auth';
+import { Sidebar } from './_components';
 import { Button } from '@/components/ui/Button';
+import Image from 'next/image';
 
 const GroupsPage = async () => {
-    const groups = await getRecommendGroups();
-
+    const session = await getAuthSession();
+    if (!session) return null;
+    const groups = await getRecommendGroups({ userId: session?.user?.id });
     return (
         <div>
             <Sidebar />
 
             <div className="ml-[400px] mt-[56px] min-h-[calc(100vh-56px)] bg-primary-1 dark:bg-dark-primary-1 lg:ml-[80px]">
                 <div className="mx-auto mt-[80px] max-w-[700px] xl:max-w-[600px] lg:max-w-[600px] md:mx-2">
-                    {groups.length > 0 && (
+                    {groups && groups.length > 0 && (
                         <>
                             <h5 className="text-xl font-bold">Nhóm gợi ý</h5>
 
                             <div className="mt-2 grid grid-cols-4 gap-4">
-                                {groups.map((group: any) => (
+                                {groups.map((group) => (
                                     <Button
                                         className="flex h-[100px] flex-col items-center rounded-xl bg-secondary-1 p-4 dark:bg-dark-secondary-1"
                                         key={group._id}
