@@ -62,7 +62,7 @@ export const useConversations = (userId: string | undefined) =>
             if (!userId) return [];
 
             const res = await axiosInstance.get(
-                `/conversations?userId=${userId}`
+                `/conversations?user_id=${userId}`
             );
             const conversations = res.data;
             return conversations;
