@@ -112,9 +112,9 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
         const friend = await User.findById(friendId).exec();
         if (!friend) throw new Error('Đã có lỗi xảy ra');
 
-        user.friends = user.friends.filter((id) => id.toString() !== friendId);
+        user.friends = user.friends.filter((id: string) => id !== friendId);
         friend.friends = friend.friends.filter(
-            (id) => id.toString() !== session.user.id
+            (id: string) => id !== session.user.id
         );
 
         await user.save();
