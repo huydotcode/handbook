@@ -105,7 +105,7 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async jwt({ token, user }) {
-            console.log('jwt');
+            console.log('jwt', token);
             await connectToDB();
 
             if (!token.email) {

@@ -11,6 +11,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
+import axiosInstance from '@/lib/axios';
 
 const PAGE_SIZE = 10;
 
@@ -60,8 +61,10 @@ export const useConversations = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const res = await fetch(`/api/conversations?userId=${userId}`);
-            const conversations = await res.json();
+            const res = await axiosInstance.get(
+                `/conversations?userId=${userId}`
+            );
+            const conversations = res.data;
             return conversations;
         },
         enabled: !!userId,

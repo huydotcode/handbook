@@ -1,4 +1,11 @@
-import { Schema, Types, deleteModel, model, modelNames } from 'mongoose';
+import {
+    Schema,
+    Types,
+    deleteModel,
+    model,
+    modelNames,
+    models,
+} from 'mongoose';
 import bcrypt from 'bcrypt';
 
 interface IUserModel {
@@ -93,6 +100,6 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
-const User = model<IUserModel>('User', UserSchema);
+const User = models.User || model<IUserModel>('User', UserSchema);
 
 export default User;

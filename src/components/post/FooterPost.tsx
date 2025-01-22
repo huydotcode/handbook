@@ -33,6 +33,7 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     post: IPost;
@@ -184,10 +185,10 @@ export const useComments = (postId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!postId) return [];
 
-            const res = await fetch(
-                `/api/comments?postId=${postId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
+            const res = await axiosInstance.get(
+                `/comments?post_id=${postId}&page=${pageParam}&page_size=${PAGE_SIZE}`
             );
-            const comments = await res.json();
+            const comments = res.data;
 
             return comments;
         },
