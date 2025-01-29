@@ -15,6 +15,7 @@ interface IComment {
     loves: IUser[];
     post: IPost;
     isDeleted: boolean;
+    hasReplies: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

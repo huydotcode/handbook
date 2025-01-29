@@ -118,11 +118,15 @@ export const sendComment = async ({
     replyTo: string | null;
     postId: string;
 }) => {
+    const sessionMgs = await mongoose.startSession();
+
     try {
         await connectToDB();
 
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
+
+        sessionMgs.startTransaction();
 
         const newComment = new Comment({
             text: content,
@@ -141,11 +145,21 @@ export const sendComment = async ({
             commentId: newComment._id,
         });
 
+        if (replyTo) {
+            await Comment.findByIdAndUpdate(replyTo, {
+                hasReplies: true,
+            });
+        }
+
         if (!comment) {
             return null;
         }
+
+        await sessionMgs.commitTransaction();
+
         return JSON.parse(JSON.stringify(comment));
     } catch (error) {
+        await sessionMgs.abortTransaction();
         throw new Error(`Error with send comment: ${error}`);
     }
 };
@@ -185,6 +199,10 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
                         },
                     }
                 );
+            } else {
+                await Comment.findByIdAndUpdate(comment.replyComment, {
+                    hasReplies: false,
+                });
             }
         }
 

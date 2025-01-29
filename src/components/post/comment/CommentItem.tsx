@@ -18,6 +18,7 @@ import Link from 'next/link';
 import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import ReplyComments from './ReplyComments';
 
 interface Props {
     data: IComment;
@@ -60,25 +61,14 @@ export const useReplyComments = (commentId: string | undefined) =>
 
 const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const { data: session } = useSession();
-    const {
-        data: replyComments,
-        hasNextPage,
-        fetchNextPage,
-        isLoading: isLoadingReplyComments,
-    } = useReplyComments(comment._id);
     const queryClient = useQueryClient();
-
-    // Bình luận trả lời
-    const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
-
-    // Form trả lời
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
     const form = useForm<FormData>({
         defaultValues: {
             text: '',
         },
     });
-    const { register, handleSubmit, formState, reset } = form;
+    const { handleSubmit, formState, reset } = form;
     const formRef = useRef<HTMLFormElement>(null);
 
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
@@ -98,8 +88,6 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
             await queryClient.invalidateQueries({
                 queryKey: getPostKey(comment.post._id),
             });
-
-            setShowReplyComments(true);
         } catch (error) {
             logger({
                 message: 'Error send reply comments' + error,
@@ -201,46 +189,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                         )}
                     </div>
 
-                    {/* Form trả lời */}
-
-                    {isLoadingReplyComments || !replyComments ? (
-                        <SkeletonComment />
-                    ) : (
-                        <>
-                            {replyComments.length > 0 && !showReplyComments && (
-                                <Button
-                                    className="w-fit"
-                                    variant={'text'}
-                                    size={'xs'}
-                                    onClick={() =>
-                                        setShowReplyComments((prev) => !prev)
-                                    }
-                                >
-                                    Xem {replyComments.length} bình luận
-                                </Button>
-                            )}
-
-                            {showReplyComments && (
-                                <div className="border-l pl-3">
-                                    {replyComments.reverse().map((cmt) => {
-                                        return (
-                                            <Comment key={cmt._id} data={cmt} />
-                                        );
-                                    })}
-
-                                    {hasNextPage && (
-                                        <Button
-                                            variant={'text'}
-                                            size={'sm'}
-                                            onClick={() => fetchNextPage()}
-                                        >
-                                            Xem thêm bình luận
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
-                        </>
-                    )}
+                    {comment.hasReplies && <ReplyComments comment={comment} />}
 
                     {session?.user && showReplyForm && (
                         <div className="relative mt-2 flex">

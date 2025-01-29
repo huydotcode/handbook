@@ -106,15 +106,37 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             console.log('jwt', token);
-            await connectToDB();
 
-            if (!token.email) {
-                return token;
-            }
+            try {
+                await connectToDB();
 
-            const userExists = await User.findOne({ email: token.email });
+                if (!token.email) {
+                    return token;
+                }
 
-            if (!userExists) {
+                const userExists =
+                    (await User.findOne({ email: token.email })) || null;
+
+                if (!userExists) {
+                    return {
+                        id: '',
+                        name: '',
+                        email: '',
+                        picture: '',
+                        role: 'user',
+                        username: '',
+                    };
+                }
+
+                return {
+                    id: userExists._id.toString(),
+                    name: userExists.name,
+                    email: userExists.email,
+                    picture: userExists.avatar,
+                    role: userExists.role || 'user',
+                    username: userExists.username,
+                };
+            } catch (error: any) {
                 return {
                     id: '',
                     name: '',
@@ -124,15 +146,6 @@ export const authOptions: NextAuthOptions = {
                     username: '',
                 };
             }
-
-            return {
-                id: userExists._id.toString(),
-                name: userExists.name,
-                email: userExists.email,
-                picture: userExists.avatar,
-                role: userExists.role || 'user',
-                username: userExists.username,
-            };
         },
         async session({ session, token }) {
             console.log('session');

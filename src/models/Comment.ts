@@ -7,6 +7,7 @@ interface ICommentModel {
     loves: Types.ObjectId[];
     post: Types.ObjectId;
     isDeleted: boolean;
+    hasReplies: boolean;
 }
 
 export const CommentSchema = new Schema<ICommentModel>(
@@ -36,6 +37,10 @@ export const CommentSchema = new Schema<ICommentModel>(
             default: [],
         },
         isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+        hasReplies: {
             type: Boolean,
             default: false,
         },

@@ -35,7 +35,7 @@ const LoginPage = () => {
     });
     const {
         handleSubmit,
-        formState: { isSubmitting, isLoading },
+        formState: { isSubmitting, isLoading, errors },
         setError,
         reset,
     } = form;
@@ -63,6 +63,10 @@ const LoginPage = () => {
                     message: string;
                 };
             } | null;
+
+            console.log({
+                validUser,
+            });
 
             if (validUser?.error) {
                 const type = validUser.error.type;
@@ -147,6 +151,10 @@ const LoginPage = () => {
                                 </FormItem>
                             )}
                         />
+
+                        <FormMessage className="h-4">
+                            {errors.root && errors.root.message}
+                        </FormMessage>
 
                         <Button
                             variant={'primary'}
