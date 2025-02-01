@@ -1,26 +1,29 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
+import { FileUploaderWrapper } from '@/components/shared/FileUploader';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
+import { sendMessage } from '@/lib/actions/message.action';
+import { getMessagesKey } from '@/lib/queryKey';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, {
     KeyboardEventHandler,
     useEffect,
     useRef,
     useState,
 } from 'react';
+import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
 import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
-import { useRouter } from 'next/navigation';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { getMessagesKey } from '@/lib/queryKey';
 
 interface Props {
     className?: string;
@@ -60,6 +63,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         refetchInterval: false,
         refetchOnWindowFocus: false,
     });
+    const queryClient = useQueryClient();
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
     const { data: lastMessage } = useLastMessage(conversation._id);
@@ -74,7 +78,34 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(false);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
+
     const bottomRef = useRef<HTMLDivElement>(null);
+
+    // Xử lý tải ảnh lên khi kéo thả
+    const handleChangeUploadFile = async (files: File[]) => {
+        try {
+            toast.loading('Đang tải ảnh lên...', {
+                id: 'uploadImages',
+                duration: 3000,
+            });
+
+            const images = await uploadImagesWithFiles({
+                files,
+            });
+
+            await sendMessage({
+                roomId: conversation._id,
+                text: '',
+                images,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: getMessagesKey(conversationId),
+            });
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra');
+        }
+    };
 
     // Xử lý nhấn Esc để đóng khung tìm kiếm
     const handleKeyDownEsc: KeyboardEventHandler<HTMLDivElement> = (e) => {
@@ -209,72 +240,90 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 )}
                 onKeyDown={handleKeyDownEsc}
             >
-                <ChatHeader
-                    currentRoom={conversation}
-                    handleOpenInfo={handleOpenInfo}
-                    handleOpenSearch={handleOpenSearch}
-                />
-
-                <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2 ">
-                    {isFetchingNextPage && (
-                        <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
-                            <Icons.Loading />
-                        </div>
+                <FileUploaderWrapper
+                    className={cn(
+                        'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
+                        className,
+                        openInfo && 'md:hidden',
+                        openSearch && 'md:hidden'
                     )}
+                    handleChange={handleChangeUploadFile}
+                >
+                    <ChatHeader
+                        currentRoom={conversation}
+                        handleOpenInfo={handleOpenInfo}
+                        handleOpenSearch={handleOpenSearch}
+                    />
 
-                    {isLoading && (
-                        <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
-                            <Icons.Loading />
+                    <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2 ">
+                        {isFetchingNextPage && (
+                            <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
+                                <Icons.Loading />
+                            </div>
+                        )}
+
+                        {isLoading && (
+                            <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
+                                <Icons.Loading />
+                            </div>
+                        )}
+
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
+                            <div ref={bottomRef} />
+
+                            {messages?.map((message) => (
+                                <Message
+                                    key={message._id}
+                                    data={message}
+                                    messages={messages}
+                                    searchMessage={findMessage}
+                                    isLastMessage={
+                                        lastMessage?._id === message._id
+                                    }
+                                />
+                            ))}
+
+                            {hasNextPage && (
+                                <div className="py-2" ref={topRef} />
+                            )}
+                            {hasNextPage && (
+                                <div className="py-2" ref={topRef2} />
+                            )}
                         </div>
-                    )}
 
-                    <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
-                        <div ref={bottomRef} />
-
-                        {messages?.map((message) => (
-                            <Message
-                                key={message._id}
-                                data={message}
-                                messages={messages}
-                                searchMessage={findMessage}
-                                isLastMessage={lastMessage?._id === message._id}
-                            />
-                        ))}
-
-                        {hasNextPage && <div className="py-2" ref={topRef} />}
-                        {hasNextPage && <div className="py-2" ref={topRef2} />}
+                        {findMessage && (
+                            <Button
+                                className={cn(
+                                    'absolute left-1/2 top-4 -translate-x-1/2'
+                                )}
+                                variant={'secondary'}
+                                onClick={() => {
+                                    router.push(
+                                        `/messages/${conversation._id}`
+                                    );
+                                    setOpenSearch(false);
+                                }}
+                            >
+                                Thoát tìm kiếm
+                            </Button>
+                        )}
                     </div>
 
-                    {findMessage && (
-                        <Button
-                            className={cn(
-                                'absolute left-1/2 top-4 -translate-x-1/2'
-                            )}
-                            variant={'secondary'}
-                            onClick={() => {
-                                router.push(`/messages/${conversation._id}`);
-                                setOpenSearch(false);
-                            }}
-                        >
-                            Thoát tìm kiếm
-                        </Button>
-                    )}
-                </div>
+                    <div className="relative flex justify-center">
+                        {showScrollDown && (
+                            <Button
+                                className={cn(
+                                    'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100 md:-top-[7rem]'
+                                )}
+                                onClick={handleScrollDown}
+                            >
+                                <Icons.ArrowDown className="h-4 w-4" />
+                            </Button>
+                        )}
 
-                <div className="relative flex justify-center">
-                    {showScrollDown && (
-                        <Button
-                            className={cn(
-                                'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100 md:-top-[7rem]'
-                            )}
-                            onClick={handleScrollDown}
-                        >
-                            <Icons.ArrowDown className="h-4 w-4" />
-                        </Button>
-                    )}
-
-                    <InputMessage currentRoom={conversation} />
-                </div>
+                        <InputMessage currentRoom={conversation} />
+                    </div>
+                </FileUploaderWrapper>
             </div>
 
             {openInfo && messages && (

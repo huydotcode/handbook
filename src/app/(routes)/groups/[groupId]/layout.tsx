@@ -44,13 +44,6 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
     const session = await getAuthSession();
     if (!session?.user) return redirect('/');
 
-    // Kiểm tra đã tham gia nhóm chưa
-    const isMember = group.members.some(
-        (mem) => mem.user._id === session.user.id
-    );
-    if (!isMember && group.type == 'private')
-        return redirect(`/groups/${groupId}/join`);
-
     return (
         <div>
             <Sidebar group={group} conversations={conversations} />

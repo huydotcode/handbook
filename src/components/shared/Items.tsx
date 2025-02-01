@@ -53,7 +53,7 @@ const Items = {
                     height={32}
                 />
 
-                <p className="ml-2 text-base text-black dark:text-dark-primary-1">
+                <p className="ml-2 text-xs text-black dark:text-dark-primary-1">
                     {name}
                 </p>
             </Button>

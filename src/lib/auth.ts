@@ -66,6 +66,7 @@ export const authOptions: NextAuthOptions = {
             console.log('decode');
             return jwt.verify(token || '') as any;
         },
+        maxAge: 30, // 30 seconds
     },
     cookies: {
         sessionToken: {
@@ -76,6 +77,8 @@ export const authOptions: NextAuthOptions = {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite:
                     process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                // 30s
+                expires: new Date(Date.now() + 30 * 1000),
             },
         },
     },

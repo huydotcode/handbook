@@ -19,7 +19,6 @@ const Action: React.FC<Props> = ({ group }) => {
     const router = useRouter();
     const groupId = group._id;
 
-    const [isRequest, setIsRequest] = useState<boolean>(false);
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
     const isJoinGroup = group.members.some(
@@ -30,8 +29,6 @@ const Action: React.FC<Props> = ({ group }) => {
     }, [group.creator._id, session?.user?.id]);
 
     const handleJoinGroup: FormEventHandler = async (e) => {
-        if (isRequest) return;
-
         e.preventDefault();
 
         try {
@@ -39,14 +36,13 @@ const Action: React.FC<Props> = ({ group }) => {
                 userId: session?.user?.id as string,
                 groupId: groupId,
             });
+            toast.success('Đã tham gia nhóm');
         } catch (error) {
             logger({
                 message: 'Error handle add friend' + error,
                 type: 'error',
             });
             toast.error('Đã có lỗi xảy ra khi gửi lời mời kết bạn!');
-        } finally {
-            setIsRequest(true);
         }
     };
 
@@ -57,7 +53,6 @@ const Action: React.FC<Props> = ({ group }) => {
                 userId: session?.user?.id as string,
             });
             toast.success('Đã rời khỏi nhóm');
-            router.push('/groups');
         } catch (error) {
             logger({
                 message: 'Error handle remove friend' + error,
@@ -89,9 +84,8 @@ const Action: React.FC<Props> = ({ group }) => {
                     {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
 
                     <p className="ml-2 md:hidden">
-                        {isRequest && 'Đã gửi lời tham gia nhóm'}
                         {isJoinGroup && 'Rời nhóm'}
-                        {!isJoinGroup && !isRequest && 'Tham gia nhóm'}
+                        {!isJoinGroup && 'Tham gia nhóm'}
                     </p>
                 </Button>
             )}

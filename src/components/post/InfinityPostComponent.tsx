@@ -1,70 +1,97 @@
 'use client';
+import { Button } from '@/components/ui/Button';
+import axiosInstance from '@/lib/axios';
 import { getNewFeedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
-import { Button } from '@/components/ui/Button';
-import toast from 'react-hot-toast';
-import axiosInstance from '@/lib/axios';
 
 interface Props {
     className?: string;
     userId?: string;
     username?: string;
     groupId?: string;
-    type?: 'new-feed' | 'profile' | 'group' | 'new-feed-group';
+    type?:
+        | 'new-feed'
+        | 'profile'
+        | 'group'
+        | 'new-feed-group'
+        | 'manage-group-posts';
     title?: string;
-    isManage?: boolean;
 }
-
-export const HOME_POSTS = ['posts', 'home'];
 
 const PAGE_SIZE = 3;
 
-export const usePosts = ({
+const usePosts = ({
     userId,
     groupId,
     username,
     type = 'new-feed',
-    isManage = false,
-}: {
-    userId?: string;
-    groupId?: string;
-    username?: string;
-    type?: 'new-feed' | 'profile' | 'group' | 'new-feed-group';
-    isManage?: boolean;
-}) => {
+}: Pick<Props, 'userId' | 'groupId' | 'username' | 'type'>) => {
     const { data: session } = useSession();
 
-    return useInfiniteQuery({
-        queryKey: getNewFeedPostsKey(type, userId, groupId, username, isManage),
-        queryFn: async ({ pageParam = 1 }) => {
-            if (!session) return [];
+    const isFeedType = useMemo(
+        () => ['new-feed', 'new-feed-group'].includes(type),
+        [type]
+    );
 
-            if (type == 'new-feed') {
-                const res = await axiosInstance.get(
-                    `/posts/${type}?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
+    return useInfiniteQuery({
+        queryKey: getNewFeedPostsKey(type, userId, groupId, username),
+        queryFn: async ({ pageParam = 1 }) => {
+            console.log('type', type, groupId);
+            if (!session?.user.id) return [];
+
+            if (isFeedType) {
+                const { data } = await axiosInstance.get<IPost[]>(
+                    `/posts/${type}`,
+                    {
+                        params: {
+                            page: pageParam,
+                            page_size: PAGE_SIZE,
+                            user_id: session.user.id,
+                        },
+                    }
                 );
-                return res.data;
+                return data;
             }
 
-            if (type == 'new-feed-group') {
-                const res = await axiosInstance.get(
-                    `/posts/${type}?page=${pageParam}&page_size=${PAGE_SIZE}&user_id=${session?.user.id}`
+            if (type === 'profile') {
+                const { data } = await axiosInstance.get<IPost[]>(
+                    `/posts/profile/${userId}`,
+                    {
+                        params: {
+                            page: pageParam,
+                            page_size: PAGE_SIZE,
+                        },
+                    }
                 );
-                return res.data;
+                return data;
+            }
+
+            if (type === 'group') {
+                console.log('groupId', groupId);
+                const { data } = await axiosInstance.get<IPost[]>(
+                    `/posts/group/${groupId}`,
+                    {
+                        params: {
+                            page: pageParam,
+                            page_size: PAGE_SIZE,
+                        },
+                    }
+                );
+                return data;
             }
 
             return [];
         },
-        getNextPageParam: (lastPage, pages) => {
-            return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
-        },
-        select: (data) => data.pages.flatMap((page) => page),
+        getNextPageParam: (lastPage, pages) =>
+            lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined,
+        select: (data) => data.pages.flat(),
         initialPageParam: 1,
         refetchInterval: 1000 * 60 * 5,
         refetchOnMount: false,
@@ -80,98 +107,127 @@ const InfinityPostComponent: React.FC<Props> = ({
     username,
     type = 'new-feed',
     title,
-    isManage = false,
 }) => {
     const { data: session } = useSession();
-    const query = usePosts({ userId, groupId, username, type, isManage });
+    const {
+        data,
+        isLoading,
+        isFetching,
+        isFetchingNextPage,
+        hasNextPage,
+        fetchNextPage,
+        refetch,
+    } = usePosts({ userId, groupId, username, type });
 
-    const { ref: bottomRef, inView } = useInView({
-        threshold: 0,
-    });
-
+    const { ref: bottomRef, inView } = useInView({ threshold: 0 });
     const currentUser = session?.user;
+
+    const isManage = type === 'manage-group-posts';
     const isCurrentUser =
         currentUser?.id === userId || currentUser?.username === username;
-    const isGroupPage = type === 'group';
-    const isProfilePage = type === 'profile';
+    const shouldShowCreatePost = useMemo(
+        () =>
+            !isManage &&
+            ((type === 'new-feed' && currentUser) ||
+                (type === 'profile' && isCurrentUser) ||
+                (type === 'group' && currentUser && groupId)),
+        [isManage, type, currentUser, isCurrentUser, groupId]
+    );
 
     useEffect(() => {
-        if (!query.isFetching && inView) {
-            (async () => {
-                try {
-                    await query.fetchNextPage();
-                } catch (error) {
-                    toast.error('Có lỗi xảy ra khi tải bài viết');
-                }
-            })();
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage().catch(() =>
+                toast.error('Có lỗi xảy ra khi tải bài viết')
+            );
         }
-    }, [query.isFetching, inView, query]);
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    const renderLoader = () => {
+        if (isLoading || isFetchingNextPage) {
+            return (
+                <div>
+                    <SkeletonPost />
+                    <SkeletonPost />
+                    <SkeletonPost />
+                </div>
+            );
+        }
+
+        if (isFetching) {
+            return (
+                <div className="flex justify-center py-10">
+                    <Icons.Loading className="text-4xl" />
+                </div>
+            );
+        }
+
+        return null;
+    };
+
+    const renderEmptyState = () => {
+        if (!data?.length && !isLoading && !isFetching) {
+            const messages = {
+                'new-feed': 'Bạn đã đọc hết bài của ngày hôm nay',
+                'new-feed-group': 'Bạn đã đọc hết bài của ngày hôm nay',
+                profile: 'Chưa có bài viết nào',
+                group: 'Chưa có bài viết nào',
+                'manage-group-posts': 'Không có bài viết để quản lý',
+            };
+
+            return (
+                <div className="pb-10 text-center">
+                    {messages[type] || 'Không có dữ liệu'}
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const renderCreatePost = () => {
+        if (!shouldShowCreatePost) return null;
+
+        return type === 'group' ? (
+            <CreatePost groupId={groupId!} type="group" />
+        ) : (
+            <CreatePost />
+        );
+    };
 
     return (
-        <>
-            <div className={cn(className, 'relative w-full')}>
-                {title && <h5 className="mb-2 text-xl font-bold">{title}</h5>}
+        <div className={cn(className, 'relative w-full')}>
+            {/* Header section */}
+            {title && <h5 className="mb-2 text-xl font-bold">{title}</h5>}
 
-                {isManage && (
-                    <Button
-                        onClick={() => query.refetch()}
-                        className="mb-2"
-                        variant="primary"
-                    >
-                        Tải mới
-                    </Button>
-                )}
+            {/* Refresh button for management view */}
+            {isManage && (
+                <Button
+                    onClick={() => refetch()}
+                    className="mb-2"
+                    variant="primary"
+                    size={'sm'}
+                >
+                    Tải mới
+                </Button>
+            )}
 
-                {!isManage && type === 'new-feed' && currentUser && (
-                    <CreatePost />
-                )}
-                {!isManage && isProfilePage && isCurrentUser && <CreatePost />}
-                {!isManage && isGroupPage && currentUser && groupId && (
-                    <CreatePost groupId={groupId} type="group" />
-                )}
+            {/* Post creation form */}
+            {renderCreatePost()}
 
-                {query?.data &&
-                    query?.data.map((post: IPost) => (
-                        <Post data={post} key={post._id} isManage={isManage} />
-                    ))}
+            {/* Posts list */}
+            {data?.map((post) => (
+                <Post data={post} key={post._id} isManage={isManage} />
+            ))}
 
-                <div className="absolute bottom-[800px]" ref={bottomRef}></div>
+            {/* Infinite scroll trigger */}
+            <div ref={bottomRef} aria-hidden="true" />
 
-                {query.isLoading && (
-                    <div className="flex justify-center py-10">
-                        <Icons.Loading className="text-4xl" />
-                    </div>
-                )}
+            {/* Loading states */}
+            {renderLoader()}
 
-                {query.isFetchingNextPage && (
-                    <div>
-                        <SkeletonPost />
-                        <SkeletonPost />
-                        <SkeletonPost />
-                    </div>
-                )}
-
-                {!query.isLoading &&
-                    !query.isFetchingNextPage &&
-                    !query.hasNextPage && (
-                        <>
-                            {type == 'new-feed' ||
-                                (type == 'new-feed-group' && (
-                                    <div className="pb-10 text-center">
-                                        Bạn đã đọc hết bài của ngày hôm nay
-                                    </div>
-                                ))}
-
-                            {type == 'profile' ||
-                                (type == 'group' && (
-                                    <div className="pb-10 text-center">
-                                        Chưa có bài viết nào
-                                    </div>
-                                ))}
-                        </>
-                    )}
-            </div>
-        </>
+            {/* Empty states */}
+            {renderEmptyState()}
+        </div>
     );
 };
-export default InfinityPostComponent;
+
+export default React.memo(InfinityPostComponent);

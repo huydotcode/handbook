@@ -108,7 +108,7 @@ const InfomationConversation: React.FC<Props> = ({
                 <h1 className="mt-2">{title}</h1>
                 {partner && (
                     <div>
-                        <p className="text-center">
+                        <p className="text-center text-xs text-secondary-1">
                             {partner.isOnline ? 'Online' : 'Offline'}
                         </p>
 

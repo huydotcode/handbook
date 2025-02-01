@@ -10,9 +10,8 @@ const ManagePostPage: React.FC<Props> = async ({ params }) => {
     return (
         <InfinityPostComponent
             groupId={groupId}
-            type={'group'}
+            type={'manage-group-posts'}
             title={'Quản lý bài viết'}
-            isManage
         />
     );
 };
