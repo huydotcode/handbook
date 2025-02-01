@@ -26,7 +26,7 @@ const PostSchema = new Schema<IPostModel>(
         images: {
             type: [Types.ObjectId],
             default: [],
-            ref: 'Image',
+            ref: 'image',
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +37,7 @@ const PostSchema = new Schema<IPostModel>(
         shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
         group: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Group',
+            ref: 'group',
             default: null,
         },
         comments_count: {
@@ -63,6 +63,6 @@ PostSchema.index({ group: 1 }); // Index for posts by group
 PostSchema.index({ author: 1 }); // Index for posts by author
 PostSchema.index({ createdAt: -1 }); // Index for posts by date
 
-const Post = models.Post || model<IPostModel>('Post', PostSchema);
+const Post = models.Post || model<IPostModel>('post', PostSchema);
 
 export default Post;

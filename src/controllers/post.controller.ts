@@ -39,13 +39,9 @@ class PostController {
         res: Response,
         next: NextFunction
     ): Promise<void> {
-        const sessionUser = await getSession(req);
-
         try {
             const user_id = req.query.user_id as string;
-            const user = await User.findById(sessionUser?.id).populate(
-                POPULATE_USER
-            );
+            const user = await User.findById(user_id).populate(POPULATE_USER);
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
@@ -87,6 +83,54 @@ class PostController {
                 group: {
                     $in: user?.groups,
                 },
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ROUTE: GET /api/v1/posts/profile/:user_id
+    public async getProfilePosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const user_id = req.params.user_id;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                author: user_id,
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ROUTE: GET /api/v1/posts/group/:group_id
+    public async getGroupPosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const group_id = req.params.group_id;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                group: group_id,
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)

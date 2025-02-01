@@ -16,27 +16,27 @@ interface IConversationModel {
 const ConversationModel = new Schema<IConversationModel>(
     {
         title: { type: String, default: '' },
-        creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        creator: { type: Schema.Types.ObjectId, ref: 'user', required: true },
         participants: {
             type: [Schema.Types.ObjectId],
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
         lastMessage: {
             type: Schema.Types.ObjectId,
-            ref: 'Message',
+            ref: 'message',
             required: false,
             default: null,
         },
         avatar: {
             type: Schema.Types.ObjectId,
-            ref: 'Image',
+            ref: 'image',
             required: false,
         },
         type: { type: String, default: 'private', enum: ['private', 'group'] },
         group: {
             type: Schema.Types.ObjectId,
-            ref: 'Group',
+            ref: 'group',
             required: false,
             default: null,
         },
@@ -49,6 +49,6 @@ ConversationModel.index({ title: 'text' });
 
 const Conversation =
     models.Conversation ||
-    model<IConversationModel>('Conversation', ConversationModel);
+    model<IConversationModel>('conversation', ConversationModel);
 
 export default Conversation;

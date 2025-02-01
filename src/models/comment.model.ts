@@ -7,6 +7,7 @@ interface ICommentModel {
     loves: Types.ObjectId[];
     post: Types.ObjectId;
     isDeleted: boolean;
+    hasReplies: boolean;
 }
 
 export const CommentSchema = new Schema<ICommentModel>(
@@ -17,25 +18,29 @@ export const CommentSchema = new Schema<ICommentModel>(
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
         replyComment: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Comment',
+            ref: 'comment',
             default: null,
         },
         post: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Post',
+            ref: 'post',
             required: true,
         },
         loves: {
             type: [mongoose.Schema.Types.ObjectId],
-            ref: 'User',
+            ref: 'user',
             default: [],
         },
         isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+        hasReplies: {
             type: Boolean,
             default: false,
         },
@@ -50,6 +55,6 @@ CommentSchema.index({ replyComment: 1 }); // Index for replies to a comment
 CommentSchema.index({ post: 1, createdAt: -1 }); // Compound index for comments in a post sorted by date
 
 const Comment =
-    models.Comment || model<ICommentModel>('Comment', CommentSchema);
+    models.Comment || model<ICommentModel>('comment', CommentSchema);
 
 export default Comment;

@@ -21,7 +21,7 @@ export const ImageSchema = new Schema<IImageModel>(
         url: String,
         creator: {
             type: Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
     },
@@ -32,6 +32,6 @@ export const ImageSchema = new Schema<IImageModel>(
 
 ImageSchema.index({ creator: 1 }); // Index for images by creator
 
-const Image = models.Image || model('Image', ImageSchema);
+const Image = models.Image || model('image', ImageSchema);
 
 export default Image;

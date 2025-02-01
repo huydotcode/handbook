@@ -12,12 +12,12 @@ const MessageSchema = new Schema<IMessageModel>(
     {
         sender: {
             type: Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
         conversation: {
             type: Schema.Types.ObjectId,
-            ref: 'Conversation',
+            ref: 'conversation',
             required: true,
         },
         text: {
@@ -25,7 +25,7 @@ const MessageSchema = new Schema<IMessageModel>(
         },
         images: {
             type: [Schema.Types.ObjectId],
-            ref: 'Image',
+            ref: 'image',
             default: [],
         },
         isRead: {
@@ -43,5 +43,5 @@ MessageSchema.index({ sender: 1 }); // Index for messages by sender
 MessageSchema.index({ createdAt: -1 }); // Index for messages by createdAt
 
 const Message =
-    models.Message || model<IMessageModel>('Message', MessageSchema);
+    models.Message || model<IMessageModel>('message', MessageSchema);
 export default Message;

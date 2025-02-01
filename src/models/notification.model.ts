@@ -11,8 +11,8 @@ interface INotificationModel {
 const NotificationSchema = new Schema<INotificationModel>(
     {
         type: { type: String, default: 'request-add-friend' },
-        sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        sender: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+        receiver: { type: Schema.Types.ObjectId, ref: 'user', required: true },
         message: {
             type: String,
             default: '',
@@ -27,6 +27,6 @@ NotificationSchema.index({ receiver: 1 }); // Index for notifications by receive
 
 const Notification =
     models.Notification ||
-    model<INotificationModel>('Notification', NotificationSchema);
+    model<INotificationModel>('notification', NotificationSchema);
 
 export default Notification;
