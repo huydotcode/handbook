@@ -64,7 +64,9 @@ const Sidebar = () => {
                                 )}
                                 href={link.path || '/'}
                             >
-                                <Icon />
+                                <div className="flex h-8 w-8 items-center justify-center">
+                                    <Icon />
+                                </div>
 
                                 <span className="ml-2 text-xs lg:hidden">
                                     {link.name}

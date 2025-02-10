@@ -138,6 +138,24 @@ export const getPostByPostId = async ({ postId }: { postId: string }) => {
     }
 };
 
+export const getSavedPosts = async ({ userId }: { userId: string }) => {
+    try {
+        await connectToDB();
+
+        const savedPost = await SavedPost.findOne({ userId })
+            .populate('posts')
+            .populate('posts.author', POPULATE_USER)
+            .populate('posts.images')
+            .populate('posts.group', POPULATE_GROUP)
+            .populate('posts.loves', POPULATE_USER)
+            .populate('posts.shares', POPULATE_USER);
+
+        return JSON.parse(JSON.stringify(savedPost));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const createPost = async ({
     content,
     images,

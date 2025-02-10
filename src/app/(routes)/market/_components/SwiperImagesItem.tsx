@@ -51,21 +51,23 @@ const SwiperImagesItem: React.FC<Props> = ({ images }) => {
                     return (
                         <SwiperSlide key={index}>
                             <div className={'relative h-full w-full'}>
-                                <div
-                                    slot="prevButton"
-                                    className={
-                                        'absolute left-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
-                                    }
-                                >
-                                    <Button
-                                        variant={'custom'}
-                                        onClick={handlePrev}
+                                {images.length > 1 && (
+                                    <div
+                                        slot="prevButton"
+                                        className={
+                                            'absolute left-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
+                                        }
                                     >
-                                        <Icons.ArrowBack
-                                            className={'h-8 w-8'}
-                                        />
-                                    </Button>
-                                </div>
+                                        <Button
+                                            variant={'custom'}
+                                            onClick={handlePrev}
+                                        >
+                                            <Icons.ArrowBack
+                                                className={'h-8 w-8'}
+                                            />
+                                        </Button>
+                                    </div>
+                                )}
 
                                 <Image
                                     className={'object-contain'}
@@ -74,21 +76,23 @@ const SwiperImagesItem: React.FC<Props> = ({ images }) => {
                                     fill={true}
                                 />
 
-                                <div
-                                    slot="nextButton"
-                                    className={
-                                        'absolute right-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
-                                    }
-                                >
-                                    <Button
-                                        variant={'custom'}
-                                        onClick={handleNext}
+                                {images.length > 1 && (
+                                    <div
+                                        slot="nextButton"
+                                        className={
+                                            'absolute right-2 top-1/2 z-50 -translate-y-1/2 rounded-full hover:bg-hover-1 hover:dark:bg-dark-secondary-1'
+                                        }
                                     >
-                                        <Icons.ArrowForward
-                                            className={'h-8 w-8'}
-                                        />
-                                    </Button>
-                                </div>
+                                        <Button
+                                            variant={'custom'}
+                                            onClick={handleNext}
+                                        >
+                                            <Icons.ArrowForward
+                                                className={'h-8 w-8'}
+                                            />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </SwiperSlide>
                     );

@@ -21,11 +21,13 @@ const Sidebar: React.FC<Props> = ({}) => {
         filter.trim().length > 0
             ? initConversations?.filter((conversation) => {
                   return (
-                      conversation.participants.find((user) =>
-                          user.name
-                              .toLocaleLowerCase()
-                              .includes(filter.toLocaleLowerCase())
-                      ) ||
+                      conversation.participants
+                          .filter((user) => user._id !== session?.user.id)
+                          .find((user) =>
+                              user.name
+                                  .toLocaleLowerCase()
+                                  .includes(filter.toLocaleLowerCase())
+                          ) ||
                       conversation.title
                           .toLocaleLowerCase()
                           .includes(filter.toLocaleLowerCase())

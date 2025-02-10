@@ -35,6 +35,11 @@ export const navLink: NavLink[] = [
         path: '/groups',
         icon: <Icons.Group className="h-8 w-8 " />,
     },
+    {
+        name: 'Đã lưu',
+        path: '/saved',
+        icon: <Icons.Bookmark className="h-7 w-7 " />,
+    },
 ];
 
 export const navAdmin: NavLink[] = [

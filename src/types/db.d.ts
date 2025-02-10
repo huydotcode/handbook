@@ -206,7 +206,7 @@ interface IItem {
 interface ISavedPost {
     _id: string;
     userId: IUser;
-    posts: string[];
+    posts: IPost[];
     createdAt: Date;
     updatedAt: Date;
 }
