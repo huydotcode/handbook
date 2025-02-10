@@ -6,6 +6,10 @@ export default async function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
+    if (req.method === 'OPTIONS') {
+        return next();
+    }
+
     // const user = await getSession(req);
 
     // if (!user) {
