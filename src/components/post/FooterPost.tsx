@@ -11,6 +11,7 @@ import { sendComment } from '@/lib/actions/comment.action';
 import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { sendMessage } from '@/lib/actions/message.action';
 import { savePost, unsavePost } from '@/lib/actions/post.action';
+import axiosInstance from '@/lib/axios';
 import { getCommentsKey, getPostKey, getSavedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import {
@@ -20,7 +21,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { KeyboardEventHandler, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import {
@@ -33,7 +34,6 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
-import axiosInstance from '@/lib/axios';
 
 interface Props {
     post: IPost;
@@ -163,7 +163,7 @@ const ShareModal: React.FC<Props> = ({ post }) => {
 };
 
 export const useSavedPosts = (userId: string | undefined) =>
-    useQuery<ISavedPost[]>({
+    useQuery<ISavedPost>({
         queryKey: getSavedPostsKey(userId),
         queryFn: async () => {
             if (!userId) return [];
@@ -176,7 +176,6 @@ export const useSavedPosts = (userId: string | undefined) =>
         enabled: !!userId,
         refetchOnWindowFocus: false,
         refetchInterval: false,
-        retry: false,
     });
 
 export const useComments = (postId: string | undefined) =>
@@ -205,7 +204,6 @@ export const useComments = (postId: string | undefined) =>
         enabled: !!postId,
         refetchOnWindowFocus: false,
         refetchInterval: false,
-        retry: false,
     });
 
 const SavePost: React.FC<Props> = ({ post }) => {
@@ -215,8 +213,8 @@ const SavePost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
 
-    const { data: savedPosts, isLoading } = useSavedPosts(session?.user.id);
-    const isSaved = savedPosts?.some((p) => p.posts.includes(post._id));
+    const { data: savedPost, isLoading } = useSavedPosts(session?.user.id);
+    const isSaved = savedPost?.posts.find((p) => p._id === post._id);
 
     const { mutate, isPending } = useMutation({
         mutationFn: handleSave,
@@ -251,6 +249,10 @@ const SavePost: React.FC<Props> = ({ post }) => {
             });
         }
     }
+
+    useEffect(() => {
+        console.log('savedPost', savedPost);
+    }, [savedPost]);
 
     return (
         <Button

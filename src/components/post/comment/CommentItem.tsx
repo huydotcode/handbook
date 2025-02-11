@@ -56,7 +56,6 @@ export const useReplyComments = (commentId: string | undefined) =>
         enabled: !!commentId,
         refetchOnWindowFocus: false,
         refetchInterval: false,
-        retry: false,
     });
 
 const CommentItem: React.FC<Props> = ({ data: comment }) => {

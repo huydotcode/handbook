@@ -1,10 +1,7 @@
 'use client';
 import { notificationType } from '@/constants/notificationType';
 import socketEvent from '@/constants/socketEvent.constant';
-import {
-    getNotificationByUserId,
-    getRequestByUserId,
-} from '@/lib/actions/notification.action';
+import { getCategories } from '@/lib/actions/category.action';
 import {
     getCategoriesKey,
     getFriendsKey,
@@ -20,7 +17,6 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
-import { getCategories } from '@/lib/actions/category.action';
 
 const PAGE_SIZE = 5;
 
@@ -52,7 +48,6 @@ export const useNotifications = (userId: string | undefined) =>
         refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        retry: false,
     });
 
 export const useCategories = () =>
@@ -64,7 +59,6 @@ export const useCategories = () =>
         },
         refetchInterval: false,
         refetchOnWindowFocus: false,
-        retry: false,
     });
 
 export const useRequests = (userId: string | undefined) =>
@@ -94,7 +88,6 @@ export const useRequests = (userId: string | undefined) =>
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
-        retry: false,
     });
 
 function AppProvider({ children }: { children: React.ReactNode }) {

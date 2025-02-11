@@ -11,9 +11,9 @@ export async function GET(
     const userId = searchParams.get('user_id');
 
     try {
-        const savedPosts = await SavedPost.find({
+        const savedPosts = await SavedPost.findOne({
             userId: userId,
-        });
+        }).populate('posts');
 
         return NextResponse.json(savedPosts);
     } catch (error: any) {

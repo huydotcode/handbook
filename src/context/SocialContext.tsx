@@ -26,7 +26,6 @@ export const useProfile = (userId: string) =>
         enabled: !!userId,
         refetchInterval: false,
         refetchOnWindowFocus: false,
-        retry: false,
     });
 
 export const useFriends = (userId: string | undefined) =>
@@ -52,7 +51,6 @@ export const useFriends = (userId: string | undefined) =>
         refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        retry: false,
     });
 
 export const useConversations = (userId: string | undefined) =>
@@ -71,7 +69,6 @@ export const useConversations = (userId: string | undefined) =>
         refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        retry: false,
     });
 
 export const useMessages = (conversationId: string | undefined) =>
@@ -100,7 +97,6 @@ export const useMessages = (conversationId: string | undefined) =>
         refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        retry: false,
     });
 
 export const useLastMessage = (conversationId: string) =>
