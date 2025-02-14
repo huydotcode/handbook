@@ -64,10 +64,6 @@ const LoginPage = () => {
                 };
             } | null;
 
-            console.log({
-                validUser,
-            });
-
             if (validUser?.error) {
                 const type = validUser.error.type;
 

@@ -55,10 +55,6 @@ const ShareModal: React.FC<Props> = ({ post }) => {
     const handleShare = async (friendId: string) => {
         if (!session?.user) return;
 
-        console.log({
-            url: `${BASE_URL}/posts/${post._id}`,
-        });
-
         try {
             const data = await getConversationWithTwoUsers({
                 otherUserId: friendId,
@@ -227,8 +223,6 @@ const SavePost: React.FC<Props> = ({ post }) => {
         if (!canClick) return;
         if (!session?.user) return;
 
-        console.log('handle save');
-
         try {
             if (isSaved) {
                 await unsavePost({ postId: post._id });
@@ -249,10 +243,6 @@ const SavePost: React.FC<Props> = ({ post }) => {
             });
         }
     }
-
-    useEffect(() => {
-        console.log('savedPost', savedPost);
-    }, [savedPost]);
 
     return (
         <Button

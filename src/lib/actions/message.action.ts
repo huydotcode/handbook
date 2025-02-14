@@ -79,7 +79,6 @@ export const sendMessage = async ({
     text: string;
     images?: string[];
 }) => {
-    console.log('Send message');
     try {
         await connectToDB();
 

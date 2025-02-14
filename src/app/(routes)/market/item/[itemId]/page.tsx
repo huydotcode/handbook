@@ -44,26 +44,43 @@ export default async function ItemPage({ params }: Props) {
                     }
                 >
                     <h1 className={'text-xl font-bold'}>{item.name}</h1>
-                    <p className={'mt-2 text-sm'}>{item.category.name}</p>
 
-                    <p className="mt-2 text-xl font-bold text-primary-1 dark:text-dark-primary-1">
+                    <p className="mt-2 text-base font-bold text-primary-1 dark:text-dark-primary-1">
                         {formatMoney(item.price)}
                     </p>
 
-                    <span className={'mt-2 flex items-center'}>
-                        {/* <Icons.Location className={'h-4 w-4'} /> */}
-                        <p className={'ml-2 text-sm'}>{item.location}</p>
-                    </span>
+                    <h5 className={'mt-2 text-lg font-bold'}>Chi tiết</h5>
 
-                    <span className={'mt-2 flex items-center'}>
-                        {/* <Icons.Time className={'h-4 w-4'} /> */}
-                        <p className={'ml-2 text-sm'}>
-                            Cập nhật: {new Date(item.updatedAt).toDateString()}
-                        </p>
-                    </span>
+                    <ul className="ml-4 list-disc">
+                        <li>
+                            <p className={'text-sm'}>
+                                <b>Mô tả: </b>
+                                {item.description}
+                            </p>
+                        </li>
 
-                    <h5 className={'mt-2 text-lg font-bold'}>Mô tả</h5>
-                    <p className={'text-sm'}>{item.description}</p>
+                        <li>
+                            <p className={'text-sm'}>
+                                <b>Tình trạng: </b>{' '}
+                                {item.status == 'active'
+                                    ? 'Còn hàng'
+                                    : 'Hết hàng'}
+                            </p>
+                        </li>
+
+                        <li>
+                            <p className={'text-sm'}>
+                                <b>Địa chỉ: </b> {item.location}
+                            </p>
+                        </li>
+
+                        <li>
+                            <p className={'text-sm'}>
+                                <b>Cập nhật: </b>
+                                {new Date(item.updatedAt).toDateString()}
+                            </p>
+                        </li>
+                    </ul>
 
                     <div className="mt-2 flex items-center">
                         {!isOwner && (
@@ -71,7 +88,7 @@ export default async function ItemPage({ params }: Props) {
                         )}
                     </div>
 
-                    <div className="mt-2 rounded-xl border px-4 py-2 dark:border-none">
+                    <div className="mt-2 rounded-xl border p-2 dark:border-none">
                         <h5 className={'mt-2 text-lg font-bold'}>
                             Thông tin người bán
                         </h5>
@@ -88,11 +105,9 @@ export default async function ItemPage({ params }: Props) {
                                 {item.seller.name}
                             </p>
                         </div>
-                        <h5 className={'mt-2 text-lg font-bold'}>
-                            Mặt hàng khác
-                        </h5>
+                        <h5 className={'text-md mt-2'}>Mặt hàng khác</h5>
 
-                        <div className={'grid grid-cols-2'}>
+                        <div className={'grid grid-cols-2 gap-2'}>
                             {itemsOther
                                 .filter((i: IItem) => i._id !== item._id)
                                 .slice(0, 4)

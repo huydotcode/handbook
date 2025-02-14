@@ -8,7 +8,7 @@ export const checkAdmin = async () => {
 
         return session.user.role === 'admin';
     } catch (error: any) {
-        console.log(error);
+        throw new Error(error.message);
     }
 
     return false;

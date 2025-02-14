@@ -43,6 +43,8 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
                 path: path,
                 userId: session.user.id,
             });
+
+            toast.success('Thay đổi tiểu sử thành công!');
         } catch (error) {
             logger({
                 message: 'error change bio' + error,

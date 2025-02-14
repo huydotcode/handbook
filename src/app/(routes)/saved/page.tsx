@@ -19,6 +19,10 @@ export default async function SavedPage() {
                 {postsSaved.posts.map((post) => (
                     <Post key={post._id} data={post} />
                 ))}
+
+                {postsSaved.posts.length === 0 && (
+                    <p className="text-center">Không có bài viết nào</p>
+                )}
             </div>
         </div>
     );

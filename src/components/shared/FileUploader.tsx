@@ -69,10 +69,6 @@ export const FileUploaderWrapper = ({
         }
     };
 
-    useEffect(() => {
-        console.log(isDragging ? 'dragging' : 'not dragging');
-    }, [isDragging]);
-
     return (
         <div
             className={cn('relative', className)}

@@ -1,13 +1,12 @@
 'use client';
 import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
-import DOMPurify from 'dompurify';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import ModalEditBio from './ModalEditBio';
 import ModalEditInfo from './ModalEditInfo';
-import { Button } from '@/components/ui/Button';
 
 interface Props {
     profile: IProfile;
@@ -48,7 +47,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 isAboutPage && 'flex'
             )}
         >
-            <article className={cn('p-2', isAboutPage && 'w-[30%] border-r')}>
+            <article className={cn(isAboutPage && 'w-[30%] border-r')}>
                 <h5 className="text-xl font-bold">Giới thiệu</h5>
                 <p className="text-sm">{bio}</p>
 

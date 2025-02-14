@@ -215,7 +215,6 @@ const NotificationItem = ({
                 });
             }
         } catch (error) {
-            console.log(error);
             toast.error(
                 'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
             );

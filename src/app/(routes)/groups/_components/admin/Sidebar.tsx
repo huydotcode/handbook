@@ -100,7 +100,7 @@ const Sidebar: React.FC<Props> = ({
                             </p>
 
                             <p className="text-xs text-secondary-1 lg:hidden">
-                                Lần hoạt động gần nhất:
+                                Hoạt động gần nhất:
                                 {timeConvert(currentGroup.updatedAt.toString())}
                             </p>
                         </div>

@@ -37,7 +37,7 @@ export const updateBio = async ({
         const sesson = await getAuthSession();
         if (!sesson) throw new Error('Unauthorized');
 
-        await Profile.updateOne({ userId: userId }, { bio: newBio });
+        await Profile.updateOne({ user: userId }, { bio: newBio });
     } catch (error: any) {
         throw new Error('Error updating bio', error);
     } finally {

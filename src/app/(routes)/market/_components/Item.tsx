@@ -30,16 +30,16 @@ const Item: React.FC<Props> = ({ data: item }) => {
                 />
             </div>
 
-            <div className={'mb-8 flex flex-col'}>
-                <p className="mt-1 whitespace-pre-wrap text-xs">{item.name}</p>
+            <div className="flex w-full flex-1 flex-col justify-between">
+                <div className={'mb-8 flex flex-col'}>
+                    <p className="mt-1 whitespace-pre-wrap text-xs">
+                        {item.name}
+                    </p>
 
-                <span className="text-xs text-secondary-1">
-                    {item.location}
-                </span>
-            </div>
-
-            <div className="flex w-full items-center justify-between">
-                <span className="text-start text-xs">{item.seller.name}</span>
+                    <span className="text-xs text-secondary-1">
+                        {item.location}
+                    </span>
+                </div>
 
                 <span className="text-end text-base font-medium">
                     {formatMoney(item.price)}

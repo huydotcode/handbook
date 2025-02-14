@@ -43,7 +43,6 @@ const usePosts = ({
     return useInfiniteQuery({
         queryKey: getNewFeedPostsKey(type, userId, groupId, username),
         queryFn: async ({ pageParam = 1 }) => {
-            console.log('type', type, groupId);
             if (!session?.user.id) return [];
 
             if (isFeedType) {
@@ -74,7 +73,6 @@ const usePosts = ({
             }
 
             if (type === 'group') {
-                console.log('groupId', groupId);
                 const { data } = await axiosInstance.get<IPost[]>(
                     `/posts/group/${groupId}`,
                     {
