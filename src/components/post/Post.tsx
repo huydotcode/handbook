@@ -57,7 +57,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
 
             await queryClient.invalidateQueries({
                 queryKey: getNewFeedPostsKey(
-                    'group',
+                    'manage-group-posts',
                     undefined,
                     post.group?._id,
                     undefined
@@ -71,7 +71,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
             if (accept) {
                 await queryClient.invalidateQueries({
                     queryKey: getNewFeedPostsKey(
-                        'group',
+                        'manage-group-posts',
                         undefined,
                         post.group?._id,
                         undefined
