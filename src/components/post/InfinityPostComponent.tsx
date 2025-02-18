@@ -85,6 +85,22 @@ const usePosts = ({
                 return data;
             }
 
+            if (type === 'manage-group-posts') {
+                const { data } = await axiosInstance.get<IPost[]>(
+                    `/posts/group/${groupId}/manage`,
+                    {
+                        params: {
+                            page: pageParam,
+                            page_size: PAGE_SIZE,
+                        },
+                    }
+                );
+
+                console.log('data', data);
+
+                return data;
+            }
+
             return [];
         },
         getNextPageParam: (lastPage, pages) =>

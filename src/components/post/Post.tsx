@@ -60,8 +60,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
                     'group',
                     undefined,
                     post.group?._id,
-                    undefined,
-                    true
+                    undefined
                 ),
             });
 
@@ -75,8 +74,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
                         'group',
                         undefined,
                         post.group?._id,
-                        undefined,
-                        false
+                        undefined
                     ),
                 });
             }
@@ -86,7 +84,6 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
     };
 
     if (!post) return <SkeletonPost />;
-    if (!showInPrivate && post.status != 'active') return null;
 
     return (
         <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">

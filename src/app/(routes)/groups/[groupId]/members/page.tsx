@@ -1,9 +1,10 @@
 import { Avatar } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import {
     getGroupByGroupId,
     getMembersByGroupId,
 } from '@/lib/actions/group.action';
-import { Button } from '@/components/ui/Button';
+import { FormatDate } from '@/utils/formatDate';
 import { splitName } from '@/utils/splitName';
 
 const MAX_MEMBERS = 6;
@@ -31,10 +32,10 @@ const GroupPage = async ({
                         .map((member) => (
                             <Button
                                 href={`/profile/${member.user._id}`}
-                                className="justify-start"
+                                className="min-w-[200px] justify-start"
                                 key={member._id}
-                                variant={'outline'}
-                                size={'lg'}
+                                variant={'ghost'}
+                                size={'md'}
                             >
                                 <Avatar
                                     className="mr-2"
@@ -59,9 +60,9 @@ const GroupPage = async ({
                         .map((member) => (
                             <Button
                                 href={`/profile/${member.user._id}`}
-                                className="justify-start"
+                                className="min-w-[200px] justify-start"
                                 key={member._id}
-                                variant={'outline'}
+                                variant={'ghost'}
                                 size={'md'}
                             >
                                 <Avatar
@@ -72,10 +73,19 @@ const GroupPage = async ({
                                     imgSrc={member.user.avatar}
                                 />
 
-                                <span>
-                                    {splitName(member.user.name).firstName}{' '}
-                                    {splitName(member.user.name).lastName}
-                                </span>
+                                <div className="flex flex-col">
+                                    <span>
+                                        {splitName(member.user.name).firstName}{' '}
+                                        {splitName(member.user.name).lastName}
+                                    </span>
+
+                                    <span className="text-xs text-gray-500">
+                                        Tham gia vào{' '}
+                                        {FormatDate.formatISODateToDateTime(
+                                            member.joinedAt
+                                        )}
+                                    </span>
+                                </div>
                             </Button>
                         ))}
 

@@ -4,6 +4,7 @@ import Post from './Post';
 interface GroupMember {
     user: Schema.Types.ObjectId;
     role: string;
+    joinedAt?: Date;
 }
 
 interface IGroupModel {
@@ -48,6 +49,10 @@ const GroupSchema = new Schema<IGroupModel>(
                 role: {
                     type: String,
                     default: 'member',
+                },
+                joinedAt: {
+                    type: Date,
+                    default: Date.now,
                 },
             },
         ],

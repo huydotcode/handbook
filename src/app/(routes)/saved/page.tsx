@@ -16,7 +16,7 @@ export default async function SavedPage() {
             <h1 className="text-2xl font-bold">Đã lưu</h1>
 
             <div className="mt-4">
-                {postsSaved.posts.map((post) => (
+                {postsSaved.posts.reverse().map((post) => (
                     <Post key={post._id} data={post} />
                 ))}
 

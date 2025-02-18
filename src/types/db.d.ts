@@ -149,6 +149,7 @@ interface IMemberGroup {
     _id: string;
     user: IUser;
     role: string;
+    joinedAt: Date;
 }
 
 interface IConversation {
