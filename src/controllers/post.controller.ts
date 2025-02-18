@@ -56,6 +56,7 @@ class PostController {
                         option: 'public',
                     },
                 ],
+                status: 'active',
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
@@ -83,6 +84,7 @@ class PostController {
                 group: {
                     $in: user?.groups,
                 },
+                status: 'active',
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
@@ -107,6 +109,7 @@ class PostController {
 
             const posts = await Post.find({
                 author: user_id,
+                status: 'active',
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
@@ -131,10 +134,43 @@ class PostController {
 
             const posts = await Post.find({
                 group: group_id,
+                status: 'active',
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
                 .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ROUTE: POST /api/v1/posts/group/:group_id/manage
+    public async getManageGroupPosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const group_id = req.params.group_id;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                group: group_id,
+                status: 'pending',
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            console.log({
+                group_id,
+                page,
+                page_size,
+                posts,
+            });
 
             res.status(200).json(posts);
         } catch (error) {
