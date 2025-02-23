@@ -28,17 +28,10 @@ const app = express();
 
 connectToMongo();
 
-app.use(
-    cors({
-        origin: ['http://localhost:3000', 'https://handbookk.vercel.app'],
-        credentials: true,
-        methods: 'GET, POST, PUT, DELETE, OPTIONS',
-        allowedHeaders: 'Content-Type, Authorization',
-    })
-);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(
     helmet({
         crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -62,10 +55,19 @@ Notification.createCollection();
 Profile.createCollection();
 SavedPost.createCollection();
 
+app.use(
+    cors({
+        origin: ['http://localhost:3000', 'https://handbookk.vercel.app'],
+        credentials: true,
+        // methods: 'GET, POST, PUT, DELETE, OPTIONS',
+        // allowedHeaders: 'Content-Type, Authorization',
+    })
+);
+
 app.use('/api/v1', authMiddleware, apiRouter);
 
 app.get('/', (req, res) => {
-    res.send(`Hello world`);
+    res.send('Hello World!');
 });
 
 export default app;

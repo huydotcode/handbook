@@ -109,6 +109,7 @@ class PostController {
 
             const posts = await Post.find({
                 author: user_id,
+                group: null,
                 status: 'active',
             })
                 .sort({ createdAt: -1, loves: -1 })
