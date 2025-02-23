@@ -71,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         sessionToken: {
             name: 'sessionToken',
             options: {
+                domain: 'handbook-api.vercel.app',
                 httpOnly: true,
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',
