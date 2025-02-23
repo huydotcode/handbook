@@ -1,7 +1,7 @@
 import React from 'react';
+import { DarkmodeButton } from '@/components/ui';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { DarkmodeButton } from '@/components/ui';
 
 interface Props {
     children: React.ReactNode;
@@ -9,7 +9,6 @@ interface Props {
 
 const AuthLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-
     if (session) redirect('/');
 
     return (

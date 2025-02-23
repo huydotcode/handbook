@@ -97,12 +97,6 @@ export const authOptions: NextAuthOptions = {
                         email: email,
                     });
 
-                    console.log('authorize', {
-                        id: user._id.toString(),
-                        name: user.name,
-                        email: user.email,
-                    });
-
                     return {
                         id: user._id.toString(),
                         name: user.name,
@@ -142,16 +136,6 @@ export const authOptions: NextAuthOptions = {
                     };
                 }
 
-                console.log('jwt', {
-                    id: userExists._id.toString(),
-                    name: userExists.name,
-                    email: userExists.email,
-                    picture: userExists.avatar,
-                    role: userExists.role || 'user',
-                    username: userExists.username,
-                    accessToken,
-                });
-
                 return {
                     id: userExists._id.toString(),
                     name: userExists.name,
@@ -183,8 +167,6 @@ export const authOptions: NextAuthOptions = {
                 session.user.username = token.username;
                 session.user.accessToken = token.accessToken;
             }
-
-            console.log('session', session);
 
             return session;
         },
