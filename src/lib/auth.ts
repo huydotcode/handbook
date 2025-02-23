@@ -57,15 +57,6 @@ export const authOptions: NextAuthOptions = {
     },
     secret: process.env.JWT_SECRET,
     pages: { error: '/auth/error' },
-    jwt: {
-        secret: process.env.JWT_SECRET,
-        encode: async ({ secret, token, maxAge, salt }) => {
-            return jwt.sign(token);
-        },
-        decode: async ({ secret, salt, token }) => {
-            return jwt.verify(token || '') as any;
-        },
-    },
     cookies: {
         sessionToken: {
             name: 'sessionToken',
@@ -75,6 +66,7 @@ export const authOptions: NextAuthOptions = {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite:
                     process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
             },
         },
     },
@@ -89,6 +81,7 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
+                console.log('authorize', credentials);
                 try {
                     const { email, password } = credentials;
                     await connectToDB();
@@ -112,14 +105,13 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async jwt({ token, user }) {
+            console.log('jwt', token);
             try {
                 await connectToDB();
 
                 if (!token.email) {
                     return token;
                 }
-
-                const accessToken = jwt.sign(token);
 
                 const userExists =
                     (await User.findOne({ email: token.email })) || null;
@@ -132,7 +124,6 @@ export const authOptions: NextAuthOptions = {
                         picture: '',
                         role: 'user',
                         username: '',
-                        accessToken: '',
                     };
                 }
 
@@ -143,7 +134,6 @@ export const authOptions: NextAuthOptions = {
                     picture: userExists.avatar,
                     role: userExists.role || 'user',
                     username: userExists.username,
-                    accessToken,
                 };
             } catch (error: any) {
                 return {
@@ -153,11 +143,11 @@ export const authOptions: NextAuthOptions = {
                     picture: '',
                     role: 'user',
                     username: '',
-                    accessToken: '',
                 };
             }
         },
         async session({ session, token }) {
+            console.log('session', session);
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
@@ -165,7 +155,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.image = token.picture;
                 session.user.role = token.role;
                 session.user.username = token.username;
-                session.user.accessToken = token.accessToken;
+                session.user.accessToken = jwt.sign(token);
             }
 
             return session;

@@ -8,7 +8,6 @@ declare module 'next-auth/jwt' {
         id: UserId;
         role: string;
         username: string;
-        accessToken: string;
     }
 }
 

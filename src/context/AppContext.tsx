@@ -126,6 +126,7 @@ function AppProvider({ children }: { children: React.ReactNode }) {
     }, [socket, session?.user.id, queryClient]);
 
     useEffect(() => {
+        console.log(session?.user);
         if (!session || !session?.user) {
             localStorage.removeItem('accessToken');
             return;
