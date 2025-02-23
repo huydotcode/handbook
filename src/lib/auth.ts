@@ -56,7 +56,6 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt',
     },
     secret: process.env.JWT_SECRET,
-    useSecureCookies: true,
     pages: { error: '/auth/error' },
     jwt: {
         secret: process.env.JWT_SECRET,
@@ -72,11 +71,11 @@ export const authOptions: NextAuthOptions = {
         sessionToken: {
             name: 'sessionToken',
             options: {
-                httpOnly: true,
+                // httpOnly: true,
                 path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                sameSite:
-                    process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                // secure: process.env.NODE_ENV === 'production',
+                // sameSite:
+                // process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 // 30s
                 expires: new Date(Date.now() + 30 * 1000),
             },
