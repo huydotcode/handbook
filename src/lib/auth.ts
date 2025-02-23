@@ -71,7 +71,6 @@ export const authOptions: NextAuthOptions = {
         sessionToken: {
             name: 'sessionToken',
             options: {
-                domain: 'vercel.app',
                 httpOnly: true,
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',
@@ -79,6 +78,7 @@ export const authOptions: NextAuthOptions = {
                     process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 // 30s
                 expires: new Date(Date.now() + 30 * 1000),
+                domain: '',
             },
         },
     },
