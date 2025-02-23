@@ -65,7 +65,6 @@ export const authOptions: NextAuthOptions = {
         decode: async ({ secret, salt, token }) => {
             return jwt.verify(token || '') as any;
         },
-        maxAge: 30, // 30 seconds
     },
     cookies: {
         sessionToken: {
@@ -76,9 +75,6 @@ export const authOptions: NextAuthOptions = {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite:
                     process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-                // 30s
-                expires: new Date(Date.now() + 30 * 1000),
-                domain: '',
             },
         },
     },
@@ -96,7 +92,22 @@ export const authOptions: NextAuthOptions = {
                 try {
                     const { email, password } = credentials;
                     await connectToDB();
-                    return await User.findOne({ email });
+
+                    const user = await User.findOne({
+                        email: email,
+                    });
+
+                    console.log('authorize', {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                    });
+
+                    return {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                    };
                 } catch (error) {
                     console.error('Authorization error:', error);
                     return null;
@@ -114,6 +125,8 @@ export const authOptions: NextAuthOptions = {
                     return token;
                 }
 
+                const accessToken = jwt.sign(token);
+
                 const userExists =
                     (await User.findOne({ email: token.email })) || null;
 
@@ -125,8 +138,19 @@ export const authOptions: NextAuthOptions = {
                         picture: '',
                         role: 'user',
                         username: '',
+                        accessToken: '',
                     };
                 }
+
+                console.log('jwt', {
+                    id: userExists._id.toString(),
+                    name: userExists.name,
+                    email: userExists.email,
+                    picture: userExists.avatar,
+                    role: userExists.role || 'user',
+                    username: userExists.username,
+                    accessToken,
+                });
 
                 return {
                     id: userExists._id.toString(),
@@ -135,6 +159,7 @@ export const authOptions: NextAuthOptions = {
                     picture: userExists.avatar,
                     role: userExists.role || 'user',
                     username: userExists.username,
+                    accessToken,
                 };
             } catch (error: any) {
                 return {
@@ -144,6 +169,7 @@ export const authOptions: NextAuthOptions = {
                     picture: '',
                     role: 'user',
                     username: '',
+                    accessToken: '',
                 };
             }
         },
@@ -155,7 +181,10 @@ export const authOptions: NextAuthOptions = {
                 session.user.image = token.picture;
                 session.user.role = token.role;
                 session.user.username = token.username;
+                session.user.accessToken = token.accessToken;
             }
+
+            console.log('session', session);
 
             return session;
         },

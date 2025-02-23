@@ -15,7 +15,11 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        // set cookie from cookie storage to header
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+
         return config;
     },
     (error) => {

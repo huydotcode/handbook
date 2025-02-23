@@ -125,6 +125,21 @@ function AppProvider({ children }: { children: React.ReactNode }) {
         );
     }, [socket, session?.user.id, queryClient]);
 
+    useEffect(() => {
+        if (!session || !session?.user) {
+            localStorage.removeItem('accessToken');
+            return;
+        }
+        if (!session?.user.accessToken) return;
+
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            localStorage.removeItem('accessToken');
+        }
+
+        localStorage.setItem('accessToken', session?.user.accessToken);
+    }, [session?.user]);
+
     return <>{children}</>;
 }
 

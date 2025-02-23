@@ -13,13 +13,7 @@ interface Payload {
 
 export const jwt = {
     sign: (payload: any) => {
-        return jwtWebToken.sign(
-            payload,
-            process.env.JWT_SECRET || 'my-secret',
-            {
-                expiresIn: '1d',
-            }
-        );
+        return jwtWebToken.sign(payload, process.env.JWT_SECRET || 'my-secret');
     },
     verify: (token: string) => {
         return jwtWebToken.verify(token, process.env.JWT_SECRET || 'my-secret');
