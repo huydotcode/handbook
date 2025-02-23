@@ -71,11 +71,11 @@ export const authOptions: NextAuthOptions = {
         sessionToken: {
             name: 'sessionToken',
             options: {
-                // httpOnly: true,
-                path: '/',
-                // secure: process.env.NODE_ENV === 'production',
-                // sameSite:
-                // process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                httpOnly: true,
+                // path: '/',
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 // 30s
                 expires: new Date(Date.now() + 30 * 1000),
             },
