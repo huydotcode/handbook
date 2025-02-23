@@ -10,15 +10,12 @@ if (process.env.NODE_ENV === 'development') {
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-    },
     withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
     (config) => {
+        // set cookie from cookie storage to header
         return config;
     },
     (error) => {
