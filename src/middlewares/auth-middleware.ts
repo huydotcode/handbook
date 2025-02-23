@@ -10,27 +10,14 @@ export default async function authMiddleware(
         return next();
     }
 
-    const sessionToken = req.cookies.sessionToken;
-
-    if (!sessionToken) {
-        return res.status(401).json({
-            message: 'Unauthorized! Not session token found',
-            cookies: req.cookies,
-        });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (!process.env.JWT_SECRET) {
-        return res.status(500).json({
-            message: 'Unauthorized! Not jwt secret found',
-        });
-    }
-
-    const token = jwt.verify(sessionToken);
-
+    const token = authHeader.split(' ')[1];
     if (!token) {
-        return res.status(401).json({
-            message: 'Unauthorized! Invalid session token',
-        });
+        return res.status(401).json({ message: 'Unauthorized' });
     }
 
     next();
