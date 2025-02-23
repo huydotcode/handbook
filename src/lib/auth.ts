@@ -78,6 +78,8 @@ export const authOptions: NextAuthOptions = {
                     process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 // 30s
                 expires: new Date(Date.now() + 30 * 1000),
+                domain:
+                    process.env.NODE_ENV === 'production' ? '.vercel.app' : '',
             },
         },
     },
