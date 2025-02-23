@@ -56,6 +56,8 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt',
     },
     secret: process.env.JWT_SECRET,
+    useSecureCookies: true,
+    pages: { error: '/auth/error' },
     jwt: {
         secret: process.env.JWT_SECRET,
         encode: async ({ secret, token, maxAge, salt }) => {

@@ -59,23 +59,10 @@ export const useConversations = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            // const res = await axiosInstance.get(
-            //     `/conversations?user_id=${userId}`
-            // );
-            // const conversations = res.data;
-            const res = await fetch(
-                `https://handbook-api.vercel.app/api/v1/conversations?user_id=${userId}`,
-                {
-                    method: 'GET',
-                    credentials: 'include',
-                }
+            const res = await axiosInstance.get(
+                `/conversations?user_id=${userId}`
             );
-
-            if (!res.ok) {
-                return [];
-            }
-
-            const conversations = await res.json();
+            const conversations = res.data;
             return conversations;
         },
         enabled: !!userId,
