@@ -96,8 +96,6 @@ const usePosts = ({
                     }
                 );
 
-                console.log('data', data);
-
                 return data;
             }
 
