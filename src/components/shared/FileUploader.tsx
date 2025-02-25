@@ -14,6 +14,7 @@ import React, {
 interface Props {
     className?: string;
     handleChange?: (files: File[]) => void;
+    single?: boolean;
 }
 
 export const FileUploaderWrapper = ({
@@ -175,7 +176,11 @@ export const FileUploaderWrapper = ({
     );
 };
 
-const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
+const FileUploader: React.FC<Props> = ({
+    className,
+    handleChange,
+    single = false,
+}) => {
     const [files, setFiles] = useState<File[]>([]);
 
     // Function to handle file selection (from both drag-and-drop and browse)
@@ -254,7 +259,7 @@ const FileUploader: React.FC<Props> = ({ className, handleChange }) => {
                             type="file"
                             className="hidden"
                             onChange={handleFileSelect}
-                            multiple
+                            multiple={!single}
                         />
                     </label>
                 </>

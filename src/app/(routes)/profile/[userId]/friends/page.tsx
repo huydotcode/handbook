@@ -24,13 +24,14 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
             <section className="relative my-3 w-full rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                 <h5 className="text-xl font-bold">Bạn bè</h5>
                 <article>
-                    <ul className="mt-2 grid grid-cols-4 gap-2">
+                    <ul className="mt-2 flex flex-wrap gap-2">
                         {friends.map((friend) => {
                             return (
                                 <Button
                                     className="h-14 justify-start border"
                                     key={friend._id}
                                     href={`/profile/${friend._id}`}
+                                    variant={'ghost'}
                                 >
                                     <Avatar
                                         className="mr-2"
@@ -41,7 +42,9 @@ const FriendsPage: React.FC<Props> = async ({ params }) => {
                                         onlyImage={true}
                                     />
 
-                                    <span>{friend.name}</span>
+                                    <span className={'text-sm'}>
+                                        {friend.name}
+                                    </span>
                                 </Button>
                             );
                         })}

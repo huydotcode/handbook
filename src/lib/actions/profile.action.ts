@@ -102,3 +102,57 @@ export const getLocations = async () => {
         throw new Error(error);
     }
 };
+
+export const updateAvatar = async ({
+    userId,
+    avatar,
+    path,
+}: {
+    userId: string;
+    avatar: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await User.updateOne(
+            {
+                _id: userId,
+            },
+            {
+                avatar,
+            }
+        );
+    } catch (error: any) {
+        throw new Error(error);
+    } finally {
+        revalidatePath(path);
+    }
+};
+
+export const updateCoverPhoto = async ({
+    userId,
+    coverPhoto,
+    path,
+}: {
+    userId: string;
+    coverPhoto: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Profile.updateOne(
+            {
+                user: userId,
+            },
+            {
+                coverPhoto,
+            }
+        );
+    } catch (error: any) {
+        throw new Error(error);
+    } finally {
+        revalidatePath(path);
+    }
+};

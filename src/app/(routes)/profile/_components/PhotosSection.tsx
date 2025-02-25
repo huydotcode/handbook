@@ -22,12 +22,10 @@ const PhotosSection: React.FC<Props> = ({ photos }) => {
             <h5 className="text-xl font-bold">Ảnh</h5>
             <article>
                 <div
-                    className={cn(
-                        'mt-2 grid grid-cols-3 gap-2 lg:grid-cols-2',
-                        {
-                            'grid-cols-2 md:grid-cols-1': isPhotosPage,
-                        }
-                    )}
+                    className={cn('mt-2 grid grid-cols-3 gap-2', {
+                        'grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1':
+                            isPhotosPage,
+                    })}
                 >
                     {photos.slice(0, 5).map((picture, index: number) => {
                         return (
