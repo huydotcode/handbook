@@ -5,6 +5,8 @@ import React from 'react';
 import { TabItem } from '@/components/shared';
 import Action from './Action';
 import { usePathname } from 'next/navigation';
+import CoverPhoto from '@/app/(routes)/groups/_components/CoverPhoto';
+import Avatar from '@/app/(routes)/groups/_components/Avatar';
 
 interface Props {
     group: IGroup;
@@ -16,23 +18,12 @@ const Header: React.FC<Props> = ({ group }) => {
 
     return (
         <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-secondary-1">
-            <div
-                className="relative h-[40vh] min-h-[300px] w-full overflow-hidden rounded-b-xl bg-cover bg-center bg-no-repeat"
-                style={{
-                    backgroundImage: `url("${group.coverPhoto}`,
-                }}
-            />
+            <CoverPhoto group={group} />
 
             <div className="flex items-center justify-between border-b lg:px-2">
                 <div className="flex items-center">
-                    <div className="relative top-[-30px] mr-4 h-[164px] w-[164px] overflow-hidden rounded-full border-8 object-cover dark:border-dark-secondary-2 md:h-[120px] md:w-[120px]">
-                        <Image
-                            className="rounded-full"
-                            src={group.avatar.url || ''}
-                            alt={group.name || ''}
-                            fill
-                        />
-                    </div>
+                    <Avatar group={group} />
+
                     <div>
                         <h5 className="text-2xl font-black md:text-lg">
                             {group?.name}

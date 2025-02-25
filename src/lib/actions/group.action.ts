@@ -9,6 +9,7 @@ import {
     getConversationsByGroupId,
 } from './conversation.action';
 import { User } from '@/models';
+import { revalidatePath } from 'next/cache';
 
 export const createGroup = async ({
     name,
@@ -280,5 +281,59 @@ export const joinGroup = async ({
         );
     } catch (error: any) {
         throw new Error(error);
+    }
+};
+
+export const updateCoverPhoto = async ({
+    groupId,
+    coverPhoto,
+    path,
+}: {
+    groupId: string;
+    coverPhoto: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Group.updateOne(
+            {
+                _id: groupId,
+            },
+            {
+                coverPhoto,
+            }
+        );
+    } catch (error: any) {
+        throw new Error(error);
+    } finally {
+        revalidatePath(path);
+    }
+};
+
+export const updateAvatar = async ({
+    groupId,
+    avatarId,
+    path,
+}: {
+    groupId: string;
+    avatarId: string;
+    path: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Group.updateOne(
+            {
+                _id: groupId,
+            },
+            {
+                avatar: avatarId,
+            }
+        );
+    } catch (error: any) {
+        throw new Error(error);
+    } finally {
+        revalidatePath(path);
     }
 };
