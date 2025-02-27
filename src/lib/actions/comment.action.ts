@@ -216,11 +216,7 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
     }
 };
 
-export const loveComment = async ({
-    commentId,
-}: {
-    commentId: string;
-}) => {
+export const loveComment = async ({ commentId }: { commentId: string }) => {
     try {
         await connectToDB();
 
@@ -247,4 +243,4 @@ export const loveComment = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-})
+};
