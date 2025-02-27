@@ -44,15 +44,24 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
     const session = await getAuthSession();
     if (!session?.user) return redirect('/');
 
+    const isMember = group.members.some(
+        (member) => member.user._id === session.user.id
+    );
+    const canAccess = isMember || group.type === 'public';
+
     return (
         <div>
-            <Sidebar group={group} conversations={conversations} />
+            {canAccess && (
+                <Sidebar group={group} conversations={conversations} />
+            )}
 
             <div className="ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
                 <div className="mx-auto w-full max-w-[1000px]">
                     <Header group={group} />
 
-                    <main className="mt-4 min-h-[150vh]">{children}</main>
+                    {canAccess && (
+                        <main className="mt-4 min-h-[150vh]">{children}</main>
+                    )}
                 </div>
             </div>
         </div>

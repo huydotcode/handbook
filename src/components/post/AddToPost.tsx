@@ -9,7 +9,7 @@ interface Props {
 const AddToPost: React.FC<Props> = ({ handleChangeImage }) => {
     return (
         <div className=" relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md  dark:border-none dark:shadow-none">
-            <h5 className="text-base font-bold ">Thêm vào bài viết của bạn</h5>
+            <h5>Thêm vào bài viết của bạn</h5>
 
             <div className="flex items-center">
                 <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:cursor-pointer">

@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/Button';
 import { timeConvert } from '@/utils/timeConvert';
 import socketEvent from '@/constants/socketEvent.constant';
 import group from '@/models/Group';
+import { useQueryClient } from '@tanstack/react-query';
+import { getConversationsKey } from '@/lib/queryKey';
 
 interface Props {
     group: IGroup;
@@ -28,6 +30,7 @@ const Sidebar: React.FC<Props> = ({
 }) => {
     const { socket } = useSocket();
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
 
     const [showModalCreateConversation, setShowModalCreateConversation] =
         useState<boolean>(false);
@@ -75,6 +78,10 @@ const Sidebar: React.FC<Props> = ({
                     });
                 }
             }
+
+            queryClient.invalidateQueries({
+                queryKey: getConversationsKey(session.user.id),
+            });
         } catch (error) {
             toast.error(
                 'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'
@@ -119,12 +126,12 @@ const Sidebar: React.FC<Props> = ({
                         </Button>
                     )}
 
-                    <div className="flex-1 p-2">
+                    <div className="mt-2 flex-1">
                         <h5 className="md:hidden">
                             Các cuộc hội thoại của nhóm
                         </h5>
 
-                        <div className="flex flex-col space-y-2">
+                        <div className="flex flex-col space-y-2 pt-1">
                             {conversations.map((conversation) => (
                                 <Button
                                     href={`/messages/${conversation._id}`}
@@ -150,7 +157,7 @@ const Sidebar: React.FC<Props> = ({
                                     setShowModalCreateConversation(true)
                                 }
                             >
-                                <span className="md:hidden">
+                                <span className="text-sm md:hidden">
                                     Tạo cuộc hội thoại
                                 </span>
                                 <span className="hidden md:block">

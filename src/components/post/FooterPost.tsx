@@ -247,7 +247,7 @@ const SavePost: React.FC<Props> = ({ post }) => {
     return (
         <Button
             onClick={() => mutate()}
-            className="flex flex-1 items-center gap-1"
+            className="flex flex-1 items-center gap-2"
             variant={'ghost'}
         >
             {!isLoading && !isPending && (

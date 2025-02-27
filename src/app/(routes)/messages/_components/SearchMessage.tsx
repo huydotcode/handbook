@@ -9,6 +9,7 @@ import SideHeader from './SideHeader';
 import { Button } from '@/components/ui/Button';
 import { Form, FormField } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
+import toast from 'react-hot-toast';
 
 interface Props {
     openSearch: boolean;
@@ -32,7 +33,7 @@ const SearchMessage: React.FC<Props> = ({
             search: '',
         },
     });
-    const { handleSubmit, register, reset, formState } = form;
+    const { handleSubmit, reset, formState } = form;
     const [searchMessages, setSearchMessages] = useState<IMessage[]>([]);
     const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
 

@@ -21,9 +21,12 @@ const ChatHeader: React.FC<Props> = ({
 }) => {
     const { data: session } = useSession();
     const router = useRouter();
+    const { breakpoint } = useBreakpoint();
+
+    const roomType = currentRoom.type;
 
     const partner = useMemo(() => {
-        if (currentRoom.group) {
+        if (roomType == 'group') {
             return null;
         } else {
             if (currentRoom.participants[0]._id === session?.user?.id) {
@@ -34,18 +37,18 @@ const ChatHeader: React.FC<Props> = ({
         }
     }, [currentRoom, session?.user.id]);
 
-    const { breakpoint } = useBreakpoint();
-
     const title = useMemo(() => {
-        if (currentRoom.group) {
-            return currentRoom.group.name;
-        } else {
+        if (roomType == 'group') {
+            return currentRoom.title;
+        } else if (roomType == 'private') {
             return partner?.name;
+        } else {
+            return '';
         }
-    }, [currentRoom.group, partner?.name]);
+    }, [partner?.name]);
 
     const avatar = useMemo(() => {
-        if (currentRoom.group) {
+        if (roomType == 'group' && currentRoom.group) {
             return currentRoom.group.avatar.url;
         } else {
             return partner?.avatar;
@@ -66,7 +69,7 @@ const ChatHeader: React.FC<Props> = ({
                         </Button>
                     )}
 
-                    {currentRoom.group ? (
+                    {roomType == 'group' ? (
                         <Avatar
                             imgSrc={avatar}
                             alt={title}
@@ -83,7 +86,7 @@ const ChatHeader: React.FC<Props> = ({
 
                     <div className="flex flex-col">
                         <h3 className="text-md ml-2 font-bold">
-                            {currentRoom.group
+                            {roomType == 'group'
                                 ? title
                                 : breakpoint == 'sm' && title
                                   ? splitName(title).lastName
@@ -105,6 +108,12 @@ const ChatHeader: React.FC<Props> = ({
                                     )}
                                 </span>
                             </>
+                        )}
+
+                        {roomType == 'group' && (
+                            <span className="ml-2 text-xs">
+                                {currentRoom.group?.name}
+                            </span>
                         )}
                     </div>
                 </div>

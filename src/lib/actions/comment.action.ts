@@ -215,3 +215,36 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
         throw new Error(`Error with delete comment: ${error}`);
     }
 };
+
+export const loveComment = async ({
+    commentId,
+}: {
+    commentId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
+
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return null;
+        }
+
+        if (comment.loves.includes(session.user.id)) {
+            comment.loves = comment.loves.filter(
+                (userId: string) => userId.toString() !== session.user.id
+            );
+        } else {
+            comment.loves.push(session.user.id);
+        }
+
+        await comment.save();
+
+        return JSON.parse(JSON.stringify(comment));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+})

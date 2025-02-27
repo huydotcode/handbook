@@ -5,7 +5,11 @@ import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { Form, FormControl } from '@/components/ui/Form';
 import { Textarea } from '@/components/ui/textarea';
-import { deleteComment, sendComment } from '@/lib/actions/comment.action';
+import {
+    deleteComment,
+    loveComment,
+    sendComment,
+} from '@/lib/actions/comment.action';
 import {
     getCommentsKey,
     getPostKey,
@@ -19,6 +23,7 @@ import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
+import { cn } from '@/lib/utils';
 
 interface Props {
     data: IComment;
@@ -80,6 +85,12 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                 postId: comment.post._id,
             });
 
+            console.log('sendReplyComment');
+
+            await queryClient.invalidateQueries({
+                queryKey: getCommentsKey(comment.post._id),
+            });
+
             await queryClient.invalidateQueries({
                 queryKey: getReplyCommentsKey(comment._id),
             });
@@ -100,6 +111,26 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
 
     const handleShowReplyForm = () => {
         setShowReplyForm((prev) => !prev);
+    };
+
+    const handleLoveComment = async () => {
+        await loveComment({
+            commentId: comment._id,
+        });
+
+        await queryClient.invalidateQueries({
+            queryKey: getCommentsKey(comment.post._id),
+        });
+
+        await queryClient.invalidateQueries({
+            queryKey: getPostKey(comment.post._id),
+        });
+
+        if (comment.replyComment) {
+            await queryClient.invalidateQueries({
+                queryKey: getReplyCommentsKey(comment.replyComment._id),
+            });
+        }
     };
 
     const handleDeleteComment = async () => {
@@ -151,7 +182,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                     alt={comment.author.name}
                 />
 
-                <div className="ml-2 flex max-w-[calc(100%-32px)] flex-1 flex-col">
+                <div className=" ml-2 flex max-w-[calc(100%-32px)] flex-1 flex-col">
                     <div className="relative w-fit break-all rounded-xl bg-primary-1 px-4 py-1 text-sm dark:bg-dark-secondary-2">
                         <Link
                             href={`/profile/${comment.author._id}`}
@@ -165,9 +196,35 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                                 __html: comment.text,
                             }}
                         />
+
+                        <div className="absolute -bottom-2 -right-2 flex items-center">
+                            {comment.loves.length > 0 && (
+                                <div className="flex items-center">
+                                    <Icons.Heart2 className={'text-red-500'} />
+                                    <span className="ml-1 text-xs font-bold">
+                                        {comment.loves.length}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="mt-2 flex h-4 items-center">
+                        <Button
+                            className={cn('', {
+                                'text-red-500':
+                                    session?.user.id &&
+                                    comment.loves.find(
+                                        (user) => user._id === session.user.id
+                                    ),
+                            })}
+                            variant={'text'}
+                            size={'xs'}
+                            onClick={handleLoveComment}
+                        >
+                            Yêu thích
+                        </Button>
+
                         <Button
                             className="mr-2"
                             variant={'text'}
