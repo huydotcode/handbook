@@ -22,7 +22,9 @@ const ReplyComments: React.FC<Props> = ({ comment }) => {
     return (
         <>
             {isLoadingReplyComments || !replyComments ? (
-                <SkeletonComment />
+                <div className={'mt-2'}>
+                    <SkeletonComment />
+                </div>
             ) : (
                 <>
                     {replyComments.length > 0 && !showReplyComments && (

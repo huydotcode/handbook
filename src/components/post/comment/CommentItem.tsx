@@ -24,6 +24,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
 import { cn } from '@/lib/utils';
+import { timeConvert } from '@/utils/timeConvert';
 
 interface Props {
     data: IComment;
@@ -243,6 +244,10 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                                 Xóa
                             </Button>
                         )}
+
+                        <span className="dark:text-dark-primary-3 text-xs text-gray-500">
+                            {timeConvert(comment.createdAt.toString())}
+                        </span>
                     </div>
 
                     {comment.hasReplies && <ReplyComments comment={comment} />}
