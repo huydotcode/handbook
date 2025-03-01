@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
-import { timeConvert } from '@/utils/timeConvert';
+import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
 import { Button } from '@/components/ui/Button';
 import { getPostByPostId, updateStatusPost } from '@/lib/actions/post.action';
 import toast from 'react-hot-toast';
@@ -198,7 +198,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
                             )}
 
                             <p className="w-full text-xs text-secondary-1">
-                                {timeConvert(post.createdAt.toString())}
+                                {timeConvert3(post.createdAt.toString())}
                             </p>
                         </div>
                     </div>
