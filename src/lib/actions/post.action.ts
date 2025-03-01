@@ -5,7 +5,7 @@ import { getAuthSession } from '../auth';
 import { revalidatePath } from 'next/cache';
 import SavedPost from '@/models/SavedPost';
 
-const POPULATE_USER = 'name username avatar friends';
+const POPULATE_USER = 'name username avatar friends isVerified';
 const POPULATE_GROUP = {
     path: 'group',
     populate: [

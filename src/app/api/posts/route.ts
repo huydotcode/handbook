@@ -11,6 +11,7 @@ const POPULATE_GROUP = {
         { path: 'avatar' },
         { path: 'members.user' },
         { path: 'creator' },
+        { path: 'isVerified' },
     ],
 };
 

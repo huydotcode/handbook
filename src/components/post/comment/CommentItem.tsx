@@ -24,7 +24,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
 import { cn } from '@/lib/utils';
-import { timeConvert } from '@/utils/timeConvert';
+import { timeConvert, timeConvert2, timeConvert3 } from '@/utils/timeConvert';
 
 interface Props {
     data: IComment;
@@ -185,12 +185,16 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
 
                 <div className=" ml-2 flex max-w-[calc(100%-32px)] flex-1 flex-col">
                     <div className="relative w-fit break-all rounded-xl bg-primary-1 px-4 py-1 text-sm dark:bg-dark-secondary-2">
-                        <Link
-                            href={`/profile/${comment.author._id}`}
-                            className="mb-1 p-0 text-xs font-bold hover:underline dark:text-dark-primary-1"
-                        >
-                            {comment.author.name}
-                        </Link>
+                        <div className={'mb-1 flex items-center'}>
+                            <Link
+                                href={`/profile/${comment.author._id}`}
+                                className="mr-1 p-0 text-xs font-bold hover:underline dark:text-dark-primary-1"
+                            >
+                                {comment.author.name}
+                            </Link>
+
+                            {comment.author.isVerified && <Icons.Verified />}
+                        </div>
 
                         <div
                             dangerouslySetInnerHTML={{
@@ -211,8 +215,12 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                     </div>
 
                     <div className="mt-2 flex h-4 items-center">
+                        <span className="dark:text-dark-primary-3 text-xs text-gray-500">
+                            {timeConvert3(comment.createdAt.toString())}
+                        </span>
+
                         <Button
-                            className={cn('', {
+                            className={cn('ml-1', {
                                 'text-red-500':
                                     session?.user.id &&
                                     comment.loves.find(
@@ -244,10 +252,6 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                                 Xóa
                             </Button>
                         )}
-
-                        <span className="dark:text-dark-primary-3 text-xs text-gray-500">
-                            {timeConvert(comment.createdAt.toString())}
-                        </span>
                     </div>
 
                     {comment.hasReplies && <ReplyComments comment={comment} />}

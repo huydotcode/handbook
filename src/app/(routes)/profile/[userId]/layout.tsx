@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props) {
     })) as IProfile;
 
     return {
-        title: `${profile.user.name} - Profile`,
+        title: `${profile.user.name} | Trang cá nhân`,
     };
 }
 

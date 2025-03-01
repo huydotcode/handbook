@@ -24,6 +24,7 @@ interface IUserModel {
     followersCount: number;
     isOnline: boolean;
     isBlocked: boolean;
+    isVerified: boolean;
     lastAccessed: Date;
     comparePassword(arg0: string): Promise<boolean>;
 }
@@ -57,6 +58,10 @@ const UserSchema = new Schema<IUserModel>(
             default: false,
         },
         isBlocked: {
+            type: Boolean,
+            default: false,
+        },
+        isVerified: {
             type: Boolean,
             default: false,
         },

@@ -131,6 +131,7 @@ interface IUser {
 
     isOnline: boolean;
     isBlocked: boolean;
+    isVerified: boolean;
 
     lastAccessed: Date;
     createdAt: Date;

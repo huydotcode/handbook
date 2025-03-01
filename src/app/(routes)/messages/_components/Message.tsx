@@ -191,87 +191,94 @@ const Message: React.FC<Props> = ({
             })}
             ref={messageRef}
         >
-            <div
-                className={cn('flex w-full', {
-                    'flex-row-reverse': isOwnMsg,
-                    'w-full items-center': !msg.conversation.group,
-                })}
-            >
-                {isSearchMessage && (
-                    <div
-                        className={cn('absolute text-xs text-secondary-1', {
-                            'left-0': isOwnMsg,
-                            'right-0': !isOwnMsg,
-                        })}
-                    >
-                        {timeConvert(msg.createdAt.toString())}
-                    </div>
-                )}
-
-                {msg.conversation.group && (
-                    <div
-                        className={cn(
-                            'relative flex h-8 w-8 items-center p-2',
-                            {
-                                'mr-2 pr-4': !isOwnMsg,
-                                'ml-2 pl-4': isOwnMsg,
-                            }
-                        )}
-                    >
-                        <Avatar imgSrc={msg.sender.avatar} fill />
-                    </div>
-                )}
-
-                <div
-                    className={cn('flex w-full flex-1 flex-col', {
-                        'items-end': isOwnMsg,
-                        'items-start': !isOwnMsg,
-                    })}
-                >
-                    {msg.conversation.group && (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger>
                         <div
-                            className={cn('text-xs', {
-                                'ml-1': !isOwnMsg,
-                                'mr-1': isOwnMsg,
+                            className={cn('flex w-full', {
+                                'flex-row-reverse': isOwnMsg,
+                                'w-full items-center': !msg.conversation.group,
                             })}
                         >
-                            {msg.sender.name}
-                        </div>
-                    )}
-
-                    {msg.images.length > 0 && (
-                        <div
-                            className={cn('flex flex-col flex-wrap', {
-                                'items-end': isOwnMsg,
-                                'items-start': !isOwnMsg,
-                            })}
-                        >
-                            {msg.images.map((img) => (
-                                <Image
-                                    key={img._id}
+                            {isSearchMessage && (
+                                <div
                                     className={cn(
-                                        'max-w-[30vw] cursor-pointer',
+                                        'absolute text-xs text-secondary-1',
                                         {
-                                            'rounded-xl rounded-l-md': isOwnMsg,
-                                            'rounded-xl rounded-r-md':
-                                                !isOwnMsg,
+                                            'left-0': isOwnMsg,
+                                            'right-0': !isOwnMsg,
                                         }
                                     )}
-                                    onClick={() => {
-                                        handleClickImage(img.url);
-                                    }}
-                                    src={img.url}
-                                    alt="image"
-                                    width={img.width}
-                                    height={img.height}
-                                />
-                            ))}
-                        </div>
-                    )}
+                                >
+                                    {timeConvert(msg.createdAt.toString())}
+                                </div>
+                            )}
 
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
+                            {msg.conversation.group && (
+                                <div
+                                    className={cn(
+                                        'relative flex h-8 w-8 items-center p-2',
+                                        {
+                                            'mr-2 pr-4': !isOwnMsg,
+                                            'ml-2 pl-4': isOwnMsg,
+                                        }
+                                    )}
+                                >
+                                    <Avatar imgSrc={msg.sender.avatar} fill />
+                                </div>
+                            )}
+
+                            <div
+                                className={cn('flex w-full flex-1 flex-col', {
+                                    'items-end': isOwnMsg,
+                                    'items-start': !isOwnMsg,
+                                })}
+                            >
+                                {msg.conversation.group && (
+                                    <div
+                                        className={cn('text-xs', {
+                                            'ml-1': !isOwnMsg,
+                                            'mr-1': isOwnMsg,
+                                        })}
+                                    >
+                                        {msg.sender.name}
+                                    </div>
+                                )}
+
+                                {msg.images.length > 0 && (
+                                    <div
+                                        className={cn(
+                                            'flex flex-col flex-wrap',
+                                            {
+                                                'items-end': isOwnMsg,
+                                                'items-start': !isOwnMsg,
+                                            }
+                                        )}
+                                    >
+                                        {msg.images.map((img) => (
+                                            <Image
+                                                key={img._id}
+                                                className={cn(
+                                                    'max-w-[30vw] cursor-pointer',
+                                                    {
+                                                        'rounded-xl rounded-l-md':
+                                                            isOwnMsg,
+                                                        'rounded-xl rounded-r-md':
+                                                            !isOwnMsg,
+                                                    }
+                                                )}
+                                                onClick={() => {
+                                                    handleClickImage(img.url);
+                                                }}
+                                                src={img.url}
+                                                alt="image"
+                                                width={img.width}
+                                                height={img.height}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+
                                 <div
                                     className={cn(
                                         'relative flex max-w-[70%] items-center px-4 py-2 text-xs',
@@ -308,27 +315,29 @@ const Message: React.FC<Props> = ({
                                         </div>
                                     )}
                                 </div>
-                            </TooltipTrigger>
 
-                            {index == 0 &&
-                                !isSearchMessage &&
-                                msg.sender._id === session?.user.id && (
-                                    <span className="text-xs text-secondary-1">
-                                        {msg.isRead && 'Đã xem'}
-                                    </span>
-                                )}
+                                {index == 0 &&
+                                    !isSearchMessage &&
+                                    msg.sender._id === session?.user.id && (
+                                        <span className="text-xs text-secondary-1">
+                                            {msg.isRead && 'Đã xem'}
+                                        </span>
+                                    )}
+                            </div>
+                        </div>
+                    </TooltipTrigger>
 
-                            <TooltipContent>
-                                <TooltipArrow className={'fill-white'} />
-                                <div className="flex items-center justify-center">
-                                    Đã gửi{' '}
-                                    {timeConvert(msg.createdAt.toString())}
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                </div>
-            </div>
+                    <TooltipContent side={'left'} align={'center'}>
+                        <Button
+                            variant={'ghost'}
+                            onClick={handleDeleteMsg}
+                            size={'xs'}
+                        >
+                            Xóa
+                        </Button>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
 
             <SlideShow
                 show={showSlideShow}

@@ -14,6 +14,13 @@ import { getNewFeedPostsKey, getPostKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import PhotoGrid from '@/components/post/PhotoGrid';
 import SkeletonPost from '@/components/post/SkeletonPost';
+import { Icons } from '@/components/ui';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface Props {
     data: IPost;
@@ -83,6 +90,10 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
         }
     };
 
+    useEffect(() => {
+        console.log('Post -> post', post);
+    }, [post]);
+
     if (!post) return <SkeletonPost />;
 
     return (
@@ -122,20 +133,35 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
 
                     <div className="ml-2 flex flex-col items-start">
                         <div className="flex items-center justify-between">
-                            {post.group ? (
-                                <Link
-                                    href={`/groups/${post.group._id}`}
-                                    className="text-base hover:underline dark:text-dark-primary-1"
-                                >
-                                    {post.group.name}
-                                </Link>
-                            ) : (
-                                <Link
-                                    href={`/profile/${post.author._id}`}
-                                    className="text-base hover:underline dark:text-dark-primary-1"
-                                >
-                                    {post.author.name}
-                                </Link>
+                            <Link
+                                href={
+                                    post.group
+                                        ? `/groups/${post.group._id}`
+                                        : `/profile/${post.author._id}`
+                                }
+                                className="text-base hover:underline dark:text-dark-primary-1"
+                            >
+                                {post.group
+                                    ? post.group.name
+                                    : post.author.name}
+                            </Link>
+
+                            {!post.group && post.author.isVerified && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <span className={'ml-1'}>
+                                                <Icons.Verified />
+                                            </span>
+                                        </TooltipTrigger>
+
+                                        <TooltipContent>
+                                            <div className={'text-xs'}>
+                                                Tài khoản đã được xác thực
+                                            </div>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             )}
                         </div>
 
@@ -151,6 +177,24 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
                                 >
                                     {post.author.name}
                                 </Link>
+                            )}
+
+                            {post.group && post.author.isVerified && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <span className={'mr-2'}>
+                                                <Icons.Verified />
+                                            </span>
+                                        </TooltipTrigger>
+
+                                        <TooltipContent>
+                                            <div className={'text-xs'}>
+                                                Tài khoản đã được xác thực
+                                            </div>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             )}
 
                             <p className="w-full text-xs text-secondary-1">

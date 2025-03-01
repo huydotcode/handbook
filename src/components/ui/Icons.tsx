@@ -45,7 +45,11 @@ import {
     MdOutlineKeyboardArrowRight,
     MdWork,
 } from 'react-icons/md';
-import { RiAdminFill, RiDeleteBin5Fill } from 'react-icons/ri';
+import {
+    RiAdminFill,
+    RiDeleteBin5Fill,
+    RiVerifiedBadgeFill,
+} from 'react-icons/ri';
 import { TiTick } from 'react-icons/ti';
 
 interface IconProps extends React.SVGAttributes<SVGElement> {
@@ -199,6 +203,12 @@ const Icons = {
     Time: (props: IconProps) => <IoTime {...props} />,
     Download: (props: IconProps) => <FaDownload {...props} />,
     Bookmark: (props: IconProps) => <FaBookmark {...props} />,
+    Verified: (props: IconProps) => (
+        <RiVerifiedBadgeFill
+            className={cn(props.className, 'text-primary-2')}
+            {...props}
+        />
+    ),
 };
 
 export const IconsArray = [
@@ -397,6 +407,18 @@ export const IconsArray = [
     {
         name: 'Shirt',
         icon: Icons.Shirt,
+    },
+    {
+        name: 'Time',
+        icon: Icons.Time,
+    },
+    {
+        name: 'Bookmark',
+        icon: Icons.Bookmark,
+    },
+    {
+        name: 'Verified',
+        icon: Icons.Verified,
     },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
