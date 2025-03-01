@@ -19,7 +19,7 @@ class CommentController {
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * page_size)
                 .limit(page_size)
-                .populate('author', 'name avatar username')
+                .populate('author', 'name avatar username isVerified')
                 .populate('loves', 'name avatar username')
                 .populate('post');
 

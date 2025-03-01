@@ -60,7 +60,7 @@ class PostController {
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
-                .limit(page_size);
+                .limit(page_size)
 
             res.status(200).json(posts);
         } catch (error) {
