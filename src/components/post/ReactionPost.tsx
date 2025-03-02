@@ -9,6 +9,7 @@ import Icons from '../ui/Icons';
 import { Button } from '../ui/Button';
 import { cn } from '@/lib/utils';
 import { getPostKey } from '@/lib/queryKey';
+import { useSocket } from '@/context';
 
 interface Props {
     post: IPost;
@@ -17,6 +18,7 @@ interface Props {
 const ReactionPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
+    const { socketEmitor } = useSocket();
     const queryClient = useQueryClient();
 
     const isReacted = React.useMemo(
@@ -45,6 +47,13 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                 await sendReaction({
                     postId: post._id,
                 });
+
+                if (!isReacted) {
+                    socketEmitor.likePost({
+                        postId: post._id,
+                        authorId: post.author._id,
+                    });
+                }
 
                 queryClient.invalidateQueries({
                     queryKey: getPostKey(post._id),

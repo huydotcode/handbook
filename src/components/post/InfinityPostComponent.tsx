@@ -231,7 +231,11 @@ const InfinityPostComponent: React.FC<Props> = ({
             ))}
 
             {/* Infinite scroll trigger */}
-            <div className={'pb-4'} ref={bottomRef} aria-hidden="true" />
+            <div
+                className={'h-0 w-full border'}
+                ref={bottomRef}
+                aria-hidden="true"
+            />
 
             {/* Loading states */}
             {renderLoader()}

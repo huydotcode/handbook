@@ -49,8 +49,8 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
     const showInPrivate =
         post &&
         post.option === 'private' &&
-        pathname !== `/profile/${post.author._id}` &&
-        session?.user?.id !== post.author._id;
+        pathname == `/profile/${post.author._id}` &&
+        session?.user?.id == post.author._id;
 
     const handleAcceptPost = async (accept: boolean) => {
         if (!post) return;
@@ -95,6 +95,8 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
     }, [post]);
 
     if (!post) return <SkeletonPost />;
+
+    if (post.option == 'private' && !showInPrivate) return null;
 
     return (
         <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">

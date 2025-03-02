@@ -10,7 +10,7 @@ interface Props {
 
 const PostPage: React.FC<Props> = async ({ params }) => {
     const { postId } = await params;
-    if (mongoose.Types.ObjectId.isValid(postId) === false) notFound();
+    if (!mongoose.Types.ObjectId.isValid(postId)) notFound();
     const post = await getPostByPostId({ postId });
     if (!post) notFound();
 

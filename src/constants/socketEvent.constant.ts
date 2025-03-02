@@ -8,6 +8,7 @@ interface SocketEvent {
     SEND_MESSAGE: string;
     RECEIVE_MESSAGE: string;
     DELETE_MESSAGE: string;
+    LIKE_POST: string;
 }
 
 const socketEvent: SocketEvent = {
@@ -26,6 +27,9 @@ const socketEvent: SocketEvent = {
     SEND_MESSAGE: 'send-message',
     RECEIVE_MESSAGE: 'receive-message',
     DELETE_MESSAGE: 'delete-message',
+
+    // Post
+    LIKE_POST: 'like-post',
 };
 
 export default socketEvent;

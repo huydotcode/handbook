@@ -48,6 +48,13 @@ type SocketContextType = {
             roomId: string;
             userId: string;
         }) => void;
+        likePost: ({
+            postId,
+            authorId,
+        }: {
+            postId: string;
+            authorId: string;
+        }) => void;
     };
 
     isConnected: boolean;
@@ -63,6 +70,7 @@ export const SocketContext = createContext<SocketContextType>({
         deleteMessage: () => {},
         sendRequestAddFriend: () => {},
         readMessage: () => {},
+        likePost: () => {},
     },
     isConnected: false,
     isLoading: false,
@@ -141,6 +149,18 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 socket?.emit(socketEvent.READ_MESSAGE, {
                     roomId,
                     userId,
+                });
+            },
+            likePost: ({
+                postId,
+                authorId,
+            }: {
+                postId: string;
+                authorId: string;
+            }) => {
+                socket?.emit(socketEvent.LIKE_POST, {
+                    postId,
+                    authorId,
                 });
             },
         };

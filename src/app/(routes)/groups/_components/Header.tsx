@@ -21,7 +21,7 @@ const Header: React.FC<Props> = ({ group }) => {
             <CoverPhoto group={group} />
 
             <div className="flex items-center justify-between border-b lg:px-2">
-                <div className="flex items-center">
+                <div className="flex items-center md:flex-col md:p-2 md:pt-0">
                     <Avatar group={group} />
 
                     <div>
