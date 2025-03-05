@@ -31,6 +31,10 @@ interface Props {
     findMessage?: IMessage;
 }
 
+interface GroupedMessages {
+    [key: string]: IMessage[];
+}
+
 const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const pageSize = 50;
     const conversationId = conversation._id;
@@ -220,6 +224,27 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         isFetchingNextPage,
     ]);
 
+    const groupedMessages = messages?.reduce(
+        (
+            acc: {
+                [key: string]: IMessage[];
+            },
+            message
+        ): GroupedMessages => {
+            const date = new Date(message.createdAt).toLocaleDateString(); // Chuyển timestamp thành ngày
+            if (!acc[date]) {
+                acc[date] = [];
+            }
+            acc[date].push(message);
+            return acc;
+        },
+        {}
+    );
+
+    useEffect(() => {
+        console.log(groupedMessages);
+    }, [groupedMessages]);
+
     // Scroll tới tin nhắn cuối cùng
     useEffect(() => {
         if (lastMessageRef.current) {
@@ -271,17 +296,37 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
                             <div ref={bottomRef} />
 
-                            {messages?.map((message) => (
-                                <Message
-                                    key={message._id}
-                                    data={message}
-                                    messages={messages}
-                                    searchMessage={findMessage}
-                                    isLastMessage={
-                                        lastMessage?._id === message._id
-                                    }
-                                />
-                            ))}
+                            {groupedMessages &&
+                                Object.keys(groupedMessages).map((date) => {
+                                    return (
+                                        <div
+                                            key={date}
+                                            className="relative mb-2"
+                                        >
+                                            <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
+                                                {date}
+                                            </div>
+                                            {groupedMessages[date].map(
+                                                (message) => (
+                                                    <Message
+                                                        key={message._id}
+                                                        data={message}
+                                                        messages={
+                                                            messages ?? []
+                                                        }
+                                                        searchMessage={
+                                                            findMessage
+                                                        }
+                                                        isLastMessage={
+                                                            lastMessage?._id ===
+                                                            message._id
+                                                        }
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                    );
+                                })}
 
                             {hasNextPage && (
                                 <div className="py-2" ref={topRef} />

@@ -197,18 +197,17 @@ const Message: React.FC<Props> = ({
                     <div
                         className={cn('flex w-full', {
                             'flex-row-reverse': isOwnMsg,
-                            'w-full items-center': !msg.conversation.group,
+                            'w-full items-center': isGroupMsg,
                         })}
                     >
                         <TooltipTrigger asChild>
                             <div
                                 className={cn(
-                                    'relative flex max-w-[70%] items-center py-2 text-xs',
+                                    'relative mb-1 flex max-w-[70%] items-center text-xs',
                                     {
-                                        'flex-row-reverse items-end rounded-xl rounded-r-md bg-primary-2 text-white':
+                                        'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
                                             isOwnMsg,
-                                        'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
-                                            !isOwnMsg,
+                                        'rounded-xl rounded-l-md': !isOwnMsg,
                                         'border-4 border-yellow-300':
                                             isFindMessage,
                                         'cursor-pointer': isSearchMessage,
@@ -304,14 +303,19 @@ const Message: React.FC<Props> = ({
                                         </div>
                                     )}
 
-                                    <div
-                                        className={cn('', {
-                                            'px-4': !isGroupMsg,
-                                            'pl-4': isGroupMsg && isOwnMsg,
-                                            'pr-4': isGroupMsg && !isOwnMsg,
-                                        })}
-                                    >
-                                        {msg.text.trim().length > 0 && (
+                                    {msg.text.trim().length > 0 && (
+                                        <div
+                                            className={cn('rounded-xl p-2', {
+                                                'bg-primary-2 text-white':
+                                                    isOwnMsg,
+                                                'bg-primary-1 pl-4 dark:bg-dark-secondary-2':
+                                                    !isOwnMsg,
+                                                'mt-1': isGroupMsg,
+                                                'px-4': !isGroupMsg,
+                                                'pl-4': isGroupMsg && isOwnMsg,
+                                                'pr-4': isGroupMsg && !isOwnMsg,
+                                            })}
+                                        >
                                             <div
                                                 onClick={() => {
                                                     handleClickContent();
@@ -329,10 +333,11 @@ const Message: React.FC<Props> = ({
                                                     <p>{msgTextContent()}</p>
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
 
                                     {index == 0 &&
+                                        !isGroupMsg &&
                                         !isSearchMessage &&
                                         msg.sender._id === session?.user.id && (
                                             <span className="text-xs text-secondary-1">
@@ -344,19 +349,21 @@ const Message: React.FC<Props> = ({
                         </TooltipTrigger>
                     </div>
 
-                    <TooltipContent side={'left'} align={'center'}>
-                        <>
-                            {isOwnMsg && (
-                                <Button
-                                    variant={'ghost'}
-                                    onClick={handleDeleteMsg}
-                                    size={'xs'}
-                                >
-                                    Xóa
-                                </Button>
-                            )}
-                        </>
-                    </TooltipContent>
+                    {isOwnMsg && (
+                        <TooltipContent
+                            side={isOwnMsg ? 'left' : 'right'}
+                            align={'center'}
+                        >
+                            <Button
+                                className={'w-[100px] rounded-none'}
+                                variant={'ghost'}
+                                onClick={handleDeleteMsg}
+                                size={'xs'}
+                            >
+                                Xóa
+                            </Button>
+                        </TooltipContent>
+                    )}
                 </Tooltip>
             </TooltipProvider>
 
