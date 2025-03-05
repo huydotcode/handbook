@@ -53,6 +53,7 @@ const Message: React.FC<Props> = ({
     const index = messages.findIndex((m) => m._id === msg._id);
     const isOwnMsg = msg.sender._id === session?.user.id;
     const messageRef = useRef<HTMLDivElement>(null);
+    const isGroupMsg = msg.conversation.group;
 
     const images = messages
         ? messages
@@ -204,7 +205,7 @@ const Message: React.FC<Props> = ({
                                 className={cn(
                                     'relative flex max-w-[70%] items-center py-2 text-xs',
                                     {
-                                        'items-end rounded-xl rounded-r-md bg-primary-2 text-white':
+                                        'flex-row-reverse items-end rounded-xl rounded-r-md bg-primary-2 text-white':
                                             isOwnMsg,
                                         'rounded-xl rounded-l-md bg-primary-1 dark:bg-dark-secondary-2':
                                             !isOwnMsg,
@@ -212,6 +213,7 @@ const Message: React.FC<Props> = ({
                                             isFindMessage,
                                         'cursor-pointer': isSearchMessage,
                                         'bg-transparent': msg.text.length === 0,
+                                        'px-2': isGroupMsg,
                                     }
                                 )}
                             >
@@ -302,7 +304,13 @@ const Message: React.FC<Props> = ({
                                         </div>
                                     )}
 
-                                    <div className={'px-4'}>
+                                    <div
+                                        className={cn('', {
+                                            'px-4': !isGroupMsg,
+                                            'pl-4': isGroupMsg && isOwnMsg,
+                                            'pr-4': isGroupMsg && !isOwnMsg,
+                                        })}
+                                    >
                                         {msg.text.trim().length > 0 && (
                                             <div
                                                 onClick={() => {

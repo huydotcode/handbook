@@ -176,25 +176,6 @@ const InfinityPostComponent: React.FC<Props> = ({
         return null;
     };
 
-    const renderEmptyState = () => {
-        if (!data?.length && !isLoading && !isFetching) {
-            const messages = {
-                'new-feed': 'Bạn đã đọc hết bài của ngày hôm nay',
-                'new-feed-group': 'Bạn đã đọc hết bài của ngày hôm nay',
-                profile: 'Chưa có bài viết nào',
-                group: 'Chưa có bài viết nào',
-                'manage-group-posts': 'Không có bài viết để quản lý',
-            };
-
-            return (
-                <div className="pb-10 text-center">
-                    {messages[type] || 'Không có dữ liệu'}
-                </div>
-            );
-        }
-        return null;
-    };
-
     const renderCreatePost = () => {
         if (!shouldShowCreatePost) return null;
 
@@ -232,16 +213,13 @@ const InfinityPostComponent: React.FC<Props> = ({
 
             {/* Infinite scroll trigger */}
             <div
-                className={'h-0 w-full border'}
+                className={'h-[1px] w-full'}
                 ref={bottomRef}
                 aria-hidden="true"
             />
 
             {/* Loading states */}
             {renderLoader()}
-
-            {/* Empty states */}
-            {renderEmptyState()}
         </div>
     );
 };

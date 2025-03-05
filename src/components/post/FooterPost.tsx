@@ -85,7 +85,7 @@ const ShareModal: React.FC<Props> = ({ post }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="flex-1" variant={'ghost'}>
+                <Button className="flex-1 md:p-1" variant={'ghost'}>
                     <Icons.Share className="text-xl" />
                     <span className="ml-1 mr-2 min-w-[10px] text-sm">
                         Chia sẻ
@@ -247,12 +247,12 @@ const SavePost: React.FC<Props> = ({ post }) => {
     return (
         <Button
             onClick={() => mutate()}
-            className="flex flex-1 items-center gap-2"
+            className="flex flex-1 items-center gap-2 p-1"
             variant={'ghost'}
         >
             {!isLoading && !isPending && (
                 <Icons.Bookmark
-                    className={cn('text-xl', {
+                    className={cn('text-sm', {
                         'text-yellow-300': isSaved,
                     })}
                 />
@@ -363,7 +363,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                     </div>
                 </div>
 
-                <div className="mt-1 flex items-center justify-between border-y-2 py-1">
+                <div className="mt-1 grid grid-cols-3 border-y-2 py-1">
                     <ReactionPost post={post} />
 
                     <ShareModal post={post} />

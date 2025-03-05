@@ -90,10 +90,6 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
         }
     };
 
-    useEffect(() => {
-        console.log('Post -> post', post);
-    }, [post]);
-
     if (!post) return <SkeletonPost />;
 
     if (post.option == 'private' && !showInPrivate) return null;

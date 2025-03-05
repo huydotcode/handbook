@@ -90,7 +90,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
 
     return (
         <Button
-            className="like-container mr-2 flex flex-1 items-center"
+            className="like-container mr-2 flex flex-1 items-center md:p-1"
             variant={'ghost'}
             onClick={() => mutation.mutate()}
         >

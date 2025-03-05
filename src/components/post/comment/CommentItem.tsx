@@ -86,8 +86,6 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                 postId: comment.post._id,
             });
 
-            console.log('sendReplyComment');
-
             await queryClient.invalidateQueries({
                 queryKey: getCommentsKey(comment.post._id),
             });
