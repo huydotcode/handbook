@@ -44,13 +44,13 @@ const ConfirmModal: React.FC<Props> = ({
                             <Button
                                 variant={'warning'}
                                 type="submit"
-                                className="mr-2 px-4 py-2"
+                                className="mr-2 rounded-md px-4 py-2"
                             >
                                 {confirmText}
                             </Button>
                         </form>
                         <Button
-                            className="px-6 py-2"
+                            className="rounded-md px-6 py-2"
                             variant={'secondary'}
                             onClick={onClose}
                         >
