@@ -78,10 +78,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
 
             await queryClient.invalidateQueries({ queryKey: getPostsKey() });
         } catch (error: any) {
-            logger({
-                message: 'Error send post' + error,
-                type: 'error',
-            });
+            toast.error('Đã có lỗi xảy ra khi đăng bài!');
         }
     }
 
