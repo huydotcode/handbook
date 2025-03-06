@@ -70,4 +70,23 @@ const Avatar: React.FC<Props> = ({
         </Link>
     );
 };
+
+export const SkeletonAvatar: React.FC<Props> = ({
+    className,
+    width = 40,
+    height = 40,
+    rounded = 'full',
+}) => {
+    return (
+        <div
+            className={cn(
+                'animate-pulse bg-gray-300 dark:bg-gray-600',
+                `rounded-${rounded}`,
+                className
+            )}
+            style={{ width: width, height: height }}
+        ></div>
+    );
+};
+
 export default Avatar;

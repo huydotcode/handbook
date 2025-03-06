@@ -47,10 +47,13 @@ import React, {
 import toast from 'react-hot-toast';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import Icons from '../ui/Icons';
+import { SkeletonAvatar } from '@/components/ui/Avatar';
 
 const NavNotification = () => {
     const { data: session } = useSession();
-    const { data: notifications } = useNotifications(session?.user?.id);
+    const { data: notifications, isLoading } = useNotifications(
+        session?.user?.id
+    );
     const [open, setOpen] = useState(false);
     const queryClient = useQueryClient();
 
@@ -65,7 +68,9 @@ const NavNotification = () => {
         }
     };
 
-    if (!notifications) return null;
+    if (isLoading || !notifications) {
+        return <SkeletonAvatar />;
+    }
 
     return (
         <>
@@ -497,7 +502,7 @@ const Searchbar = () => {
 };
 
 const NavUser = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [history, setHistory] = useState([{ data: [] as any }]);
     const currentHistory = history[history.length - 1] as any;
 
@@ -510,6 +515,10 @@ const NavUser = () => {
     const handleClose = () => {
         setHistory([{ data: [] }]);
     };
+
+    if (status == 'loading' || !session?.user) {
+        return <SkeletonAvatar />;
+    }
 
     return (
         <>
@@ -801,10 +810,10 @@ const Navbar = () => {
                         <DarkmodeButton />
                     </div>
                     <div className="mr-2 flex h-full items-center justify-center">
-                        {session?.user && <NavNotification />}
+                        <NavNotification />
                     </div>
                     <div className="flex h-full items-center">
-                        {session?.user && <NavUser />}
+                        <NavUser />
                     </div>
                 </div>
             </div>

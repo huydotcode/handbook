@@ -109,26 +109,24 @@ const Message: React.FC<Props> = ({
                                 href={text}
                                 target="_blank"
                                 rel="noreferrer"
-                                className={cn('underline', {
-                                    'text-white': isOwnMsg,
-                                    'text-primary-1 dark:text-dark-primary-1':
-                                        !isOwnMsg,
-                                    'text-yellow-300': isFindMessage,
-                                })}
+                                className={cn(
+                                    'max-w-full break-words underline',
+                                    {
+                                        'text-white': isOwnMsg,
+                                        'text-primary-1 dark:text-dark-primary-1':
+                                            !isOwnMsg,
+                                        'text-yellow-300': isFindMessage,
+                                    }
+                                )}
                             >
                                 {text + ' '}
                             </Link>
                         );
                     } else {
                         return (
-                            <span
-                                className={cn({
-                                    'font-bold text-yellow-400': isFindMessage,
-                                })}
-                                key={index}
-                            >
+                            <p className={'max-w-full break-words'} key={text}>
                                 {text + ' '}
-                            </span>
+                            </p>
                         );
                     }
                 })}
@@ -186,7 +184,7 @@ const Message: React.FC<Props> = ({
         <div
             id={msg._id}
             key={msg._id}
-            className={cn('relative mb-[2px] flex w-full ', {
+            className={cn('relative mb-[2px] flex w-full', {
                 'justify-end': isOwnMsg,
                 'justify-start': !isOwnMsg,
             })}
@@ -203,7 +201,7 @@ const Message: React.FC<Props> = ({
                         <TooltipTrigger asChild>
                             <div
                                 className={cn(
-                                    'relative mb-1 flex max-w-[70%] items-center text-xs',
+                                    'relative mb-1 flex max-w-full items-center text-xs',
                                     {
                                         'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
                                             isOwnMsg,
@@ -305,16 +303,21 @@ const Message: React.FC<Props> = ({
 
                                     {msg.text.trim().length > 0 && (
                                         <div
-                                            className={cn('rounded-xl p-2', {
-                                                'bg-primary-2 text-white':
-                                                    isOwnMsg,
-                                                'bg-primary-1 pl-4 dark:bg-dark-secondary-2':
-                                                    !isOwnMsg,
-                                                'mt-1': isGroupMsg,
-                                                'px-4': !isGroupMsg,
-                                                'pl-4': isGroupMsg && isOwnMsg,
-                                                'pr-4': isGroupMsg && !isOwnMsg,
-                                            })}
+                                            className={cn(
+                                                'max-w-full rounded-xl p-2',
+                                                {
+                                                    'bg-primary-2 text-white':
+                                                        isOwnMsg,
+                                                    'bg-primary-1 pl-4 dark:bg-dark-secondary-2':
+                                                        !isOwnMsg,
+                                                    'mt-1': isGroupMsg,
+                                                    'px-4': !isGroupMsg,
+                                                    'pl-4':
+                                                        isGroupMsg && isOwnMsg,
+                                                    'pr-4':
+                                                        isGroupMsg && !isOwnMsg,
+                                                }
+                                            )}
                                         >
                                             <div
                                                 onClick={() => {
@@ -329,8 +332,8 @@ const Message: React.FC<Props> = ({
                                                     !isSearchMessage &&
                                                     createMenuMessages()}
 
-                                                <div className="flex flex-col">
-                                                    <p>{msgTextContent()}</p>
+                                                <div className="flex flex-col flex-wrap">
+                                                    {msgTextContent()}
                                                 </div>
                                             </div>
                                         </div>

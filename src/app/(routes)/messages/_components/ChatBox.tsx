@@ -306,8 +306,9 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                             <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
                                                 {date}
                                             </div>
-                                            {groupedMessages[date].map(
-                                                (message) => (
+                                            {groupedMessages[date]
+                                                .reverse()
+                                                .map((message) => (
                                                     <Message
                                                         key={message._id}
                                                         data={message}
@@ -322,8 +323,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                                             message._id
                                                         }
                                                     />
-                                                )
-                                            )}
+                                                ))}
                                         </div>
                                     );
                                 })}
