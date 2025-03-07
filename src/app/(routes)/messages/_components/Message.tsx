@@ -20,6 +20,11 @@ import {
 } from '@/components/ui/tooltip';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
 import Link from 'next/link';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/Popover';
 
 interface Props {
     data: IMessage;
@@ -49,6 +54,17 @@ const Message: React.FC<Props> = ({
     const [startIndex, setStartIndex] = useState<number>(0);
     const [openModalCofirm, setOpenModalConfirm] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const [openPopover, setOpenPopover] = useState(false);
+
+    const handleMouseEnter = () => {
+        setOpenPopover(true);
+    };
+
+    const handleMouseLeave = () => {
+        setTimeout(() => {
+            setOpenPopover(false);
+        }, 3000);
+    };
 
     const index = messages.findIndex((m) => m._id === msg._id);
     const isOwnMsg = msg.sender._id === session?.user.id;
@@ -224,98 +240,119 @@ const Message: React.FC<Props> = ({
             })}
             ref={messageRef}
         >
-            <TooltipProvider>
-                <Tooltip>
+            <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                <div
+                    className={cn('flex w-full', {
+                        'flex-row-reverse': isOwnMsg,
+                        'w-full items-center': isGroupMsg,
+                    })}
+                >
                     <div
-                        className={cn('flex w-full', {
-                            'flex-row-reverse': isOwnMsg,
-                            'w-full items-center': isGroupMsg,
-                        })}
+                        className={cn(
+                            'relative mb-1 flex w-full items-center text-xs',
+                            {
+                                'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
+                                    isOwnMsg,
+                                'rounded-xl rounded-l-md': !isOwnMsg,
+                                'border-4 border-yellow-300': isFindMessage,
+                                'cursor-pointer': isSearchMessage,
+                                'bg-transparent': msg.text.length === 0,
+                                'px-2': isGroupMsg,
+                            }
+                        )}
                     >
-                        <div
-                            className={cn(
-                                'relative mb-1 flex w-full items-center text-xs',
-                                {
-                                    'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
-                                        isOwnMsg,
-                                    'rounded-xl rounded-l-md': !isOwnMsg,
-                                    'border-4 border-yellow-300': isFindMessage,
-                                    'cursor-pointer': isSearchMessage,
-                                    'bg-transparent': msg.text.length === 0,
-                                    'px-2': isGroupMsg,
-                                }
-                            )}
-                        >
-                            {isSearchMessage && (
-                                <div
-                                    className={cn(
-                                        'absolute text-xs text-secondary-1',
-                                        {
-                                            'left-0': isOwnMsg,
-                                            'right-0': !isOwnMsg,
-                                        }
-                                    )}
-                                >
-                                    {timeConvert(msg.createdAt.toString())}
-                                </div>
-                            )}
+                        {isSearchMessage && (
+                            <div
+                                className={cn(
+                                    'absolute text-xs text-secondary-1',
+                                    {
+                                        'left-0': isOwnMsg,
+                                        'right-0': !isOwnMsg,
+                                    }
+                                )}
+                            >
+                                {timeConvert(msg.createdAt.toString())}
+                            </div>
+                        )}
 
+                        {msg.conversation.group && (
+                            <div
+                                className={cn(
+                                    'relative flex h-8 w-8 items-center p-2',
+                                    {
+                                        'mr-2 pr-4': !isOwnMsg,
+                                        'ml-2 pl-4': isOwnMsg,
+                                    }
+                                )}
+                            >
+                                <Avatar imgSrc={msg.sender.avatar} fill />
+                            </div>
+                        )}
+
+                        <div
+                            className={cn('flex w-full flex-1 flex-col', {
+                                'items-end': isOwnMsg,
+                                'items-start': !isOwnMsg,
+                            })}
+                        >
                             {msg.conversation.group && (
                                 <div
-                                    className={cn(
-                                        'relative flex h-8 w-8 items-center p-2',
-                                        {
-                                            'mr-2 pr-4': !isOwnMsg,
-                                            'ml-2 pl-4': isOwnMsg,
-                                        }
-                                    )}
+                                    className={cn('text-xs', {
+                                        'ml-1': !isOwnMsg,
+                                        'mr-1': isOwnMsg,
+                                    })}
                                 >
-                                    <Avatar imgSrc={msg.sender.avatar} fill />
+                                    {msg.sender.name}
                                 </div>
                             )}
-
-                            <div
-                                className={cn('flex w-full flex-1 flex-col', {
-                                    'items-end': isOwnMsg,
-                                    'items-start': !isOwnMsg,
-                                })}
+                            {renderContentImages()}
+                            <PopoverTrigger
+                                asChild
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeave}
                             >
-                                {msg.conversation.group && (
-                                    <div
-                                        className={cn('text-xs', {
-                                            'ml-1': !isOwnMsg,
-                                            'mr-1': isOwnMsg,
-                                        })}
-                                    >
-                                        {msg.sender.name}
-                                    </div>
-                                )}
-                                {renderContentImages()}
-                                <TooltipTrigger asChild>
-                                    {renderMessageText()}
-                                </TooltipTrigger>
-                                {renderReadMessage()}
-                            </div>
+                                {renderMessageText()}
+                            </PopoverTrigger>
+
+                            {renderReadMessage()}
                         </div>
                     </div>
+                </div>
 
-                    {isOwnMsg && (
-                        <TooltipContent
-                            side={isOwnMsg ? 'left' : 'right'}
-                            align={'center'}
+                {isOwnMsg && (
+                    <PopoverContent
+                        className={'p-1'}
+                        side={isOwnMsg ? 'left' : 'right'}
+                        asChild
+                    >
+                        <div
+                            className={
+                                'flex max-w-[150px] flex-col items-center'
+                            }
                         >
                             <Button
-                                className={'h-[24px] w-[80px] rounded-none'}
+                                className={'w-full justify-start rounded-none'}
                                 variant={'ghost'}
                                 onClick={() => setOpenModalConfirm(true)}
                                 size={'xs'}
                             >
-                                Xóa
+                                <Icons.Delete className={'h-4 w-4'} /> Xóa tin
+                                nhắn
                             </Button>
-                        </TooltipContent>
-                    )}
-                </Tooltip>
-            </TooltipProvider>
+
+                            <Button
+                                className={'w-full justify-start rounded-none'}
+                                variant={'ghost'}
+                                onClick={() => setOpenModalConfirm(true)}
+                                size={'xs'}
+                            >
+                                <Icons.Pin className={'h-4 w-4'} /> Ghim tin
+                                nhắn
+                            </Button>
+                        </div>
+                    </PopoverContent>
+                )}
+            </Popover>
 
             <SlideShow
                 show={showSlideShow}

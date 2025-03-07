@@ -3,7 +3,11 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
-import { BsFileEarmarkPost, BsFillSendFill } from 'react-icons/bs';
+import {
+    BsFileEarmarkPost,
+    BsFillSendFill,
+    BsPinAngleFill,
+} from 'react-icons/bs';
 import { CgClose, CgProfile } from 'react-icons/cg';
 import {
     FaArrowLeft,
@@ -209,6 +213,7 @@ const Icons = {
             {...props}
         />
     ),
+    Pin: (props: IconProps) => <BsPinAngleFill {...props} />,
 };
 
 export const IconsArray = [
@@ -419,6 +424,10 @@ export const IconsArray = [
     {
         name: 'Verified',
         icon: Icons.Verified,
+    },
+    {
+        name: 'Pin',
+        icon: Icons.Pin,
     },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
