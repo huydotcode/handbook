@@ -11,7 +11,10 @@ export const connectToMongo = async () => {
             throw new Error('MongoDB URI is not defined');
         }
 
-        await mongoose.connect(config.mongodbUri);
+        await mongoose.connect(config.mongodbUri, {
+            autoCreate: true,
+            autoIndex: true,
+        });
         console.log('Connected to MongoDB');
 
         isConnected = true;
