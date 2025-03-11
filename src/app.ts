@@ -39,28 +39,10 @@ app.use(
 );
 app.use(morgan('dev'));
 
-Message.createCollection();
-User.createCollection();
-Post.createCollection();
-Category.createCollection();
-Comment.createCollection();
-Conversation.createCollection();
-ConversationRole.createCollection();
-Follows.createCollection();
-Group.createCollection();
-Image.createCollection();
-Item.createCollection();
-Location.createCollection();
-Notification.createCollection();
-Profile.createCollection();
-SavedPost.createCollection();
-
 app.use(
     cors({
         origin: ['http://localhost:3000', 'https://handbookk.vercel.app'],
         credentials: true,
-        // methods: 'GET, POST, PUT, DELETE, OPTIONS',
-        // allowedHeaders: 'Content-Type, Authorization',
     })
 );
 
