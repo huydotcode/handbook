@@ -30,15 +30,18 @@ const ConfirmModal: React.FC<Props> = ({
 
     return (
         <Modal open={open} disableAutoFocus>
-            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-xl bg-white dark:bg-dark-secondary-1 md:min-w-[400px]">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-xl bg-white dark:bg-dark-secondary-1 md:min-w-[80vw]">
                 <div className="rounded-xl px-6 py-4 shadow-xl">
                     <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">{title}</h3>
-                        <Button className="p-2  " onClick={handleClose}>
-                            <Icons.Close />
+                        <Button
+                            className="rounded-xl p-2"
+                            onClick={handleClose}
+                        >
+                            <Icons.Close className={'h-6 w-6'} />
                         </Button>
                     </div>
-                    <p className="mt-2">{message}</p>
+                    <p className="mt-4">{message}</p>
                     <div className="mt-4 flex justify-end">
                         <form onSubmit={onConfirm}>
                             <Button
