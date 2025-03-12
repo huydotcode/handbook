@@ -88,7 +88,7 @@ export const FileUploaderWrapper = ({
     return (
         <div
             ref={containerRef}
-            className={cn('group relative', className)}
+            className={className}
             onDragEnter={handleDrag}
             onDragLeave={handleDragLeave}
             onDragOver={handleDrag}

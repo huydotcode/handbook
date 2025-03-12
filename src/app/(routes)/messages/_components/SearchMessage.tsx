@@ -3,7 +3,7 @@ import Message from '@/app/(routes)/messages/_components/Message';
 import { Icons, Loading } from '@/components/ui';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import SideHeader from './SideHeader';
 import { Button } from '@/components/ui/Button';
@@ -57,11 +57,9 @@ const SearchMessage: React.FC<Props> = ({
 
     const { breakpoint } = useBreakpoint();
 
-    if (!openSearch) return null;
-
     return (
         <>
-            <div className="relative ml-2 flex h-full max-h-screen w-[240px] flex-col overflow-y-scroll rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1 sm:ml-0">
+            <div className="relative ml-2 flex h-full max-h-screen w-full flex-1 flex-col overflow-y-scroll rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1 sm:ml-0">
                 <SideHeader
                     handleClickBack={() => setOpenSearch(false)}
                     title="Tìm kiếm tin nhắn"

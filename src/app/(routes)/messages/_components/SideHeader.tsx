@@ -8,7 +8,7 @@ interface Props {
 
 const SideHeader: React.FC<Props> = ({ handleClickBack, title }) => {
     return (
-        <div className="flex h-16 items-center border-b p-4 dark:border-dark-secondary-2">
+        <div className="flex h-16 items-center border-b p-2 dark:border-dark-secondary-2">
             <Button
                 className="hidden md:block"
                 onClick={handleClickBack}

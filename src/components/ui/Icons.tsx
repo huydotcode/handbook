@@ -160,7 +160,6 @@ const Icons = {
     Google: (props: IconProps) => (
         <svg
             className={cn('h-6 w-6', props.className)}
-            aria-hidden="true"
             focusable="false"
             data-prefix="fab"
             data-icon="github"

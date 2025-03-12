@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import React, {
     KeyboardEventHandler,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -24,6 +25,7 @@ import ChatHeader from './ChatHeader';
 import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
+import useBreakpoint from '@/hooks/useBreakpoint';
 
 interface Props {
     className?: string;
@@ -67,6 +69,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         refetchInterval: false,
         refetchOnWindowFocus: false,
     });
+
     const queryClient = useQueryClient();
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
@@ -82,8 +85,21 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(false);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
+    const { breakpoint } = useBreakpoint();
 
     const bottomRef = useRef<HTMLDivElement>(null);
+    const groupedMessages = useMemo(() => {
+        if (!messages) return {};
+        return messages.reduce(
+            (acc: { [key: string]: IMessage[] }, message) => {
+                const date = new Date(message.createdAt).toLocaleDateString();
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(message);
+                return acc;
+            },
+            {}
+        );
+    }, [messages]);
 
     // Xử lý tải ảnh lên khi kéo thả
     const handleChangeUploadFile = async (files: File[]) => {
@@ -176,15 +192,22 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         };
     }, [showScrollDown]);
 
+    // Xử lý tìm kiếm tin nhắn
     useEffect(() => {
         setIsFind(false);
     }, [findMessage]);
 
+    // Nếu màn hình lớn thì đóng cả 2 khung tìm kiếm và thông tin
+    useEffect(() => {
+        if (breakpoint == 'lg') {
+            setOpenInfo(false);
+            setOpenSearch(false);
+        }
+    }, [breakpoint]);
+
     useEffect(() => {
         if (findMessage && !isFind && messages && !isFetchingNextPage) {
             const handleFindMessage = async () => {
-                // Vòng lặp fetch cho đến khi tìm thấy hoặc hết trang
-
                 // Tìm tin nhắn trong dữ liệu hiện có
                 const foundMessage = messages.find(
                     (message) => message._id === findMessage._id
@@ -216,34 +239,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         }
     }, [
         findMessage,
-        messages,
         fetchNextPage,
         hasNextPage,
-        isFind,
-        pageSize,
         isFetchingNextPage,
+        isFind,
+        messages,
     ]);
-
-    const groupedMessages = messages?.reduce(
-        (
-            acc: {
-                [key: string]: IMessage[];
-            },
-            message
-        ): GroupedMessages => {
-            const date = new Date(message.createdAt).toLocaleDateString(); // Chuyển timestamp thành ngày
-            if (!acc[date]) {
-                acc[date] = [];
-            }
-            acc[date].push(message);
-            return acc;
-        },
-        {}
-    );
-
-    useEffect(() => {
-        console.log(groupedMessages);
-    }, [groupedMessages]);
 
     // Scroll tới tin nhắn cuối cùng
     useEffect(() => {
@@ -257,17 +258,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     return (
         <>
             <div
-                className={cn(
-                    'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
-                    className,
-                    openInfo && 'md:hidden',
-                    openSearch && 'md:hidden'
-                )}
+                className={cn('relative flex w-full', className)}
                 onKeyDown={handleKeyDownEsc}
             >
                 <FileUploaderWrapper
                     className={cn(
-                        'relative flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
+                        'flex h-full w-full flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                         className,
                         openInfo && 'md:hidden',
                         openSearch && 'md:hidden'
@@ -297,24 +293,21 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             <div ref={bottomRef} />
 
                             {groupedMessages &&
-                                Object.keys(groupedMessages).map((date) => {
-                                    return (
+                                messages &&
+                                Object.keys(groupedMessages).map((date) => (
+                                    <div key={date} className="relative mb-2">
+                                        <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
+                                            {date}
+                                        </div>
                                         <div
-                                            key={date}
-                                            className="relative mb-2"
+                                            className={'flex flex-col-reverse'}
                                         >
-                                            <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
-                                                {date}
-                                            </div>
-                                            {groupedMessages[date]
-                                                .reverse()
-                                                .map((message) => (
+                                            {groupedMessages[date].map(
+                                                (message) => (
                                                     <Message
                                                         key={message._id}
+                                                        messages={messages}
                                                         data={message}
-                                                        messages={
-                                                            messages ?? []
-                                                        }
                                                         searchMessage={
                                                             findMessage
                                                         }
@@ -322,11 +315,21 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                                             lastMessage?._id ===
                                                             message._id
                                                         }
+                                                        isSearchMessage={
+                                                            findMessage?._id ===
+                                                            message._id
+                                                        }
+                                                        handleClick={
+                                                            findMessage
+                                                                ? handleOpenSearch
+                                                                : undefined
+                                                        }
                                                     />
-                                                ))}
+                                                )
+                                            )}
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                ))}
 
                             {hasNextPage && (
                                 <div className="py-2" ref={topRef} />
@@ -369,21 +372,29 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         <InputMessage currentRoom={conversation} />
                     </div>
                 </FileUploaderWrapper>
+
+                <div
+                    className={cn('w-[400px] lg:hidden lg:w-full', {
+                        'lg:block': openInfo || openSearch,
+                    })}
+                >
+                    {openSearch && (
+                        <SearchMessage
+                            openSearch={openSearch}
+                            conversationId={conversation._id}
+                            setOpenSearch={setOpenSearch}
+                        />
+                    )}
+
+                    {!openSearch && (
+                        <InfomationConversation
+                            messages={messages || []}
+                            conversation={conversation}
+                            setOpenInfo={setOpenInfo}
+                        />
+                    )}
+                </div>
             </div>
-
-            {openInfo && messages && (
-                <InfomationConversation
-                    messages={messages}
-                    conversation={conversation}
-                    setOpenInfo={setOpenInfo}
-                />
-            )}
-
-            <SearchMessage
-                openSearch={openSearch}
-                conversationId={conversation._id}
-                setOpenSearch={setOpenSearch}
-            />
         </>
     );
 };
