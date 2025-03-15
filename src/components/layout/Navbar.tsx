@@ -206,6 +206,9 @@ const Navbar = () => {
                                                         }
                                                     )}
                                                     href={link.path || '/'}
+                                                    onClick={() =>
+                                                        setShowPages(false)
+                                                    }
                                                 >
                                                     <Icon />
 

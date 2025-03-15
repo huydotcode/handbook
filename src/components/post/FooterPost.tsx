@@ -50,7 +50,7 @@ const ShareModal: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const { data: friends } = useFriends(session?.user.id);
     const [sended, setSended] = useState<string[]>([]);
-    const { socket, socketEmitor } = useSocket();
+    const { socketEmitor } = useSocket();
 
     const handleShare = async (friendId: string) => {
         if (!session?.user) return;
