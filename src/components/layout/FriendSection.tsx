@@ -46,7 +46,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
             <div className="relative h-full w-full">
                 <div
                     className={cn(
-                        'flex h-full w-full flex-col pl-2 pt-2 transition-all duration-500 dark:border-none md:pl-0',
+                        'flex h-full w-full flex-col pl-2 pt-2 dark:border-none md:pl-0',
                         path !== '/' && 'bg-white dark:bg-dark-secondary-1'
                     )}
                 >
@@ -122,7 +122,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                                                         >
                                                             <Button
                                                                 className={
-                                                                    'w-full justify-start'
+                                                                    'w-full min-w-[250px] justify-start'
                                                                 }
                                                                 variant={
                                                                     'ghost'

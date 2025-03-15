@@ -39,11 +39,16 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: getFriendsKey(session?.user.id),
+            });
+            queryClient.invalidateQueries({
+                queryKey: getRequestsKey(session?.user.id),
+            });
+
             socketEmitor.sendRequestAddFriend({
                 request: data,
             });
-
-            refetch();
 
             toast.success('Gửi lời mời kết bạn thành công', {
                 id: 'sendRequest',
