@@ -78,6 +78,7 @@ const GroupSchema = new Schema<IGroupModel>(
     }
 );
 
+GroupSchema.index({ name: 'text' }); // Index for search
 GroupSchema.index({ name: 1 }); // Index for name
 GroupSchema.index({ creator: 1 }); // Index for creator
 GroupSchema.index({ 'members.user': 1 }); // Index for members
