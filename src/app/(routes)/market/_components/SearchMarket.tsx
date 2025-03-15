@@ -1,7 +1,8 @@
+'use client';
 import { Icons } from '@/components/ui';
 import { useDebounce } from '@/hooks';
 import { cn } from '@/lib/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import {
     Dialog,
@@ -20,9 +21,6 @@ interface Props {
 const SearchMarket: React.FC<Props> = ({ showFull, setShowFullSidebar }) => {
     const [searchValue, setSearchValue] = useState<string>('');
     const debounceValue = useDebounce(searchValue, 500);
-
-    // Xử lý với debounce value để lấy ra các cuộc trò chuyện
-    useEffect(() => {}, [debounceValue]);
 
     return (
         <>

@@ -23,6 +23,15 @@ import { getCategoriesKey } from '@/lib/queryKey';
 import { Input } from '@/components/ui/Input';
 import React from 'react';
 import { Button } from '@/components/ui/Button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useLocations } from '@/context/AppContext';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
@@ -53,6 +62,8 @@ const CreateItemPage = () => {
             return await getCategories();
         },
     });
+
+    const { data: locations } = useLocations();
 
     const onSubmit = async (data: CreateItemValidation) => {
         router.push('/market');
@@ -87,15 +98,15 @@ const CreateItemPage = () => {
 
     return (
         <>
-            <div className="mx-auto mt-2 h-full w-[600px] max-w-full  pt-4">
+            <div className="mx-auto mt-2 h-full w-[600px] max-w-full pt-4">
                 <Form {...form}>
                     <form
-                        className="bg-secondary-1"
+                        className="rounded-xl bg-secondary-1 p-6 dark:bg-dark-secondary-1"
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <h1
                             className={
-                                'mb-4 text-center text-2xl font-semibold text-primary-1'
+                                'mb-4 text-center text-2xl font-semibold text-primary-1 dark:text-dark-primary-1'
                             }
                         >
                             Tạo sản phẩm
@@ -108,17 +119,20 @@ const CreateItemPage = () => {
 
                         <div
                             className={
-                                'flex w-full items-center justify-between gap-2 md:flex-col'
+                                'flex w-full items-center gap-2 md:flex-col'
                             }
                         >
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className={'flex-1'}>
                                         <FormLabel>Tên</FormLabel>
                                         <FormControl>
                                             <Input
+                                                className={
+                                                    'flex-1 bg-primary-1 dark:bg-dark-primary-1'
+                                                }
                                                 placeholder="Tên"
                                                 {...field}
                                             />
@@ -136,6 +150,9 @@ const CreateItemPage = () => {
                                         <FormLabel>Giá</FormLabel>
                                         <FormControl>
                                             <Input
+                                                className={
+                                                    'bg-primary-1 dark:bg-dark-primary-1'
+                                                }
                                                 placeholder="Giá"
                                                 {...field}
                                             />
@@ -150,10 +167,15 @@ const CreateItemPage = () => {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className={'mt-2'}>
                                     <FormLabel>Mô tả</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Mô tả" {...field} />
+                                        <Textarea
+                                            className={
+                                                'bg-primary-1 dark:bg-dark-primary-1'
+                                            }
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -162,7 +184,7 @@ const CreateItemPage = () => {
 
                         <div
                             className={
-                                'flex w-full items-center justify-between gap-2 md:flex-col'
+                                'mt-2 flex w-full items-center gap-2 md:flex-col'
                             }
                         >
                             <FormField
@@ -171,12 +193,33 @@ const CreateItemPage = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Danh mục</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Danh mục"
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger
+                                                    className={
+                                                        'min-w-[200px] bg-primary-1 dark:bg-dark-primary-1'
+                                                    }
+                                                >
+                                                    <SelectValue placeholder="Chọn một danh mục" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {categories?.map(
+                                                    (category: ICategory) => (
+                                                        <SelectItem
+                                                            key={category._id}
+                                                            value={category._id}
+                                                        >
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -186,25 +229,50 @@ const CreateItemPage = () => {
                                 control={form.control}
                                 name="location"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Vị trí</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Vị trí"
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                    <FormItem className={'flex-1'}>
+                                        <FormLabel>Địa điểm</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger
+                                                    className={
+                                                        'flex-1 bg-primary-1 dark:bg-dark-primary-1'
+                                                    }
+                                                >
+                                                    <SelectValue placeholder="Chọn địa điểm" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {locations?.map(
+                                                    (location: ILocation) => (
+                                                        <SelectItem
+                                                            key={location._id}
+                                                            value={location._id}
+                                                        >
+                                                            {location.name}
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                        <Button
-                            disabled={formState.isSubmitting}
-                            type={'submit'}
-                        >
-                            Tạo sản phẩm
-                        </Button>
+
+                        <div className={'mt-4 flex w-full justify-center'}>
+                            <Button
+                                variant={'primary'}
+                                disabled={formState.isSubmitting}
+                                type={'submit'}
+                            >
+                                Tạo sản phẩm
+                            </Button>
+                        </div>
                     </form>
                 </Form>
             </div>

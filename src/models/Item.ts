@@ -78,6 +78,7 @@ export const ItemSchema = new Schema<IItemModel>(
     }
 );
 
+ItemSchema.index({ name: 'text' }); // Index for search
 ItemSchema.index({ slug: 1 }, { unique: true }); // Unique index for slug
 ItemSchema.index({ name: 1 }); // Index for name search
 ItemSchema.index({ seller: 1 }); // Index for seller

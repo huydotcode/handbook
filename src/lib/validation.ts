@@ -64,7 +64,7 @@ export type CreateGroupValidation = z.infer<typeof createGroupValidation>;
 
 export const createItemValidation = z.object({
     name: z.string().min(1, 'Tên không được để trống'),
-    price: z.string().min(0, 'Giá không được âm'),
+    price: z.string().regex(/^\d+$/, 'Giá tiền không hợp lệ'),
     description: z.string().min(1, 'Mô tả không được để trống'),
     category: z.string().min(1, 'Danh mục không được để trống'),
     location: z.string().min(1, 'Địa điểm không được để trống'),

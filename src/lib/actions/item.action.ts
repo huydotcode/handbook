@@ -92,7 +92,7 @@ export const getItemsBySeller = async ({ seller }: { seller: string }) => {
             .populate('seller')
             .populate('images');
 
-        return JSON.parse(JSON.stringify(items));
+        return JSON.parse(JSON.stringify(items)) as IItem[];
     } catch (error: any) {
         throw new Error(error);
     }
@@ -114,6 +114,18 @@ export const getItemsByCategoryId = async ({
             .populate('images');
 
         return JSON.parse(JSON.stringify(items));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const deleteItem = async ({ itemId }: { itemId: string }) => {
+    try {
+        await connectToDB();
+
+        await Item.findByIdAndDelete(itemId);
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

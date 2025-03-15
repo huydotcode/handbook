@@ -1,3 +1,9 @@
+/* Search */
+export const getSearchKey = (
+    q: string | undefined,
+    type: string | undefined
+) => ['search', q, type];
+
 /* Conversation & message key */
 export const getConversationsKey = (userId: string | undefined) => [
     'conversations',

@@ -32,12 +32,21 @@ const Sidebar: React.FC<Props> = () => {
                 </Button>
 
                 <Button
-                    className="my-2 w-full md:hidden"
+                    className="mt-2 w-full md:hidden"
                     variant={'primary'}
                     href="/market/create/item"
                     size={'sm'}
                 >
                     Tạo mặt hàng cần bán
+                </Button>
+
+                <Button
+                    className="mt-2 w-full md:hidden"
+                    variant={'secondary'}
+                    href="/market/manage/item"
+                    size={'sm'}
+                >
+                    Quản lý mặt hàng
                 </Button>
             </div>
 
