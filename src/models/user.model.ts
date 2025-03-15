@@ -87,6 +87,9 @@ const UserSchema = new Schema<IUserModel>(
     }
 );
 
+// Index text with username and name
+UserSchema.index({ username: 'text', name: 'text' });
+
 if (modelNames && modelNames().includes('User')) {
     deleteModel('User');
 }

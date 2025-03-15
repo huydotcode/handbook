@@ -62,6 +62,7 @@ const PostSchema = new Schema<IPostModel>(
 PostSchema.index({ group: 1 }); // Index for posts by group
 PostSchema.index({ author: 1 }); // Index for posts by author
 PostSchema.index({ createdAt: -1 }); // Index for posts by date
+PostSchema.index({ text: 'text' }); // Index for posts by text
 
 const Post = models.Post || model<IPostModel>('post', PostSchema);
 
