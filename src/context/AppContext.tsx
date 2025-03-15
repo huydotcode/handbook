@@ -5,6 +5,7 @@ import { getCategories } from '@/lib/actions/category.action';
 import {
     getCategoriesKey,
     getFriendsKey,
+    getLocationsKey,
     getNotificationsKey,
     getRequestsKey,
 } from '@/lib/queryKey';
@@ -86,6 +87,18 @@ export const useRequests = (userId: string | undefined) =>
             return data.pages.flatMap((page) => page);
         },
         enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+    });
+
+export const useLocations = () =>
+    useQuery<ILocation[]>({
+        queryKey: getLocationsKey(),
+        queryFn: async () => {
+            const res = await fetch('/api/locations');
+            const locations = await res.json();
+            return locations;
+        },
         refetchInterval: false,
         refetchOnWindowFocus: false,
     });

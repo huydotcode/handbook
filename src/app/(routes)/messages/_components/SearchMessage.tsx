@@ -17,10 +17,6 @@ interface Props {
     setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface FormValues {
-    search: string;
-}
-
 const SearchMessage: React.FC<Props> = ({
     openSearch,
     conversationId,
@@ -28,83 +24,88 @@ const SearchMessage: React.FC<Props> = ({
 }) => {
     const router = useRouter();
 
-    const form = useForm<FormValues>({
-        defaultValues: {
-            search: '',
-        },
-    });
-    const { handleSubmit, reset, formState } = form;
+    const [search, setSearch] = useState<string>('');
+    const [isSearching, setIsSearching] = useState<boolean>(false);
     const [searchMessages, setSearchMessages] = useState<IMessage[]>([]);
     const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
 
-    const onSubmit = async (data: FormValues) => {
-        const { search } = data;
-        const searchValue = search.trim().toLowerCase();
+    const searchMessage = async () => {
+        try {
+            setIsSearching(true);
 
-        if (!searchValue) return;
+            const searchValue = search.trim().toLowerCase();
 
-        setSearchMessages([]);
+            if (!searchValue) return;
 
-        const res = await fetch(
-            `/api/messages/search?search=${searchValue}&conversationId=${conversationId}`
-        );
+            setSearchMessages([]);
 
-        if (res.ok) {
-            const data = await res.json();
-            setSearchMessages(data);
+            const res = await fetch(
+                `/api/messages/search?search=${searchValue}&conversationId=${conversationId}`
+            );
+
+            if (res.ok) {
+                const data = await res.json();
+                setSearchMessages(data);
+            }
+        } catch (error: any) {
+            toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
+        } finally {
+            setIsSearching(false);
         }
     };
 
     const { breakpoint } = useBreakpoint();
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search.trim() == '') {
+                setSearchMessages([]);
+            } else {
+                searchMessage();
+            }
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
     return (
         <>
-            <div className="relative ml-2 flex h-full max-h-screen w-full flex-1 flex-col overflow-y-scroll rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1 sm:ml-0">
+            <div className="relative ml-2 flex h-full max-h-[100vh-[64px]] w-full flex-1 flex-col overflow-hidden rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none md:flex-1 sm:ml-0">
                 <SideHeader
                     handleClickBack={() => setOpenSearch(false)}
                     title="Tìm kiếm tin nhắn"
                 />
 
                 <div className="mt-2 flex flex-col px-4">
-                    <Form {...form}>
-                        <form
+                    <div
+                        className={
+                            'flex items-center rounded-xl border bg-primary-1 px-2 dark:bg-dark-secondary-1'
+                        }
+                    >
+                        <Icons.Search size={32} />
+
+                        <Input
                             className={
-                                'flex items-center rounded-xl border bg-primary-1 px-2 dark:bg-dark-secondary-1'
+                                'bg-transparent text-sm placeholder:text-xs placeholder:text-secondary-1'
                             }
-                            onSubmit={handleSubmit(onSubmit)}
+                            placeholder="Tìm kiếm tin nhắn"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+
+                        <Button type={'submit'} className={'hidden'}></Button>
+
+                        <Button
+                            onClick={() => {
+                                setSearch('');
+                                setSearchMessages([]);
+                            }}
+                            variant={'text'}
+                            size={'xs'}
                         >
-                            <Icons.Search size={32} />
-                            <FormField
-                                control={form.control}
-                                name={'search'}
-                                render={({ field }) => (
-                                    <Input
-                                        className={
-                                            'bg-transparent text-sm placeholder:text-xs placeholder:text-secondary-1'
-                                        }
-                                        placeholder="Tìm kiếm tin nhắn"
-                                        {...field}
-                                    />
-                                )}
-                            />
-
-                            <Button
-                                type={'submit'}
-                                className={'hidden'}
-                            ></Button>
-
-                            <Button
-                                onClick={() => {
-                                    reset();
-                                    setSearchMessages([]);
-                                }}
-                                variant={'text'}
-                                size={'xs'}
-                            >
-                                <Icons.Close size={18} />
-                            </Button>
-                        </form>
-                    </Form>
+                            <Icons.Close size={18} />
+                        </Button>
+                    </div>
                     <h5 className={'mt-2 text-xs text-secondary-1'}>
                         Kết quả: {searchMessages.length} tin nhắn
                     </h5>
@@ -118,7 +119,7 @@ const SearchMessage: React.FC<Props> = ({
                     )}
 
                     <div className="mt-2 flex flex-col items-center">
-                        {formState.isSubmitting && (
+                        {isSearching && (
                             <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
                                 <Icons.Loading />
                             </div>

@@ -27,7 +27,7 @@ import {
     getNotificationAddFriendByUserId,
     markAllAsRead,
 } from '@/lib/actions/notification.action';
-import { getUsers } from '@/lib/actions/user.action';
+import { searchUsers } from '@/lib/actions/user.action';
 import { getConversationsKey, getNotificationsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
@@ -48,6 +48,197 @@ import toast from 'react-hot-toast';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import Icons from '../ui/Icons';
 import { SkeletonAvatar } from '@/components/ui/Avatar';
+
+const Navbar = () => {
+    const { data: session } = useSession();
+    const [showPages, setShowPages] = useState<boolean>(false);
+    const path = usePathname();
+    const listNavRef = React.useRef<HTMLUListElement>(null);
+    const menuButtonRef = React.useRef<HTMLButtonElement>(null);
+
+    // Xử lý click ra ngoài để đóng menu
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                listNavRef.current &&
+                !listNavRef.current.contains(event.target as Node) &&
+                menuButtonRef.current &&
+                !menuButtonRef.current.contains(event.target as Node)
+            ) {
+                setShowPages(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [listNavRef]);
+
+    return (
+        <nav className="fixed left-0 right-0 top-0 z-50 h-14 w-screen shadow-md md:px-2">
+            <div className="relative flex h-full w-full items-center justify-between px-5 md:px-1">
+                <div className="flex w-1/4 items-center md:w-1/2">
+                    <div className={'flex items-center justify-center'}>
+                        <Link className="flex h-8 w-8 items-center" href={'/'}>
+                            <Icons.Logo className="text-4xl text-primary-2" />
+                        </Link>
+                    </div>
+
+                    <Searchbar />
+
+                    <div className="ml-2 hidden md:block">
+                        <Button
+                            onClick={() => setShowPages((prev) => !prev)}
+                            size={'md'}
+                            variant={'ghost'}
+                            ref={menuButtonRef}
+                        >
+                            <Icons.Menu />
+                        </Button>
+                    </div>
+                </div>
+                <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
+                    <ul
+                        className={
+                            'top-14 flex h-full w-full items-center justify-between overflow-hidden bg-white dark:bg-dark-secondary-1'
+                        }
+                        ref={listNavRef}
+                    >
+                        {navLink.map((link) => {
+                            if (
+                                link.role === 'admin' &&
+                                session?.user.role !== 'admin'
+                            )
+                                return null;
+
+                            const isActived =
+                                path === link.path ||
+                                (path.includes(link.path) && link.path !== '/');
+                            const Icon = () => {
+                                return link.icon;
+                            };
+
+                            return (
+                                <TooltipProvider key={link.name}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <li
+                                                className={cn(
+                                                    `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
+                                                    {
+                                                        'border-b-4 border-b-blue':
+                                                            isActived,
+                                                    }
+                                                )}
+                                            >
+                                                <Link
+                                                    className={cn(
+                                                        'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
+                                                        {
+                                                            'text-blue dark:text-blue':
+                                                                isActived,
+                                                        }
+                                                    )}
+                                                    href={link.path || '/'}
+                                                >
+                                                    <Icon />
+
+                                                    <span className="ml-2 hidden text-xs md:block">
+                                                        {link.name}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        </TooltipTrigger>
+
+                                        <TooltipContent>
+                                            {link.name}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            );
+                        })}
+                    </ul>
+                </div>
+
+                {showPages && (
+                    <ul
+                        className={
+                            'fixed left-0 top-14 hidden w-[200px] flex-col items-center justify-between overflow-hidden rounded-b-xl bg-white p-2 shadow-xl dark:bg-dark-secondary-1 md:flex'
+                        }
+                        ref={listNavRef}
+                    >
+                        {navLink.map((link, index) => {
+                            if (
+                                link.role === 'admin' &&
+                                session?.user.role !== 'admin'
+                            )
+                                return null;
+
+                            const isActived =
+                                path === link.path ||
+                                (path.includes(link.path) && link.path !== '/');
+                            const Icon = () => {
+                                return link.icon;
+                            };
+
+                            return (
+                                <TooltipProvider key={link.name}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <li
+                                                key={index}
+                                                className={cn(
+                                                    `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
+                                                    {
+                                                        'border-b-4 border-b-blue':
+                                                            isActived,
+                                                    }
+                                                )}
+                                            >
+                                                <Link
+                                                    className={cn(
+                                                        'flex w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
+                                                        {
+                                                            'text-blue dark:text-blue':
+                                                                isActived,
+                                                        }
+                                                    )}
+                                                    href={link.path || '/'}
+                                                >
+                                                    <Icon />
+
+                                                    <span className="ml-2 hidden text-xs md:block">
+                                                        {link.name}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            {link.name}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            );
+                        })}
+                    </ul>
+                )}
+                <div className="flex h-full w-1/4 items-center justify-end md:w-1/2">
+                    <div className="relative mr-4 flex items-center">
+                        <DarkmodeButton />
+                    </div>
+                    <div className="mr-2 flex h-full items-center justify-center">
+                        <NavNotification />
+                    </div>
+                    <div className="flex h-full items-center">
+                        <NavUser />
+                    </div>
+                </div>
+            </div>
+        </nav>
+    );
+};
 
 const NavNotification = () => {
     const { data: session } = useSession();
@@ -344,13 +535,14 @@ const Searchbar = () => {
             if (!session?.user.id) return;
 
             try {
-                const { users, isNext } = await getUsers({
+                const { users, isNext } = await searchUsers({
                     userId: session?.user.id,
                     pageNumber: page,
                     pageSize: pageSize,
                     searchString: value,
                     sortBy: 'desc',
                 });
+
                 setSearchResult(users);
             } catch (error: any) {
                 logger({
@@ -495,6 +687,17 @@ const Searchbar = () => {
                             <Icons.Loading className="animate-spin text-2xl" />
                         </div>
                     )}
+
+                    {!isSearching && (
+                        <div className={'flex justify-center'}>
+                            <Button
+                                href={`/search?q=${debounceValue}`}
+                                variant={'text'}
+                            >
+                                Xem tất cả kết quả: {debounceValue}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </Collapse>
         </>
@@ -627,197 +830,6 @@ const NavUser = () => {
                 </PopoverContent>
             </Popover>
         </>
-    );
-};
-
-const Navbar = () => {
-    const { data: session } = useSession();
-    const [showPages, setShowPages] = useState<boolean>(false);
-    const path = usePathname();
-    const listNavRef = React.useRef<HTMLUListElement>(null);
-    const menuButtonRef = React.useRef<HTMLButtonElement>(null);
-
-    // Xử lý click ra ngoài để đóng menu
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                listNavRef.current &&
-                !listNavRef.current.contains(event.target as Node) &&
-                menuButtonRef.current &&
-                !menuButtonRef.current.contains(event.target as Node)
-            ) {
-                setShowPages(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [listNavRef]);
-
-    return (
-        <nav className="fixed left-0 right-0 top-0 z-50 h-14 w-screen shadow-md md:px-2">
-            <div className="relative flex h-full w-full items-center justify-between px-5 md:px-1">
-                <div className="flex w-1/4 items-center md:w-1/2">
-                    <div className={'flex items-center justify-center'}>
-                        <Link className="flex h-8 w-8 items-center" href={'/'}>
-                            <Icons.Logo className="text-4xl text-primary-2" />
-                        </Link>
-                    </div>
-
-                    <Searchbar />
-
-                    <div className="ml-2 hidden md:block">
-                        <Button
-                            onClick={() => setShowPages((prev) => !prev)}
-                            size={'md'}
-                            variant={'ghost'}
-                            ref={menuButtonRef}
-                        >
-                            <Icons.Menu />
-                        </Button>
-                    </div>
-                </div>
-                <div className="mx-auto flex h-full w-1/2 max-w-[400px] flex-1 items-center justify-center md:hidden">
-                    <ul
-                        className={
-                            'top-14 flex h-full w-full items-center justify-between overflow-hidden bg-white dark:bg-dark-secondary-1'
-                        }
-                        ref={listNavRef}
-                    >
-                        {navLink.map((link) => {
-                            if (
-                                link.role === 'admin' &&
-                                session?.user.role !== 'admin'
-                            )
-                                return null;
-
-                            const isActived =
-                                path === link.path ||
-                                (path.includes(link.path) && link.path !== '/');
-                            const Icon = () => {
-                                return link.icon;
-                            };
-
-                            return (
-                                <TooltipProvider key={link.name}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <li
-                                                className={cn(
-                                                    `flex h-full w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1 md:rounded-xl`,
-                                                    {
-                                                        'border-b-4 border-b-blue':
-                                                            isActived,
-                                                    }
-                                                )}
-                                            >
-                                                <Link
-                                                    className={cn(
-                                                        'flex h-full w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
-                                                        {
-                                                            'text-blue dark:text-blue':
-                                                                isActived,
-                                                        }
-                                                    )}
-                                                    href={link.path || '/'}
-                                                >
-                                                    <Icon />
-
-                                                    <span className="ml-2 hidden text-xs md:block">
-                                                        {link.name}
-                                                    </span>
-                                                </Link>
-                                            </li>
-                                        </TooltipTrigger>
-
-                                        <TooltipContent>
-                                            {link.name}
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            );
-                        })}
-                    </ul>
-                </div>
-
-                {showPages && (
-                    <ul
-                        className={
-                            'fixed left-0 top-14 hidden w-[200px] flex-col items-center justify-between overflow-hidden rounded-b-xl bg-white p-2 shadow-xl dark:bg-dark-secondary-1 md:flex'
-                        }
-                        ref={listNavRef}
-                    >
-                        {navLink.map((link, index) => {
-                            if (
-                                link.role === 'admin' &&
-                                session?.user.role !== 'admin'
-                            )
-                                return null;
-
-                            const isActived =
-                                path === link.path ||
-                                (path.includes(link.path) && link.path !== '/');
-                            const Icon = () => {
-                                return link.icon;
-                            };
-
-                            return (
-                                <TooltipProvider key={link.name}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <li
-                                                key={index}
-                                                className={cn(
-                                                    `flex w-full cursor-pointer items-center p-2 hover:bg-hover-2 dark:hover:bg-dark-hover-1`,
-                                                    {
-                                                        'border-b-4 border-b-blue':
-                                                            isActived,
-                                                    }
-                                                )}
-                                            >
-                                                <Link
-                                                    className={cn(
-                                                        'flex w-full items-center justify-center dark:text-dark-primary-1 md:justify-start',
-                                                        {
-                                                            'text-blue dark:text-blue':
-                                                                isActived,
-                                                        }
-                                                    )}
-                                                    href={link.path || '/'}
-                                                >
-                                                    <Icon />
-
-                                                    <span className="ml-2 hidden text-xs md:block">
-                                                        {link.name}
-                                                    </span>
-                                                </Link>
-                                            </li>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            {link.name}
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            );
-                        })}
-                    </ul>
-                )}
-                <div className="flex h-full w-1/4 items-center justify-end md:w-1/2">
-                    <div className="relative mr-4 flex items-center">
-                        <DarkmodeButton />
-                    </div>
-                    <div className="mr-2 flex h-full items-center justify-center">
-                        <NavNotification />
-                    </div>
-                    <div className="flex h-full items-center">
-                        <NavUser />
-                    </div>
-                </div>
-            </div>
-        </nav>
     );
 };
 

@@ -319,7 +319,7 @@ const Message: React.FC<Props> = ({
                     </div>
                 </div>
 
-                {isOwnMsg && (
+                {isOwnMsg && !isSearchMessage && (
                     <PopoverContent
                         className={'p-1'}
                         side={isOwnMsg ? 'left' : 'right'}

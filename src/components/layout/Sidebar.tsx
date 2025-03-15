@@ -34,7 +34,7 @@ const Sidebar = () => {
 
             <ul
                 className={cn(
-                    `top-14 z-50 flex w-full flex-col items-center justify-between overflow-hidden bg-white transition-all duration-1000 dark:bg-dark-secondary-1 md:hidden`
+                    `top-14 z-50 flex w-full flex-col items-center justify-between overflow-hidden bg-white dark:bg-dark-secondary-1 md:hidden`
                 )}
             >
                 {navLink.map((link, index) => {

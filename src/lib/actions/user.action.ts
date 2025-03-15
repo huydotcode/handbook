@@ -15,7 +15,7 @@ import Follows from '@/models/Follows';
     type: string;
 */
 
-export const getUsers = async ({
+export const searchUsers = async ({
     userId,
     searchString = '',
     pageNumber = 1,
@@ -32,26 +32,22 @@ export const getUsers = async ({
         await connectToDB();
 
         const skipAmount = (pageNumber - 1) * pageSize;
-        const regex = new RegExp(searchString, 'i');
-        const query: FilterQuery<typeof User> = {
-            id: { $ne: userId },
-        };
-
-        if (searchString.trim() !== '') {
-            query.$or = [
-                { username: { $regex: regex } },
-                { name: { $regex: regex } },
-            ];
-        }
-
         const sortOptions = { createdAt: sortBy };
 
-        const usersQuery = User.find(query)
+        const usersQuery = User.find({
+            $text: {
+                $search: searchString,
+            },
+        })
             .sort(sortOptions)
             .skip(skipAmount)
             .limit(pageSize);
 
-        const totalUsersCount = await User.countDocuments(query);
+        const totalUsersCount = await User.countDocuments({
+            $text: {
+                $search: searchString,
+            },
+        });
 
         const users = await usersQuery;
 
