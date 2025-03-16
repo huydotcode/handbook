@@ -37,7 +37,7 @@ import { useCategories, useLocations } from '@/context/AppContext';
 
 interface Props {
     data: IItem;
-    isManage: boolean;
+    isManage?: boolean;
 }
 
 interface ItemData {
