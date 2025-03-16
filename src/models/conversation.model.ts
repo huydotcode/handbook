@@ -9,6 +9,7 @@ interface IConversationModel {
     avatar: Types.ObjectId;
     type: string;
     status: string;
+    pinnedMessages: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -39,6 +40,12 @@ const ConversationModel = new Schema<IConversationModel>(
             ref: 'group',
             required: false,
             default: null,
+        },
+        pinnedMessages: {
+            type: [Schema.Types.ObjectId],
+            ref: 'message',
+            required: false,
+            default: [],
         },
         status: { type: String, default: 'active' },
     },
