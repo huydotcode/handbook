@@ -12,6 +12,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
 import axiosInstance from '@/lib/axios';
+import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10;
 
@@ -115,11 +116,11 @@ export const useLastMessage = (conversationId: string) =>
 
 function SocialProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
-    const { socketEmitor } = useSocket();
+    const { socketEmitor, isConnected } = useSocket();
     const { data: conversations } = useConversations(session?.user.id);
 
     useEffect(() => {
-        if (!session?.user?.id || !conversations) return;
+        if (!session?.user?.id || !conversations || !isConnected) return;
 
         conversations.forEach((conversation) => {
             socketEmitor.joinRoom({
@@ -127,7 +128,16 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
                 userId: session?.user.id,
             });
         });
-    }, [conversations, session?.user.id, socketEmitor]);
+
+        return () => {
+            conversations.forEach((conversation) => {
+                socketEmitor.leaveRoom({
+                    roomId: conversation._id,
+                    userId: session?.user.id,
+                });
+            });
+        };
+    }, [conversations, session?.user.id, socketEmitor, isConnected]);
 
     return <>{children}</>;
 }

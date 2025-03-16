@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar } from '@/components/layout';
-import ChatWithGemini from '@/components/gemini/ChatWithGemini';
+import ChatWithGemini from '@/components/layout/ChatWithGemini';
 import { cn } from '@/lib/utils';
 
 interface Props {

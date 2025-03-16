@@ -19,9 +19,11 @@ type SocketContextType = {
         sendMessage: (args: { roomId: string; message: IMessage }) => void;
         receiveNotification: (args: { notification: INotification }) => void;
         deleteMessage: (args: { message: IMessage }) => void;
+        pinMessage: (args: { message: IMessage }) => void;
         sendRequestAddFriend: (args: { request: INotification }) => void;
         readMessage: (args: { roomId: string; userId: string }) => void;
         likePost: (args: { postId: string; authorId: string }) => void;
+        leaveRoom: (args: { roomId: string; userId: string }) => void;
     };
     isConnected: boolean;
     isLoading: boolean;
@@ -36,7 +38,9 @@ export const SocketContext = createContext<SocketContextType>({
         deleteMessage: () => {},
         sendRequestAddFriend: () => {},
         readMessage: () => {},
+        pinMessage: () => {},
         likePost: () => {},
+        leaveRoom: () => {},
     },
     isConnected: false,
     isLoading: false,
@@ -103,6 +107,10 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             }) => {
                 socket?.emit(socketEvent.READ_MESSAGE, { roomId, userId });
             },
+            pinMessage: ({ message }: { message: IMessage }) => {
+                console.log("socket.emit('pin-message', { message })");
+                socket?.emit(socketEvent.PIN_MESSAGE, { message });
+            },
             likePost: ({
                 postId,
                 authorId,
@@ -111,6 +119,15 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 authorId: string;
             }) => {
                 socket?.emit(socketEvent.LIKE_POST, { postId, authorId });
+            },
+            leaveRoom: ({
+                roomId,
+                userId,
+            }: {
+                roomId: string;
+                userId: string;
+            }) => {
+                socket?.emit(socketEvent.LEAVE_ROOM, { roomId, userId });
             },
         }),
         [socket]
@@ -162,7 +179,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                         href={`/messages/${message.conversation._id}`}
                     >
                         <Icons.Message className="text-3xl" />
-                        <p className="ml-2">Bạn có tin nhắn mới</p>
+                        <p className="ml-2 text-sm text-primary-1">
+                            Bạn có tin nhắn mới
+                        </p>
                     </Link>,
                     {
                         id: message.conversation._id,
@@ -176,6 +195,11 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             if (session.user.id !== message.sender._id) {
                 invalidateMessages(queryClient, message.conversation._id);
             }
+        });
+
+        socketIO.on(socketEvent.PIN_MESSAGE, (message: IMessage) => {
+            console.log("socket.on('pin-message', (message) => {");
+            invalidateMessages(queryClient, message.conversation._id);
         });
 
         socketIO.on(

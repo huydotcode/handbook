@@ -169,3 +169,39 @@ export const getLastMessageByCoversationId = async ({
         throw new Error(error);
     }
 };
+
+export const pinMessage = async ({ messageId }: { messageId: string }) => {
+    try {
+        await connectToDB();
+
+        await Message.findOneAndUpdate(
+            {
+                _id: messageId,
+            },
+            {
+                isPin: true,
+            }
+        );
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const unPinMessage = async ({ messageId }: { messageId: string }) => {
+    try {
+        await connectToDB();
+
+        await Message.findOneAndUpdate(
+            {
+                _id: messageId,
+            },
+            {
+                isPin: false,
+            }
+        );
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

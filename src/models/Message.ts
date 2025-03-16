@@ -5,6 +5,7 @@ interface IMessageModel {
     images: Types.ObjectId[];
     sender: Types.ObjectId;
     conversation: Types.ObjectId;
+    isPin: boolean;
     isRead: boolean;
 }
 
@@ -29,6 +30,10 @@ const MessageSchema = new Schema<IMessageModel>(
             default: [],
         },
         isRead: {
+            type: Boolean,
+            default: false,
+        },
+        isPin: {
             type: Boolean,
             default: false,
         },

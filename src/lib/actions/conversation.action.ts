@@ -3,6 +3,7 @@ import { Conversation } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import ConversationRole from '@/models/ConversationRole';
+import { pinMessage, unPinMessage } from '@/lib/actions/message.action';
 
 export const createConversationRoleAdmin = async ({
     userId,
@@ -252,6 +253,68 @@ export const getConversationWithTwoUsers = async ({
                 })
             );
         }
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const addPinMessage = async ({
+    conversationId,
+    messageId,
+}: {
+    conversationId: string;
+    messageId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Conversation.findByIdAndUpdate(
+            {
+                _id: conversationId,
+            },
+            {
+                $set: {
+                    $push: {
+                        pinnedMessages: messageId,
+                    },
+                },
+            }
+        );
+
+        await pinMessage({
+            messageId,
+        });
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const removePinMessage = async ({
+    conversationId,
+    messageId,
+}: {
+    conversationId: string;
+    messageId: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Conversation.findByIdAndUpdate(
+            {
+                _id: conversationId,
+            },
+            {
+                $pull: {
+                    pinnedMessages: messageId,
+                },
+            }
+        );
+
+        await unPinMessage({ messageId });
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

@@ -81,6 +81,7 @@ interface IMessage {
     sender: IUser;
     conversation: IConversation;
     isRead: boolean;
+    isPin: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -163,6 +164,7 @@ interface IConversation {
     type: string;
     status: string;
     avatar: IImage;
+    pinnedMessages: IMessage[];
     createdAt: Date;
     updatedAt: Date;
 }

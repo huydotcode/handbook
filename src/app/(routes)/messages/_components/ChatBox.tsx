@@ -26,6 +26,12 @@ import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
 import useBreakpoint from '@/hooks/useBreakpoint';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface Props {
     className?: string;
@@ -33,33 +39,22 @@ interface Props {
     findMessage?: IMessage;
 }
 
-interface GroupedMessages {
-    [key: string]: IMessage[];
-}
+const PAGE_SIZE = 20;
 
-const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
-    const pageSize = 50;
-    const conversationId = conversation._id;
-    const [isFind, setIsFind] = useState<boolean>(false);
-    const {
-        data: messages,
-        fetchNextPage,
-        isLoading,
-        isFetchingNextPage,
-        hasNextPage,
-    } = useInfiniteQuery({
+export const useMessages = (conversationId: string) => {
+    return useInfiniteQuery({
         queryKey: getMessagesKey(conversationId),
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
             const res = await fetch(
-                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${pageSize}`
+                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
             );
             const messages = await res.json();
             return messages;
         },
         getNextPageParam: (lastPage, pages) => {
-            return lastPage.length === pageSize ? pages.length + 1 : undefined;
+            return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
         },
         initialPageParam: 1,
         enabled: !!conversationId,
@@ -69,30 +64,45 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         refetchInterval: false,
         refetchOnWindowFocus: false,
     });
+};
 
-    const queryClient = useQueryClient();
+const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const { data: session } = useSession();
-    const { socketEmitor } = useSocket();
-    const { data: lastMessage } = useLastMessage(conversation._id);
-    const { ref: topRef, inView } = useInView({
-        threshold: 0,
-        triggerOnce: false,
-    });
-    const topRef2 = useRef<HTMLDivElement>(null);
+    const { socketEmitor, isConnected } = useSocket();
+    const queryClient = useQueryClient();
     const router = useRouter();
-    const lastMessageRef = useRef<HTMLDivElement>(null);
-
-    const [openSearch, setOpenSearch] = useState<boolean>(false);
-    const [openInfo, setOpenInfo] = useState<boolean>(false);
-    const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
     const { breakpoint } = useBreakpoint();
 
-    const bottomRef = useRef<HTMLDivElement>(null);
+    // Data messages && pinnedMessages && lastMessages
+    const {
+        data: messages,
+        fetchNextPage,
+        isLoading,
+        isFetchingNextPage,
+        hasNextPage,
+    } = useMessages(conversation._id);
+    const { data: lastMessage } = useLastMessage(conversation._id);
+
+    // Pinned messages
+    const pinnedMessages = useMemo(() => {
+        return (messages && messages.filter((msg) => msg.isPin)) || [];
+    }, [messages]);
+
+    // Group messages
     const groupedMessages = useMemo(() => {
         if (!messages) return {};
         return messages.reduce(
             (acc: { [key: string]: IMessage[] }, message) => {
-                const date = new Date(message.createdAt).toLocaleDateString();
+                // Date type: DD/MM/YYYY
+                const date = new Date(message.createdAt).toLocaleDateString(
+                    'vi-VN',
+                    {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    }
+                );
+
                 if (!acc[date]) acc[date] = [];
                 acc[date].push(message);
                 return acc;
@@ -100,6 +110,23 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             {}
         );
     }, [messages]);
+
+    // State UI
+    const { ref: topRef, inView } = useInView({
+        threshold: 0,
+        triggerOnce: false,
+    });
+    const [isFind, setIsFind] = useState<boolean>(false);
+    const [isShowAllPinMessages, setIsShowAllPinMessages] =
+        useState<boolean>(false);
+    const [openSearch, setOpenSearch] = useState<boolean>(false);
+    const [openInfo, setOpenInfo] = useState<boolean>(false);
+    const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
+    const [showPinMessages, setShowPinMessages] = useState<boolean>(false);
+
+    // Ref UI
+    const lastMessageRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
 
     // Xử lý tải ảnh lên khi kéo thả
     const handleChangeUploadFile = async (files: File[]) => {
@@ -120,7 +147,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             });
 
             queryClient.invalidateQueries({
-                queryKey: getMessagesKey(conversationId),
+                queryKey: getMessagesKey(conversation._id),
             });
         } catch (error) {
             toast.error('Đã có lỗi xảy ra');
@@ -142,14 +169,178 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         });
     };
 
+    // Xử lý mở khung tìm kiếm
     const handleOpenSearch = () => {
         setOpenInfo(false);
         setOpenSearch((prev) => !prev);
     };
 
+    // Xử ly mở khung thông tin
     const handleOpenInfo = () => {
         setOpenSearch(false);
         setOpenInfo((prev) => !prev);
+    };
+
+    // Xử lý mở tin nhắn tìm kiếm
+    const handleFindMessage = async (messageId: string) => {
+        if (!findMessage || !messages) return;
+
+        // Tìm tin nhắn trong dữ liệu hiện có
+        const foundMessage = messages.find(
+            (message) => messageId === findMessage._id
+        );
+
+        if (foundMessage) {
+            // Tìm thấy
+
+            document.getElementById(foundMessage._id)?.scrollIntoView({
+                behavior: 'smooth',
+            });
+            setIsFind(true); // Đánh dấu tìm thấy
+            return;
+        }
+
+        if (hasNextPage) {
+            // Nếu không tìm thấy, fetch trang tiếp theo
+            await fetchNextPage();
+        }
+
+        if (!hasNextPage) {
+            toast.error('Không tìm thấy tin nhắn', {
+                position: 'top-center',
+            });
+        }
+    };
+
+    // Render tin nhắn ghim
+    const renderPinnedMessasges = () => {
+        return (
+            <>
+                {pinnedMessages.length > 0 && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    className={
+                                        'absolute right-0 top-0 z-20 h-8 px-2'
+                                    }
+                                    variant={'secondary'}
+                                    onClick={() => {
+                                        setShowPinMessages((prev) => !prev);
+                                    }}
+                                >
+                                    {showPinMessages ? (
+                                        <Icons.ArrowUp />
+                                    ) : (
+                                        <Icons.ArrowDown />
+                                    )}
+                                </Button>
+                            </TooltipTrigger>
+
+                            <TooltipContent>
+                                Hiển thị tin nhắn ghim
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+
+                {showPinMessages && (
+                    <div
+                        className={
+                            'absolute top-2 z-10 w-[90%] rounded-xl bg-primary-1 p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none'
+                        }
+                    >
+                        <span className={'flex items-center text-sm'}>
+                            <Icons.Pin className={'mr-2'} /> Tin nhắn ghim
+                        </span>
+
+                        <div className="mt-2 flex flex-col-reverse">
+                            {pinnedMessages.length > 1 && (
+                                <Button
+                                    size={'xs'}
+                                    variant={'text'}
+                                    onClick={() =>
+                                        setIsShowAllPinMessages((prev) => !prev)
+                                    }
+                                >
+                                    {isShowAllPinMessages
+                                        ? 'Thu gọn'
+                                        : 'Xem thêm'}
+                                </Button>
+                            )}
+
+                            {messages &&
+                                pinnedMessages
+                                    .slice(
+                                        0,
+                                        isShowAllPinMessages ? undefined : 1
+                                    )
+                                    .map((message) => (
+                                        <Message
+                                            key={message._id}
+                                            messages={messages}
+                                            data={message}
+                                            searchMessage={findMessage}
+                                            isLastMessage={
+                                                lastMessage?._id === message._id
+                                            }
+                                            isSearchMessage={
+                                                findMessage?._id === message._id
+                                            }
+                                            handleClick={() => {
+                                                // scroll to this message
+                                                router.push(
+                                                    `/messages/${conversation._id}?findMessage=${message._id}`
+                                                );
+                                            }}
+                                            isPin={true}
+                                        />
+                                    ))}
+                        </div>
+                    </div>
+                )}
+            </>
+        );
+    };
+
+    // Xử lý render tin nhắn
+    const renderMessages = () => {
+        return (
+            <>
+                {groupedMessages &&
+                    messages &&
+                    Object.keys(groupedMessages).map((date) => (
+                        <div key={date} className="relative mb-2">
+                            <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
+                                {date}
+                            </div>
+                            <div className={'flex flex-col-reverse'}>
+                                {groupedMessages[date].map((message) => (
+                                    <Message
+                                        key={message._id}
+                                        messages={messages}
+                                        data={message}
+                                        searchMessage={findMessage}
+                                        isLastMessage={
+                                            lastMessage?._id === message._id
+                                        }
+                                        isSearchMessage={
+                                            findMessage?._id === message._id
+                                        }
+                                        handleClick={
+                                            findMessage
+                                                ? handleOpenSearch
+                                                : undefined
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+
+                <div ref={topRef} className={'p-2'} />
+            </>
+        );
     };
 
     useEffect(() => {
@@ -205,37 +396,16 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         }
     }, [breakpoint]);
 
+    // Xử lý tìm kiếm tin nhắn
     useEffect(() => {
         if (findMessage && !isFind && messages && !isFetchingNextPage) {
-            const handleFindMessage = async () => {
-                // Tìm tin nhắn trong dữ liệu hiện có
-                const foundMessage = messages.find(
-                    (message) => message._id === findMessage._id
-                );
-
-                if (foundMessage) {
-                    // Tìm thấy
-
-                    document.getElementById(foundMessage._id)?.scrollIntoView({
-                        behavior: 'smooth',
-                    });
-                    setIsFind(true); // Đánh dấu tìm thấy
-                    return;
+            (async () => {
+                try {
+                    await handleFindMessage(findMessage._id);
+                } catch (error: any) {
+                    toast.error('Không tìm thấy tin nhắn');
                 }
-
-                if (hasNextPage) {
-                    // Nếu không tìm thấy, fetch trang tiếp theo
-                    await fetchNextPage();
-                }
-
-                if (!hasNextPage) {
-                    toast.error('Không tìm thấy tin nhắn', {
-                        position: 'top-center',
-                    });
-                }
-            };
-
-            handleFindMessage();
+            })();
         }
     }, [
         findMessage,
@@ -276,67 +446,20 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         handleOpenSearch={handleOpenSearch}
                     />
 
-                    <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2 ">
-                        {isFetchingNextPage && (
-                            <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
-                                <Icons.Loading />
-                            </div>
-                        )}
+                    <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
+                        {renderPinnedMessasges()}
 
-                        {isLoading && (
-                            <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
-                                <Icons.Loading />
-                            </div>
-                        )}
+                        {isLoading ||
+                            (isFetchingNextPage && (
+                                <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
+                                    <Icons.Loading />
+                                </div>
+                            ))}
 
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
                             <div ref={bottomRef} />
 
-                            {groupedMessages &&
-                                messages &&
-                                Object.keys(groupedMessages).map((date) => (
-                                    <div key={date} className="relative mb-2">
-                                        <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
-                                            {date}
-                                        </div>
-                                        <div
-                                            className={'flex flex-col-reverse'}
-                                        >
-                                            {groupedMessages[date].map(
-                                                (message) => (
-                                                    <Message
-                                                        key={message._id}
-                                                        messages={messages}
-                                                        data={message}
-                                                        searchMessage={
-                                                            findMessage
-                                                        }
-                                                        isLastMessage={
-                                                            lastMessage?._id ===
-                                                            message._id
-                                                        }
-                                                        isSearchMessage={
-                                                            findMessage?._id ===
-                                                            message._id
-                                                        }
-                                                        handleClick={
-                                                            findMessage
-                                                                ? handleOpenSearch
-                                                                : undefined
-                                                        }
-                                                    />
-                                                )
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-
-                            {hasNextPage && (
-                                <div className="py-2" ref={topRef} />
-                            )}
-                            {hasNextPage && (
-                                <div className="py-2" ref={topRef2} />
-                            )}
+                            {renderMessages()}
                         </div>
 
                         {findMessage && (

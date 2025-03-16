@@ -12,19 +12,16 @@ import Image from 'next/image';
 import React, { FormEventHandler, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { timeConvert } from '@/utils/timeConvert';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { TooltipArrow } from '@radix-ui/react-tooltip';
 import Link from 'next/link';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/Popover';
+import {
+    addPinMessage,
+    removePinMessage,
+} from '@/lib/actions/conversation.action';
 
 interface Props {
     data: IMessage;
@@ -34,28 +31,42 @@ interface Props {
     isSearchMessage?: boolean;
     ref?: React.RefObject<HTMLDivElement>;
     isLastMessage?: boolean;
+    isPin?: boolean;
 }
 
 const Message: React.FC<Props> = ({
     data: msg,
     messages,
-    handleClick,
+    handleClick = () => {},
     searchMessage,
     isSearchMessage = false,
     isLastMessage,
+    isPin = false,
 }) => {
     const { data: session } = useSession();
-    const isFindMessage = searchMessage && searchMessage._id === msg._id;
-
     const { socket, socketEmitor } = useSocket();
     const queryClient = useQueryClient();
 
+    // State
     const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
     const [startIndex, setStartIndex] = useState<number>(0);
     const [openModalCofirm, setOpenModalConfirm] = useState<boolean>(false);
-    const menuRef = useRef<HTMLDivElement>(null);
     const [openPopover, setOpenPopover] = useState(false);
 
+    // Variables
+    const isFindMessage = searchMessage && searchMessage._id === msg._id;
+    const index = messages.findIndex((m) => m._id === msg._id);
+    const isOwnMsg = msg.sender._id === session?.user.id;
+    const messageRef = useRef<HTMLDivElement>(null);
+    const isGroupMsg = msg.conversation.group;
+    const images = messages
+        ? messages
+              .filter((msg) => msg.images.length > 0)
+              .map((msg) => msg.images)
+              .flatMap((img) => img)
+        : [];
+
+    // Function
     const handleMouseEnter = () => {
         setOpenPopover(true);
     };
@@ -65,18 +76,6 @@ const Message: React.FC<Props> = ({
             setOpenPopover(false);
         }, 3000);
     };
-
-    const index = messages.findIndex((m) => m._id === msg._id);
-    const isOwnMsg = msg.sender._id === session?.user.id;
-    const messageRef = useRef<HTMLDivElement>(null);
-    const isGroupMsg = msg.conversation.group;
-
-    const images = messages
-        ? messages
-              .filter((msg) => msg.images.length > 0)
-              .map((msg) => msg.images)
-              .flatMap((img) => img)
-        : [];
 
     // Xử lý click vào ảnh
     const handleClickImage = (url: string) => {
@@ -88,6 +87,54 @@ const Message: React.FC<Props> = ({
         setShowSlideShow(true);
     };
 
+    // Xử lý ghim tin nhắn
+    const handlePinMessage = async () => {
+        if (messages.filter((msg) => msg.isPin).length >= 5) {
+            toast.error('Không thể ghim quá 5 tin nhắn!', {
+                id: 'pin-message',
+            });
+            return;
+        }
+
+        try {
+            if (!socket || msg.isPin) return;
+
+            console.log({
+                messageId: msg._id,
+                conversationId: msg.conversation._id,
+            });
+
+            await addPinMessage({
+                messageId: msg._id,
+                conversationId: msg.conversation._id,
+            });
+
+            invalidateMessages(queryClient, msg.conversation._id);
+
+            socketEmitor.pinMessage({
+                message: msg,
+            });
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra!', { id: 'pin-message' });
+        }
+    };
+
+    // Xử lý hủy ghim tin nhắn
+    const handleUnPinMessage = async () => {
+        try {
+            if (!socket || !msg.isPin) return;
+
+            await removePinMessage({
+                messageId: msg._id,
+                conversationId: msg.conversation._id,
+            });
+
+            invalidateMessages(queryClient, msg.conversation._id);
+        } catch (error) {
+            toast.error('Đã có lỗi xảy ra!', { id: 'unpin-message' });
+        }
+    };
+
     // Xử lý xóa tin nhắn
     const handleDeleteMsg: FormEventHandler = async (e) => {
         e.preventDefault();
@@ -96,6 +143,13 @@ const Message: React.FC<Props> = ({
             if (!socket) return;
 
             await deleteMessage({ messageId: msg._id });
+
+            if (msg.isPin) {
+                await removePinMessage({
+                    messageId: msg._id,
+                    conversationId: msg.conversation._id,
+                });
+            }
 
             invalidateMessages(queryClient, msg.conversation._id);
 
@@ -120,16 +174,12 @@ const Message: React.FC<Props> = ({
                             'mt-1': isGroupMsg,
                             'pl-4': isGroupMsg && isOwnMsg,
                             'pr-4': isGroupMsg && !isOwnMsg,
+                            'w-full max-w-full rounded-md bg-secondary-1 text-secondary-1 dark:bg-dark-primary-1 dark:text-dark-primary-1':
+                                isPin,
                         }
                     )}
                 >
-                    <div
-                        onClick={() => {
-                            if (handleClick) {
-                                handleClick();
-                            }
-                        }}
-                    >
+                    <div onClick={handleClick}>
                         <div className="flex max-w-full flex-col flex-wrap">
                             <p
                                 className={'max-w-full break-words'}
@@ -208,6 +258,7 @@ const Message: React.FC<Props> = ({
                                 className={cn('max-w-[30vw] cursor-pointer', {
                                     'rounded-xl rounded-l-md': isOwnMsg,
                                     'rounded-xl rounded-r-md': !isOwnMsg,
+                                    'w-full': isPin,
                                 })}
                                 onClick={() => {
                                     handleClickImage(img.url);
@@ -242,11 +293,17 @@ const Message: React.FC<Props> = ({
         >
             <Popover open={openPopover} onOpenChange={setOpenPopover}>
                 <div
-                    className={cn('flex w-full', {
+                    className={cn('relative flex w-full', {
                         'flex-row-reverse': isOwnMsg,
                         'w-full items-center': isGroupMsg,
                     })}
                 >
+                    {msg.isPin && !isPin && (
+                        <div className={'absolute -right-1 top-0 z-10'}>
+                            <Icons.Pin />
+                        </div>
+                    )}
+
                     <div
                         className={cn(
                             'relative mb-1 flex w-full items-center text-xs',
@@ -254,27 +311,14 @@ const Message: React.FC<Props> = ({
                                 'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
                                     isOwnMsg,
                                 'rounded-xl rounded-l-md': !isOwnMsg,
-                                'border-4 border-yellow-300': isFindMessage,
+                                'border-2 border-yellow-300': isFindMessage,
                                 'cursor-pointer': isSearchMessage,
                                 'bg-transparent': msg.text.length === 0,
                                 'px-2': isGroupMsg,
+                                'mx-2 border-none': isPin,
                             }
                         )}
                     >
-                        {isSearchMessage && (
-                            <div
-                                className={cn(
-                                    'absolute text-xs text-secondary-1',
-                                    {
-                                        'left-0': isOwnMsg,
-                                        'right-0': !isOwnMsg,
-                                    }
-                                )}
-                            >
-                                {timeConvert(msg.createdAt.toString())}
-                            </div>
-                        )}
-
                         {msg.conversation.group && (
                             <div
                                 className={cn(
@@ -319,7 +363,7 @@ const Message: React.FC<Props> = ({
                     </div>
                 </div>
 
-                {isOwnMsg && !isSearchMessage && (
+                {isOwnMsg && !isPin && !isSearchMessage && (
                     <PopoverContent
                         className={'p-1'}
                         side={isOwnMsg ? 'left' : 'right'}
@@ -343,11 +387,17 @@ const Message: React.FC<Props> = ({
                             <Button
                                 className={'w-full justify-start rounded-none'}
                                 variant={'ghost'}
-                                onClick={() => setOpenModalConfirm(true)}
+                                onClick={() => {
+                                    if (msg.isPin) {
+                                        handleUnPinMessage();
+                                    } else {
+                                        handlePinMessage();
+                                    }
+                                }}
                                 size={'xs'}
                             >
-                                <Icons.Pin className={'h-4 w-4'} /> Ghim tin
-                                nhắn
+                                <Icons.Pin className={'h-4 w-4'} />{' '}
+                                {msg.isPin ? 'Hủy ghim' : 'Ghim tin nhắn'}
                             </Button>
                         </div>
                     </PopoverContent>

@@ -6,6 +6,7 @@ interface SocketEvent {
     LEAVE_ROOM: string;
     READ_MESSAGE: string;
     SEND_MESSAGE: string;
+    PIN_MESSAGE: string;
     RECEIVE_MESSAGE: string;
     DELETE_MESSAGE: string;
     LIKE_POST: string;
@@ -27,6 +28,7 @@ const socketEvent: SocketEvent = {
     SEND_MESSAGE: 'send-message',
     RECEIVE_MESSAGE: 'receive-message',
     DELETE_MESSAGE: 'delete-message',
+    PIN_MESSAGE: 'pin-message',
 
     // Post
     LIKE_POST: 'like-post',
