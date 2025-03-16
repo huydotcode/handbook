@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -51,9 +50,6 @@ interface ItemData {
 }
 
 const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
-    const { data: session } = useSession();
-    if (!session) return null;
-
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState<boolean>(false);
     const form = useForm<ItemData>({
         defaultValues: {
