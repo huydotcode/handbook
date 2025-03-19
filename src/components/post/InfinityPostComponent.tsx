@@ -1,31 +1,43 @@
 'use client';
+import { useSavedPosts } from '@/components/post/FooterPost';
 import { Button } from '@/components/ui/Button';
 import axiosInstance from '@/lib/axios';
 import { getNewFeedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
+
+type PostType =
+    | 'new-feed'
+    | 'profile'
+    | 'group'
+    | 'new-feed-group'
+    | 'manage-group-posts';
 
 interface Props {
     className?: string;
     userId?: string;
     username?: string;
     groupId?: string;
-    type?:
-        | 'new-feed'
-        | 'profile'
-        | 'group'
-        | 'new-feed-group'
-        | 'manage-group-posts';
+    type?: PostType;
     title?: string;
 }
 
 const PAGE_SIZE = 3;
+const REFETCH_INTERVAL = 1000 * 60 * 5; // 5 minutes
+
+const ENDPOINTS: Record<PostType, string> = {
+    'new-feed': '/posts/new-feed',
+    'new-feed-group': '/posts/new-feed-group',
+    profile: '/posts/profile',
+    group: '/posts/group',
+    'manage-group-posts': '/posts/group/manage',
+};
 
 const usePosts = ({
     userId,
@@ -40,72 +52,47 @@ const usePosts = ({
         [type]
     );
 
-    return useInfiniteQuery({
-        queryKey: getNewFeedPostsKey(type, userId, groupId, username),
-        queryFn: async ({ pageParam = 1 }) => {
+    const getEndpoint = useCallback(
+        (type: PostType) => {
+            const baseEndpoint = ENDPOINTS[type];
+            if (type === 'profile') return `${baseEndpoint}/${userId}`;
+            if (type === 'group' || type === 'manage-group-posts')
+                return `${baseEndpoint}/${groupId}`;
+            return baseEndpoint;
+        },
+        [userId, groupId]
+    );
+
+    const fetchPosts = useCallback(
+        async (pageParam: number) => {
             if (!session?.user.id) return [];
 
-            if (isFeedType) {
-                const { data } = await axiosInstance.get<IPost[]>(
-                    `/posts/${type}`,
-                    {
-                        params: {
-                            page: pageParam,
-                            page_size: PAGE_SIZE,
-                            user_id: session.user.id,
-                        },
-                    }
-                );
-                return data;
-            }
+            const endpoint = getEndpoint(type);
+            const params = {
+                page: pageParam,
+                page_size: PAGE_SIZE,
+                ...(isFeedType && { user_id: session.user.id }),
+            };
 
-            if (type === 'profile') {
-                const { data } = await axiosInstance.get<IPost[]>(
-                    `/posts/profile/${userId}`,
-                    {
-                        params: {
-                            page: pageParam,
-                            page_size: PAGE_SIZE,
-                        },
-                    }
-                );
-                return data;
-            }
-
-            if (type === 'group') {
-                const { data } = await axiosInstance.get<IPost[]>(
-                    `/posts/group/${groupId}`,
-                    {
-                        params: {
-                            page: pageParam,
-                            page_size: PAGE_SIZE,
-                        },
-                    }
-                );
-                return data;
-            }
-
-            if (type === 'manage-group-posts') {
-                const { data } = await axiosInstance.get<IPost[]>(
-                    `/posts/group/${groupId}/manage`,
-                    {
-                        params: {
-                            page: pageParam,
-                            page_size: PAGE_SIZE,
-                        },
-                    }
-                );
-
-                return data;
-            }
-
-            return [];
+            const { data } = await axiosInstance.get<IPost[]>(endpoint, {
+                params,
+            });
+            return data;
         },
-        getNextPageParam: (lastPage, pages) =>
-            lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined,
+        [session?.user.id, type, isFeedType, getEndpoint]
+    );
+
+    return useInfiniteQuery({
+        queryKey: getNewFeedPostsKey(type, userId, groupId, username),
+        queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam),
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
         select: (data) => data.pages.flat(),
         initialPageParam: 1,
-        refetchInterval: 1000 * 60 * 5,
+        refetchInterval: REFETCH_INTERVAL,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         enabled: !!session,
@@ -130,13 +117,17 @@ const InfinityPostComponent: React.FC<Props> = ({
         fetchNextPage,
         refetch,
     } = usePosts({ userId, groupId, username, type });
+    const { data: savedPosts } = useSavedPosts(session?.user.id);
 
     const { ref: bottomRef, inView } = useInView({ threshold: 0 });
     const currentUser = session?.user;
 
     const isManage = type === 'manage-group-posts';
-    const isCurrentUser =
-        currentUser?.id === userId || currentUser?.username === username;
+    const isCurrentUser = useMemo(
+        () => currentUser?.id === userId || currentUser?.username === username,
+        [currentUser?.id, currentUser?.username, userId, username]
+    );
+
     const shouldShowCreatePost = useMemo(
         () =>
             !isManage &&
@@ -146,15 +137,21 @@ const InfinityPostComponent: React.FC<Props> = ({
         [isManage, type, currentUser, isCurrentUser, groupId]
     );
 
-    useEffect(() => {
+    const handleFetchNextPage = useCallback(async () => {
         if (inView && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage().catch(() =>
-                toast.error('Có lỗi xảy ra khi tải bài viết')
-            );
+            try {
+                await fetchNextPage();
+            } catch (error) {
+                toast.error('Có lỗi xảy ra khi tải bài viết');
+            }
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    const renderLoader = () => {
+    useEffect(() => {
+        handleFetchNextPage();
+    }, [handleFetchNextPage]);
+
+    const renderLoader = useCallback(() => {
         if (isLoading || isFetchingNextPage) {
             return (
                 <div>
@@ -174,9 +171,9 @@ const InfinityPostComponent: React.FC<Props> = ({
         }
 
         return null;
-    };
+    }, [isLoading, isFetching, isFetchingNextPage]);
 
-    const renderCreatePost = () => {
+    const renderCreatePost = useCallback(() => {
         if (!shouldShowCreatePost) return null;
 
         return type === 'group' ? (
@@ -184,7 +181,7 @@ const InfinityPostComponent: React.FC<Props> = ({
         ) : (
             <CreatePost />
         );
-    };
+    }, [shouldShowCreatePost, type, groupId]);
 
     return (
         <div className={cn(className, 'relative w-full')}>
@@ -207,9 +204,20 @@ const InfinityPostComponent: React.FC<Props> = ({
             {renderCreatePost()}
 
             {/* Posts list */}
-            {data?.map((post) => (
-                <Post data={post} key={post._id} isManage={isManage} />
-            ))}
+            {data?.map((post) => {
+                const isSaved = savedPosts?.posts.some(
+                    (p) => p._id === post._id
+                );
+
+                return (
+                    <Post
+                        data={post}
+                        key={post._id}
+                        isManage={isManage}
+                        isSaved={isSaved}
+                    />
+                );
+            })}
 
             {/* Infinite scroll trigger */}
             <div

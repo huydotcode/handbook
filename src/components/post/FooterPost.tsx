@@ -37,6 +37,7 @@ import { Textarea } from '../ui/textarea';
 
 interface Props {
     post: IPost;
+    isSaved?: boolean;
 }
 
 type FormData = {
@@ -202,15 +203,12 @@ export const useComments = (postId: string | undefined) =>
         refetchInterval: false,
     });
 
-const SavePost: React.FC<Props> = ({ post }) => {
+const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
     const { countClick, handleClick, canClick } = usePreventMultiClick({
         message: 'Bạn thao tác quá nhanh, vui lòng thử lại sau 5s!',
     });
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-
-    const { data: savedPost, isLoading } = useSavedPosts(session?.user.id);
-    const isSaved = savedPost?.posts.find((p) => p._id === post._id);
 
     const { mutate, isPending } = useMutation({
         mutationFn: handleSave,
@@ -247,30 +245,18 @@ const SavePost: React.FC<Props> = ({ post }) => {
     return (
         <Button
             onClick={() => mutate()}
-            className="flex flex-1 items-center gap-2 p-1"
+            className={cn('flex flex-1 items-center gap-2 p-1', {
+                'text-yellow-300 hover:text-yellow-200': isSaved,
+            })}
             variant={'ghost'}
         >
-            {!isLoading && !isPending && (
-                <Icons.Bookmark
-                    className={cn('text-sm', {
-                        'text-yellow-300': isSaved,
-                    })}
-                />
-            )}
-            <span className={cn('', { 'text-yellow-300': isSaved })}>
-                {isPending || isLoading ? (
-                    <Icons.Loading className="text-xl text-yellow-300" />
-                ) : isSaved ? (
-                    'Đã lưu'
-                ) : (
-                    'Lưu'
-                )}
-            </span>
+            <Icons.Bookmark />
+            {isSaved ? 'Đã lưu' : 'Lưu'}
         </Button>
     );
 };
 
-const FooterPost: React.FC<Props> = ({ post }) => {
+const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
     const {
@@ -368,7 +354,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
 
                     <ShareModal post={post} />
 
-                    <SavePost post={post} />
+                    <SavePost post={post} isSaved={isSaved} />
                 </div>
 
                 <div className="mb-2 mt-2 flex items-center">

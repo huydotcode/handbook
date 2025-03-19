@@ -75,6 +75,9 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
     });
     const { handleSubmit, formState, reset } = form;
     const formRef = useRef<HTMLFormElement>(null);
+    const [isLoved, setIsLoved] = useState<boolean>(
+        comment.loves.some((love) => love._id === session?.user.id)
+    );
 
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
         if (formState.isSubmitting || formState.isLoading) return;
@@ -113,6 +116,8 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
     };
 
     const handleLoveComment = async () => {
+        setIsLoved((prev) => !prev);
+
         await loveComment({
             commentId: comment._id,
         });
@@ -219,11 +224,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
 
                         <Button
                             className={cn('ml-1', {
-                                'text-red-500':
-                                    session?.user.id &&
-                                    comment.loves.find(
-                                        (user) => user._id === session.user.id
-                                    ),
+                                'text-red-500': isLoved,
                             })}
                             variant={'text'}
                             size={'xs'}

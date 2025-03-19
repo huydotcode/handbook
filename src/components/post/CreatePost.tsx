@@ -2,33 +2,37 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FC, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FC, useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { createPost } from '@/lib/actions/post.action';
+import { getPostsKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ModalCreatePost } from '.';
-import { getPostsKey } from '@/lib/queryKey';
 
 interface Props {
     groupId?: string;
     type?: 'default' | 'profile' | 'group';
 }
 
+const TOAST_POSITION = 'bottom-left';
+const TOAST_DURATION = 3000;
+
 const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
 
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
     const [photos, setPhotos] = useState<any[]>([]);
+
+    const handleClose = useCallback(() => setShow(false), []);
+    const handleShow = useCallback(() => setShow(true), []);
+
     const form = useForm<IPostFormData>({
         defaultValues: {
             content: '',
@@ -38,81 +42,102 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
         resolver: zodResolver(createPostValidation),
     });
 
-    const mutation = useMutation({
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getPostsKey() });
-        },
-        mutationFn: onSubmit,
-    });
-
     const { control, register, handleSubmit, formState, reset } = form;
 
-    async function sendPost(data: IPostFormData) {
-        if (!session?.user) return;
+    const resetForm = useCallback(() => {
+        reset({
+            content: '',
+        });
+        setPhotos([]);
+    }, [reset]);
 
-        try {
-            const { content, option, files } = data;
+    const sendPost = useCallback(
+        async (data: IPostFormData) => {
+            if (!session?.user) return;
 
-            if (!content && photos.length === 0) {
-                toast.error('Nội dung bài viết không được để trống!');
-                return;
+            try {
+                const { content, option, files } = data;
+
+                if (!content && photos.length === 0) {
+                    toast.error('Nội dung bài viết không được để trống!');
+                    return;
+                }
+
+                const imagesId = await uploadImagesWithFiles({ files });
+
+                const newPost = (await createPost({
+                    content,
+                    option,
+                    images: imagesId,
+                    groupId,
+                    type,
+                })) as IPost;
+
+                await queryClient.invalidateQueries({
+                    queryKey: getPostsKey(),
+                });
+                resetForm();
+                return newPost;
+            } catch (error: any) {
+                logger({
+                    message: 'Error creating post: ' + error.message,
+                    type: 'error',
+                });
+                throw error;
             }
+        },
+        [session?.user, photos.length, groupId, type, queryClient, resetForm]
+    );
 
-            const imagesId = await uploadImagesWithFiles({
-                files,
-            });
-
-            reset({
-                content: '',
-            });
-
-            setPhotos([]);
-
-            const newPost = (await createPost({
-                content: content,
-                option: option,
-                images: imagesId,
-                groupId: groupId,
-                type,
-            })) as IPost;
-
-            await queryClient.invalidateQueries({ queryKey: getPostsKey() });
-        } catch (error: any) {
-            toast.error('Đã có lỗi xảy ra khi đăng bài!');
-        }
-    }
-
-    async function onSubmit(data: IPostFormData) {
-        if (formState.isSubmitting) return;
-        setShow(false);
-        try {
-            await toast.promise(
-                sendPost(data),
+    const mutation = useMutation({
+        mutationFn: sendPost,
+        onSuccess: () => {
+            handleClose();
+            toast.success(
+                type === 'default'
+                    ? 'Đăng bài thành công!'
+                    : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
                 {
-                    loading: 'Bài viết đang được đăng...!',
-                    success:
-                        type == 'default'
-                            ? 'Đăng bài thành công!'
-                            : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
-                    error: 'Đã có lỗi xảy ra khi đăng bài!',
-                },
-                {
-                    position: 'bottom-left',
+                    position: TOAST_POSITION,
+                    duration: TOAST_DURATION,
                 }
             );
-        } catch (error: any) {
-            logger({
-                message: 'Error submit post' + error,
-                type: 'error',
+        },
+        onError: () => {
+            toast.error('Đã có lỗi xảy ra khi đăng bài!', {
+                position: TOAST_POSITION,
+                duration: TOAST_DURATION,
             });
-        } finally {
-            reset({
-                content: '',
-            });
-        }
-    }
-    const submit = handleSubmit(
-        mutation.mutate as SubmitHandler<IPostFormData>
+        },
+    });
+
+    const onSubmit = useCallback(
+        async (data: IPostFormData) => {
+            if (formState.isSubmitting) return;
+
+            try {
+                await toast.promise(
+                    mutation.mutateAsync(data),
+                    {
+                        loading: 'Bài viết đang được đăng...!',
+                        success:
+                            type === 'default'
+                                ? 'Đăng bài thành công!'
+                                : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
+                        error: 'Đã có lỗi xảy ra khi đăng bài!',
+                    },
+                    {
+                        position: TOAST_POSITION,
+                    }
+                );
+            } catch (error: any) {
+                logger({
+                    message: 'Error submitting post: ' + error.message,
+                    type: 'error',
+                });
+            }
+        },
+        [formState.isSubmitting, mutation, type]
     );
 
     return (
@@ -154,7 +179,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     photos={photos}
                     setPhotos={setPhotos}
                     register={register}
-                    submit={submit}
+                    submit={handleSubmit(onSubmit)}
                     form={form}
                     formState={formState}
                     control={control}

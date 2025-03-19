@@ -2,10 +2,10 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
-import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
+import { timeConvert3 } from '@/utils/timeConvert';
 import { Button } from '@/components/ui/Button';
 import { getPostByPostId, updateStatusPost } from '@/lib/actions/post.action';
 import toast from 'react-hot-toast';
@@ -25,9 +25,10 @@ import {
 interface Props {
     data: IPost;
     isManage?: boolean;
+    isSaved?: boolean;
 }
 
-const Post: React.FC<Props> = ({ data, isManage = false }) => {
+const Post: React.FC<Props> = ({ data, isManage = false, isSaved = false }) => {
     const pathname = usePathname();
     const { data: session } = useSession();
     const { data: post } = useQuery<IPost>({
@@ -237,7 +238,7 @@ const Post: React.FC<Props> = ({ data, isManage = false }) => {
             </main>
 
             {/* Footer */}
-            {!isManage && <FooterPost post={post} />}
+            {!isManage && <FooterPost post={post} isSaved={isSaved} />}
             {isManage && (
                 <div className={'flex w-full justify-center gap-4'}>
                     <Button
