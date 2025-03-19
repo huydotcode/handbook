@@ -43,15 +43,14 @@ const ConfirmModal: React.FC<Props> = ({
                     </div>
                     <p className="mt-4">{message}</p>
                     <div className="mt-4 flex justify-end">
-                        <form onSubmit={onConfirm}>
-                            <Button
-                                variant={'warning'}
-                                type="submit"
-                                className="mr-2 rounded-md px-4 py-2"
-                            >
-                                {confirmText}
-                            </Button>
-                        </form>
+                        <Button
+                            className="mr-2 rounded-md px-4 py-2"
+                            variant={'warning'}
+                            onClick={onConfirm}
+                        >
+                            {confirmText}
+                        </Button>
+
                         <Button
                             className="rounded-md px-6 py-2"
                             variant={'secondary'}

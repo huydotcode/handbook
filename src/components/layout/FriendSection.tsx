@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
     session: Session;
