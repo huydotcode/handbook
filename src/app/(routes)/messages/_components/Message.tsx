@@ -99,11 +99,6 @@ const Message: React.FC<Props> = ({
         try {
             if (!socket || msg.isPin) return;
 
-            console.log({
-                messageId: msg._id,
-                conversationId: msg.conversation._id,
-            });
-
             await addPinMessage({
                 messageId: msg._id,
                 conversationId: msg.conversation._id,
@@ -283,7 +278,7 @@ const Message: React.FC<Props> = ({
 
     return (
         <div
-            id={msg._id}
+            id={msg._id + (isPin ? 'pinned' : '')}
             key={msg._id}
             className={cn('relative flex w-full', {
                 'justify-end': isOwnMsg,

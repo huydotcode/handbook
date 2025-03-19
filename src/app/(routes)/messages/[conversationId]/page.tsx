@@ -38,12 +38,14 @@ const ConversationPage: React.FC<Props> = async ({ params, searchParams }) => {
 
     // Kiểm tra xem cuộc trò chuyện có tồn tại không
     if (!conversation) {
+        console.log("conversation doesn't exist");
         notFound();
     }
 
     // Kiểm tra xem người dùng có trong cuộc trò chuyện không
     if (conversation && conversation.participants) {
         if (!conversation.participants.find((p) => p._id === session.user.id)) {
+            console.log("user doesn't exist in conversation");
             redirect('/messages');
         }
     }

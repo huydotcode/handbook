@@ -39,7 +39,7 @@ interface Props {
     findMessage?: IMessage;
 }
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 30;
 
 export const useMessages = (conversationId: string) => {
     return useInfiniteQuery({
@@ -146,7 +146,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 images,
             });
 
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: getMessagesKey(conversation._id),
             });
         } catch (error) {
@@ -186,16 +186,31 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         if (!findMessage || !messages) return;
 
         // Tìm tin nhắn trong dữ liệu hiện có
-        const foundMessage = messages.find(
-            (message) => messageId === findMessage._id
-        );
+        const foundMessage = messages.find((msg) => msg._id === messageId);
 
         if (foundMessage) {
-            // Tìm thấy
+            // Tìm thấy thì scroll tới tin nhắn đó
+            const element = document.getElementById(messageId);
 
-            document.getElementById(foundMessage._id)?.scrollIntoView({
-                behavior: 'smooth',
-            });
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                const observer = new MutationObserver(() => {
+                    const newElement = document.getElementById(messageId);
+                    console.log('newElement', newElement);
+                    if (newElement) {
+                        newElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                        });
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                });
+            }
             setIsFind(true); // Đánh dấu tìm thấy
             return;
         }

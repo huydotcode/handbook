@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
+import { useSession } from 'next-auth/react';
 
 interface Props {
     currentRoom: IConversation;
@@ -24,6 +25,7 @@ interface IFormData {
 const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { socketEmitor } = useSocket();
     const queryClient = useQueryClient();
+    const { data: session } = useSession();
 
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
@@ -64,6 +66,8 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
         setFocus('text');
 
         const { text, files } = data;
+
+        if (!session?.user) return;
 
         if (!text.trim() && files.length === 0) {
             return;
