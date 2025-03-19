@@ -1,5 +1,6 @@
 import { Conversation } from '@/models';
 import { NextRequest, NextResponse } from 'next/server';
+import { POPULATE_USER } from '@/lib/populate';
 
 export const GET = async (
     request: NextRequest,
@@ -12,12 +13,12 @@ export const GET = async (
             _id: conversationId,
         })
             .populate('participants')
-            .populate('creator')
+            .populate('creator', POPULATE_USER)
             .populate({
                 path: 'group',
                 populate: [
                     { path: 'avatar' },
-                    { path: 'members.user' },
+                    { path: 'members.user', populate: POPULATE_USER },
                     { path: 'creator' },
                 ],
             });

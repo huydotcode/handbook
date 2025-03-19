@@ -1,5 +1,6 @@
 import { Profile } from '@/models';
 import { NextResponse, type NextRequest } from 'next/server';
+import { POPULATE_USER } from '@/lib/populate';
 
 type Params = Promise<{ req: NextRequest }>;
 
@@ -10,10 +11,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
     try {
         const profile = await Profile.findOne({
             user: userid,
-        }).populate(
-            'user',
-            'name avatar givenName familyName friends followersCount followers'
-        );
+        }).populate('user', POPULATE_USER);
 
         return NextResponse.json(profile, {
             status: 200,

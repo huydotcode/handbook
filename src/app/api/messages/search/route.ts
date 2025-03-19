@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDB from '@/services/mongoose';
 import { Message } from '@/models';
+import { POPULATE_USER } from '@/lib/populate';
 
 type Params = Promise<{ req: NextRequest }>;
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
                 $options: 'i',
             },
         })
-            .populate('sender')
+            .populate('sender', POPULATE_USER)
             .populate('conversation')
             .populate('images')
             .sort({ createdAt: -1 });

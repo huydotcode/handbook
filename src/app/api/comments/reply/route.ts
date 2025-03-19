@@ -1,5 +1,6 @@
 import { Comment } from '@/models';
 import { NextRequest, NextResponse } from 'next/server';
+import { POPULATE_USER } from '@/lib/populate';
 
 type Params = Promise<{ req: NextRequest }>;
 
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
             .skip((+page - 1) * +pageSize)
             .limit(+pageSize)
             .sort({ createdAt: -1 })
-            .populate('author')
+            .populate('author', POPULATE_USER)
             .populate('replyComment')
             .populate('post')
             .populate('loves');

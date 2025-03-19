@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
                 path: 'group',
                 populate: [
                     { path: 'avatar' },
-                    { path: 'members.user' },
+                    { path: 'members.user', populate: POPULATE_USER },
                     { path: 'creator' },
                 ],
             });

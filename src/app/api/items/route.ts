@@ -1,6 +1,7 @@
 import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
+import { POPULATE_USER } from '@/lib/populate';
 
 type Params = Promise<{ req: NextRequest }>;
 
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest, segmentData: { params: Params }) {
             .limit(+pageSize)
             .sort({ createdAt: -1 })
             .populate('category')
-            .populate('seller')
+            .populate('seller', POPULATE_USER)
             .populate('images');
 
         return NextResponse.json(items, {
