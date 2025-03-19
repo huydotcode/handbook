@@ -1,11 +1,15 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import {
+    InfiniteData,
+    useInfiniteQuery,
+    useQuery,
+} from '@tanstack/react-query';
 import { getSearchKey } from '@/lib/queryKey';
 import axiosInstance from '@/lib/axios';
 import { Avatar, Loading } from '@/components/ui';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useSession } from 'next-auth/react';
@@ -19,6 +23,9 @@ interface SearchData {
     groups: IGroup[];
 }
 
+const PAGE_SIZE = 10;
+const SEARCH_DEBOUNCE = 300; // ms
+
 const SearchPage = () => {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
@@ -26,62 +33,80 @@ const SearchPage = () => {
     const type = searchParams.get('type') || '';
     const [page, setPage] = useState<number>(1);
 
+    const searchEndpoint = useMemo(() => {
+        if (!q) return '';
+        return `/search${type ? `/${type}` : ''}?q=${encodeURIComponent(q)}&page=${page}&page_size=${PAGE_SIZE}`;
+    }, [q, type, page]);
+
     const { data, isLoading } = useQuery<SearchData>({
         queryKey: getSearchKey(q, type),
         queryFn: async () => {
-            if (q == '') return;
+            if (!searchEndpoint) return { users: [], posts: [], groups: [] };
 
-            const res = await axiosInstance.get(
-                `/search${type !== '' ? `/${type}` : ''}?q=${q}&page=${page}`
-            );
-            const data = res.data;
+            const { data } = await axiosInstance.get(searchEndpoint);
 
             return data;
         },
         enabled: !!q,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-        refetchIntervalInBackground: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
     });
 
     const { data: friends } = useFriends(session?.user.id);
 
-    return (
-        <div
-            className={
-                '= mx-auto mt-[64px] min-h-[calc(100vh-72px)] w-[800px] max-w-screen'
-            }
-        >
-            <h1 className={'text-md'}>Kết quả tìm kiếm: {q}</h1>
+    const userFriendStatus = useMemo(() => {
+        if (!data?.users || !friends) return {};
+        return data.users.reduce(
+            (acc, user) => {
+                acc[user._id] = friends.some(
+                    (friend) => friend._id === user._id
+                );
+                return acc;
+            },
+            {} as Record<string, boolean>
+        );
+    }, [data?.users, friends]);
 
-            {isLoading && <Loading className={'mt-12'} overlay={false} />}
+    const renderSearchResults = useCallback(() => {
+        if (isLoading) {
+            return <Loading className={'mt-12'} overlay={false} />;
+        }
 
+        if (
+            !data ||
+            (!data.users.length && !data.posts.length && !data.groups.length)
+        ) {
+            return (
+                <div className="mt-4 text-center text-gray-500">
+                    Không tìm thấy kết quả nào
+                </div>
+            );
+        }
+
+        return (
             <div className="mt-4 flex flex-col gap-2">
-                {data?.users.map((user) => {
-                    const isFriend = !!(
-                        friends &&
-                        friends.find((friend) => friend._id === user._id)
-                    );
-
-                    return (
-                        <UserSearchItem
-                            key={user._id}
-                            data={user}
-                            isFriend={isFriend}
-                        />
-                    );
-                })}
-
-                {data?.posts?.map((post) => (
-                    <Post key={post._id} data={post} />
+                {data.users.map((user) => (
+                    <UserSearchItem
+                        key={user._id}
+                        data={user}
+                        isFriend={userFriendStatus[user._id] || false}
+                    />
                 ))}
 
-                {data?.groups?.map((group) => (
+                {data.posts?.map((post) => <Post key={post._id} data={post} />)}
+
+                {data.groups?.map((group) => (
                     <GroupSearchItem key={group._id} data={group} />
                 ))}
             </div>
+        );
+    }, [data, isLoading, userFriendStatus]);
+
+    return (
+        <div className="mx-auto mt-[64px] min-h-[calc(100vh-72px)] w-[800px] max-w-screen">
+            <h1 className="text-md">
+                Kết quả tìm kiếm:{' '}
+                {q ? `"${q}"` : 'Vui lòng nhập từ khóa tìm kiếm'}
+            </h1>
+            {renderSearchResults()}
         </div>
     );
 };
@@ -94,11 +119,7 @@ const UserSearchItem = ({
     isFriend: boolean;
 }) => {
     return (
-        <div
-            className={
-                'flex items-center rounded-xl bg-secondary-1 p-2 shadow-xl'
-            }
-        >
+        <div className="flex items-center rounded-xl bg-secondary-1 p-2 shadow-xl">
             <Avatar
                 userUrl={data._id}
                 imgSrc={data.avatar}
@@ -106,9 +127,9 @@ const UserSearchItem = ({
                 height={48}
             />
 
-            <div className={'flex flex-1 items-center justify-between'}>
-                <div className={'ml-2 flex flex-col gap-2'}>
-                    <Button variant={'text'} href={`/profile/${data._id}`}>
+            <div className="flex flex-1 items-center justify-between">
+                <div className="ml-2 flex flex-col gap-2">
+                    <Button variant="text" href={`/profile/${data._id}`}>
                         {data.name}
                     </Button>
                 </div>
@@ -121,11 +142,7 @@ const UserSearchItem = ({
 
 const GroupSearchItem = ({ data }: { data: IGroup }) => {
     return (
-        <div
-            className={
-                'flex items-center rounded-xl bg-secondary-1 p-2 shadow-xl'
-            }
-        >
+        <div className="flex items-center rounded-xl bg-secondary-1 p-2 shadow-xl">
             <Avatar
                 userUrl={data._id}
                 imgSrc={data.avatar.url}
@@ -133,9 +150,9 @@ const GroupSearchItem = ({ data }: { data: IGroup }) => {
                 height={48}
             />
 
-            <div className={'flex flex-1 items-center justify-between'}>
-                <div className={'ml-2 flex flex-col gap-2'}>
-                    <Button variant={'text'} href={`/group/${data._id}`}>
+            <div className="flex flex-1 items-center justify-between">
+                <div className="ml-2 flex flex-col gap-2">
+                    <Button variant="text" href={`/group/${data._id}`}>
                         {data.name}
                     </Button>
                 </div>
