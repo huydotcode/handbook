@@ -9,8 +9,8 @@ class SearchController {
         const query = req.query.q as string;
         const pageString = req?.query?.page as string;
         const page: number = req?.query?.page ? parseInt(pageString) : 1;
-        const limitString = req?.query?.limit as string;
-        const limit =  req?.query?.limit ? parseInt(limitString) : 10;
+        const pageSizeString = req?.query?.page_size as string;
+        const pageSize =  req?.query?.limit ? parseInt(pageSizeString) : 10;
 
         const token: string = req.headers.authorization?.split(' ')[1] || "";
         if (!token) {
@@ -28,8 +28,8 @@ class SearchController {
                 $ne: user.id,
             },
         })
-            .skip((page - 1) * limit)
-            .limit(limit);
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
 
         const groups = await Group.find({
             $text: { $search: query },
@@ -38,8 +38,8 @@ class SearchController {
                 { members: { $elemMatch: { user: user.id } } }
             ],
         })
-            .skip((page - 1) * limit)
-            .limit(limit).populate("avatar");
+            .skip((page - 1) * pageSize)
+            .limit(pageSize).populate("avatar");
 
         console.log("groups", groups);
 
@@ -50,8 +50,8 @@ class SearchController {
                 { option: 'private', author: user.id },
             ],
         })
-            .skip((page - 1) * limit)
-            .limit(limit);
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
 
         const results = {
             users: users,
