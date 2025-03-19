@@ -2,6 +2,7 @@
 import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
+import { revalidatePath } from 'next/cache';
 
 export const createItem = async ({
     name,
@@ -119,11 +120,19 @@ export const getItemsByCategoryId = async ({
     }
 };
 
-export const deleteItem = async ({ itemId }: { itemId: string }) => {
+export const deleteItem = async ({
+    itemId,
+    path,
+}: {
+    itemId: string;
+    path: string;
+}) => {
     try {
         await connectToDB();
 
         await Item.findByIdAndDelete(itemId);
+
+        revalidatePath(path);
 
         return true;
     } catch (error: any) {

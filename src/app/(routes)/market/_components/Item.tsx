@@ -34,6 +34,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useCategories, useLocations } from '@/context/AppContext';
+import { usePathname } from 'next/navigation';
 
 interface Props {
     data: IItem;
@@ -64,6 +65,7 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
 
     const { data: categories } = useCategories();
     const { data: locations } = useLocations();
+    const path = usePathname();
 
     const handleChange = (files: File[]) => {
         form.setValue('images', files);
@@ -73,7 +75,9 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
         if (!item) return;
 
         try {
-            await deleteItem({ itemId: item?._id });
+            await deleteItem({ itemId: item?._id, path });
+
+            toast.success('Xóa mặt hàng thành công');
         } catch (error: any) {
             toast.error('Xóa mặt hàng thất bại', {
                 id: 'delete-item',
@@ -101,6 +105,8 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
                             alt={item.name || ''}
                             fill={true}
                             quality={100}
+                            // sizes={'100%'}
+                            // priority={false}
                         />
                     </div>
 
