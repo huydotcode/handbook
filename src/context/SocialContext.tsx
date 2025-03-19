@@ -110,8 +110,6 @@ export const useLastMessage = (conversationId: string) =>
             return lastMessage;
         },
         enabled: !!conversationId,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
     });
 
 function SocialProvider({ children }: { children: React.ReactNode }) {
