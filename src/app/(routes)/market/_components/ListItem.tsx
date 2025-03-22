@@ -5,6 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import Item from './Item';
 import React, { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import axiosInstance from '@/lib/axios';
 
 interface Props {}
 
@@ -18,11 +19,10 @@ const ListItem: React.FC<Props> = () => {
     } = useInfiniteQuery<IItem[]>({
         queryKey: getItemsKey(),
         queryFn: async ({ pageParam = 1 }) => {
-            const res = await fetch(
-                `/api/items?page=${pageParam}&pageSize=${PAGE_SIZE}`
+            const res = await axiosInstance.get(
+                `/items?page=${pageParam}&page_size=${PAGE_SIZE}`
             );
-            const items = await res.json();
-            return items;
+            return res.data;
         },
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.length < PAGE_SIZE) return undefined;

@@ -1,5 +1,6 @@
 import { getProfileByUserId } from '@/lib/actions/profile.action';
 import { Header } from '../_components';
+import { useSession } from 'next-auth/react';
 
 interface Props {
     params: Promise<{ userId: string }>;
@@ -17,17 +18,9 @@ export async function generateMetadata({ params }: Props) {
     };
 }
 
-const getProfile = async (userId: string) => {
-    const res = await fetch(
-        `${process.env.NEXTAUTH_URL}/api/profile?userid=${userId}`
-    );
-    const profile = await res.json();
-    return profile;
-};
-
 const ProfileLayout = async ({ params, children }: Props) => {
     const { userId } = await params;
-    const profile = await getProfile(userId);
+    const profile = await getProfileByUserId({ query: userId });
     if (!profile) throw new Error("Profile doesn't exist");
 
     return (

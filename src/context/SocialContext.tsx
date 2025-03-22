@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
 import axiosInstance from '@/lib/axios';
-import toast from 'react-hot-toast';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
 
 const PAGE_SIZE = 10;
 
@@ -20,8 +20,9 @@ export const useProfile = (userId: string) =>
     useQuery<IProfile>({
         queryKey: getProfileKey(userId),
         queryFn: async () => {
-            const res = await fetch(`/api/profile?userid=${userId}`);
-            const data = await res.json();
+            const data = await getProfileByUserId({
+                query: userId,
+            });
             return data;
         },
         enabled: !!userId,
@@ -35,11 +36,15 @@ export const useFriends = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(
-                `/api/friends?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
-            const friends = await res.json();
-            return friends;
+            const res = await axiosInstance.get('/user/friends', {
+                params: {
+                    user_id: userId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data;
         },
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
@@ -78,13 +83,15 @@ export const useMessages = (conversationId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
-            const res = await fetch(
-                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
+            const res = await axiosInstance.get('/message', {
+                params: {
+                    conversation_id: conversationId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
 
-            const messages = await res.json();
-
-            return messages;
+            return res.data;
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;

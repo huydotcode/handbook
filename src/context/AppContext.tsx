@@ -18,6 +18,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
+import axiosInstance from '@/lib/axios';
 
 const PAGE_SIZE = 5;
 
@@ -27,11 +28,15 @@ export const useNotifications = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(
-                `/api/notifications?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
-            const notifications = await res.json();
-            return notifications;
+            const res = await axiosInstance.get('/notifications', {
+                params: {
+                    user_id: userId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data;
         },
         select: (data) => {
             return data.pages.flatMap((page) => page);
@@ -68,11 +73,15 @@ export const useRequests = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await fetch(
-                `/api/requests?userId=${userId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
-            const requests = await res.json();
-            return requests;
+            const res = await axiosInstance.get('/requests', {
+                params: {
+                    user_id: userId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data;
         },
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
@@ -95,9 +104,9 @@ export const useLocations = () =>
     useQuery<ILocation[]>({
         queryKey: getLocationsKey(),
         queryFn: async () => {
-            const res = await fetch('/api/locations');
-            const locations = await res.json();
-            return locations;
+            const res = await axiosInstance.get('/locations');
+
+            return res.data;
         },
         refetchInterval: false,
         refetchOnWindowFocus: false,

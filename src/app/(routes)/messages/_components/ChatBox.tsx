@@ -32,6 +32,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     className?: string;
@@ -47,11 +48,15 @@ export const useMessages = (conversationId: string) => {
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
-            const res = await fetch(
-                `/api/messages?conversationId=${conversationId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
-            const messages = await res.json();
-            return messages;
+            const res = await axiosInstance.get('/message', {
+                params: {
+                    conversation_id: conversationId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data || [];
         },
         getNextPageParam: (lastPage, pages) => {
             return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;

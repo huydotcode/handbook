@@ -25,6 +25,7 @@ import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
 import { cn } from '@/lib/utils';
 import { timeConvert, timeConvert2, timeConvert3 } from '@/utils/timeConvert';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     data: IComment;
@@ -42,12 +43,15 @@ export const useReplyComments = (commentId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!commentId) return [];
 
-            const res = await fetch(
-                `/api/comments/reply?commentId=${commentId}&page=${pageParam}&pageSize=${PAGE_SIZE}`
-            );
-            const comments = await res.json();
+            const res = await axiosInstance.get(`/comments/reply`, {
+                params: {
+                    comment_id: commentId,
+                    page: pageParam,
+                    page_size: pageParam,
+                },
+            });
 
-            return comments;
+            return res.data;
         },
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {

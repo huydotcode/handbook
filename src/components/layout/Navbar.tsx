@@ -577,8 +577,6 @@ const Searchbar = () => {
         };
     }, []);
 
-    if (window === undefined) return null;
-
     return (
         <>
             <div

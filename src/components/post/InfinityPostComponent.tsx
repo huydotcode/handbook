@@ -205,7 +205,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
             {/* Posts list */}
             {data?.map((post) => {
-                const isSaved = savedPosts?.posts.some(
+                const isSaved = savedPosts?.posts?.some(
                     (p) => p._id === post._id
                 );
 
@@ -214,7 +214,7 @@ const InfinityPostComponent: React.FC<Props> = ({
                         data={post}
                         key={post._id}
                         isManage={isManage}
-                        isSaved={isSaved}
+                        isSaved={!!isSaved}
                     />
                 );
             })}

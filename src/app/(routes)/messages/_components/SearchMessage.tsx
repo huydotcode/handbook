@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Form, FormField } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     openSearch: boolean;
@@ -39,14 +40,15 @@ const SearchMessage: React.FC<Props> = ({
 
             setSearchMessages([]);
 
-            const res = await fetch(
-                `/api/messages/search?search=${searchValue}&conversationId=${conversationId}`
-            );
+            const res = await axiosInstance.get(`/message/search`, {
+                params: {
+                    q: searchValue,
+                    conversation_id: conversationId,
+                },
+            });
 
-            if (res.ok) {
-                const data = await res.json();
-                setSearchMessages(data);
-            }
+            const data = res.data;
+            setSearchMessages(data);
         } catch (error: any) {
             toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
         } finally {

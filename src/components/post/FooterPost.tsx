@@ -21,7 +21,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import {
@@ -165,10 +165,11 @@ export const useSavedPosts = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const res = await fetch(`/api/saved-posts?user_id=${userId}`);
-            const savedPosts = await res.json();
+            const res = await axiosInstance.get(`/saved-posts`, {
+                params: { user_id: userId },
+            });
 
-            return savedPosts;
+            return res.data;
         },
         enabled: !!userId,
         refetchOnWindowFocus: false,
@@ -181,9 +182,13 @@ export const useComments = (postId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!postId) return [];
 
-            const res = await axiosInstance.get(
-                `/comments?post_id=${postId}&page=${pageParam}&page_size=${PAGE_SIZE}`
-            );
+            const res = await axiosInstance.get(`/comments`, {
+                params: {
+                    post_id: postId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
             const comments = res.data;
 
             return comments;
