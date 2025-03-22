@@ -13,6 +13,7 @@ import Post from '../models/post.model';
 import Profile from '../models/profile.model';
 import SavedPost from '../models/savedpost.model';
 import User from '../models/user.model';
+import Category from '../models/category.model';
 
 let isConnected = false;
 
@@ -43,6 +44,7 @@ export const connectToMongo = async () => {
         Profile.createCollection();
         SavedPost.createCollection();
         User.createCollection();
+        Category.createCollection();
 
         isConnected = true;
     } catch (error: any) {
