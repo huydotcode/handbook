@@ -70,24 +70,6 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
         },
     });
 
-    const convertNumberToChar = (number: number) => {
-        if (number >= 1000000000) {
-            return `${(number / 1000000000).toFixed(1)}b`;
-        }
-
-        // Nếu lớn hơn 1 triệu
-        if (number >= 1000000) {
-            return `${(number / 1000000).toFixed(1)}m`;
-        }
-
-        // Nếu lớn hơn 1000
-        if (number >= 1000) {
-            return `${(number / 1000).toFixed(1)}k`;
-        }
-
-        return number;
-    };
-
     return (
         <Button
             className="like-container mr-2 flex flex-1 items-center md:p-1"

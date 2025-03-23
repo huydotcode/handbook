@@ -53,7 +53,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     <div className="relative flex flex-col overflow-hidden">
                         <Button
                             className="w-full justify-start rounded-sm shadow-none"
-                            size={'md'}
+                            size={'sm'}
                             variant={'ghost'}
                             onClick={() => handleShowModal('editModal')}
                         >
@@ -62,7 +62,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
 
                         <Button
                             className="w-full justify-start rounded-sm shadow-none"
-                            size={'md'}
+                            size={'sm'}
                             variant={'ghost'}
                             onClick={() => handleShowModal('deleteModal')}
                         >
