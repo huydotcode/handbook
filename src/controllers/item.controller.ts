@@ -14,6 +14,7 @@ class ItemController {
                 .limit(+page_size)
                 .sort({ createdAt: -1 })
                 .populate('category')
+                .populate('location')
                 .populate('seller', POPULATE_USER)
                 .populate('images');
 
