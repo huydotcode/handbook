@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { splitName } from '@/utils/splitName';
 import { useRouter } from 'next/navigation';
-import { timeConvert } from '@/utils/timeConvert';
+import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
 
 interface Props {
     currentRoom: IConversation;
@@ -101,8 +101,9 @@ const ChatHeader: React.FC<Props> = ({
                                     ) : (
                                         <>
                                             Hoạt động{' '}
-                                            {timeConvert(
-                                                partner.lastAccessed.toString()
+                                            {timeConvert3(
+                                                partner.lastAccessed.toString(),
+                                                'trước'
                                             )}
                                         </>
                                     )}

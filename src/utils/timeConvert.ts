@@ -11,7 +11,7 @@ export const timeConvert2 = (time: string) => {
 };
 
 // Format time to time ago 1m, 1h
-export const timeConvert3 = (time: string) => {
+export const timeConvert3 = (time: string, afterPrelix: string = '') => {
     const now = momment();
     const end = momment(time);
     const duration = momment.duration(now.diff(end));
@@ -22,13 +22,13 @@ export const timeConvert3 = (time: string) => {
     const years = duration.asYears();
 
     if (minutes < 60) {
-        return `${Math.floor(minutes)} phút`;
+        return `${Math.floor(minutes)} phút ${afterPrelix}`;
     } else if (hours < 24) {
-        return `${Math.floor(hours)} giờ`;
+        return `${Math.floor(hours)} giờ ${afterPrelix}`;
     } else if (days < 30) {
-        return `${Math.floor(days)} ngày`;
+        return `${Math.floor(days)} ngày ${afterPrelix}`;
     } else if (months < 12) {
-        return `${Math.floor(months)} tháng`;
+        return `${Math.floor(months)} tháng ${afterPrelix}`;
     }
 
     return `${Math.floor(years)} năm`;

@@ -14,7 +14,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { timeConvert } from '@/utils/timeConvert';
+import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
 
 interface Props {
     data: IConversation;
@@ -151,8 +151,9 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                                             session?.user.id,
                                                     })}
                                                 >
-                                                    {timeConvert(
-                                                        lastMessage.createdAt.toString()
+                                                    {timeConvert3(
+                                                        lastMessage.createdAt.toString(),
+                                                        'trước'
                                                     )}
                                                 </span>
                                             )}
