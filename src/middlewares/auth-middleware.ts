@@ -6,10 +6,6 @@ export default async function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
-    if (req.method === 'OPTIONS') {
-        return next();
-    }
-
     const authHeader = req.headers.authorization;
     if (!authHeader) {
         return res.status(401).json({ message: 'Unauthorized' });
