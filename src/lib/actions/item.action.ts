@@ -50,21 +50,6 @@ export const createItem = async ({
     }
 };
 
-export const getItems = async () => {
-    try {
-        await connectToDB();
-
-        const items = await Item.find({})
-            .populate('category')
-            .populate('seller')
-            .populate('images');
-
-        return JSON.parse(JSON.stringify(items));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
 export const getItemById = async ({ id }: { id: string }) => {
     try {
         await connectToDB();
@@ -72,6 +57,7 @@ export const getItemById = async ({ id }: { id: string }) => {
         const item = await Item.findById(id)
             .populate('category')
             .populate('seller')
+            .populate('location')
             .populate('images');
 
         return JSON.parse(JSON.stringify(item));
@@ -91,6 +77,7 @@ export const getItemsBySeller = async ({ seller }: { seller: string }) => {
         const items = await Item.find({ seller })
             .populate('category')
             .populate('seller')
+            .populate('location')
             .populate('images');
 
         return JSON.parse(JSON.stringify(items)) as IItem[];
@@ -112,6 +99,7 @@ export const getItemsByCategoryId = async ({
         })
             .populate('category')
             .populate('seller')
+            .populate('location')
             .populate('images');
 
         return JSON.parse(JSON.stringify(items));

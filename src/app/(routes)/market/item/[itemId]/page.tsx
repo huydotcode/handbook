@@ -70,7 +70,7 @@ export default async function ItemPage({ params }: Props) {
 
                         <li>
                             <p className={'text-sm'}>
-                                <b>Địa chỉ: </b> {item.location}
+                                <b>Địa chỉ: </b> {item.location.name}
                             </p>
                         </li>
 

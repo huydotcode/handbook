@@ -195,7 +195,7 @@ interface IItem {
     description: string;
     price: number;
     images: IImage[];
-    location: string;
+    location: ILocation;
     category: ICategory;
     slug: string;
     status: string;

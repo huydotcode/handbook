@@ -6,7 +6,7 @@ interface IItemModel {
     description: string;
     price: number;
     images: Schema.Types.ObjectId[];
-    location: string;
+    location: Schema.Types.ObjectId;
     category: Schema.Types.ObjectId;
     slug: string;
     status: string;
@@ -44,7 +44,8 @@ export const ItemSchema = new Schema<IItemModel>(
             },
         ],
         location: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'Location',
             required: true,
         },
         category: {

@@ -56,7 +56,7 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
         defaultValues: {
             name: item.name,
             price: item.price,
-            location: item.location,
+            location: item.location.name,
             description: item.description,
             images: item.images.map((image) => image.url),
             category: item.category._id,
@@ -105,8 +105,6 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
                             alt={item.name || ''}
                             fill={true}
                             quality={100}
-                            // sizes={'100%'}
-                            // priority={false}
                         />
                     </div>
 
@@ -117,7 +115,7 @@ const Item: React.FC<Props> = ({ data: item, isManage = false }) => {
                             </p>
 
                             <span className="text-xs text-secondary-1">
-                                {item.location}
+                                {item.location.name}
                             </span>
                         </div>
 
