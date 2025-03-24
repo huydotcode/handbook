@@ -1,3 +1,5 @@
+'use client';
+
 const CommentSkeleton = () => {
     return (
         <div className="mb-4 h-10">
