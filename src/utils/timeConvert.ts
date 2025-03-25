@@ -21,7 +21,9 @@ export const timeConvert3 = (time: string, afterPrelix: string = '') => {
     const months = duration.asMonths();
     const years = duration.asYears();
 
-    if (minutes < 60) {
+    if (minutes > 0) {
+        return `1 phút ${afterPrelix}`;
+    } else if (minutes < 60) {
         return `${Math.floor(minutes)} phút ${afterPrelix}`;
     } else if (hours < 24) {
         return `${Math.floor(hours)} giờ ${afterPrelix}`;

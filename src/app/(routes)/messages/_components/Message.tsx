@@ -113,6 +113,8 @@ const Message: React.FC<Props> = React.memo<Props>(
                     conversationId: msg.conversation._id,
                 });
 
+                toast.success('Đã ghim tin nhắn!', { id: 'pin-message' });
+
                 invalidateMessages(queryClient, msg.conversation._id);
 
                 socketEmitor.pinMessage({
@@ -132,6 +134,8 @@ const Message: React.FC<Props> = React.memo<Props>(
                     messageId: msg._id,
                     conversationId: msg.conversation._id,
                 });
+
+                toast.success('Đã hủy ghim tin nhắn!', { id: 'unpin-message' });
 
                 invalidateMessages(queryClient, msg.conversation._id);
             } catch (error) {
@@ -154,6 +158,8 @@ const Message: React.FC<Props> = React.memo<Props>(
                         conversationId: msg.conversation._id,
                     });
                 }
+
+                toast.success('Đã xóa tin nhắn!', { id: 'delete-message' });
 
                 invalidateMessages(queryClient, msg.conversation._id);
 

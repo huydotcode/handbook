@@ -28,6 +28,11 @@ const ConfirmModal: React.FC<Props> = ({
 }) => {
     const handleClose = () => setShow(false);
 
+    const handleConfirm = (e: React.FormEvent<Element>) => {
+        handleClose();
+        onConfirm(e);
+    };
+
     return (
         <Modal open={open} disableAutoFocus>
             <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-xl bg-white dark:bg-dark-secondary-1 md:min-w-[80vw]">
@@ -46,7 +51,7 @@ const ConfirmModal: React.FC<Props> = ({
                         <Button
                             className="mr-2 rounded-md px-4 py-2"
                             variant={'warning'}
-                            onClick={onConfirm}
+                            onClick={handleConfirm}
                         >
                             {confirmText}
                         </Button>
