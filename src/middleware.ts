@@ -16,8 +16,10 @@ export const config = {
         '/',
         '/groups/:path*',
         '/market/:path*',
-        '/profile/:path*',
         '/messages/:path*',
         '/posts/:path*',
+        '/profile/:path*',
+        '/saved/:path*',
+        '/search/:path*',
     ],
 };

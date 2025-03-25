@@ -295,7 +295,7 @@ const NavNotification = () => {
                 </PopoverTrigger>
 
                 <PopoverContent asChild>
-                    <div className="max-h-[50vh] min-h-[200px] w-[300px] overflow-x-hidden overflow-y-scroll px-4 py-2 dark:bg-dark-secondary-1">
+                    <div className="max-h-[50vh] min-h-[300px] w-[300px] overflow-x-hidden overflow-y-scroll px-4 py-2 dark:bg-dark-secondary-1">
                         <div className="flex items-center justify-between">
                             <h1 className="text font-bold dark:text-dark-primary-1">
                                 Thông báo
