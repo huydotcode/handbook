@@ -73,22 +73,6 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
             return;
         }
 
-        const optimisticMessage: IMessage = {
-            _id: Date.now().toString(),
-            conversation: {
-                _id: currentRoom._id,
-            } as IConversation,
-            createdAt: new Date(),
-            images: [],
-            isPin: false,
-            isRead: false,
-            sender: {
-                _id: session.user.id,
-            } as IUser,
-            text: text,
-            updatedAt: new Date(),
-        };
-
         try {
             let imagesUpload;
 
@@ -98,22 +82,13 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 });
             }
 
-            queryClient.setQueryData<IMessage[]>(
-                ['messages', currentRoom._id],
-                (old) => {
-                    if (!old) return [optimisticMessage];
-
-                    return [optimisticMessage, ...old];
-                }
-            );
-
             const newMsg = await sendMessage({
                 roomId: currentRoom._id,
                 text,
                 images: imagesUpload,
             });
 
-            // invalidateMessages(queryClient, currentRoom._id);
+            invalidateMessages(queryClient, currentRoom._id);
 
             socketEmitor.sendMessage({
                 roomId: currentRoom._id,
