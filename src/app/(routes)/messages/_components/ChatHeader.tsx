@@ -2,7 +2,7 @@
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSession } from 'next-auth/react';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { splitName } from '@/utils/splitName';
 import { useRouter } from 'next/navigation';
@@ -54,6 +54,10 @@ const ChatHeader: React.FC<Props> = ({
             return partner?.avatar;
         }
     }, [currentRoom.group, partner?.avatar]);
+
+    useEffect(() => {
+        console.log(avatar);
+    }, [avatar]);
 
     return (
         <>

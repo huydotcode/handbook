@@ -166,8 +166,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             // Bỏ qua tin nhắn do chính user gửi đi
             if (session.user.id === message.sender._id) return;
 
-            invalidateMessages(queryClient, message.conversation._id);
             if (pathname.includes(`/messages/${message.conversation._id}`)) {
+                invalidateMessages(queryClient, message.conversation._id);
                 socketEmitor.readMessage({
                     roomId: message.conversation._id,
                     userId: session.user.id,

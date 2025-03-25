@@ -54,7 +54,17 @@ function getGoogleCredentials() {
 export const authOptions: NextAuthOptions = {
     session: {
         strategy: 'jwt',
+        maxAge: 24 * 60 * 60, // 24 hours
     },
+    // jwt: {
+    //     encode(params) {
+    //         return jwt.sign(params);
+    //     },
+    //     decode(params) {
+    //         return {};
+    //     },
+    // }
+
     secret: process.env.JWT_SECRET,
     pages: { error: '/auth/error' },
     cookies: {
@@ -105,7 +115,6 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async jwt({ token, user }) {
-            // console.log('jwt', token);
             try {
                 await connectToDB();
 
@@ -113,9 +122,7 @@ export const authOptions: NextAuthOptions = {
                     return token;
                 }
 
-                const userExists =
-                    (await User.findOne({ email: token.email })) || null;
-
+                const userExists = await User.findOne({ email: token.email });
                 if (!userExists) {
                     return {
                         id: '',
@@ -162,30 +169,18 @@ export const authOptions: NextAuthOptions = {
         },
         async signIn({
             profile: oAuthCredentials,
-            credentials: passwordcredentials,
+            credentials: passwordCredentials,
         }) {
             try {
                 await connectToDB();
 
-                const isHaveAccount = async ({ email }: { email: string }) => {
-                    if (email.length === 0) return null;
-
-                    const userExits = await User.findOne({
-                        email: email,
-                    });
-
-                    return userExits;
-                };
-
                 const email =
-                    (oAuthCredentials?.email as string) ||
-                    (passwordcredentials?.email as string) ||
-                    ('' as string);
+                    oAuthCredentials?.email || passwordCredentials?.email;
+                if (!email) {
+                    throw new Error('No email provided');
+                }
 
-                const userExists = await isHaveAccount({
-                    email: email || '',
-                });
-
+                const userExists = await User.findOne({ email });
                 if (!userExists && oAuthCredentials) {
                     const { email, name, picture, family_name, given_name } =
                         oAuthCredentials as OAuthCredentials;
@@ -193,7 +188,7 @@ export const authOptions: NextAuthOptions = {
                     const username = generateUsernameFromEmail({ email });
 
                     const newUser = new User({
-                        email: email,
+                        email,
                         name,
                         avatar: picture,
                         familyName: family_name,
@@ -217,23 +212,20 @@ export const authOptions: NextAuthOptions = {
                     return true;
                 }
 
-                if (userExists && passwordcredentials) {
-                    // Đăng nhập với email và password
-                    const password = passwordcredentials.password as string;
-
-                    const isValid = await userExists.comparePassword(password);
-
+                if (userExists && passwordCredentials?.password) {
+                    const isValid = await userExists.comparePassword(
+                        passwordCredentials.password
+                    );
                     if (!isValid) {
-                        return false;
+                        throw new Error('Invalid password');
                     }
-
                     return true;
                 }
 
                 return true;
             } catch (error) {
                 logger({
-                    message: 'Error signin auth' + error,
+                    message: `Error in signIn: ${error instanceof Error ? error.message : 'Unknown error'}`,
                     type: 'error',
                 });
                 return false;
