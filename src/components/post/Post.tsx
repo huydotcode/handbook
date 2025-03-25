@@ -272,4 +272,6 @@ const Post: React.FC<Props> = React.memo(
     }
 );
 
+Post.displayName = 'Post';
+
 export default Post;
