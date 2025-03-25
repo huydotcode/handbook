@@ -5,10 +5,12 @@ import logger from '@/utils/logger';
 
 import bcrypt from 'bcrypt';
 import { NextAuthOptions } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { jwt } from './actions/jwt';
+import * as jwtWebToken from 'jsonwebtoken';
 
 interface OAuthCredentials {
     iss: string;
@@ -56,15 +58,31 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt',
         maxAge: 24 * 60 * 60, // 24 hours
     },
-    // jwt: {
-    //     encode(params) {
-    //         return jwt.sign(params);
-    //     },
-    //     decode(params) {
-    //         return {};
-    //     },
-    // }
+    jwt: {
+        encode({ salt, secret, maxAge, token }) {
+            if (!token) {
+                return '';
+            }
 
+            return jwtWebToken.sign(token, secret, {
+                expiresIn: '1d',
+            });
+        },
+        decode: async ({ token, salt, secret }) => {
+            if (!token) {
+                return null;
+            }
+
+            const decoded = jwtWebToken.decode(token) as JWT;
+            if (!decoded) {
+                return null;
+            }
+
+            return decoded;
+        },
+        secret: process.env.JWT_SECRET,
+        maxAge: 24 * 60 * 60, // 24 hours
+    },
     secret: process.env.JWT_SECRET,
     pages: { error: '/auth/error' },
     cookies: {
