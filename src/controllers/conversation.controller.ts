@@ -6,7 +6,7 @@ class ConversationController {
     public async getConversations(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const user_id = req.query.user_id as string;
@@ -31,6 +31,27 @@ class ConversationController {
 
             res.status(200).json(conversations);
         } catch (error) {
+            next(error);
+        }
+    }
+
+    public async getConversationById(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const conversation_id = req.params.id;
+
+            const conversation = await Conversation.findOne({
+                _id: conversation_id,
+            })
+                .populate('participants')
+                .populate('creator')
+                .populate('group');
+
+            return JSON.parse(JSON.stringify(conversation));
+        } catch (error: any) {
             next(error);
         }
     }
