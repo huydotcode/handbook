@@ -82,7 +82,13 @@ export const getConversationById = async ({
         })
             .populate('participants')
             .populate('creator')
-            .populate('group');
+            .populate({
+                path: 'group',
+                populate: {
+                    path: 'avatar', // Populate đến model Image
+                    model: 'Image', // Đảm bảo tên model chính xác
+                },
+            });
 
         return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
