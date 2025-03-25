@@ -79,11 +79,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                 resetForm();
                 return newPost;
             } catch (error: any) {
-                logger({
-                    message: 'Error creating post: ' + error.message,
-                    type: 'error',
-                });
-                throw error;
+                throw new Error(error);
             }
         },
         [session?.user, photos.length, groupId, type, queryClient, resetForm]
@@ -92,7 +88,6 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const mutation = useMutation({
         mutationFn: sendPost,
         onSuccess: () => {
-            handleClose();
             toast.success(
                 type === 'default'
                     ? 'Đăng bài thành công!'
@@ -114,6 +109,9 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const onSubmit = useCallback(
         async (data: IPostFormData) => {
             if (formState.isSubmitting) return;
+
+            // Đóng form khi submit
+            setShow(false);
 
             try {
                 await toast.promise(
