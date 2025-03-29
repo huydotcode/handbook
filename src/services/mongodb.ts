@@ -31,20 +31,20 @@ export const connectToMongo = async () => {
         });
         console.log('Connected to MongoDB');
 
-        Conversation.createCollection();
-        ConversationRole.createCollection();
-        Follows.createCollection();
-        Group.createCollection();
-        Image.createCollection();
-        Item.createCollection();
-        Location.createCollection();
-        Message.createCollection();
-        Notification.createCollection();
-        Post.createCollection();
-        Profile.createCollection();
-        SavedPost.createCollection();
-        User.createCollection();
-        Category.createCollection();
+        await Conversation.createCollection();
+        await ConversationRole.createCollection();
+        await Follows.createCollection();
+        await Group.createCollection();
+        await Image.createCollection();
+        await Item.createCollection();
+        await Location.createCollection();
+        await Message.createCollection();
+        await Notification.createCollection();
+        await Post.createCollection();
+        await Profile.createCollection();
+        await SavedPost.createCollection();
+        await User.createCollection();
+        await Category.createCollection();
 
         isConnected = true;
     } catch (error: any) {
