@@ -1,12 +1,8 @@
 'use client';
-import Link from 'next/link';
 import { Navbar } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
-import { useRouter } from 'next/navigation';
 
 const ErrorPage = () => {
-    const router = useRouter();
-
     return (
         <>
             <Navbar />
@@ -23,21 +19,20 @@ const ErrorPage = () => {
                             Nhưng đừng lo lắng, bạn có thể quay lại trang chủ để
                             tìm
                         </p>
-                        <Button
-                            rel="noopener noreferrer"
-                            href="/"
-                            className="rounded px-8 py-3 font-semibold dark:bg-violet-600 dark:text-gray-50"
-                        >
-                            Quay lại trang chủ
-                        </Button>
 
-                        <Button
-                            rel="noopener noreferrer"
-                            onClick={() => router.refresh()}
-                            className="rounded px-8 py-3 font-semibold dark:bg-violet-600 dark:text-gray-50"
+                        <div
+                            className={
+                                'flex items-center justify-center gap-2 md:flex-col'
+                            }
                         >
-                            Thử lại
-                        </Button>
+                            <Button
+                                className={'px-8'}
+                                variant={'secondary'}
+                                onClick={() => window.location.reload()}
+                            >
+                                Thử lại
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </section>
