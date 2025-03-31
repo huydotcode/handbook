@@ -54,9 +54,6 @@ export const useFriends = (userId: string | undefined) =>
             return data.pages.flatMap((page) => page) as IUser[];
         },
         enabled: !!userId,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
     });
 
 export const useConversations = (userId: string | undefined) =>
@@ -72,9 +69,6 @@ export const useConversations = (userId: string | undefined) =>
             return conversations;
         },
         enabled: !!userId,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
     });
 
 export const useMessages = (conversationId: string | undefined) =>
