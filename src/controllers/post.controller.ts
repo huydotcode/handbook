@@ -68,6 +68,34 @@ class PostController {
         }
     }
 
+    // ROUTE: GET /api/v1/posts/new-feed-friend
+    public async getNewFeedFriendPosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const user_id = req.query.user_id as string;
+            const user = await User.findById(user_id).populate(POPULATE_USER);
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                author: {
+                    $in: user?.friends,
+                },
+                status: 'active',
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     // ROUTE: GET /api/v1/posts/new-feed-group
     public async getNewFeedGroupPosts(
         req: Request,
