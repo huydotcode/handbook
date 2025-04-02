@@ -15,14 +15,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { IShowModal } from '../ActionPost';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
 
 interface Props {
     post: IPost;
     show: boolean;
-    setShow: React.Dispatch<React.SetStateAction<IShowModal>>;
+    setShow: React.Dispatch<React.SetStateAction<boolean>>;
     handleClose: () => void;
 }
 
@@ -97,7 +96,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
 
     async function onSubmit(data: IPostFormData) {
         if (formState.isSubmitting) return;
-        setShow({ editModal: false, deleteModal: false });
+        setShow(false);
         try {
             await toast.promise(
                 updatePost(data),

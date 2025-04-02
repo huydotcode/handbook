@@ -14,24 +14,9 @@ interface Props {
     post: IPost;
 }
 
-export type IShowModal = {
-    editModal: boolean;
-    deleteModal: boolean;
-};
-
 const ActionPost: React.FC<Props> = ({ post }) => {
-    const [showModal, setShowModal] = useState<IShowModal>({
-        editModal: false,
-        deleteModal: false,
-    });
-
-    const handleShowModal = (type: keyof IShowModal) => {
-        setShowModal((prev) => ({ ...prev, [type]: true }));
-    };
-
-    const handleCloseModal = (type: keyof IShowModal) => {
-        setShowModal((prev) => ({ ...prev, [type]: false }));
-    };
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
     return (
         <>
@@ -55,7 +40,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                             className="w-full justify-start rounded-sm shadow-none"
                             size={'sm'}
                             variant={'ghost'}
-                            onClick={() => handleShowModal('editModal')}
+                            onClick={() => setShowEditModal(true)}
                         >
                             <Icons.Edit className="mr-2" /> Chỉnh sửa bài viết
                         </Button>
@@ -64,7 +49,7 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                             className="w-full justify-start rounded-sm shadow-none"
                             size={'sm'}
                             variant={'ghost'}
-                            onClick={() => handleShowModal('deleteModal')}
+                            onClick={() => setShowDeleteModal(true)}
                         >
                             <Icons.Delete className="mr-2" /> Xóa bài viết
                         </Button>
@@ -72,20 +57,21 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                 </PopoverContent>
             </Popover>
 
-            {showModal.editModal && (
+            {showEditModal && (
                 <EditPostModal
                     post={post}
-                    show={showModal.editModal}
-                    setShow={setShowModal}
-                    handleClose={() => handleCloseModal('editModal')}
+                    show={showEditModal}
+                    setShow={setShowEditModal}
+                    handleClose={() => setShowEditModal(false)}
                 />
             )}
 
-            {showModal.deleteModal && (
+            {showDeleteModal && (
                 <DeletePostModal
-                    show={showModal.deleteModal}
                     postId={post._id}
-                    handleClose={() => handleCloseModal('deleteModal')}
+                    show={showDeleteModal}
+                    setShow={setShowDeleteModal}
+                    handleClose={() => setShowDeleteModal(false)}
                 />
             )}
         </>
