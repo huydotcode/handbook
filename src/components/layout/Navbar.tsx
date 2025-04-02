@@ -14,7 +14,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { navLink } from '@/constants/navLink';
+import { navbarLink, navLink } from '@/constants/navLink';
 import { useSocket } from '@/context';
 import { useNotifications } from '@/context/AppContext';
 import { useDebounce } from '@/hooks';
@@ -106,7 +106,7 @@ const Navbar = () => {
                         }
                         ref={listNavRef}
                     >
-                        {navLink.map((link) => {
+                        {navbarLink.map((link) => {
                             if (
                                 link.role === 'admin' &&
                                 session?.user.role !== 'admin'

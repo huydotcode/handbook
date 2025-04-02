@@ -6,7 +6,11 @@ interface NavLink {
     path: string;
     icon: React.ReactNode;
     role?: string;
+    visible?: string[];
 }
+
+export const SIDEBAR = 'sidebar';
+export const NAVBAR = 'navbar';
 
 export const navLink: NavLink[] = [
     {
@@ -14,38 +18,52 @@ export const navLink: NavLink[] = [
         path: '/admin',
         icon: <Icons.Admin className="h-8 w-8 " />,
         role: 'admin',
+        visible: [SIDEBAR, NAVBAR],
     },
     {
         name: 'Trang chủ',
         path: '/',
         icon: <Icons.Home className="h-8 w-8 " />,
+        visible: [SIDEBAR, NAVBAR],
     },
     {
         name: 'News Feed',
         path: '/news-feed',
         icon: <Icons.Posts className="h-8 w-8 " />,
+        visible: [SIDEBAR],
     },
     {
         name: 'Trò chuyện',
         path: '/messages',
         icon: <Icons.Message className="h-8 w-8 " />,
+        visible: [SIDEBAR, NAVBAR],
     },
     {
         name: 'Chợ',
         path: '/market',
         icon: <Icons.Shop className="h-8 w-8" />,
+        visible: [SIDEBAR, NAVBAR],
     },
     {
         name: 'Nhóm',
         path: '/groups',
         icon: <Icons.Group className="h-8 w-8 " />,
+        visible: [SIDEBAR, NAVBAR],
     },
     {
         name: 'Đã lưu',
         path: '/saved',
         icon: <Icons.Bookmark className="h-7 w-7 " />,
+        visible: [SIDEBAR],
     },
 ];
+
+export const navbarLink: NavLink[] = navLink.filter((nav) =>
+    nav.visible?.includes(NAVBAR)
+);
+export const sidebarLink: NavLink[] = navLink.filter((nav) =>
+    nav.visible?.includes(SIDEBAR)
+);
 
 export const navAdmin: NavLink[] = [
     {
