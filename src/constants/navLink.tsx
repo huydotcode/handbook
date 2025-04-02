@@ -21,6 +21,11 @@ export const navLink: NavLink[] = [
         icon: <Icons.Home className="h-8 w-8 " />,
     },
     {
+        name: 'News Feed',
+        path: '/news-feed',
+        icon: <Icons.Posts className="h-8 w-8 " />,
+    },
+    {
         name: 'Trò chuyện',
         path: '/messages',
         icon: <Icons.Message className="h-8 w-8 " />,

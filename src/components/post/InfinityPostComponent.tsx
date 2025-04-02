@@ -12,11 +12,12 @@ import { useInView } from 'react-intersection-observer';
 import { CreatePost, Post, SkeletonPost } from '.';
 import { Icons } from '../ui';
 
-type PostType =
+export type PostType =
     | 'new-feed'
     | 'profile'
     | 'group'
     | 'new-feed-group'
+    | 'new-feed-friend'
     | 'manage-group-posts';
 
 interface Props {
@@ -34,6 +35,7 @@ const REFETCH_INTERVAL = 1000 * 60 * 5; // 5 minutes
 const ENDPOINTS: Record<PostType, string> = {
     'new-feed': '/posts/new-feed',
     'new-feed-group': '/posts/new-feed-group',
+    'new-feed-friend': '/posts/new-feed-friend',
     profile: '/posts/profile',
     group: '/posts/group',
     'manage-group-posts': '/posts/group/manage',
@@ -48,7 +50,7 @@ const usePosts = ({
     const { data: session } = useSession();
 
     const isFeedType = useMemo(
-        () => ['new-feed', 'new-feed-group'].includes(type),
+        () => ['new-feed', 'new-feed-friend', 'new-feed-group'].includes(type),
         [type]
     );
 

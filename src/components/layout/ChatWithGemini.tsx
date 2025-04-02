@@ -156,7 +156,7 @@ const ChatWithGemini = () => {
                                 {isPending && (
                                     <div
                                         className={
-                                            'flex h-10 w-[70%] items-center justify-center rounded-xl bg-skeleton'
+                                            'flex h-10 w-[70%] items-center justify-center rounded-xl bg-skeleton dark:bg-dark-secondary-2'
                                         }
                                     >
                                         <Loading
