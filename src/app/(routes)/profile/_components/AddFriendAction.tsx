@@ -12,7 +12,7 @@ import { unfriend } from '@/lib/actions/user.action';
 import { getFriendsKey, getRequestsKey } from '@/lib/queryKey';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -65,7 +65,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     const { mutate: mutationUnFriend } = useMutation({
         mutationFn: async ({ friendId }: { friendId: string }) => {
-            unfriend({ friendId });
+            await unfriend({ friendId });
         },
         onMutate: () => {
             toast('Đang hủy kết bạn...', {
@@ -74,7 +74,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
         onSuccess: () => {
-            refetch();
+            console.log('Unfriend success');
+            queryClient.invalidateQueries({
+                queryKey: getFriendsKey(session?.user.id),
+            });
 
             toast.success('Hủy kết bạn thành công', {
                 id: 'unfriend',
@@ -166,6 +169,12 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
         if (isRequest) return 'Đã gửi';
         return 'Kết bạn';
     };
+
+    useEffect(() => {
+        console.log({
+            friends,
+        });
+    }, [friends]);
 
     return (
         <Button

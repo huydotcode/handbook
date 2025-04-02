@@ -98,23 +98,39 @@ export const getUserByUserId = async ({ userId }: { userId: string }) => {
 };
 
 export const unfriend = async ({ friendId }: { friendId: string }) => {
+    const transaction = await User.startSession();
+
     try {
         await connectToDB();
 
+        await transaction.startTransaction();
+
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
-        const user = await User.findById(session.user.id).exec();
-        if (!user) throw new Error('Đã có lỗi xảy ra');
-        const friend = await User.findById(friendId).exec();
-        if (!friend) throw new Error('Đã có lỗi xảy ra');
 
-        user.friends = user.friends.filter((id: string) => id !== friendId);
-        friend.friends = friend.friends.filter(
-            (id: string) => id !== session.user.id
+        await User.updateOne(
+            {
+                _id: session.user.id,
+            },
+            {
+                $pull: {
+                    friends: friendId,
+                },
+            }
         );
 
-        await user.save();
-        await friend.save();
+        await User.updateOne(
+            {
+                _id: friendId,
+            },
+            {
+                $pull: {
+                    friends: session.user.id,
+                },
+            }
+        );
+
+        await transaction.commitTransaction();
 
         return true;
     } catch (error: any) {
@@ -122,6 +138,8 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
             message: 'Error un friend' + error,
             type: 'error',
         });
+
+        await transaction.abortTransaction();
     }
 };
 
