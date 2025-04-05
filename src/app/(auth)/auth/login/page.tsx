@@ -105,7 +105,7 @@ const LoginPage = () => {
 
     return (
         <>
-            <div className="bg-glass relative w-[400px] max-w-screen rounded-xl px-4 py-10 shadow-lg">
+            <div className="bg-glass relative w-[450px] max-w-screen rounded-xl px-6 py-10 shadow-lg">
                 <h2 className="flex justify-center text-center text-2xl font-semibold uppercase tracking-tight">
                     Đăng nhập
                 </h2>

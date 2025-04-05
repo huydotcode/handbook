@@ -88,7 +88,7 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="bg-glass relative flex w-[400px] max-w-screen flex-col rounded-xl px-10 py-10 shadow-lg">
+        <div className="bg-glass relative flex w-[450px] max-w-screen flex-col rounded-xl px-6 py-10 shadow-lg">
             <h2 className="flex justify-center text-center text-2xl font-semibold uppercase tracking-tight">
                 Đăng ký
             </h2>
