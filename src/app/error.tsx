@@ -16,8 +16,7 @@ const ErrorPage = () => {
                             Xin lỗi, đã có lỗi xảy ra.
                         </p>
                         <p className="mb-8 mt-4 dark:text-gray-600">
-                            Nhưng đừng lo lắng, bạn có thể quay lại trang chủ để
-                            tìm
+                            Bạn có thể thử lại sau! Xin lỗi vì sự bất tiện này.
                         </p>
 
                         <div
