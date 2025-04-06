@@ -5,18 +5,24 @@ import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
 import {
     BsFileEarmarkPost,
+    BsFillFileBreakFill,
     BsFillSendFill,
     BsPinAngleFill,
+    BsTextParagraph,
 } from 'react-icons/bs';
 import { CgClose, CgProfile } from 'react-icons/cg';
 import {
     FaArrowLeft,
     FaBirthdayCake,
+    FaBold,
     FaCircle,
     FaHeart,
     FaImage,
+    FaItalic,
+    FaListUl,
     FaPlus,
     FaRegComment,
+    FaRegFileCode,
     FaReply,
     FaShare,
     FaUsers,
@@ -24,6 +30,7 @@ import {
 import {
     FaBookmark,
     FaCar,
+    FaCode,
     FaDownload,
     FaEye,
     FaLocationDot,
@@ -43,6 +50,7 @@ import { IoChatbubbleEllipses, IoPersonAdd, IoTime } from 'react-icons/io5';
 import {
     MdEmojiEmotions,
     MdGroups,
+    MdHorizontalRule,
     MdMoreVert,
     MdNotifications,
     MdNotificationsActive,
@@ -55,6 +63,10 @@ import {
     RiVerifiedBadgeFill,
 } from 'react-icons/ri';
 import { TiTick } from 'react-icons/ti';
+import { ImStrikethrough } from 'react-icons/im';
+import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
+import { VscClearAll } from 'react-icons/vsc';
+import { GrRedo, GrUndo } from 'react-icons/gr';
 
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
@@ -213,6 +225,23 @@ const Icons = {
         />
     ),
     Pin: (props: IconProps) => <BsPinAngleFill {...props} />,
+};
+
+export const MenuBarEditorIcons = {
+    Bold: (props: IconProps) => <FaBold />,
+    Italic: (props: IconProps) => <FaItalic />,
+    Strike: (props: IconProps) => <ImStrikethrough />,
+    CodeBlock: (props: IconProps) => <FaRegFileCode />,
+    ClearMark: (props: IconProps) => <TbClearFormatting />,
+    ClearNode: (props: IconProps) => <VscClearAll />,
+    Paragraph: (props: IconProps) => <BsTextParagraph />,
+    BulletList: (props: IconProps) => <FaListUl />,
+    Code: (props: IconProps) => <FaCode />,
+    Blockquote: (props: IconProps) => <TbBlockquote />,
+    HorizontalRule: (props: IconProps) => <MdHorizontalRule />,
+    HardBreak: (props: IconProps) => <BsFillFileBreakFill />,
+    Undo: (props: IconProps) => <GrUndo />,
+    Redo: (props: IconProps) => <GrRedo />,
 };
 
 export const IconsArray = [

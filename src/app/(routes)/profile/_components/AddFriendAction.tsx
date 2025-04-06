@@ -24,7 +24,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const queryClient = useQueryClient();
     const { data: requests } = useRequests(session?.user.id);
     const { socketEmitor } = useSocket();
-    const { data: friends, refetch } = useFriends(session?.user.id);
+    const { data: friends } = useFriends(session?.user.id);
 
     const { mutateAsync: sendRequest, isPending } = useMutation({
         mutationFn: async ({ receiverId }: { receiverId: string }) => {
@@ -74,7 +74,6 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             });
         },
         onSuccess: () => {
-            console.log('Unfriend success');
             queryClient.invalidateQueries({
                 queryKey: getFriendsKey(session?.user.id),
             });

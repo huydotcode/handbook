@@ -1,17 +1,24 @@
 import Image from 'next/image';
 import React from 'react';
 import { Icons } from '../ui';
+import { cn } from '@/lib/utils';
 
 interface Props {
+    className?: string;
     photos: string[];
     onClickPhoto: (index: number) => void;
 }
 
-const Photos: React.FC<Props> = ({ photos, onClickPhoto }) => {
+const Photos: React.FC<Props> = ({ className = '', photos, onClickPhoto }) => {
     return (
         <>
             {photos && photos.length > 0 && (
-                <div className=" flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2">
+                <div
+                    className={cn(
+                        'flex max-h-[200px] flex-wrap overflow-y-scroll rounded-xl p-2',
+                        className
+                    )}
+                >
                     {photos.map((img: string, index: number) => {
                         return (
                             <div

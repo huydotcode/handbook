@@ -19,7 +19,7 @@ const FeedsPage = () => {
                 'mx-auto w-[600px] max-w-screen md:max-w-[calc(100vw-100px)]'
             }
         >
-            <InfinityPostComponent type={type} />
+            <InfinityPostComponent showCreatePost={false} type={type} />
         </div>
     );
 };

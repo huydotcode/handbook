@@ -72,6 +72,13 @@ const FriendSection: React.FC<Props> = ({ session }) => {
 
                                 if (!friend) return null;
 
+                                if (
+                                    friends?.find(
+                                        (f) => friend._id === f._id
+                                    ) === undefined
+                                )
+                                    return null;
+
                                 return (
                                     <TooltipProvider key={conversation._id}>
                                         <Tooltip>

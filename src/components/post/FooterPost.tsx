@@ -279,6 +279,11 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
         formState: { isLoading },
         setValue,
     } = form;
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (data: FormData) => {
+            await onSubmitComment(data);
+        },
+    });
     const formRef = useRef<HTMLFormElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -289,6 +294,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
 
         reset();
         setFocus('text');
+        setValue('text', '');
 
         try {
             await sendComment({
@@ -304,8 +310,6 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
             await queryClient.invalidateQueries({
                 queryKey: getCommentsKey(post._id),
             });
-
-            setValue('text', '');
         } catch (error: any) {
             toast.error('Không thể gửi bình luận!', {
                 position: 'bottom-left',
@@ -354,7 +358,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                     </div>
                 </div>
 
-                <div className="mt-1 grid grid-cols-3 border-y-2 py-1">
+                <div className="mt-1 grid grid-cols-3 border-y py-1 dark:border-dark-secondary-2">
                     <ReactionPost post={post} />
 
                     <ShareModal post={post} />
@@ -368,8 +372,10 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                     <div className="ml-2 flex-1">
                         <Form {...form}>
                             <form
-                                className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
-                                onSubmit={handleSubmit(onSubmitComment)}
+                                className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:border-none dark:bg-dark-secondary-2"
+                                onSubmit={handleSubmit((data) => {
+                                    mutate(data);
+                                })}
                                 ref={formRef}
                             >
                                 <Controller
@@ -380,7 +386,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                                             <Textarea
                                                 {...field}
                                                 ref={inputRef}
-                                                className="cursor-text rounded-l-xl rounded-r-none bg-transparent p-2 text-start text-sm outline-none"
+                                                className="cursor-text rounded-l-xl rounded-r-none bg-transparent px-2 pt-2 text-sm outline-none dark:border-none"
                                                 placeholder="Viết bình luận..."
                                                 spellCheck={false}
                                                 autoComplete="off"
@@ -391,7 +397,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                                 />
 
                                 <Button
-                                    className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:hover:bg-dark-hover-2"
+                                    className="right-0 w-10 rounded-l-none rounded-r-xl px-3 hover:cursor-pointer hover:bg-hover-1 dark:border-none dark:hover:bg-dark-hover-2"
                                     variant={'custom'}
                                     type="submit"
                                 >
@@ -405,6 +411,8 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                         </Form>
                     </div>
                 </div>
+
+                {isPending && <SkeletonComment />}
 
                 {comments.length === 0 && (
                     <div className="text-center text-xs text-secondary-1">

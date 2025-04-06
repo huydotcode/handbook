@@ -36,9 +36,9 @@ const ConversationPage: React.FC<Props> = async ({ params, searchParams }) => {
             messageId: findMessage,
         })) as IMessage;
         return <ChatBox conversation={conversation} findMessage={message} />;
-    } else {
-        return <ChatBox conversation={conversation} />;
     }
+
+    return <ChatBox conversation={conversation} />;
 };
 
 export default ConversationPage;

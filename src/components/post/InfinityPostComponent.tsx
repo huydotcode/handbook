@@ -27,6 +27,7 @@ interface Props {
     groupId?: string;
     type?: PostType;
     title?: string;
+    showCreatePost?: boolean;
 }
 
 const PAGE_SIZE = 3;
@@ -108,6 +109,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     username,
     type = 'new-feed',
     title,
+    showCreatePost = true,
 }) => {
     const { data: session } = useSession();
     const {
@@ -132,6 +134,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
     const shouldShowCreatePost = useMemo(
         () =>
+            showCreatePost &&
             !isManage &&
             ((type === 'new-feed' && currentUser) ||
                 (type === 'profile' && isCurrentUser) ||

@@ -38,7 +38,6 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     <div className="relative flex flex-col overflow-hidden">
                         <Button
                             className="w-full justify-start rounded-sm shadow-none"
-                            size={'sm'}
                             variant={'ghost'}
                             onClick={() => setShowEditModal(true)}
                         >
@@ -47,7 +46,6 @@ const ActionPost: React.FC<Props> = ({ post }) => {
 
                         <Button
                             className="w-full justify-start rounded-sm shadow-none"
-                            size={'sm'}
                             variant={'ghost'}
                             onClick={() => setShowDeleteModal(true)}
                         >

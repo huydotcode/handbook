@@ -1,14 +1,21 @@
 'use client';
 import Image from 'next/image';
 import React, { ChangeEvent } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Props {
+    className?: string;
     handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const AddToPost: React.FC<Props> = ({ handleChangeImage }) => {
+const AddToPost: React.FC<Props> = ({ className = '', handleChangeImage }) => {
     return (
-        <div className=" relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md  dark:border-none dark:shadow-none">
+        <div
+            className={cn(
+                'relative mt-2 flex items-center justify-between rounded-xl border-t-2 px-2 py-2 shadow-md dark:border-none dark:shadow-none',
+                className
+            )}
+        >
             <h5 className={'text-sm'}>Thêm vào bài viết của bạn</h5>
 
             <div className="flex items-center">

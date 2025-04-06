@@ -73,6 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
             <Comp
                 className={cn(buttonVariants({ variant, size, className }))}
+                type={props.type == 'submit' ? 'submit' : 'button'}
                 ref={ref}
                 {...props}
             />

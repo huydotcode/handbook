@@ -258,3 +258,200 @@
 .swiper-button-next {
     right: 0 !important;
 }
+
+/* Basic editor styles */
+.tiptap {
+    @apply bg-secondary-1 px-4 py-4 rounded-xl outline-none dark:bg-dark-secondary-1;
+
+    :first-child {
+        margin-top: 0;
+    }
+
+    /* List styles */
+    ul,
+    ol {
+        padding: 0 1rem;
+        margin: 1.25rem 1rem 1.25rem 0.4rem;
+        list-style: square;
+
+        li p {
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+        }
+    }
+
+    /* Heading styles */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.1;
+        margin-top: 0.5rem;
+        text-wrap: pretty;
+    }
+
+    h1,
+    h2 {
+        margin-top: 1rem;
+        margin-bottom: 1em;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+
+    h5 {
+        font-size: 0.9rem;
+    }
+
+    h6 {
+        font-size: 0.8rem;
+    }
+
+    /* Code and preformatted text styles */
+    code {
+        //background-color: var(--primary-2-blue);
+        @apply bg-secondary-2 dark:bg-dark-secondary-2 text-primary-1 dark:text-dark-primary-1;
+        border-radius: 0.4rem;
+        font-size: 0.85rem;
+        padding: 0.25em 0.3em;
+    }
+
+    pre {
+        @apply bg-secondary-2 dark:bg-dark-secondary-2;
+        border-radius: 0.5rem;
+        color: var(--white);
+        font-family: 'JetBrainsMono', monospace;
+        margin: 1.5rem 0;
+        padding: 0.75rem 1rem;
+
+        code {
+            background: none;
+            color: inherit;
+            font-size: 0.8rem;
+            padding: 0;
+        }
+    }
+
+    blockquote {
+        border-left: 3px solid var(--gray-3);
+        margin: 1.5rem 0;
+        padding-left: 1rem;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--gray-2);
+        margin: 2rem 0;
+    }
+}
+
+.post-content {
+    @apply bg-transparent;
+
+    :first-child {
+        margin-top: 0;
+    }
+
+    /* List styles */
+    ul,
+    ol {
+        padding: 0 1rem;
+        margin: 1.25rem 1rem 1.25rem 0.4rem;
+        list-style: square;
+
+        li p {
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+        }
+    }
+
+    /* Heading styles */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.1;
+        margin-top: 0.5rem;
+        text-wrap: pretty;
+    }
+
+    h1,
+    h2 {
+        margin-top: 1rem;
+        margin-bottom: 1em;
+    }
+
+    h1 {
+        @apply text-xl font-bold
+    }
+
+    h2 {
+        @apply text-lg font-semibold
+    }
+
+    h3 {
+        @apply text-base font-normal
+    }
+
+    h4 {
+        @apply text-sm
+    }
+
+    p {
+        @apply text-justify;
+    }
+
+    /* Code and preformatted text styles */
+    code {
+        //background-color: var(--primary-2-blue);
+        @apply bg-secondary-2 dark:bg-dark-secondary-2 text-primary-1 dark:text-dark-primary-1;
+        border-radius: 0.4rem;
+        font-size: 0.85rem;
+        padding: 0.25em 0.3em;
+    }
+
+    pre {
+        @apply bg-secondary-2 dark:bg-dark-secondary-2;
+        border-radius: 0.5rem;
+        color: var(--white);
+        font-family: 'JetBrainsMono', monospace;
+        margin: 1.5rem 0;
+        padding: 0.75rem 1rem;
+
+        code {
+            background: none;
+            color: inherit;
+            font-size: 0.8rem;
+            padding: 0;
+        }
+    }
+
+    blockquote {
+        border-left: 3px solid var(--gray-3);
+        margin: 1.5rem 0;
+        padding-left: 1rem;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--gray-2);
+        margin: 2rem 0;
+    }
+}

@@ -97,7 +97,17 @@ const ModalCreatePost: React.FC<Props> = ({
                             </Button>
                         </div>
 
-                        <div className="mt-3 flex flex-col">
+                        <div className="relative mt-3 flex flex-col">
+                            <Button
+                                href={'/create-post'}
+                                variant={'text'}
+                                size={'sm'}
+                                className={
+                                    'absolute right-2 top-2 text-secondary-1 '
+                                }
+                            >
+                                Nâng cao
+                            </Button>
                             <div className="flex items-center">
                                 <Link href="/">
                                     <Image

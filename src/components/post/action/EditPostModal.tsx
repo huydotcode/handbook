@@ -17,6 +17,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
+import EditorV2 from '@/components/ui/EditorV2';
 
 interface Props {
     post: IPost;
@@ -201,10 +202,10 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
                         <Controller
                             render={({ field }) => (
                                 <>
-                                    <TextEditor
-                                        className="dark:no-scrollbar relative max-h-[20vh] min-h-[150px] w-full cursor-text overflow-scroll text-base "
-                                        handleSubmit={submit}
-                                        field={field}
+                                    <EditorV2
+                                        className={'max-h-[50vh] min-h-[300px]'}
+                                        setContent={field.onChange}
+                                        content={field.value}
                                     />
                                 </>
                             )}

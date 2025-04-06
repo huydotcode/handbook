@@ -214,7 +214,7 @@ const Post: React.FC<Props> = React.memo(
                 {/* Content */}
                 <main className="mb-2 mt-4 ">
                     <div
-                        className="text-sm"
+                        className="post-content"
                         dangerouslySetInnerHTML={{
                             __html: content || '',
                         }}

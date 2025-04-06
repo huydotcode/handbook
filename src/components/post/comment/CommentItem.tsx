@@ -266,7 +266,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                             <div className="ml-2 flex w-full flex-col">
                                 <Form {...form}>
                                     <form
-                                        className="flex h-fit w-full overflow-hidden rounded-xl border bg-primary-1 dark:bg-dark-secondary-2"
+                                        className="flex h-fit w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
                                         onSubmit={handleSubmit(
                                             sendReplyComment
                                         )}

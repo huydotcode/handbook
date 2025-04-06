@@ -55,10 +55,6 @@ const ChatHeader: React.FC<Props> = ({
         }
     }, [currentRoom.group, partner?.avatar]);
 
-    useEffect(() => {
-        console.log(avatar);
-    }, [avatar]);
-
     return (
         <>
             <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
