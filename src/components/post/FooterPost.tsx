@@ -386,7 +386,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                                             <Textarea
                                                 {...field}
                                                 ref={inputRef}
-                                                className="cursor-text rounded-l-xl rounded-r-none bg-transparent px-2 pt-2 text-sm outline-none dark:border-none"
+                                                className="cursor-text rounded-l-xl rounded-r-none bg-transparent outline-none dark:border-none"
                                                 placeholder="Viết bình luận..."
                                                 spellCheck={false}
                                                 autoComplete="off"

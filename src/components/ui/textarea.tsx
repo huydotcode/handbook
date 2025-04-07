@@ -15,9 +15,11 @@ const Textarea = React.forwardRef<
     const textAreaAdjust = (element: HTMLTextAreaElement | null) => {
         if (!element) return;
 
+        console.log('element.scrollHeight', element.scrollHeight);
+
         element.style.height = 'auto';
         element.style.height =
-            element.scrollHeight == 56 ? '40px' : `${element.scrollHeight}px`;
+            element.scrollHeight <= 64 ? '40px' : `${element.scrollHeight}px`;
     };
 
     // Sự kiện onInput sẽ được gọi mỗi khi nội dung thay đổi.
@@ -30,7 +32,7 @@ const Textarea = React.forwardRef<
         <textarea
             ref={textAreaRef}
             className={cn(
-                'no-scrollbar flex h-10 w-full resize-none rounded-md bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+                'no-scrollbar flex h-10 w-full resize-none rounded-md bg-background px-3 pt-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
                 className
             )}
             onInput={handleInput}

@@ -279,7 +279,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                                                 <FormControl>
                                                     <Textarea
                                                         {...field}
-                                                        className="cursor-text overflow-auto rounded-l-xl rounded-r-none bg-transparent p-2 text-start text-sm outline-none"
+                                                        className="cursor-text overflow-auto rounded-l-xl rounded-r-none bg-transparent text-start text-sm outline-none"
                                                         placeholder="Viết bình luận..."
                                                         spellCheck={false}
                                                         autoComplete="off"
