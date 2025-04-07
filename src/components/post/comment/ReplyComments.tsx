@@ -41,7 +41,7 @@ const ReplyComments: React.FC<Props> = ({ comment }) => {
                     )}
 
                     {showReplyComments && (
-                        <div className="border-l pl-3">
+                        <div className="border-l-2 pl-3 dark:border-dark-secondary-2">
                             {replyComments.reverse().map((cmt) => {
                                 return <Comment key={cmt._id} data={cmt} />;
                             })}
