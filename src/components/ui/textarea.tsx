@@ -16,7 +16,8 @@ const Textarea = React.forwardRef<
         if (!element) return;
 
         element.style.height = 'auto';
-        element.style.height = `${element.scrollHeight}px`;
+        element.style.height =
+            element.scrollHeight == 56 ? '40px' : `${element.scrollHeight}px`;
     };
 
     // Sự kiện onInput sẽ được gọi mỗi khi nội dung thay đổi.
