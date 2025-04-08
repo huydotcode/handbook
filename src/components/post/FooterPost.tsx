@@ -251,12 +251,13 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
         <Button
             onClick={() => mutate()}
             className={cn('flex flex-1 items-center gap-2 p-1', {
-                'text-yellow-300 hover:text-yellow-200': isSaved,
+                'text-yellow-300 hover:text-yellow-200': isSaved && !isPending,
             })}
+            disabled={isPending}
             variant={'ghost'}
         >
-            <Icons.Bookmark />
-            {isSaved ? 'Đã lưu' : 'Lưu'}
+            {isPending ? <Icons.Loading /> : <Icons.Bookmark />}
+            {isPending ? 'Đang lưu' : isSaved ? 'Đã lưu' : 'Lưu'}
         </Button>
     );
 };
