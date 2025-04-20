@@ -6,7 +6,7 @@ class ConversationController {
     public async getConversations(
         req: Request,
         res: Response,
-        next: NextFunction,
+        next: NextFunction
     ): Promise<void> {
         try {
             const user_id = req.query.user_id as string;
@@ -16,7 +16,7 @@ class ConversationController {
                     $elemMatch: { $eq: user_id },
                 },
             })
-                .populate('participants', POPULATE_USER)
+                .populate('participants', POPULATE_USER + ' lastAccessed')
                 .populate('creator', POPULATE_USER)
                 .populate('lastMessage')
                 .populate('avatar')
@@ -38,7 +38,7 @@ class ConversationController {
     public async getConversationById(
         req: Request,
         res: Response,
-        next: NextFunction,
+        next: NextFunction
     ): Promise<void> {
         try {
             const conversation_id = req.params.id;
@@ -48,7 +48,13 @@ class ConversationController {
             })
                 .populate('participants')
                 .populate('creator')
-                .populate('group');
+                .populate({
+                    path: 'group',
+                    populate: {
+                        path: 'avatar',
+                        model: 'Image',
+                    },
+                });
 
             return JSON.parse(JSON.stringify(conversation));
         } catch (error: any) {
