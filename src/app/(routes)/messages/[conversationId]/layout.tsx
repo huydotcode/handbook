@@ -1,0 +1,56 @@
+import { getConversationById } from '@/lib/actions/conversation.action';
+import { getAuthSession } from '@/lib/auth';
+import React from 'react';
+
+interface Props {
+    params: Promise<{ conversationId: string }>;
+    children: React.ReactNode;
+}
+
+export async function generateMetadata({ params }: Props) {
+    try {
+        const { conversationId } = await params;
+        const conversation = (await getConversationById({
+            conversationId,
+        })) as IConversation;
+        const session = await getAuthSession();
+
+        if (!conversation) {
+            return {
+                title: 'Messenger | Handbook',
+            };
+        }
+
+        const type = conversation?.type;
+
+        if (type === 'group') {
+            const name = conversation?.title || 'Nhóm chat';
+
+            return {
+                title: `${name} | Messenger`,
+            };
+        } else if (type === 'private') {
+            const name =
+                conversation?.participants.find(
+                    (member) => member._id !== session?.user.id
+                )?.name || 'Messenger';
+
+            return {
+                title: `${name} | Messenger`,
+            };
+        }
+
+        return {
+            title: 'Messenger | Handbook',
+        };
+    } catch (error) {
+        return {
+            title: 'Messenger | Handbook',
+        };
+    }
+}
+
+const MessageLayout: React.FC<Props> = async ({ children }: Props) => {
+    return <>{children}</>;
+};
+export default MessageLayout;

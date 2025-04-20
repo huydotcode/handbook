@@ -15,8 +15,6 @@ const Textarea = React.forwardRef<
     const textAreaAdjust = (element: HTMLTextAreaElement | null) => {
         if (!element) return;
 
-        console.log('element.scrollHeight', element.scrollHeight);
-
         element.style.height = 'auto';
         element.style.height =
             element.scrollHeight <= 64 ? '40px' : `${element.scrollHeight}px`;

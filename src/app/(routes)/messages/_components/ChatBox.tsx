@@ -1,7 +1,7 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
-import { Icons } from '@/components/ui';
+import { Icons, Loading } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import {
     Tooltip,
@@ -204,7 +204,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 } else {
                     const observer = new MutationObserver(() => {
                         const newElement = document.getElementById(messageId);
-                        console.log('newElement', newElement);
+
                         if (newElement) {
                             newElement.scrollIntoView({
                                 behavior: 'smooth',
@@ -474,12 +474,17 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                     <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
                         {renderPinnedMessasges()}
 
-                        {isLoading ||
-                            (isFetchingNextPage && (
-                                <div className="absolute left-1/2 -translate-x-1/2 text-3xl">
-                                    <Icons.Loading />
-                                </div>
-                            ))}
+                        {isFetchingNextPage && (
+                            <div className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl">
+                                <Icons.Loading />
+                            </div>
+                        )}
+
+                        {isLoading && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-3xl">
+                                <Icons.Loading />
+                            </div>
+                        )}
 
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
                             <div ref={bottomRef} />

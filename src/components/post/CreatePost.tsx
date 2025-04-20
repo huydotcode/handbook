@@ -53,7 +53,6 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
 
     const sendPost = useCallback(
         async (data: IPostFormData) => {
-            console.log('sendPost data', data);
             if (!session?.user) return;
 
             try {

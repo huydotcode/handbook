@@ -108,7 +108,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 socket?.emit(socketEvent.READ_MESSAGE, { roomId, userId });
             },
             pinMessage: ({ message }: { message: IMessage }) => {
-                console.log("socket.emit('pin-message', { message })");
                 socket?.emit(socketEvent.PIN_MESSAGE, { message });
             },
             likePost: ({
@@ -198,7 +197,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socketIO.on(socketEvent.PIN_MESSAGE, (message: IMessage) => {
-            console.log("socket.on('pin-message', (message) => {");
             invalidateMessages(queryClient, message.conversation._id);
         });
 

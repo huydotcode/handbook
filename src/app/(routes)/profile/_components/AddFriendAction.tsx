@@ -185,12 +185,6 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
         return 'Kết bạn';
     };
 
-    useEffect(() => {
-        console.log({
-            friends,
-        });
-    }, [friends]);
-
     return (
         <Button
             className="min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"

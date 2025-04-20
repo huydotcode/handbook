@@ -109,7 +109,6 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
-                // console.log('authorize', credentials);
                 try {
                     const { email, password } = credentials;
                     await connectToDB();
@@ -172,7 +171,6 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({ session, token }) {
-            // console.log('session', session);
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
