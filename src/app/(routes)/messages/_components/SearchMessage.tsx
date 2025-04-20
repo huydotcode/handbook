@@ -136,7 +136,7 @@ const SearchMessage: React.FC<Props> = ({
                                     setLoadingSearch(true);
 
                                     router.push(
-                                        `/messages/${message.conversation._id}?findMessage=${message._id}`
+                                        `/messages/${message.conversation._id}?find_msg=${message._id}`
                                     );
 
                                     if (breakpoint == 'sm') {

@@ -1,44 +1,45 @@
-import { getMessageByMessageId } from '@/lib/actions/message.action';
-import { getAuthSession } from '@/lib/auth';
-import { notFound, redirect } from 'next/navigation';
-import React from 'react';
+'use client';
+import { useConversations } from '@/context/SocialContext';
+import { useSession } from 'next-auth/react';
+import { notFound, useParams, useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
 import { ChatBox } from '../_components';
-import { getConversationById } from '@/lib/actions/conversation.action';
 
-interface Props {
-    params: Promise<{ conversationId: string }>;
-    searchParams: Promise<{ findMessage: string }>;
-}
+interface Props {}
 
-const ConversationPage: React.FC<Props> = async ({ params, searchParams }) => {
-    const session = await getAuthSession();
-    if (!session) return null;
+const ConversationPage: React.FC<Props> = ({}) => {
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const { conversationId } = params;
+    const findMessage = searchParams.get('find_msg') || '';
 
-    const { conversationId } = await params;
-    const { findMessage } = await searchParams;
+    const { data: session } = useSession();
+    const { data: coversations, isLoading } = useConversations(
+        session?.user.id as string
+    );
 
-    const conversation = (await getConversationById({
-        conversationId,
-    })) as IConversation;
+    const conversation = useMemo(() => {
+        return coversations?.find(
+            (conversation) => conversation._id === conversationId
+        );
+    }, [coversations, conversationId]);
 
-    // Kiểm tra xem cuộc trò chuyện có tồn tại không
-    if (!conversation) return notFound();
-
-    // Kiểm tra xem người dùng có trong cuộc trò chuyện không
-    if (conversation && conversation.participants) {
-        if (!conversation.participants.find((p) => p._id === session.user.id)) {
-            return redirect('/messages');
+    useEffect(() => {
+        if (!isLoading && !conversation) {
+            notFound();
         }
-    }
+    }, [conversation, isLoading]);
 
-    if (findMessage) {
-        const message = (await getMessageByMessageId({
-            messageId: findMessage,
-        })) as IMessage;
-        return <ChatBox conversation={conversation} findMessage={message} />;
-    }
-
-    return <ChatBox conversation={conversation} />;
+    return (
+        <>
+            {conversation && (
+                <ChatBox
+                    conversation={conversation}
+                    findMessage={findMessage}
+                />
+            )}
+        </>
+    );
 };
 
 export default ConversationPage;

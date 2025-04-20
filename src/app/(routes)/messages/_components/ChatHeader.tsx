@@ -1,12 +1,13 @@
 'use client';
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo } from 'react';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { splitName } from '@/utils/splitName';
+import { timeConvert3 } from '@/utils/timeConvert';
+import { useEditor } from '@tiptap/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
+import React, { useEffect, useMemo } from 'react';
 
 interface Props {
     currentRoom: IConversation;
@@ -35,7 +36,7 @@ const ChatHeader: React.FC<Props> = ({
                 return currentRoom.participants[0];
             }
         }
-    }, [currentRoom, session?.user.id]);
+    }, [currentRoom, session?.user.id, roomType]);
 
     const title = useMemo(() => {
         if (roomType == 'group') {
@@ -45,7 +46,7 @@ const ChatHeader: React.FC<Props> = ({
         } else {
             return '';
         }
-    }, [partner?.name]);
+    }, [currentRoom.title, partner?.name, roomType]);
 
     const avatar = useMemo(() => {
         if (roomType == 'group' && currentRoom.group) {
@@ -53,7 +54,11 @@ const ChatHeader: React.FC<Props> = ({
         } else {
             return partner?.avatar;
         }
-    }, [currentRoom.group, partner?.avatar]);
+    }, [currentRoom.group, partner?.avatar, roomType]);
+
+    useEffect(() => {
+        console.log({ currentRoom });
+    }, [currentRoom]);
 
     return (
         <>

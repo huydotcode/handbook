@@ -33,7 +33,7 @@ interface Props {
     data: IMessage;
     messages: IMessage[];
     handleClick?: () => void;
-    searchMessage?: IMessage;
+    searchMessage?: string;
     isSearchMessage?: boolean;
     ref?: React.RefObject<HTMLDivElement>;
     isLastMessage?: boolean;
@@ -61,7 +61,7 @@ const Message: React.FC<Props> = React.memo<Props>(
         const [openPopover, setOpenPopover] = useState(false);
 
         // Variables
-        const isFindMessage = searchMessage && searchMessage._id === msg._id;
+        const isFindMessage = searchMessage && searchMessage === msg._id;
         const index = messages.findIndex((m) => m._id === msg._id);
         const isOwnMsg = msg.sender._id === session?.user.id;
         const messageRef = useRef<HTMLDivElement>(null);

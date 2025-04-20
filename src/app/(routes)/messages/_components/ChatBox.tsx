@@ -3,9 +3,17 @@ import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
+import useBreakpoint from '@/hooks/useBreakpoint';
 import { sendMessage } from '@/lib/actions/message.action';
+import axiosInstance from '@/lib/axios';
 import { getMessagesKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
@@ -14,6 +22,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, {
     KeyboardEventHandler,
+    useCallback,
     useEffect,
     useMemo,
     useRef,
@@ -25,19 +34,11 @@ import ChatHeader from './ChatHeader';
 import InfomationConversation from './InfomationConversation';
 import InputMessage from './InputMessage';
 import Message from './Message';
-import useBreakpoint from '@/hooks/useBreakpoint';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
-import axiosInstance from '@/lib/axios';
 
 interface Props {
     className?: string;
     conversation: IConversation;
-    findMessage?: IMessage;
+    findMessage?: string;
 }
 
 const PAGE_SIZE = 30;
@@ -73,7 +74,7 @@ export const useMessages = (conversationId: string) => {
 
 const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const { data: session } = useSession();
-    const { socketEmitor, isConnected } = useSocket();
+    const { socketEmitor } = useSocket();
     const queryClient = useQueryClient();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
@@ -187,50 +188,53 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     };
 
     // Xử lý mở tin nhắn tìm kiếm
-    const handleFindMessage = async (messageId: string) => {
-        if (!findMessage || !messages) return;
+    const handleFindMessage = useCallback(
+        async (messageId: string) => {
+            if (!findMessage || !messages) return;
 
-        // Tìm tin nhắn trong dữ liệu hiện có
-        const foundMessage = messages.find((msg) => msg._id === messageId);
+            // Tìm tin nhắn trong dữ liệu hiện có
+            const foundMessage = messages.find((msg) => msg._id === messageId);
 
-        if (foundMessage) {
-            // Tìm thấy thì scroll tới tin nhắn đó
-            const element = document.getElementById(messageId);
+            if (foundMessage) {
+                // Tìm thấy thì scroll tới tin nhắn đó
+                const element = document.getElementById(messageId);
 
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                const observer = new MutationObserver(() => {
-                    const newElement = document.getElementById(messageId);
-                    console.log('newElement', newElement);
-                    if (newElement) {
-                        newElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center',
-                        });
-                        observer.disconnect();
-                    }
-                });
-                observer.observe(document.body, {
-                    childList: true,
-                    subtree: true,
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    const observer = new MutationObserver(() => {
+                        const newElement = document.getElementById(messageId);
+                        console.log('newElement', newElement);
+                        if (newElement) {
+                            newElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center',
+                            });
+                            observer.disconnect();
+                        }
+                    });
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                    });
+                }
+                setIsFind(true); // Đánh dấu tìm thấy
+                return;
+            }
+
+            if (hasNextPage) {
+                // Nếu không tìm thấy, fetch trang tiếp theo
+                await fetchNextPage();
+            }
+
+            if (!hasNextPage) {
+                toast.error('Không tìm thấy tin nhắn', {
+                    position: 'top-center',
                 });
             }
-            setIsFind(true); // Đánh dấu tìm thấy
-            return;
-        }
-
-        if (hasNextPage) {
-            // Nếu không tìm thấy, fetch trang tiếp theo
-            await fetchNextPage();
-        }
-
-        if (!hasNextPage) {
-            toast.error('Không tìm thấy tin nhắn', {
-                position: 'top-center',
-            });
-        }
-    };
+        },
+        [messages, fetchNextPage, hasNextPage, findMessage]
+    );
 
     // Render tin nhắn ghim
     const renderPinnedMessasges = () => {
@@ -305,7 +309,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                                 lastMessage?._id === message._id
                                             }
                                             isSearchMessage={
-                                                findMessage?._id === message._id
+                                                findMessage === message._id
                                             }
                                             handleClick={() => {
                                                 // scroll to this message
@@ -345,7 +349,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                             lastMessage?._id === message._id
                                         }
                                         isSearchMessage={
-                                            findMessage?._id === message._id
+                                            findMessage === message._id
                                         }
                                         handleClick={
                                             findMessage
@@ -421,7 +425,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         if (findMessage && !isFind && messages && !isFetchingNextPage) {
             (async () => {
                 try {
-                    await handleFindMessage(findMessage._id);
+                    await handleFindMessage(findMessage);
                 } catch (error: any) {
                     toast.error('Không tìm thấy tin nhắn');
                 }
@@ -434,6 +438,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         isFetchingNextPage,
         isFind,
         messages,
+        handleFindMessage,
     ]);
 
     // Scroll tới tin nhắn cuối cùng

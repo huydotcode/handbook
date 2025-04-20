@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import mongoose from 'mongoose';
@@ -136,9 +136,11 @@ export async function sendRequestAddFriend({
 }: {
     receiverId: string;
 }) {
+    const transaction = await mongoose.startSession();
     try {
         await connectToDB();
         const session = await getAuthSession();
+        await transaction.startTransaction();
         if (!session?.user) throw new Error('Đã có lỗi xảy ra');
 
         // Kiểm tra xem đã gửi lời mời kết bạn chưa
@@ -150,21 +152,29 @@ export async function sendRequestAddFriend({
 
         if (isExistRequest) return;
 
-        const newNotification = await new Notification({
-            sender: session?.user.id,
-            receiver: receiverId,
-            message: 'Đã gửi lời mời kết bạn',
-            type: 'request-add-friend',
-        });
+        const newNotification = await new Notification(
+            {
+                sender: session?.user.id,
+                receiver: receiverId,
+                message: 'Đã gửi lời mời kết bạn',
+                type: 'request-add-friend',
+            },
+            { session: transaction }
+        );
 
-        await newNotification.save();
+        await newNotification.save({ session: transaction });
 
         const notification = await getNotificationByNotiId({
             notificationId: newNotification._id,
         });
 
+        await transaction.commitTransaction();
+        await transaction.endSession();
+
         return JSON.parse(JSON.stringify(notification));
     } catch (error: any) {
+        await transaction.abortTransaction();
+        await transaction.endSession();
         throw new Error(error);
     }
 }
@@ -174,6 +184,7 @@ export async function acceptFriend({
     notification: INotification;
 }) {
     const ERROR_MESSAGE = 'Đã có lỗi xảy ra';
+    const transaction = await mongoose.startSession();
 
     try {
         await connectToDB();
@@ -205,8 +216,13 @@ export async function acceptFriend({
         // Lưu cả hai người dùng đồng thời
         await Promise.all([user.save(), friend.save()]);
 
+        await transaction.commitTransaction();
+        await transaction.endSession();
+
         return true;
     } catch (error: any) {
+        await transaction.abortTransaction();
+        await transaction.endSession();
         throw new Error(error.message || ERROR_MESSAGE);
     }
 }

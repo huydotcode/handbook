@@ -1,6 +1,6 @@
 import { getProfileByUserId } from '@/lib/actions/profile.action';
+import { notFound } from 'next/navigation';
 import { Header } from '../_components';
-import { useSession } from 'next-auth/react';
 
 interface Props {
     params: Promise<{ userId: string }>;
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props) {
 const ProfileLayout = async ({ params, children }: Props) => {
     const { userId } = await params;
     const profile = await getProfileByUserId({ query: userId });
-    if (!profile) throw new Error("Profile doesn't exist");
+    if (!profile) notFound();
 
     return (
         <div className={'mx-auto w-container max-w-screen'}>
