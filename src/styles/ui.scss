@@ -295,31 +295,27 @@
     h1,
     h2 {
         margin-top: 1rem;
-        margin-bottom: 1em;
+        margin-bottom: 0,5em;
     }
 
     h1 {
-        font-size: 1.4rem;
+        @apply text-xl font-bold
     }
 
     h2 {
-        font-size: 1.2rem;
+        @apply text-lg font-semibold
     }
 
     h3 {
-        font-size: 1.1rem;
+        @apply text-base font-normal
     }
 
     h4 {
-        font-size: 1rem;
+        @apply text-sm
     }
 
-    h5 {
-        font-size: 0.9rem;
-    }
-
-    h6 {
-        font-size: 0.8rem;
+    p {
+        @apply text-justify text-sm;
     }
 
     /* Code and preformatted text styles */
@@ -395,7 +391,6 @@
     h1,
     h2 {
         margin-top: 1rem;
-        margin-bottom: 1em;
     }
 
     h1 {
@@ -415,7 +410,7 @@
     }
 
     p {
-        @apply text-justify;
+        @apply text-justify text-sm;
     }
 
     /* Code and preformatted text styles */

@@ -109,7 +109,12 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
     return (
         <>
             <div className="mx-auto my-[100px] w-[500px] max-w-screen rounded-xl bg-secondary-1 p-6 dark:bg-dark-secondary-2">
-                <h5 className="text-xl font-bold">Tạo nhóm</h5>
+                <div className={'flex items-center justify-between'}>
+                    <h5 className="text-xl font-bold">Tạo nhóm</h5>
+                    <Button href={'/groups'} variant={'text'} size={'xs'}>
+                        Trở về trang nhóm
+                    </Button>
+                </div>
                 <Form {...form}>
                     <form
                         onSubmit={handleSubmit(onSubmit)}

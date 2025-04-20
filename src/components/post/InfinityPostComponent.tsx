@@ -18,7 +18,9 @@ export type PostType =
     | 'group'
     | 'new-feed-group'
     | 'new-feed-friend'
-    | 'manage-group-posts';
+    | 'manage-group-posts'
+    | 'manage-group-posts-pending'
+    | 'post-by-member';
 
 interface Props {
     className?: string;
@@ -40,6 +42,8 @@ const ENDPOINTS: Record<PostType, string> = {
     profile: '/posts/profile',
     group: '/posts/group',
     'manage-group-posts': '/posts/group/manage',
+    'post-by-member': '/posts/group/member',
+    'manage-group-posts-pending': '/posts/group/manage/pending',
 };
 
 const usePosts = ({
@@ -59,7 +63,11 @@ const usePosts = ({
         (type: PostType) => {
             const baseEndpoint = ENDPOINTS[type];
             if (type === 'profile') return `${baseEndpoint}/${userId}`;
-            if (type === 'group' || type === 'manage-group-posts')
+            if (
+                type === 'group' ||
+                type === 'manage-group-posts' ||
+                type === 'manage-group-posts-pending'
+            )
                 return `${baseEndpoint}/${groupId}`;
             return baseEndpoint;
         },
@@ -75,6 +83,10 @@ const usePosts = ({
                 page: pageParam,
                 page_size: PAGE_SIZE,
                 ...(isFeedType && { user_id: session.user.id }),
+                ...(type === 'post-by-member' && {
+                    user_id: userId,
+                    group_id: groupId,
+                }),
             };
 
             const { data } = await axiosInstance.get<IPost[]>(endpoint, {
@@ -126,7 +138,7 @@ const InfinityPostComponent: React.FC<Props> = ({
     const { ref: bottomRef, inView } = useInView({ threshold: 0 });
     const currentUser = session?.user;
 
-    const isManage = type === 'manage-group-posts';
+    const isManage = type === 'manage-group-posts-pending';
     const isCurrentUser = useMemo(
         () => currentUser?.id === userId || currentUser?.username === username,
         [currentUser?.id, currentUser?.username, userId, username]
@@ -195,14 +207,16 @@ const InfinityPostComponent: React.FC<Props> = ({
 
             {/* Refresh button for management view */}
             {isManage && (
-                <Button
-                    onClick={() => refetch()}
-                    className="mb-2"
-                    variant="primary"
-                    size={'sm'}
-                >
-                    Tải mới
-                </Button>
+                <div className={'flex justify-center'}>
+                    <Button
+                        onClick={() => refetch()}
+                        className="mb-2"
+                        variant="secondary"
+                        size={'sm'}
+                    >
+                        Tải mới
+                    </Button>
+                </div>
             )}
 
             {/* Post creation form */}

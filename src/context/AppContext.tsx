@@ -5,6 +5,7 @@ import { getCategories } from '@/lib/actions/category.action';
 import {
     getCategoriesKey,
     getFriendsKey,
+    getGroupsKey,
     getLocationsKey,
     getNotificationsKey,
     getRequestsKey,
@@ -66,6 +67,40 @@ export const useCategories = () =>
         refetchInterval: false,
         refetchOnWindowFocus: false,
     });
+
+export const useGroupsJoined = (userId: string | undefined) => {
+    return useInfiniteQuery({
+        queryKey: getGroupsKey(userId),
+        queryFn: async ({ pageParam = 1 }) => {
+            if (!userId) return [];
+
+            const res = await axiosInstance.get('/groups/joined', {
+                params: {
+                    user_id: userId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
+        getPreviousPageParam: (firstPage, allPages) => {
+            return firstPage.length === PAGE_SIZE ? 1 : undefined;
+        },
+        select: (data) => {
+            return data.pages.flatMap((page) => page);
+        },
+        enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+    });
+};
 
 export const useRequests = (userId: string | undefined) =>
     useInfiniteQuery({

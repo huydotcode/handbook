@@ -15,6 +15,12 @@ const ManageLayout: React.FC<Props> = async ({ children, params }) => {
     if (!session?.user) redirect('/');
     if (!group) redirect('/groups');
     if (group.creator._id !== session.user.id) redirect(`/groups/${groupId}`);
+    if (
+        !group.members.find(
+            (mem) => mem.user._id === session.user.id && mem.role === 'admin'
+        )
+    )
+        redirect(`/groups/${groupId}`);
 
     return <>{children}</>;
 };

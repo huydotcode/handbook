@@ -22,9 +22,16 @@ interface Props {
 const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-    const { data: requests } = useRequests(session?.user.id);
+    const { data: requests, isLoading: isLoadingRequests } = useRequests(
+        session?.user.id
+    );
     const { socketEmitor } = useSocket();
-    const { data: friends } = useFriends(session?.user.id);
+    const { data: friends, isLoading: isLoadingFriends } = useFriends(
+        session?.user.id
+    );
+    const isLoadingBtn = useMemo(() => {
+        return isLoadingRequests || isLoadingFriends;
+    }, [isLoadingRequests, isLoadingFriends]);
 
     const { mutateAsync: sendRequest, isPending } = useMutation({
         mutationFn: async ({ receiverId }: { receiverId: string }) => {
@@ -78,6 +85,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 queryKey: getFriendsKey(session?.user.id),
             });
 
+            queryClient.invalidateQueries({
+                queryKey: getRequestsKey(session?.user.id),
+            });
+
             toast.success('Hủy kết bạn thành công', {
                 id: 'unfriend',
                 position: 'bottom-left',
@@ -115,6 +126,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
             queryClient.invalidateQueries({
                 queryKey: getRequestsKey(session?.user.id),
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: getFriendsKey(session?.user.id),
             });
 
             toast.success('Đã hủy lời mời kết bạn', {
@@ -164,6 +179,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     // Hiển thị văn bản nút
     const getButtonText = () => {
+        if (isLoadingBtn) return 'Đang tải...';
         if (isFriend) return 'Hủy';
         if (isRequest) return 'Đã gửi';
         return 'Kết bạn';
@@ -185,7 +201,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
             onClick={handleAddFriend}
             disabled={isPending}
         >
-            {isPending ? (
+            {isLoadingBtn || isPending ? (
                 <>
                     <Icons.Loading />
                 </>

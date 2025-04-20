@@ -53,6 +53,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
 
     const sendPost = useCallback(
         async (data: IPostFormData) => {
+            console.log('sendPost data', data);
             if (!session?.user) return;
 
             try {
@@ -77,7 +78,6 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     queryKey: getPostsKey(),
                 });
                 resetForm();
-                return newPost;
             } catch (error: any) {
                 throw new Error(error);
             }
@@ -87,23 +87,6 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
 
     const mutation = useMutation({
         mutationFn: sendPost,
-        onSuccess: () => {
-            toast.success(
-                type === 'default'
-                    ? 'Đăng bài thành công!'
-                    : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
-                {
-                    position: TOAST_POSITION,
-                    duration: TOAST_DURATION,
-                }
-            );
-        },
-        onError: () => {
-            toast.error('Đã có lỗi xảy ra khi đăng bài!', {
-                position: TOAST_POSITION,
-                duration: TOAST_DURATION,
-            });
-        },
     });
 
     const onSubmit = useCallback(

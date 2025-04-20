@@ -291,7 +291,13 @@ export const updateStatusPost = async ({
     }
 };
 
-export const savePost = async ({ postId }: { postId: string }) => {
+export const savePost = async ({
+    postId,
+    path,
+}: {
+    postId: string;
+    path?: string;
+}) => {
     try {
         const session = await getAuthSession();
         if (!session) return;
@@ -315,13 +321,20 @@ export const savePost = async ({ postId }: { postId: string }) => {
             await savedPost.save();
         }
 
+        if (path) revalidatePath(path);
         return JSON.parse(JSON.stringify(savedPost));
     } catch (error: any) {
         throw new Error(error);
     }
 };
 
-export const unsavePost = async ({ postId }: { postId: string }) => {
+export const unsavePost = async ({
+    postId,
+    path,
+}: {
+    postId: string;
+    path?: string;
+}) => {
     try {
         const session = await getAuthSession();
         if (!session) return;
@@ -338,6 +351,8 @@ export const unsavePost = async ({ postId }: { postId: string }) => {
             );
             await savedPost.save();
         }
+
+        if (path) revalidatePath(path);
 
         return JSON.parse(JSON.stringify(savedPost));
     } catch (error: any) {

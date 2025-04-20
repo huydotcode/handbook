@@ -6,9 +6,12 @@ import { deleteGroup, joinGroup, leaveGroup } from '@/lib/actions/group.action';
 import { Button } from '@/components/ui/Button';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getConversationsKey, getGroupsKey } from '@/lib/queryKey';
+import { useGroupsJoined } from '@/context/AppContext';
 
 interface Props {
     group: IGroup;
@@ -18,12 +21,13 @@ const Action: React.FC<Props> = ({ group }) => {
     const { data: session } = useSession();
     const router = useRouter();
     const groupId = group._id;
+    const { data: groupJoined } = useGroupsJoined(session?.user.id);
+    const isJoinGroup = groupJoined?.some((item) => item._id === groupId);
+    const [isPending, setIsPending] = useState(false);
+    const queryClient = useQueryClient();
 
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
-    const isJoinGroup = group.members.some(
-        (member) => member.user._id == session?.user?.id
-    );
     const isCreator = useMemo(() => {
         return group.creator._id == session?.user?.id;
     }, [group.creator._id, session?.user?.id]);
@@ -31,40 +35,65 @@ const Action: React.FC<Props> = ({ group }) => {
     const handleJoinGroup: FormEventHandler = async (e) => {
         e.preventDefault();
 
+        setIsPending(true);
+
         try {
             await joinGroup({
                 userId: session?.user?.id as string,
                 groupId: groupId,
             });
+
+            await queryClient.invalidateQueries({
+                queryKey: getGroupsKey(session?.user?.id),
+            });
+
             toast.success('Đã tham gia nhóm');
         } catch (error) {
             logger({
                 message: 'Error handle add friend' + error,
                 type: 'error',
             });
-            toast.error('Đã có lỗi xảy ra khi gửi lời mời kết bạn!');
+            toast.error('Có lỗi xảy ra khi tham gia nhóm!');
+        } finally {
+            setIsPending(false);
         }
     };
 
     const handleOutGroup = async () => {
+        setIsPending(true);
+
         try {
             await leaveGroup({
                 groupId: groupId,
                 userId: session?.user?.id as string,
             });
-            toast.success('Đã rời khỏi nhóm');
-        } catch (error) {
-            logger({
-                message: 'Error handle remove friend' + error,
-                type: 'error',
+
+            await queryClient.invalidateQueries({
+                queryKey: getGroupsKey(session?.user?.id),
             });
-            toast.error('Đã có lỗi xảy ra khi hủy kết bạn!');
+
+            await queryClient.invalidateQueries({
+                queryKey: getConversationsKey(session?.user.id),
+            });
+
+            toast.success('Đã rời khỏi nhóm');
+
+            router.push('/groups');
+        } catch (error) {
+            console.log(error);
+            toast.error('Có lỗi xảy ra khi rời khỏi nhóm!');
+        } finally {
+            setIsPending(false);
         }
     };
 
     const handleDeleteGroup = async () => {
         try {
             await deleteGroup({ groupId });
+
+            await queryClient.invalidateQueries({
+                queryKey: getConversationsKey(session?.user.id),
+            });
 
             router.push('/groups');
         } catch (error) {
@@ -76,12 +105,19 @@ const Action: React.FC<Props> = ({ group }) => {
         <div className="flex items-center">
             {!isCreator && (
                 <Button
-                    className={'h-12 min-w-[48px]'}
+                    className={'h-10 min-w-[48px]'}
                     variant={isJoinGroup ? 'warning' : 'primary'}
                     size={'sm'}
+                    disabled={isPending}
                     onClick={isJoinGroup ? handleOutGroup : handleJoinGroup}
                 >
-                    {isJoinGroup ? <Icons.Users /> : <Icons.PersonAdd />}
+                    {isPending ? (
+                        <Icons.Loading />
+                    ) : isJoinGroup ? (
+                        <Icons.Users />
+                    ) : (
+                        <Icons.PersonAdd />
+                    )}
 
                     <p className="ml-2 md:hidden">
                         {isJoinGroup && 'Rời nhóm'}
@@ -92,7 +128,7 @@ const Action: React.FC<Props> = ({ group }) => {
 
             {isCreator && (
                 <Button
-                    className={'ml-2 h-12 min-w-[48px]'}
+                    className={'ml-2 h-10 min-w-[48px]'}
                     variant={'warning'}
                     size={'md'}
                     onClick={() => setOpenModalDelete(true)}

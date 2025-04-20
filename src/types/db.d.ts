@@ -47,11 +47,7 @@ interface IGroup {
     name: string;
     description: string;
     avatar: IImage;
-    members: {
-        _id: string;
-        user: IUser;
-        role: string;
-    }[];
+    members: IMemberGroup[];
     creator: IUser;
     coverPhoto: string;
     type: string;

@@ -19,7 +19,7 @@ const GroupsPage = async () => {
                         <>
                             <h5 className="text-xl font-bold">Nhóm gợi ý</h5>
 
-                            <div className="mt-2 grid grid-cols-4 gap-4">
+                            <div className="mt-2 grid grid-cols-4 gap-4 p-2 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
                                 {groups.map((group) => (
                                     <Button
                                         className="flex h-[100px] flex-col items-center rounded-xl bg-secondary-1 p-4 dark:bg-dark-secondary-1"

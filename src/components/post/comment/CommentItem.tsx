@@ -16,7 +16,11 @@ import {
     getReplyCommentsKey,
 } from '@/lib/queryKey';
 import logger from '@/utils/logger';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useRef, useState } from 'react';
@@ -82,6 +86,14 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const [isLoved, setIsLoved] = useState<boolean>(
         comment.loves.some((love) => love._id === session?.user.id)
     );
+
+    const mutationLoveComment = useMutation({
+        mutationFn: () => handleLoveComment(),
+    });
+
+    const mutationDeleteComment = useMutation({
+        mutationFn: () => handleDeleteComment(),
+    });
 
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
         if (formState.isSubmitting || formState.isLoading) return;
@@ -232,7 +244,8 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                             })}
                             variant={'text'}
                             size={'xs'}
-                            onClick={handleLoveComment}
+                            onClick={() => mutationLoveComment.mutate()}
+                            disabled={mutationLoveComment.isPending}
                         >
                             Yêu thích
                         </Button>
@@ -250,7 +263,8 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                             <Button
                                 variant={'text'}
                                 size={'xs'}
-                                onClick={handleDeleteComment}
+                                onClick={() => mutationDeleteComment.mutate()}
+                                disabled={mutationDeleteComment.isPending}
                             >
                                 Xóa
                             </Button>

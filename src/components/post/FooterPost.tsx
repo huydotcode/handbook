@@ -21,7 +21,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import {
@@ -34,6 +34,8 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
+import { usePathname } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 interface Props {
     post: IPost;
@@ -176,44 +178,16 @@ export const useSavedPosts = (userId: string | undefined) =>
         refetchInterval: false,
     });
 
-export const useComments = (postId: string | undefined) =>
-    useInfiniteQuery({
-        queryKey: getCommentsKey(postId),
-        queryFn: async ({ pageParam = 1 }) => {
-            if (!postId) return [];
-
-            const res = await axiosInstance.get(`/comments`, {
-                params: {
-                    post_id: postId,
-                    page: pageParam,
-                    page_size: PAGE_SIZE,
-                },
-            });
-            const comments = res.data;
-
-            return comments;
-        },
-        initialPageParam: 1,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === PAGE_SIZE
-                ? allPages.length + 1
-                : undefined;
-        },
-        getPreviousPageParam: (firstPage, allPages) => {
-            return firstPage.length === PAGE_SIZE ? 1 : undefined;
-        },
-        select: (data) => data.pages.flatMap((page) => page),
-        enabled: !!postId,
-        refetchOnWindowFocus: false,
-        refetchInterval: false,
-    });
-
 const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
     const { countClick, handleClick, canClick } = usePreventMultiClick({
         message: 'Bạn thao tác quá nhanh, vui lòng thử lại sau 5s!',
     });
     const { data: session } = useSession();
     const queryClient = useQueryClient();
+    const pathName = usePathname();
+    const isSavedPage = useMemo(() => {
+        return pathName.includes('/saved');
+    }, [pathName]);
 
     const { mutate, isPending } = useMutation({
         mutationFn: handleSave,
@@ -228,9 +202,9 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
 
         try {
             if (isSaved) {
-                await unsavePost({ postId: post._id });
+                await unsavePost({ postId: post._id, path: pathName });
             } else {
-                await savePost({ postId: post._id });
+                await savePost({ postId: post._id, path: pathName });
             }
 
             await queryClient.invalidateQueries({
@@ -265,12 +239,46 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
 const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
+    const [loadComment, setLoadComment] = useState<boolean>(false);
     const {
         data: comments,
         isLoading: isLoadingComments,
         hasNextPage,
         fetchNextPage,
-    } = useComments(post._id);
+    } = useInfiniteQuery({
+        queryKey: getCommentsKey(post._id),
+        queryFn: async ({ pageParam = 1 }) => {
+            if (!post._id) return [];
+
+            const res = await axiosInstance.get(`/comments`, {
+                params: {
+                    post_id: post._id,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+            const comments = res.data;
+
+            return comments;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === PAGE_SIZE
+                ? allPages.length + 1
+                : undefined;
+        },
+        getPreviousPageParam: (firstPage, allPages) => {
+            return firstPage.length === PAGE_SIZE ? 1 : undefined;
+        },
+        select: (data) => data.pages.flatMap((page) => page),
+        enabled: !!post._id && loadComment,
+        refetchOnWindowFocus: false,
+        refetchInterval: false,
+        initialData: {
+            pages: [],
+            pageParams: [],
+        },
+    });
 
     const form = useForm<FormData>();
     const {
@@ -331,7 +339,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
         }
     };
 
-    if (!session || !comments)
+    if (!session || !comments || isLoadingComments)
         return (
             <div className={'flex flex-col gap-4'}>
                 <SkeletonComment />
@@ -413,18 +421,33 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                     </div>
                 </div>
 
-                {isPending && <SkeletonComment />}
+                {!loadComment && (
+                    <div className="flex w-full items-center justify-center">
+                        <Button
+                            variant={'text'}
+                            onClick={() => {
+                                setLoadComment(true);
+                            }}
+                            className="cursor-pointer text-center text-xs text-secondary-1"
+                        >
+                            Hiển thị bình luận
+                        </Button>
+                    </div>
+                )}
 
-                {comments.length === 0 && (
+                {loadComment && isPending && <SkeletonComment />}
+
+                {loadComment && !isLoadingComments && comments.length === 0 && (
                     <div className="text-center text-xs text-secondary-1">
                         Chưa có bình luận nào
                     </div>
                 )}
 
-                {comments &&
+                {!isLoadingComments &&
+                    comments &&
                     comments.map((cmt) => <Comment data={cmt} key={cmt._id} />)}
 
-                {hasNextPage && (
+                {!isLoadingComments && hasNextPage && (
                     <Button
                         className="text-secondary-1"
                         variant={'text'}

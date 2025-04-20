@@ -12,9 +12,10 @@ import {
 
 interface Props {
     post: IPost;
+    isManage?: boolean;
 }
 
-const ActionPost: React.FC<Props> = ({ post }) => {
+const ActionPost: React.FC<Props> = ({ post, isManage = false }) => {
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
@@ -36,13 +37,16 @@ const ActionPost: React.FC<Props> = ({ post }) => {
                     align={'end'}
                 >
                     <div className="relative flex flex-col overflow-hidden">
-                        <Button
-                            className="w-full justify-start rounded-sm shadow-none"
-                            variant={'ghost'}
-                            onClick={() => setShowEditModal(true)}
-                        >
-                            <Icons.Edit className="mr-2" /> Chỉnh sửa bài viết
-                        </Button>
+                        {!isManage && (
+                            <Button
+                                className="w-full justify-start rounded-sm shadow-none"
+                                variant={'ghost'}
+                                onClick={() => setShowEditModal(true)}
+                            >
+                                <Icons.Edit className="mr-2" /> Chỉnh sửa bài
+                                viết
+                            </Button>
+                        )}
 
                         <Button
                             className="w-full justify-start rounded-sm shadow-none"

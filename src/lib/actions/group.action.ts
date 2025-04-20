@@ -8,7 +8,7 @@ import {
     deleteConversation,
     getConversationsByGroupId,
 } from './conversation.action';
-import { User } from '@/models';
+import { Conversation, User } from '@/models';
 import { revalidatePath } from 'next/cache';
 
 export const createGroup = async ({
@@ -168,14 +168,15 @@ export const getMembersByGroupId = async ({ groupId }: { groupId: string }) => {
 export const leaveGroup = async ({
     groupId,
     userId,
+    path,
 }: {
     groupId: string;
     userId: string;
+    path?: string;
 }) => {
     const session = await mongoose.startSession();
 
     try {
-        // Begin transaction
         await connectToDB();
 
         session.startTransaction();
@@ -194,18 +195,32 @@ export const leaveGroup = async ({
             },
         });
 
-        // Commit transaction
+        await Conversation.find({
+            group: groupId,
+        }).updateMany({
+            $pull: {
+                participants: {
+                    user: userId,
+                },
+            },
+        });
+
         await session.commitTransaction();
         session.endSession();
 
+        if (path) {
+            revalidatePath(path);
+        }
+
         return true;
     } catch (error: any) {
-        // Rollback transaction
         await session.abortTransaction();
         session.endSession();
 
         throw new Error(error);
     }
+
+    return false;
 };
 
 export const deleteGroup = async ({ groupId }: { groupId: string }) => {
@@ -336,4 +351,36 @@ export const updateAvatar = async ({
     } finally {
         revalidatePath(path);
     }
+};
+
+export const updateGroup = async ({
+    groupId,
+    name,
+    description,
+    type,
+    path,
+}: {
+    groupId: string;
+    name: string;
+    description: string;
+    type: string;
+    path?: string;
+}) => {
+    try {
+        await connectToDB();
+
+        await Group.findByIdAndUpdate(groupId, {
+            name,
+            description,
+            type,
+        });
+
+        if (path) revalidatePath(path);
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+
+    return false;
 };

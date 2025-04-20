@@ -35,3 +35,8 @@ export const timeConvert3 = (time: string, afterPrelix: string = '') => {
 
     return `${Math.floor(years)} năm`;
 };
+
+// Format time to dd/MM/yyyy
+export const timeConvert4 = (time: string) => {
+    return momment(time).locale('vi').format('DD/MM/YYYY');
+};

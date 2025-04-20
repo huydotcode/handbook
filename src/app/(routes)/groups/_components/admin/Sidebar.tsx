@@ -114,16 +114,29 @@ const Sidebar: React.FC<Props> = ({
                     </div>
 
                     {isCreator && (
-                        <Button
-                            href={`/groups/${currentGroup._id}/manage/posts`}
-                            variant={'secondary'}
-                            size={'sm'}
-                        >
-                            <Icons.Posts />
-                            <span className={'md:hidden'}>
-                                Quản lý bài viết
-                            </span>
-                        </Button>
+                        <div className={'flex w-full flex-col gap-2'}>
+                            <Button
+                                href={`/groups/${currentGroup._id}/manage/posts`}
+                                variant={'secondary'}
+                                size={'sm'}
+                            >
+                                <Icons.Posts />
+                                <span className={'md:hidden'}>
+                                    Quản lý bài viết
+                                </span>
+                            </Button>
+
+                            <Button
+                                href={`/groups/${currentGroup._id}/manage`}
+                                variant={'secondary'}
+                                size={'sm'}
+                            >
+                                <Icons.Edit />
+                                <span className={'md:hidden'}>
+                                    Cài đặt nhóm
+                                </span>
+                            </Button>
+                        </div>
                     )}
 
                     <div className="mt-2 flex-1">

@@ -135,7 +135,7 @@ export const sendComment = async ({
             replyComment: replyTo,
         });
 
-        await newComment.save();
+        await newComment.save({ session: sessionMgs });
 
         await Post.findByIdAndUpdate(postId, {
             $inc: { comments_count: 1 },
@@ -148,7 +148,7 @@ export const sendComment = async ({
         if (replyTo) {
             await Comment.findByIdAndUpdate(replyTo, {
                 hasReplies: true,
-            });
+            }).session(sessionMgs);
         }
 
         if (!comment) {

@@ -31,7 +31,7 @@ const GroupPage = async ({
                         .filter((m) => m.role == 'admin')
                         .map((member) => (
                             <Button
-                                href={`/profile/${member.user._id}`}
+                                href={`/groups/${group._id}/members/${member.user._id}`}
                                 className="min-w-[200px] justify-start"
                                 key={member._id}
                                 variant={'ghost'}
@@ -53,13 +53,13 @@ const GroupPage = async ({
 
             <div className="mt-2">
                 <h1 className="text-sm font-bold">Thành viên</h1>
-                <div className="mt-2 grid grid-cols-4 gap-2 lg:grid-cols-3 md:grid-cols-2">
+                <div className="mt-2 grid grid-cols-3 gap-2 lg:grid-cols-2 md:grid-cols-1">
                     {members
                         .filter((m) => m.role == 'member')
                         .slice(0, MAX_MEMBERS)
                         .map((member) => (
                             <Button
-                                href={`/profile/${member.user._id}`}
+                                href={`/groups/${group._id}/members/${member.user._id}`}
                                 className="min-w-[200px] justify-start"
                                 key={member._id}
                                 variant={'ghost'}

@@ -1,11 +1,8 @@
 'use client';
+import Avatar from '@/app/(routes)/profile/_components/Avatar';
+import CoverPhoto from '@/app/(routes)/profile/_components/CoverPhoto';
 import FollowAction from '@/app/(routes)/profile/_components/FollowAction';
 import { MessageAction, TabItem } from '@/components/shared';
-import { navProfile } from '@/constants/navLink';
-import Image from 'next/image';
-import React from 'react';
-import AddFriendAction from './AddFriendAction';
-import { useSession } from 'next-auth/react';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import {
@@ -14,8 +11,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Avatar from '@/app/(routes)/profile/_components/Avatar';
-import CoverPhoto from '@/app/(routes)/profile/_components/CoverPhoto';
+import { navProfile } from '@/constants/navLink';
+import { useSession } from 'next-auth/react';
+import React from 'react';
+import AddFriendAction from './AddFriendAction';
 
 interface Props {
     profile: IProfile;

@@ -14,7 +14,6 @@ interface Props {
 
 const Header: React.FC<Props> = ({ group }) => {
     const path = usePathname();
-    const isJoinPage = path.includes('join');
 
     return (
         <header className="w-full rounded-b-xl bg-white pb-2 dark:bg-dark-secondary-1">
