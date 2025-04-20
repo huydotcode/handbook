@@ -9,7 +9,7 @@ class PostController {
     public async getAllPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const posts = await Post.find();
@@ -23,7 +23,7 @@ class PostController {
     public async getPostById(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const post = await Post.findById(req.params.id);
@@ -37,7 +37,7 @@ class PostController {
     public async getNewFeedPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const user_id = req.query.user_id as string;
@@ -60,7 +60,7 @@ class PostController {
             })
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
-                .limit(page_size)
+                .limit(page_size);
 
             res.status(200).json(posts);
         } catch (error) {
@@ -72,7 +72,7 @@ class PostController {
     public async getNewFeedFriendPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const user_id = req.query.user_id as string;
@@ -100,7 +100,7 @@ class PostController {
     public async getNewFeedGroupPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const user_id = req.query.user_id as string;
@@ -128,7 +128,7 @@ class PostController {
     public async getProfilePosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const user_id = req.params.user_id;
@@ -154,7 +154,7 @@ class PostController {
     public async getGroupPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const group_id = req.params.group_id;
@@ -179,7 +179,39 @@ class PostController {
     public async getManageGroupPosts(
         req: Request,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const group_id = req.params.group_id;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                group: group_id,
+                status: 'active',
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            console.log({
+                group_id,
+                page,
+                page_size,
+                posts,
+            });
+
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ROUTE: POST /api/v1/posts/group/:group_id/manage
+    public async getManageGroupPostsPending(
+        req: Request,
+        res: Response,
+        next: NextFunction,
     ): Promise<void> {
         try {
             const group_id = req.params.group_id;
@@ -204,6 +236,31 @@ class PostController {
             res.status(200).json(posts);
         } catch (error) {
             next(error);
+        }
+    }
+
+    public async getPostByMember(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const { user_id, group_id } = req.query;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await Post.find({
+                author: user_id,
+                group: group_id,
+                status: 'active',
+            })
+                .sort({ createdAt: -1, loves: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts);
+        } catch (e) {
+            next(e)
         }
     }
 }

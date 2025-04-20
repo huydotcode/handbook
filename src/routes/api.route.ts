@@ -10,6 +10,7 @@ import userRouter from './user.route';
 import locationRouter from './location.route';
 import notificationRouter from './notification.route';
 import requestRouter from './request.route';
+import groupRouter from './group.route';
 
 const apiRouter = Router();
 
@@ -24,5 +25,6 @@ apiRouter.use('/user', userRouter);
 apiRouter.use('/locations', locationRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/requests', requestRouter);
+apiRouter.use('/groups', groupRouter);
 
 export default apiRouter;
