@@ -113,24 +113,32 @@ const InfomationConversation: React.FC<Props> = ({
             key: 'file-attachment',
             label: 'File đính kèm',
             children: (
-                <div className="grid max-h-[200px] grid-cols-2 gap-2 overflow-y-scroll">
-                    {imagesInRoom.map((img, i) => (
-                        <div className={'relative h-16 w-full'} key={i}>
-                            <Image
-                                className="absolute cursor-pointer rounded-md object-cover"
-                                fill
-                                key={i}
-                                quality={100}
-                                src={img.url}
-                                alt="image"
-                                onClick={() => {
-                                    setStartImageIndex(i);
-                                    setOpenSlideShow(true);
-                                }}
-                            />
-                        </div>
-                    ))}
-                </div>
+                <>
+                    <div className="grid max-h-[200px] grid-cols-2 gap-2 overflow-y-scroll">
+                        {imagesInRoom.map((img, i) => (
+                            <div className={'relative h-16 w-full'} key={i}>
+                                <Image
+                                    className="absolute cursor-pointer rounded-md object-cover"
+                                    fill
+                                    key={i}
+                                    quality={100}
+                                    src={img.url}
+                                    alt="image"
+                                    onClick={() => {
+                                        setStartImageIndex(i);
+                                        setOpenSlideShow(true);
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {imagesInRoom.length === 0 && (
+                        <p className="text-center text-xs text-secondary-1">
+                            Không có file đính kèm nào
+                        </p>
+                    )}
+                </>
             ),
         },
     ];
