@@ -127,7 +127,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const [isShowAllPinMessages, setIsShowAllPinMessages] =
         useState<boolean>(false);
     const [openSearch, setOpenSearch] = useState<boolean>(false);
-    const [openInfo, setOpenInfo] = useState<boolean>(false);
+    const [openInfo, setOpenInfo] = useState<boolean>(true);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
     const [showPinMessages, setShowPinMessages] = useState<boolean>(false);
 
@@ -411,7 +411,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             >
                 <FileUploaderWrapper
                     className={cn(
-                        'flex h-full w-full flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
+                        'flex h-full w-full flex-1 flex-col rounded-xl bg-white shadow-xl dark:bg-dark-secondary-1 dark:shadow-none',
                         className,
                         openInfo && 'md:hidden',
                         openSearch && 'md:hidden'
@@ -419,6 +419,8 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                     handleChange={handleChangeUploadFile}
                 >
                     <ChatHeader
+                        openInfo={openInfo}
+                        openSearch={openSearch}
                         currentRoom={conversation}
                         handleOpenInfo={handleOpenInfo}
                         handleOpenSearch={handleOpenSearch}
@@ -480,9 +482,14 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 </FileUploaderWrapper>
 
                 <div
-                    className={cn('w-[400px] lg:hidden lg:w-full', {
-                        'lg:block': openInfo || openSearch,
-                    })}
+                    className={cn(
+                        'transition-all duration-300 lg:hidden lg:transition-none',
+                        {
+                            'w-[300px] lg:block lg:w-full':
+                                openInfo || openSearch,
+                            'w-0 lg:block': !openInfo && !openSearch,
+                        }
+                    )}
                 >
                     {openSearch && (
                         <SearchMessage
@@ -492,7 +499,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         />
                     )}
 
-                    {!openSearch && (
+                    {openInfo && (
                         <InfomationConversation
                             messages={messages || []}
                             conversation={conversation}

@@ -2,6 +2,7 @@
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import useBreakpoint from '@/hooks/useBreakpoint';
+import { cn } from '@/lib/utils';
 import { splitName } from '@/utils/splitName';
 import { timeConvert3 } from '@/utils/timeConvert';
 import { useEditor } from '@tiptap/react';
@@ -10,12 +11,16 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo } from 'react';
 
 interface Props {
+    openInfo: boolean;
+    openSearch: boolean;
     currentRoom: IConversation;
     handleOpenInfo: () => void;
     handleOpenSearch: () => void;
 }
 
 const ChatHeader: React.FC<Props> = ({
+    openInfo,
+    openSearch,
     currentRoom,
     handleOpenInfo,
     handleOpenSearch,
@@ -122,7 +127,13 @@ const ChatHeader: React.FC<Props> = ({
 
                 <div className="flex items-center">
                     <Button
-                        className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                        className={cn(
+                            'rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1',
+                            {
+                                'bg-primary-1 dark:bg-dark-primary-1':
+                                    openSearch,
+                            }
+                        )}
                         variant={'custom'}
                         onClick={handleOpenSearch}
                     >
@@ -130,7 +141,12 @@ const ChatHeader: React.FC<Props> = ({
                     </Button>
 
                     <Button
-                        className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                        className={cn(
+                            'rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1',
+                            {
+                                'bg-primary-1 dark:bg-dark-primary-1': openInfo,
+                            }
+                        )}
                         variant={'custom'}
                         onClick={() => handleOpenInfo()}
                     >
