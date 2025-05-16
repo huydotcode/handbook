@@ -17,6 +17,8 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
 
+const PAGE_SIZE = 10;
+
 export const useNotifications = (userId: string | undefined) =>
     useInfiniteQuery({
         queryKey: getNotificationsKey(userId),
