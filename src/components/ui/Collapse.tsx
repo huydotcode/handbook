@@ -28,10 +28,10 @@ const Collapse: React.FC<CollapseProps> = ({ className, items }) => {
     return (
         <div className={cn(className)}>
             {items.map((item) => (
-                <div key={item.key} className="mb-2">
+                <div key={item.key}>
                     <Button
                         className="w-full justify-between"
-                        variant="default"
+                        variant="ghost"
                         onClick={() => onActiveChange(item.key)}
                     >
                         <span className="text-xs font-bold">{item.label}</span>

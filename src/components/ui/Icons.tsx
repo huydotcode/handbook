@@ -68,6 +68,7 @@ import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
 import { VscClearAll } from 'react-icons/vsc';
 import { GrRedo, GrUndo } from 'react-icons/gr';
 import { IoIosCreate } from 'react-icons/io';
+import { FaBoxArchive } from 'react-icons/fa6';
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
     size?: string | number;
@@ -226,6 +227,7 @@ const Icons = {
     ),
     Pin: (props: IconProps) => <BsPinAngleFill {...props} />,
     CreatePost: (props: IconProps) => <IoIosCreate {...props} />,
+    Archive: (props: IconProps) => <FaBoxArchive {...props} />,
 };
 
 export const MenuBarEditorIcons = {

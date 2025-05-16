@@ -14,6 +14,7 @@ import {
 } from '@/lib/actions/conversation.action';
 import { deleteMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
+import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -182,7 +183,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 'mt-1': isGroupMsg,
                                 'pl-4': isGroupMsg && isOwnMsg,
                                 'pr-4': isGroupMsg && !isOwnMsg,
-                                'w-full max-w-full rounded-md bg-secondary-1 text-secondary-1 dark:bg-dark-primary-1 dark:text-dark-primary-1':
+                                'w-full max-w-full rounded-md bg-primary-1 text-primary-1 dark:bg-dark-secondary-2 dark:text-dark-primary-1':
                                     isPin,
                             }
                         )}
@@ -312,7 +313,12 @@ const Message: React.FC<Props> = React.memo<Props>(
                         })}
                     >
                         {msg.isPin && !isPin && (
-                            <div className={'absolute -right-1 top-0 z-10'}>
+                            <div
+                                className={cn('absolute top-0 z-10', {
+                                    '-left-1': !isOwnMsg,
+                                    '-right-1': isOwnMsg,
+                                })}
+                            >
                                 <Icons.Pin />
                             </div>
                         )}
@@ -348,8 +354,8 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                             <div
                                 className={cn('flex w-full flex-1 flex-col', {
-                                    'items-end': isOwnMsg,
-                                    'items-start': !isOwnMsg,
+                                    'items-end': isOwnMsg && !isPin,
+                                    'items-start': !isOwnMsg && !isPin,
                                 })}
                             >
                                 {msg.conversation.group && (
@@ -362,6 +368,21 @@ const Message: React.FC<Props> = React.memo<Props>(
                                         {msg.sender.name}
                                     </div>
                                 )}
+
+                                {isPin && (
+                                    <div
+                                        className={cn(
+                                            'text-xs text-primary-1 dark:text-dark-primary-1',
+                                            {
+                                                'ml-1': !isOwnMsg,
+                                                'mr-1': isOwnMsg,
+                                            }
+                                        )}
+                                    >
+                                        {msg.sender.name}
+                                    </div>
+                                )}
+
                                 {renderContentImages()}
                                 <PopoverTrigger
                                     asChild
@@ -370,6 +391,18 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 >
                                     {renderMessageText()}
                                 </PopoverTrigger>
+
+                                {isPin && (
+                                    <div
+                                        className={
+                                            'p-1 text-xs text-primary-1 dark:text-dark-primary-1'
+                                        }
+                                    >
+                                        {FormatDate.formatISODateToDateTime(
+                                            msg.createdAt
+                                        )}
+                                    </div>
+                                )}
 
                                 {renderReadMessage()}
                             </div>

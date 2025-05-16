@@ -10,6 +10,7 @@ interface Props {
     children: React.ReactNode;
     title?: string;
     show: boolean;
+    width?: string;
     handleClose: () => void;
 }
 
@@ -18,6 +19,7 @@ const Modal: React.FC<Props> = ({
     title,
     show,
     children,
+    width = '50vw',
     handleClose,
 }) => {
     const renderHeader = () => {
@@ -43,7 +45,8 @@ const Modal: React.FC<Props> = ({
             <Fade in={show}>
                 <div
                     className={cn(
-                        'fixed left-1/2 top-1/2 flex w-[50vw] max-w-screen translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none   dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none',
+                        'fixed left-1/2 top-1/2 flex max-w-screen translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none',
+                        `w-[${width}]`,
                         className
                     )}
                 >

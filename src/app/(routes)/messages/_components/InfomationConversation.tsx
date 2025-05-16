@@ -1,11 +1,13 @@
 'use client';
 import { Items } from '@/components/shared';
-import { Avatar, Collapse, Icons, SlideShow } from '@/components/ui';
+import { Avatar, Collapse, Icons, Modal, SlideShow } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
 import SideHeader from './SideHeader';
-import { Button } from '@/components/ui/Button';
+import Message from './Message';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     conversation: IConversation;
@@ -23,9 +25,18 @@ const InfomationConversation: React.FC<Props> = ({
     const [openSlideShow, setOpenSlideShow] = useState<boolean>(false);
     const [startImageIndex, setStartImageIndex] = useState<number>(0);
 
+    const [openPinnedMessageModal, setOpenPinnedMessageModal] = useState(false);
+    const [openArchiveMessageModal, setOpenArchiveMessageModal] =
+        useState(false);
+
     const imagesInRoom = useMemo(() => {
         return (messages && messages.map((msg) => msg.images).flat()) || [];
     }, [messages]);
+
+    const pinnedMessages = useMemo(
+        () => messages?.filter((msg) => msg.isPin) || [],
+        [messages]
+    );
 
     const partner = useMemo(() => {
         if (conversation.group) {
@@ -57,7 +68,33 @@ const InfomationConversation: React.FC<Props> = ({
 
     const items = [
         {
-            key: '1',
+            key: 'infomation-chat',
+            label: 'Thông tin về đoạn chat',
+            children: (
+                // Tin nhắn đã ghim tin nhắn lưu trữ
+                <div>
+                    <Button
+                        className={'mb-2 w-full justify-start'}
+                        variant={'ghost'}
+                        onClick={() => {
+                            setOpenPinnedMessageModal(true);
+                        }}
+                    >
+                        <Icons.Pin className="h-5 w-5" />
+                        <p className="ml-2 text-xs">Tin nhắn đã ghim</p>
+                    </Button>
+                    <Button
+                        className={'mb-2 w-full justify-start'}
+                        variant={'ghost'}
+                    >
+                        <Icons.Archive className="h-5 w-5" />
+                        <p className="ml-2 text-xs">Tin nhắn đã lưu trữ</p>
+                    </Button>
+                </div>
+            ),
+        },
+        {
+            key: 'member',
             label: 'Thành viên',
             children: (
                 <div>
@@ -71,8 +108,9 @@ const InfomationConversation: React.FC<Props> = ({
                 </div>
             ),
         },
+
         {
-            key: '2',
+            key: 'file-attachment',
             label: 'File đính kèm',
             children: (
                 <div className="grid max-h-[200px] grid-cols-2 gap-2 overflow-y-scroll">
@@ -140,7 +178,56 @@ const InfomationConversation: React.FC<Props> = ({
                 images={imagesInRoom}
                 startIndex={startImageIndex}
             />
+
+            {openPinnedMessageModal && (
+                <PinnedMessagesModal
+                    handleClose={() => setOpenPinnedMessageModal(false)}
+                    pinnedMessages={pinnedMessages}
+                />
+            )}
         </div>
+    );
+};
+
+const PinnedMessagesModal = ({
+    handleClose,
+    pinnedMessages,
+}: {
+    handleClose: () => void;
+    pinnedMessages: IMessage[];
+}) => {
+    const router = useRouter();
+
+    return (
+        <Modal
+            width="500px"
+            show={true}
+            handleClose={handleClose}
+            title="Tin nhắn đã ghim"
+        >
+            <div className="flex max-h-[400px] w-full flex-col overflow-y-scroll">
+                {pinnedMessages.length > 0 ? (
+                    pinnedMessages.map((msg) => (
+                        <Message
+                            key={msg._id}
+                            data={msg}
+                            messages={pinnedMessages}
+                            isPin
+                            isSearchMessage
+                            handleClick={() => {
+                                router.push(
+                                    `/messages/${msg.conversation._id}?find_msg=${msg._id}`
+                                );
+                            }}
+                        />
+                    ))
+                ) : (
+                    <p className="text-center text-xs text-secondary-1">
+                        Không có tin nhắn nào được ghim
+                    </p>
+                )}
+            </div>
+        </Modal>
     );
 };
 

@@ -3,12 +3,6 @@ import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import useBreakpoint from '@/hooks/useBreakpoint';
@@ -93,12 +87,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
     const { data: lastMessage } = useLastMessage(conversation._id);
 
-    // Memoize pinned messages
-    const pinnedMessages = useMemo(
-        () => messages?.filter((msg) => msg.isPin) || [],
-        [messages]
-    );
-
     // Memoize grouped messages with date formatting
     const groupedMessages = useMemo(() => {
         if (!messages?.length) return {};
@@ -124,12 +112,10 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         threshold: 0,
         triggerOnce: false,
     });
-    const [isShowAllPinMessages, setIsShowAllPinMessages] =
-        useState<boolean>(false);
+
     const [openSearch, setOpenSearch] = useState<boolean>(false);
     const [openInfo, setOpenInfo] = useState<boolean>(true);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
-    const [showPinMessages, setShowPinMessages] = useState<boolean>(false);
 
     // Ref UI
     const lastMessageRef = useRef<HTMLDivElement>(null);
@@ -187,95 +173,95 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     };
 
     // Render tin nhắn ghim
-    const renderPinnedMessasges = () => {
-        return (
-            <>
-                {pinnedMessages.length > 0 && (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    className={
-                                        'absolute right-0 top-0 z-20 h-8 px-2'
-                                    }
-                                    variant={'secondary'}
-                                    onClick={() => {
-                                        setShowPinMessages((prev) => !prev);
-                                    }}
-                                >
-                                    {showPinMessages ? (
-                                        <Icons.ArrowUp />
-                                    ) : (
-                                        <Icons.ArrowDown />
-                                    )}
-                                </Button>
-                            </TooltipTrigger>
+    // const renderPinnedMessasges = () => {
+    //     return (
+    //         <>
+    //             {pinnedMessages.length > 0 && (
+    //                 <TooltipProvider>
+    //                     <Tooltip>
+    //                         <TooltipTrigger asChild>
+    //                             <Button
+    //                                 className={
+    //                                     'absolute right-0 top-0 z-20 h-8 px-2'
+    //                                 }
+    //                                 variant={'secondary'}
+    //                                 onClick={() => {
+    //                                     setShowPinMessages((prev) => !prev);
+    //                                 }}
+    //                             >
+    //                                 {showPinMessages ? (
+    //                                     <Icons.ArrowUp />
+    //                                 ) : (
+    //                                     <Icons.ArrowDown />
+    //                                 )}
+    //                             </Button>
+    //                         </TooltipTrigger>
 
-                            <TooltipContent>
-                                Hiển thị tin nhắn ghim
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                )}
+    //                         <TooltipContent>
+    //                             Hiển thị tin nhắn ghim
+    //                         </TooltipContent>
+    //                     </Tooltip>
+    //                 </TooltipProvider>
+    //             )}
 
-                {showPinMessages && (
-                    <div
-                        className={
-                            'absolute top-2 z-10 w-[90%] rounded-xl bg-primary-1 p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none'
-                        }
-                    >
-                        <span className={'flex items-center text-sm'}>
-                            <Icons.Pin className={'mr-2'} /> Tin nhắn ghim
-                        </span>
+    //             {showPinMessages && (
+    //                 <div
+    //                     className={
+    //                         'absolute top-2 z-10 w-[90%] rounded-xl bg-primary-1 p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none'
+    //                     }
+    //                 >
+    //                     <span className={'flex items-center text-sm'}>
+    //                         <Icons.Pin className={'mr-2'} /> Tin nhắn ghim
+    //                     </span>
 
-                        <div className="mt-2 flex flex-col-reverse">
-                            {pinnedMessages.length > 1 && (
-                                <Button
-                                    size={'xs'}
-                                    variant={'text'}
-                                    onClick={() =>
-                                        setIsShowAllPinMessages((prev) => !prev)
-                                    }
-                                >
-                                    {isShowAllPinMessages
-                                        ? 'Thu gọn'
-                                        : 'Xem thêm'}
-                                </Button>
-                            )}
+    //                     <div className="mt-2 flex flex-col-reverse">
+    //                         {pinnedMessages.length > 1 && (
+    //                             <Button
+    //                                 size={'xs'}
+    //                                 variant={'text'}
+    //                                 onClick={() =>
+    //                                     setIsShowAllPinMessages((prev) => !prev)
+    //                                 }
+    //                             >
+    //                                 {isShowAllPinMessages
+    //                                     ? 'Thu gọn'
+    //                                     : 'Xem thêm'}
+    //                             </Button>
+    //                         )}
 
-                            {messages &&
-                                pinnedMessages
-                                    .slice(
-                                        0,
-                                        isShowAllPinMessages ? undefined : 1
-                                    )
-                                    .map((message) => (
-                                        <Message
-                                            key={message._id}
-                                            messages={messages}
-                                            data={message}
-                                            searchMessage={findMessage}
-                                            isLastMessage={
-                                                lastMessage?._id === message._id
-                                            }
-                                            isSearchMessage={
-                                                findMessage === message._id
-                                            }
-                                            handleClick={() => {
-                                                // scroll to this message
-                                                router.push(
-                                                    `/messages/${conversation._id}?findMessage=${message._id}`
-                                                );
-                                            }}
-                                            isPin={true}
-                                        />
-                                    ))}
-                        </div>
-                    </div>
-                )}
-            </>
-        );
-    };
+    //                         {messages &&
+    //                             pinnedMessages
+    //                                 .slice(
+    //                                     0,
+    //                                     isShowAllPinMessages ? undefined : 1
+    //                                 )
+    //                                 .map((message) => (
+    //                                     <Message
+    //                                         key={message._id}
+    //                                         messages={messages}
+    //                                         data={message}
+    //                                         searchMessage={findMessage}
+    //                                         isLastMessage={
+    //                                             lastMessage?._id === message._id
+    //                                         }
+    //                                         isSearchMessage={
+    //                                             findMessage === message._id
+    //                                         }
+    //                                         handleClick={() => {
+    //                                             // scroll to this message
+    //                                             router.push(
+    //                                                 `/messages/${conversation._id}?findMessage=${message._id}`
+    //                                             );
+    //                                         }}
+    //                                         isPin={true}
+    //                                     />
+    //                                 ))}
+    //                     </div>
+    //                 </div>
+    //             )}
+    //         </>
+    //     );
+    // };
 
     // Xử lý render tin nhắn
     const renderMessages = () => {
@@ -427,7 +413,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                     />
 
                     <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
-                        {renderPinnedMessasges()}
+                        {/* {renderPinnedMessasges()} */}
 
                         {isFetchingNextPage && (
                             <div className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl">
