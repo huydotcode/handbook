@@ -27,10 +27,46 @@ class MessageController {
         } catch (error) {
             res.status(500).json({ message: 'Internal server error' });
         }
-
     }
 
-    public async search(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public async getPinnedMessages(req: Request, res: Response): Promise<void> {
+        const conversationId = req.query.conversation_id;
+        const page = req.query.page || 1;
+        const pageSize = req.query.page_size || 10;
+
+        console.log({
+            conversationId,
+            page,
+            pageSize,
+        });
+
+        if (!conversationId) {
+            res.status(400).json({ message: 'Conversation ID is required' });
+        }
+
+        try {
+            const messages = await Message.find({
+                conversation: conversationId,
+                isPin: true,
+            })
+                .skip((+page - 1) * +pageSize)
+                .limit(+pageSize)
+                .populate('sender', POPULATE_USER)
+                .populate('conversation')
+                .populate('images')
+                .sort({ createdAt: -1 });
+
+            res.status(200).json(messages);
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    public async search(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
         const q = req.query.q;
         const conversationId = req.query.conversation_id;
 
