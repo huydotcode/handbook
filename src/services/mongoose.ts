@@ -7,6 +7,7 @@ let isConnected = false; // Variable to track the connection status
 
 const connectToDB = async () => {
     mongoose.set('strictQuery', true);
+    mongoose.set('bufferCommands', false);
 
     if (!uri) {
         logger({
@@ -19,7 +20,12 @@ const connectToDB = async () => {
     if (isConnected) return;
 
     try {
-        await mongoose.connect(uri);
+        await mongoose.connect(uri, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 30000,
+            connectTimeoutMS: 30000,
+            autoIndex: false,
+        });
 
         isConnected = true;
     } catch (error: any) {

@@ -9,6 +9,7 @@ export const createCategory = async (data: {
     slug: string;
     icon: string;
 }) => {
+    console.log('[LIB-ACTIONS] createCategory');
     try {
         const isAdmin = await checkAdmin();
         if (!isAdmin) {
@@ -35,6 +36,7 @@ export const createCategory = async (data: {
 };
 
 export const getCategories = async () => {
+    console.log('[LIB-ACTIONS] getCategories');
     try {
         await connectToDB();
 
@@ -47,6 +49,7 @@ export const getCategories = async () => {
 };
 
 export const getCategoryBySlug = async ({ slug }: { slug: string }) => {
+    console.log('[LIB-ACTIONS] getCategoryBySlug');
     try {
         await connectToDB();
 

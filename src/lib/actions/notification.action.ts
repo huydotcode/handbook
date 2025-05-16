@@ -20,6 +20,7 @@ export async function getNotificationByNotiId({
 }: {
     notificationId: string;
 }) {
+    console.log('[LIB-ACTIONS] getNotificationByNotiId');
     try {
         await connectToDB();
 
@@ -40,6 +41,7 @@ export const getNotificationAddFriendByUsers = async ({
     senderId: string;
     receiverId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getNotificationAddFriendByUsers');
     try {
         await connectToDB();
 
@@ -63,6 +65,7 @@ export async function getNotificationAddFriendByUserId({
 }: {
     receiverId: string;
 }) {
+    console.log('[LIB-ACTIONS] getNotificationAddFriendByUserId');
     try {
         await connectToDB();
 
@@ -81,6 +84,7 @@ export async function getNotificationAddFriendByUserId({
 }
 
 export async function getNotificationByUserId({ userId }: { userId: string }) {
+    console.log('[LIB-ACTIONS] getNotificationByUserId');
     try {
         await connectToDB();
 
@@ -98,6 +102,7 @@ export async function getNotificationByUserId({ userId }: { userId: string }) {
 }
 
 export async function getRequestByUserId({ userId }: { userId: string }) {
+    console.log('[LIB-ACTIONS] getRequestByUserId');
     try {
         await connectToDB();
 
@@ -115,6 +120,7 @@ export async function getRequestByUserId({ userId }: { userId: string }) {
 }
 
 export async function markAllAsRead() {
+    console.log('[LIB-ACTIONS] markAllAsRead');
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -130,17 +136,15 @@ export async function markAllAsRead() {
         throw new Error(error);
     }
 }
-
 export async function sendRequestAddFriend({
     receiverId,
 }: {
     receiverId: string;
 }) {
-    const transaction = await mongoose.startSession();
+    console.log('[LIB-ACTIONS] sendRequestAddFriend');
     try {
         await connectToDB();
         const session = await getAuthSession();
-        await transaction.startTransaction();
         if (!session?.user) throw new Error('Đã có lỗi xảy ra');
 
         // Kiểm tra xem đã gửi lời mời kết bạn chưa
@@ -152,39 +156,34 @@ export async function sendRequestAddFriend({
 
         if (isExistRequest) return;
 
-        const newNotification = await new Notification(
-            {
-                sender: session?.user.id,
-                receiver: receiverId,
-                message: 'Đã gửi lời mời kết bạn',
-                type: 'request-add-friend',
-            },
-            { session: transaction }
-        );
+        // Tạo notification mới
+        const newNotification = new Notification({
+            sender: session?.user.id,
+            receiver: receiverId,
+            message: 'Đã gửi lời mời kết bạn',
+            type: 'request-add-friend',
+        });
 
-        await newNotification.save({ session: transaction });
+        await newNotification.save();
 
         const notification = await getNotificationByNotiId({
             notificationId: newNotification._id,
         });
 
-        await transaction.commitTransaction();
-        await transaction.endSession();
-
         return JSON.parse(JSON.stringify(notification));
     } catch (error: any) {
-        await transaction.abortTransaction();
-        await transaction.endSession();
-        throw new Error(error);
+        console.log('[LIB-ACTIONS] sendRequestAddFriend error', error);
+        throw new Error(error.message || 'Lỗi khi gửi lời mời kết bạn');
     }
 }
+
 export async function acceptFriend({
     notification,
 }: {
     notification: INotification;
 }) {
+    console.log('[LIB-ACTIONS] acceptFriend');
     const ERROR_MESSAGE = 'Đã có lỗi xảy ra';
-    const transaction = await mongoose.startSession();
 
     try {
         await connectToDB();
@@ -215,14 +214,8 @@ export async function acceptFriend({
 
         // Lưu cả hai người dùng đồng thời
         await Promise.all([user.save(), friend.save()]);
-
-        await transaction.commitTransaction();
-        await transaction.endSession();
-
         return true;
     } catch (error: any) {
-        await transaction.abortTransaction();
-        await transaction.endSession();
         throw new Error(error.message || ERROR_MESSAGE);
     }
 }
@@ -239,6 +232,7 @@ export async function createNotificationAcceptFriend({
     message: string;
     type: string;
 }) {
+    console.log('[LIB-ACTIONS] createNotificationAcceptFriend');
     try {
         const notificationAcceptFriend = new Notification({
             sender: senderId,
@@ -264,6 +258,7 @@ export async function declineFriend({
 }: {
     notification: INotification;
 }) {
+    console.log('[LIB-ACTIONS] declineFriend');
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -288,6 +283,7 @@ export async function deleteNotification({
 }: {
     notificationId: string;
 }) {
+    console.log('[LIB-ACTIONS] deleteNotification');
     try {
         await connectToDB();
         await Notification.deleteOne({ _id: notificationId });

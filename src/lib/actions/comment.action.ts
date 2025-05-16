@@ -2,7 +2,6 @@
 import { Comment, Post } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
-import mongoose from 'mongoose';
 import { getAuthSession } from '../auth';
 
 export const getCommentByCommentId = async ({
@@ -10,6 +9,7 @@ export const getCommentByCommentId = async ({
 }: {
     commentId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getCommentByCommentId');
     try {
         await connectToDB();
 
@@ -37,6 +37,7 @@ export const getCommentsByPostId = async ({
     page: number;
     pageSize: number;
 }) => {
+    console.log('[LIB-ACTIONS] getCommentsByPostId');
     try {
         await connectToDB();
 
@@ -70,6 +71,7 @@ export const getReplyComments = async ({
     page: number;
     pageSize: number;
 }) => {
+    console.log('[LIB-ACTIONS] getReplyComments');
     if (!commentId) return;
 
     try {
@@ -96,6 +98,7 @@ export const getCommentsCountByPostId = async ({
 }: {
     postId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getCommentsCountByPostId');
     try {
         await connectToDB();
 
@@ -118,16 +121,14 @@ export const sendComment = async ({
     replyTo: string | null;
     postId: string;
 }) => {
-    const sessionMgs = await mongoose.startSession();
-
+    console.log('[LIB-ACTIONS] sendComment');
     try {
         await connectToDB();
 
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
-        sessionMgs.startTransaction();
-
+        // Tạo bình luận mới
         const newComment = new Comment({
             text: content,
             author: session.user.id,
@@ -135,47 +136,43 @@ export const sendComment = async ({
             replyComment: replyTo,
         });
 
-        await newComment.save({ session: sessionMgs });
+        await newComment.save();
 
+        // Cập nhật số lượng bình luận của bài viết
         await Post.findByIdAndUpdate(postId, {
             $inc: { comments_count: 1 },
         });
 
+        // Lấy thông tin bình luận mới
         const comment = await getCommentByCommentId({
             commentId: newComment._id,
         });
 
         if (replyTo) {
-            await Comment.findByIdAndUpdate(replyTo, {
-                hasReplies: true,
-            }).session(sessionMgs);
+            // Cập nhật trạng thái hasReplies
+            await Comment.findByIdAndUpdate(replyTo, { hasReplies: true });
         }
 
         if (!comment) {
-            return null;
+            throw new Error('Không tìm thấy bình luận');
         }
-
-        await sessionMgs.commitTransaction();
 
         return JSON.parse(JSON.stringify(comment));
     } catch (error) {
-        await sessionMgs.abortTransaction();
+        console.log('error', error);
         throw new Error(`Error with send comment: ${error}`);
     }
 };
 
 export const deleteComment = async ({ commentId }: { commentId: string }) => {
+    console.log('[LIB-ACTIONS] deleteComment');
     if (!commentId) return;
-
-    const sessionMgs = await mongoose.startSession();
 
     try {
         await connectToDB();
 
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
-
-        sessionMgs.startTransaction();
 
         const comment = await Comment.findById(commentId);
 
@@ -207,16 +204,13 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
         }
 
         await Comment.findByIdAndDelete(commentId);
-
-        await sessionMgs.commitTransaction();
-        await sessionMgs.endSession();
     } catch (error) {
-        await sessionMgs.abortTransaction();
         throw new Error(`Error with delete comment: ${error}`);
     }
 };
 
 export const loveComment = async ({ commentId }: { commentId: string }) => {
+    console.log('[LIB-ACTIONS] loveComment');
     try {
         await connectToDB();
 

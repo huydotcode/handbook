@@ -3,6 +3,7 @@ import { Image } from '@/models';
 import logger from '@/utils/logger';
 
 export const fetchAllPhotos = async () => {
+    console.log('[LIB-ACTIONS] fetchAllPhotos');
     try {
         const images = await Image.find().sort({ createdAt: -1 });
 

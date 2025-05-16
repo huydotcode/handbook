@@ -23,6 +23,7 @@ export const createItem = async ({
     category: string;
     status: string;
 }) => {
+    console.log('[LIB-ACTIONS] createItem');
     try {
         await connectToDB();
 
@@ -51,6 +52,7 @@ export const createItem = async ({
 };
 
 export const getItemById = async ({ id }: { id: string }) => {
+    console.log('[LIB-ACTIONS] getItemById');
     try {
         await connectToDB();
 
@@ -67,6 +69,7 @@ export const getItemById = async ({ id }: { id: string }) => {
 };
 
 export const getItemsBySeller = async ({ seller }: { seller: string }) => {
+    console.log('[LIB-ACTIONS] getItemsBySeller');
     if (!seller) {
         throw new Error('Seller is required');
     }
@@ -91,6 +94,7 @@ export const getItemsByCategoryId = async ({
 }: {
     categoryId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getItemsByCategoryId');
     try {
         await connectToDB();
 
@@ -115,6 +119,7 @@ export const deleteItem = async ({
     itemId: string;
     path: string;
 }) => {
+    console.log('[LIB-ACTIONS] deleteItem');
     try {
         await connectToDB();
 

@@ -16,6 +16,13 @@
 /out/
 
 # production
+.env
+/.env
+/.env.local
+/.env.development.local
+/.env.test.local
+
+# production
 /build
 
 # misc

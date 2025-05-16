@@ -14,6 +14,7 @@ export const createConversationRoleAdmin = async ({
     conversationId: string;
     role?: string;
 }) => {
+    console.log('[LIB-ACTIONS] createConversationRoleAdmin');
     try {
         await connectToDB();
 
@@ -41,6 +42,7 @@ export const createConversationAfterAcceptFriend = async ({
     userId: string;
     friendId: string;
 }) => {
+    console.log('[LIB-ACTIONS] createConversationAfterAcceptFriend');
     try {
         await connectToDB();
 
@@ -74,6 +76,7 @@ export const getConversationById = async ({
 }: {
     conversationId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getConversationById');
     try {
         await connectToDB();
 
@@ -101,6 +104,7 @@ export const getConversationsByGroupId = async ({
 }: {
     groupId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getConversationsByGroupId');
     try {
         await connectToDB();
 
@@ -132,6 +136,7 @@ export const createConversation = async ({
     groupId?: string | null;
     type?: string;
 }) => {
+    console.log('[LIB-ACTIONS] createConversation');
     try {
         await connectToDB();
 
@@ -165,6 +170,7 @@ export const getConversationsByUserId = async ({
 }: {
     userId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getConversationsByUserId');
     try {
         await connectToDB();
 
@@ -190,6 +196,7 @@ export const getConversationByParticipants = async ({
     userId: string;
     otherUserId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getConversationByParticipants');
     try {
         await connectToDB();
 
@@ -210,6 +217,7 @@ export const deleteConversation = async ({
 }: {
     conversationId: string;
 }) => {
+    console.log('[LIB-ACTIONS] deleteConversation');
     try {
         await connectToDB();
 
@@ -231,6 +239,7 @@ export const getConversationWithTwoUsers = async ({
     userId: string;
     otherUserId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getConversationWithTwoUsers');
     try {
         await connectToDB();
 
@@ -271,6 +280,7 @@ export const addPinMessage = async ({
     conversationId: string;
     messageId: string;
 }) => {
+    console.log('[LIB-ACTIONS] addPinMessage');
     try {
         await connectToDB();
 
@@ -304,6 +314,7 @@ export const removePinMessage = async ({
     conversationId: string;
     messageId: string;
 }) => {
+    console.log('[LIB-ACTIONS] removePinMessage');
     try {
         await connectToDB();
 

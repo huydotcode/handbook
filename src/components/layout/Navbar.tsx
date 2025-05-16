@@ -691,16 +691,18 @@ const Searchbar = () => {
                         </div>
                     )}
 
-                    {!isSearching && (
-                        <div className={'flex justify-center'}>
-                            <Button
-                                href={`/search?q=${debounceValue}`}
-                                variant={'text'}
-                            >
-                                Xem tất cả kết quả: {debounceValue}
-                            </Button>
-                        </div>
-                    )}
+                    {!isSearching &&
+                        searchResult.length == 0 &&
+                        debounceValue.trim().length !== 0 && (
+                            <div className={'flex justify-center'}>
+                                <Button
+                                    href={`/search?q=${debounceValue}`}
+                                    variant={'text'}
+                                >
+                                    Xem tất cả kết quả: {debounceValue}
+                                </Button>
+                            </div>
+                        )}
                 </div>
             </Collapse>
         </>

@@ -10,6 +10,7 @@ export const fetchAllPosts = async ({
     page: number;
     limit: number;
 }) => {
+    console.log('[LIB-ACTIONS] fetchAllPosts');
     try {
         const posts = await Post.find()
             .populate('creator', '_id name avatar')
@@ -27,6 +28,7 @@ export const fetchAllPosts = async ({
 };
 
 export const fetchPostsCount = async () => {
+    console.log('[LIB-ACTIONS] fetchPostsCount');
     try {
         const postCount = await Post.countDocuments();
 
@@ -46,6 +48,7 @@ export const deletePost = async ({
     postId: string;
     path: string;
 }) => {
+    console.log('[LIB-ACTIONS] deletePost');
     try {
         await Post.findByIdAndDelete(postId);
 

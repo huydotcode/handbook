@@ -98,12 +98,8 @@ export const getUserByUserId = async ({ userId }: { userId: string }) => {
 };
 
 export const unfriend = async ({ friendId }: { friendId: string }) => {
-    const transaction = await User.startSession();
-
     try {
         await connectToDB();
-
-        await transaction.startTransaction();
 
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
@@ -130,16 +126,12 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
             }
         );
 
-        await transaction.commitTransaction();
-
         return true;
     } catch (error: any) {
         logger({
             message: 'Error un friend' + error,
             type: 'error',
         });
-
-        await transaction.abortTransaction();
     }
 };
 

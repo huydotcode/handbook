@@ -4,6 +4,7 @@ import { Image } from '@/models';
 import connectToDB from '@/services/mongoose';
 
 export const getUrlByImageId = async ({ imageId }: { imageId: string }) => {
+    console.log('[LIB-ACTIONS] getUrlByImageId');
     try {
         await connectToDB();
         const session = await getAuthSession();
@@ -17,6 +18,7 @@ export const getUrlByImageId = async ({ imageId }: { imageId: string }) => {
 };
 
 export const removeImage = async ({ imageUrl }: { imageUrl: string }) => {
+    console.log('[LIB-ACTIONS] removeImage');
     try {
         await connectToDB();
         const session = await getAuthSession();

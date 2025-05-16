@@ -266,7 +266,9 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                                 onClick={() => mutationDeleteComment.mutate()}
                                 disabled={mutationDeleteComment.isPending}
                             >
-                                Xóa
+                                {mutationDeleteComment.isPending
+                                    ? 'Đang xóa'
+                                    : 'Xóa'}
                             </Button>
                         )}
                     </div>

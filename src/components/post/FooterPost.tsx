@@ -21,6 +21,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 import React, { useMemo, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -34,8 +35,6 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
-import { usePathname } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
 
 interface Props {
     post: IPost;
@@ -181,6 +180,7 @@ export const useSavedPosts = (userId: string | undefined) =>
 const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
     const { countClick, handleClick, canClick } = usePreventMultiClick({
         message: 'Bạn thao tác quá nhanh, vui lòng thử lại sau 5s!',
+        maxCount: 1,
     });
     const { data: session } = useSession();
     const queryClient = useQueryClient();
@@ -231,7 +231,11 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
             variant={'ghost'}
         >
             {isPending ? <Icons.Loading /> : <Icons.Bookmark />}
-            {isPending ? 'Đang lưu' : isSaved ? 'Đã lưu' : 'Lưu'}
+            {isPending && isSaved
+                ? 'Đang hủy'
+                : isPending && !isSaved
+                  ? 'Đang lưu'
+                  : 'Lưu'}
         </Button>
     );
 };
@@ -239,7 +243,6 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
 const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-    const [loadComment, setLoadComment] = useState<boolean>(false);
     const {
         data: comments,
         isLoading: isLoadingComments,
@@ -271,7 +274,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
             return firstPage.length === PAGE_SIZE ? 1 : undefined;
         },
         select: (data) => data.pages.flatMap((page) => page),
-        enabled: !!post._id && loadComment,
+        enabled: !!post._id,
         refetchOnWindowFocus: false,
         refetchInterval: false,
         initialData: {
@@ -320,6 +323,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                 queryKey: getCommentsKey(post._id),
             });
         } catch (error: any) {
+            console.log('Error onSubmitComment: ', error);
             toast.error('Không thể gửi bình luận!', {
                 position: 'bottom-left',
             });
@@ -421,23 +425,9 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                     </div>
                 </div>
 
-                {!loadComment && (
-                    <div className="flex w-full items-center justify-center">
-                        <Button
-                            variant={'text'}
-                            onClick={() => {
-                                setLoadComment(true);
-                            }}
-                            className="cursor-pointer text-center text-xs text-secondary-1"
-                        >
-                            Hiển thị bình luận
-                        </Button>
-                    </div>
-                )}
+                {isPending && <SkeletonComment />}
 
-                {loadComment && isPending && <SkeletonComment />}
-
-                {loadComment && !isLoadingComments && comments.length === 0 && (
+                {!isLoadingComments && comments.length === 0 && (
                     <div className="text-center text-xs text-secondary-1">
                         Chưa có bình luận nào
                     </div>

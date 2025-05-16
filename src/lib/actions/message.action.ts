@@ -20,6 +20,7 @@ export const getMessageByMessageId = async ({
 }: {
     messageId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getMessageByMessageId');
     try {
         await connectToDB();
 
@@ -46,6 +47,7 @@ export const getMessagesWithConversationId = async ({
     page: number;
     pageSize: number;
 }) => {
+    console.log('[LIB-ACTIONS] getMessagesWithConversationId');
     if (conversationId.trim().length === 0) throw new Error('Đã có lỗi xảy ra');
 
     try {
@@ -79,6 +81,7 @@ export const sendMessage = async ({
     text: string;
     images?: string[];
 }) => {
+    console.log('[LIB-ACTIONS] sendMessage');
     try {
         await connectToDB();
 
@@ -109,6 +112,7 @@ export const sendMessage = async ({
 };
 
 export const deleteMessage = async ({ messageId }: { messageId: string }) => {
+    console.log('[LIB-ACTIONS] deleteMessage');
     try {
         await connectToDB();
 
@@ -129,6 +133,7 @@ export const getMessages = async ({
     page: number;
     pageSize: number;
 }) => {
+    console.log('[LIB-ACTIONS] getMessages');
     try {
         await connectToDB();
 
@@ -153,6 +158,7 @@ export const getLastMessageByCoversationId = async ({
 }: {
     conversationId: string;
 }) => {
+    console.log('[LIB-ACTIONS] getLastMessageByCoversationId');
     try {
         await connectToDB();
 
@@ -171,6 +177,7 @@ export const getLastMessageByCoversationId = async ({
 };
 
 export const pinMessage = async ({ messageId }: { messageId: string }) => {
+    console.log('[LIB-ACTIONS] pinMessage');
     try {
         await connectToDB();
 
@@ -190,6 +197,7 @@ export const pinMessage = async ({ messageId }: { messageId: string }) => {
 };
 
 export const unPinMessage = async ({ messageId }: { messageId: string }) => {
+    console.log('[LIB-ACTIONS] unPinMessage');
     try {
         await connectToDB();
 

@@ -9,6 +9,7 @@ function JSON_parse(obj: any) {
 }
 
 export const fetchUsersCount = async () => {
+    console.log('[LIB-ACTIONS] fetchUsersCount');
     try {
         await connectToDB();
 
@@ -24,6 +25,7 @@ export const fetchUsersCount = async () => {
 };
 
 export const fetchUsers = async ({ limit = 10 }: { limit?: number }) => {
+    console.log('[LIB-ACTIONS] fetchUsers');
     try {
         await connectToDB();
 
@@ -44,6 +46,7 @@ export const deleteUser = async ({
     userId: string;
     path: string;
 }) => {
+    console.log('[LIB-ACTIONS] deleteUser');
     try {
         await User.findByIdAndDelete(userId);
 

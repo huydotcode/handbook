@@ -5,6 +5,7 @@ import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 
 export const getGroups = async () => {
+    console.log('[LIB-ACTIONS] getGroups');
     try {
         await connectToDB();
 

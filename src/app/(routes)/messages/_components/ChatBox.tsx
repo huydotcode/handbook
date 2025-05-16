@@ -1,7 +1,7 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
-import { Icons, Loading } from '@/components/ui';
+import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import {
     Tooltip,
@@ -12,6 +12,7 @@ import {
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import useBreakpoint from '@/hooks/useBreakpoint';
+import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
 import { getMessagesKey } from '@/lib/queryKey';
@@ -22,7 +23,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, {
     KeyboardEventHandler,
-    useCallback,
     useEffect,
     useMemo,
     useRef,
@@ -79,41 +79,42 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
 
-    // Data messages && pinnedMessages && lastMessages
     const {
-        data: messages,
-        fetchNextPage,
+        messages,
         isLoading,
         isFetchingNextPage,
         hasNextPage,
-    } = useMessages(conversation._id);
+        handleFindMessage,
+        isFind,
+        setIsFind,
+        fetchNextPage,
+    } = useMessageHandling(conversation._id);
+
     const { data: lastMessage } = useLastMessage(conversation._id);
 
-    // Pinned messages
-    const pinnedMessages = useMemo(() => {
-        return (messages && messages.filter((msg) => msg.isPin)) || [];
-    }, [messages]);
+    // Memoize pinned messages
+    const pinnedMessages = useMemo(
+        () => messages?.filter((msg) => msg.isPin) || [],
+        [messages]
+    );
 
-    // Group messages
+    // Memoize grouped messages with date formatting
     const groupedMessages = useMemo(() => {
-        if (!messages) return {};
-        return messages.reduce(
-            (acc: { [key: string]: IMessage[] }, message) => {
-                // Date type: DD/MM/YYYY
-                const date = new Date(message.createdAt).toLocaleDateString(
-                    'vi-VN',
-                    {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                    }
-                );
+        if (!messages?.length) return {};
 
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(message);
+        const formatter = new Intl.DateTimeFormat('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        return messages.reduce(
+            (acc, message) => {
+                const date = formatter.format(new Date(message.createdAt));
+                (acc[date] = acc[date] || []).push(message);
                 return acc;
             },
-            {}
+            {} as Record<string, IMessage[]>
         );
     }, [messages]);
 
@@ -122,7 +123,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         threshold: 0,
         triggerOnce: false,
     });
-    const [isFind, setIsFind] = useState<boolean>(false);
     const [isShowAllPinMessages, setIsShowAllPinMessages] =
         useState<boolean>(false);
     const [openSearch, setOpenSearch] = useState<boolean>(false);
@@ -186,55 +186,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setOpenSearch(false);
         setOpenInfo((prev) => !prev);
     };
-
-    // Xử lý mở tin nhắn tìm kiếm
-    const handleFindMessage = useCallback(
-        async (messageId: string) => {
-            if (!findMessage || !messages) return;
-
-            // Tìm tin nhắn trong dữ liệu hiện có
-            const foundMessage = messages.find((msg) => msg._id === messageId);
-
-            if (foundMessage) {
-                // Tìm thấy thì scroll tới tin nhắn đó
-                const element = document.getElementById(messageId);
-
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    const observer = new MutationObserver(() => {
-                        const newElement = document.getElementById(messageId);
-
-                        if (newElement) {
-                            newElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center',
-                            });
-                            observer.disconnect();
-                        }
-                    });
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true,
-                    });
-                }
-                setIsFind(true); // Đánh dấu tìm thấy
-                return;
-            }
-
-            if (hasNextPage) {
-                // Nếu không tìm thấy, fetch trang tiếp theo
-                await fetchNextPage();
-            }
-
-            if (!hasNextPage) {
-                toast.error('Không tìm thấy tin nhắn', {
-                    position: 'top-center',
-                });
-            }
-        },
-        [messages, fetchNextPage, hasNextPage, findMessage]
-    );
 
     // Render tin nhắn ghim
     const renderPinnedMessasges = () => {
@@ -373,6 +324,15 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         }
     }, [fetchNextPage, inView]);
 
+    useEffect(() => {
+        if (!session?.user?.id) return;
+
+        socketEmitor.joinRoom({
+            roomId: conversation._id,
+            userId: session?.user.id,
+        });
+    }, [conversation._id, session?.user.id, socketEmitor]);
+
     // Xử lý đọc tin nhắn
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -388,24 +348,18 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     }, [lastMessage, session?.user?.id, socketEmitor, conversation._id]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
+    // Optimize scroll observer
     useEffect(() => {
+        if (!bottomRef.current) return;
+
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                setShowScrollDown(!entry.isIntersecting);
-            },
-            {
-                threshold: 1,
-            }
+            ([entry]) => setShowScrollDown(!entry.isIntersecting),
+            { threshold: 1 }
         );
 
-        if (bottomRef.current) {
-            observer.observe(bottomRef.current);
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [showScrollDown]);
+        observer.observe(bottomRef.current);
+        return () => observer.disconnect();
+    }, []); // Remove showScrollDown dependency
 
     // Xử lý tìm kiếm tin nhắn
     useEffect(() => {

@@ -1,15 +1,15 @@
 'use server';
+import { Conversation, User } from '@/models';
 import Group from '@/models/Group';
 import connectToDB from '@/services/mongoose';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { Session } from 'next-auth';
+import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
 import {
     deleteConversation,
     getConversationsByGroupId,
 } from './conversation.action';
-import { Conversation, User } from '@/models';
-import { revalidatePath } from 'next/cache';
 
 export const createGroup = async ({
     name,
@@ -24,6 +24,7 @@ export const createGroup = async ({
     type: string;
     members: string[];
 }) => {
+    console.log('[LIB-ACTIONS] createGroup');
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -69,6 +70,7 @@ export const getGroupsByUserId = async ({
     page: number;
     pageSize: number;
 }) => {
+    console.log('[LIB-ACTIONS] getGroupsByUserId');
     try {
         await connectToDB();
 
@@ -93,6 +95,7 @@ export const getGroupsByUserId = async ({
 };
 
 export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
+    console.log('[LIB-ACTIONS] getGroupByGroupId');
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -117,6 +120,7 @@ export const getGroupByGroupId = async ({ groupId }: { groupId: string }) => {
 };
 
 export const getRecommendGroups = async ({ userId }: { userId: string }) => {
+    console.log('[LIB-ACTIONS] getRecommendGroups');
     try {
         await connectToDB();
 
@@ -142,6 +146,7 @@ export const getRecommendGroups = async ({ userId }: { userId: string }) => {
 };
 
 export const getMembersByGroupId = async ({ groupId }: { groupId: string }) => {
+    console.log('[LIB-ACTIONS] getMembersByGroupId');
     try {
         await connectToDB();
         const session = (await getAuthSession()) as Session;
@@ -174,12 +179,10 @@ export const leaveGroup = async ({
     userId: string;
     path?: string;
 }) => {
-    const session = await mongoose.startSession();
+    console.log('[LIB-ACTIONS] leaveGroup');
 
     try {
         await connectToDB();
-
-        session.startTransaction();
 
         await Group.findByIdAndUpdate(groupId, {
             $pull: {
@@ -205,25 +208,18 @@ export const leaveGroup = async ({
             },
         });
 
-        await session.commitTransaction();
-        session.endSession();
-
         if (path) {
             revalidatePath(path);
         }
 
         return true;
     } catch (error: any) {
-        await session.abortTransaction();
-        session.endSession();
-
         throw new Error(error);
     }
-
-    return false;
 };
 
 export const deleteGroup = async ({ groupId }: { groupId: string }) => {
+    console.log('[LIB-ACTIONS] deleteGroup');
     // Xóa nhóm, hội thoại nhóm, participant trong nhóm
     try {
         await connectToDB();
@@ -267,6 +263,7 @@ export const joinGroup = async ({
     groupId: string;
     userId: string;
 }) => {
+    console.log('[LIB-ACTIONS] joinGroup');
     try {
         await connectToDB();
 
@@ -308,6 +305,7 @@ export const updateCoverPhoto = async ({
     coverPhoto: string;
     path: string;
 }) => {
+    console.log('[LIB-ACTIONS] updateCoverPhoto');
     try {
         await connectToDB();
 
@@ -335,6 +333,7 @@ export const updateAvatar = async ({
     avatarId: string;
     path: string;
 }) => {
+    console.log('[LIB-ACTIONS] updateAvatar');
     try {
         await connectToDB();
 
@@ -366,6 +365,7 @@ export const updateGroup = async ({
     type: string;
     path?: string;
 }) => {
+    console.log('[LIB-ACTIONS] updateGroup');
     try {
         await connectToDB();
 
@@ -381,6 +381,4 @@ export const updateGroup = async ({
     } catch (error: any) {
         throw new Error(error);
     }
-
-    return false;
 };

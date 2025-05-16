@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
     },
     jwt: {
         encode({ salt, secret, maxAge, token }) {
+            console.log('[LIB - AUTH] JWT encode');
             if (!token) {
                 return '';
             }
@@ -109,6 +110,7 @@ export const authOptions: NextAuthOptions = {
                 password: {},
             },
             authorize: async function (credentials: any) {
+                console.log('[LIB - AUTH] Authorizing user with credentials');
                 try {
                     const { email, password } = credentials;
                     await connectToDB();
@@ -132,6 +134,7 @@ export const authOptions: NextAuthOptions = {
 
     callbacks: {
         async jwt({ token, user }) {
+            console.log('[LIB - AUTH] JWT callback');
             try {
                 await connectToDB();
 
@@ -171,6 +174,7 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({ session, token }) {
+            console.log('[LIB - AUTH] Session callback');
             if (token) {
                 session.user.id = token.id.toString();
                 session.user.name = token.name;
@@ -187,6 +191,7 @@ export const authOptions: NextAuthOptions = {
             profile: oAuthCredentials,
             credentials: passwordCredentials,
         }) {
+            console.log('[LIB - AUTH] SignIn callback');
             try {
                 await connectToDB();
 

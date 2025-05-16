@@ -21,13 +21,18 @@ export async function generateMetadata({ params }: Props) {
             };
         }
 
-        const type = conversation?.type;
+        const type = conversation.type; // Remove optional chaining
 
         if (type === 'group') {
-            const name = conversation?.title || 'Nhóm chat';
+            const name = conversation.title || 'Nhóm chat';
 
             return {
                 title: `${name} | Messenger`,
+                description: `Group conversation in Handbook Messenger`,
+                openGraph: {
+                    title: `${name} | Messenger`,
+                    description: `Group conversation in Handbook Messenger`,
+                },
             };
         } else if (type === 'private') {
             const name =
@@ -44,8 +49,10 @@ export async function generateMetadata({ params }: Props) {
             title: 'Messenger | Handbook',
         };
     } catch (error) {
+        console.error('Error generating metadata:', error);
         return {
             title: 'Messenger | Handbook',
+            description: 'An error occurred while loading the conversation',
         };
     }
 }
