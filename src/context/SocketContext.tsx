@@ -54,7 +54,8 @@ const SOCKET_API =
 
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
-    const { invalidateMessages } = useQueryInvalidation();
+    const { invalidateMessages, invalidateLastMessages } =
+        useQueryInvalidation();
 
     const pathname = usePathname();
 
@@ -162,6 +163,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socketIO.on(socketEvent.RECEIVE_MESSAGE, async (message: IMessage) => {
+            await invalidateLastMessages(message.conversation._id);
+
             // Bỏ qua tin nhắn do chính user gửi đi
             if (session.user.id === message.sender._id) return;
 
@@ -194,16 +197,28 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             if (session.user.id !== message.sender._id) {
                 await invalidateMessages(message.conversation._id);
             }
+
+            if (pathname.includes(`/messages/${message.conversation._id}`)) {
+                await invalidateMessages(message.conversation._id);
+            }
         });
 
         socketIO.on(socketEvent.PIN_MESSAGE, async (message: IMessage) => {
-            await invalidateMessages(message.conversation._id);
+            if (session.user.id !== message.sender._id) {
+                await invalidateMessages(message.conversation._id);
+            }
+            if (pathname.includes(`/messages/${message.conversation._id}`)) {
+                await invalidateMessages(message.conversation._id);
+            }
         });
 
         socketIO.on(
             socketEvent.READ_MESSAGE,
             async ({ roomId }: { roomId: string }) => {
-                await invalidateMessages(roomId);
+                if (pathname.includes(`/messages/${roomId}`)) {
+                    await invalidateMessages(roomId);
+                }
+                await invalidateLastMessages(roomId);
             }
         );
 
@@ -212,7 +227,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socketIO.disconnect();
             setSocket(null);
         };
-    }, [invalidateMessages, pathname, session?.user, socketEmitor]);
+    }, [session?.user, pathname]);
 
     const values: SocketContextType = {
         socket,
