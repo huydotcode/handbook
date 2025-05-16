@@ -11,6 +11,7 @@ import {
     getMessagesKey,
     getNewFeedPostsKey,
     getNotificationsKey,
+    getPinnedMessagesKey,
     getPostKey,
     getPostsKey,
     getProfileKey,
@@ -31,6 +32,12 @@ export const useQueryInvalidation = () => {
     const invalidateMessages = async (conversationId: string) => {
         await queryClient.invalidateQueries({
             queryKey: getMessagesKey(conversationId),
+        });
+    };
+
+    const invalidatePinnedMessages = async (conversationId: string) => {
+        await queryClient.invalidateQueries({
+            queryKey: getPinnedMessagesKey(conversationId),
         });
     };
 
@@ -58,6 +65,9 @@ export const useQueryInvalidation = () => {
         });
         await queryClient.invalidateQueries({
             queryKey: getConversationsKey(session?.user.id as string),
+        });
+        await queryClient.invalidateQueries({
+            queryKey: getPinnedMessagesKey(conversationId),
         });
     };
 
@@ -171,6 +181,7 @@ export const useQueryInvalidation = () => {
 
     return {
         invalidateMessages,
+        invalidatePinnedMessages,
         invalidateConversations,
         invalidateConversation,
         invalidateProfile,

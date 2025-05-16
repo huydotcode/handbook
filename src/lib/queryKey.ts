@@ -17,6 +17,10 @@ export const getLastMessagesKey = (conversationId: string | undefined) => [
     'lastMessage',
     conversationId,
 ];
+export const getPinnedMessagesKey = (conversationId: string | undefined) => [
+    'pinnedMessages',
+    conversationId,
+];
 
 export const getUserKey = (userId: string | undefined) => ['user', userId];
 export const getProfileKey = (userId: string | undefined) => [

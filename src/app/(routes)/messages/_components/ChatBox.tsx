@@ -3,6 +3,7 @@ import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { API_ROUTES } from '@/config/api';
 import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import useBreakpoint from '@/hooks/useBreakpoint';
@@ -10,7 +11,7 @@ import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
-import { getMessagesKey } from '@/lib/queryKey';
+import { getMessagesKey, getPinnedMessagesKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -67,10 +68,39 @@ export const useMessages = (conversationId: string) => {
     });
 };
 
+export const usePinnedMessages = (conversationId: string) => {
+    return useInfiniteQuery({
+        queryKey: getPinnedMessagesKey(conversationId),
+        queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
+            if (!conversationId) return [];
+
+            const res = await axiosInstance.get(API_ROUTES.MESSAGES.PINNED, {
+                params: {
+                    conversation_id: conversationId,
+                    page: pageParam,
+                    page_size: PAGE_SIZE,
+                },
+            });
+
+            return res.data || [];
+        },
+        getNextPageParam: (lastPage, pages) => {
+            return lastPage.length === PAGE_SIZE ? pages.length + 1 : undefined;
+        },
+        select: (data) => {
+            return data.pages.flatMap((page) => page) as IMessage[];
+        },
+        initialPageParam: 1,
+        enabled: !!conversationId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+    });
+};
+
 const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
-    const { invalidateMessages } = useQueryInvalidation();
+    const { invalidateAfterSendMessage } = useQueryInvalidation();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
 
@@ -139,7 +169,8 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 images,
             });
 
-            await invalidateMessages(conversation._id);
+            await invalidateAfterSendMessage(conversation._id);
+            toast;
         } catch (error) {
             toast.error('Đã có lỗi xảy ra');
         }
@@ -171,97 +202,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setOpenSearch(false);
         setOpenInfo((prev) => !prev);
     };
-
-    // Render tin nhắn ghim
-    // const renderPinnedMessasges = () => {
-    //     return (
-    //         <>
-    //             {pinnedMessages.length > 0 && (
-    //                 <TooltipProvider>
-    //                     <Tooltip>
-    //                         <TooltipTrigger asChild>
-    //                             <Button
-    //                                 className={
-    //                                     'absolute right-0 top-0 z-20 h-8 px-2'
-    //                                 }
-    //                                 variant={'secondary'}
-    //                                 onClick={() => {
-    //                                     setShowPinMessages((prev) => !prev);
-    //                                 }}
-    //                             >
-    //                                 {showPinMessages ? (
-    //                                     <Icons.ArrowUp />
-    //                                 ) : (
-    //                                     <Icons.ArrowDown />
-    //                                 )}
-    //                             </Button>
-    //                         </TooltipTrigger>
-
-    //                         <TooltipContent>
-    //                             Hiển thị tin nhắn ghim
-    //                         </TooltipContent>
-    //                     </Tooltip>
-    //                 </TooltipProvider>
-    //             )}
-
-    //             {showPinMessages && (
-    //                 <div
-    //                     className={
-    //                         'absolute top-2 z-10 w-[90%] rounded-xl bg-primary-1 p-2 shadow-xl dark:bg-dark-secondary-1 dark:shadow-none'
-    //                     }
-    //                 >
-    //                     <span className={'flex items-center text-sm'}>
-    //                         <Icons.Pin className={'mr-2'} /> Tin nhắn ghim
-    //                     </span>
-
-    //                     <div className="mt-2 flex flex-col-reverse">
-    //                         {pinnedMessages.length > 1 && (
-    //                             <Button
-    //                                 size={'xs'}
-    //                                 variant={'text'}
-    //                                 onClick={() =>
-    //                                     setIsShowAllPinMessages((prev) => !prev)
-    //                                 }
-    //                             >
-    //                                 {isShowAllPinMessages
-    //                                     ? 'Thu gọn'
-    //                                     : 'Xem thêm'}
-    //                             </Button>
-    //                         )}
-
-    //                         {messages &&
-    //                             pinnedMessages
-    //                                 .slice(
-    //                                     0,
-    //                                     isShowAllPinMessages ? undefined : 1
-    //                                 )
-    //                                 .map((message) => (
-    //                                     <Message
-    //                                         key={message._id}
-    //                                         messages={messages}
-    //                                         data={message}
-    //                                         searchMessage={findMessage}
-    //                                         isLastMessage={
-    //                                             lastMessage?._id === message._id
-    //                                         }
-    //                                         isSearchMessage={
-    //                                             findMessage === message._id
-    //                                         }
-    //                                         handleClick={() => {
-    //                                             // scroll to this message
-    //                                             router.push(
-    //                                                 `/messages/${conversation._id}?findMessage=${message._id}`
-    //                                             );
-    //                                         }}
-    //                                         isPin={true}
-    //                                     />
-    //                                 ))}
-    //                     </div>
-    //                 </div>
-    //             )}
-    //         </>
-    //     );
-    // };
 
     // Xử lý render tin nhắn
     const renderMessages = () => {

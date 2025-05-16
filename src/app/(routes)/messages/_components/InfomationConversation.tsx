@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import SideHeader from './SideHeader';
 import Message from './Message';
 import { useRouter } from 'next/navigation';
+import { usePinnedMessages } from './ChatBox';
 
 interface Props {
     conversation: IConversation;
@@ -189,8 +190,8 @@ const InfomationConversation: React.FC<Props> = ({
 
             {openPinnedMessageModal && (
                 <PinnedMessagesModal
+                    conversationId={conversation._id}
                     handleClose={() => setOpenPinnedMessageModal(false)}
-                    pinnedMessages={pinnedMessages}
                 />
             )}
         </div>
@@ -198,12 +199,13 @@ const InfomationConversation: React.FC<Props> = ({
 };
 
 const PinnedMessagesModal = ({
+    conversationId,
     handleClose,
-    pinnedMessages,
 }: {
     handleClose: () => void;
-    pinnedMessages: IMessage[];
+    conversationId: string;
 }) => {
+    const { data: pinnedMessages } = usePinnedMessages(conversationId);
     const router = useRouter();
 
     return (
@@ -214,7 +216,7 @@ const PinnedMessagesModal = ({
             title="Tin nhắn đã ghim"
         >
             <div className="flex max-h-[400px] w-full flex-col overflow-y-scroll">
-                {pinnedMessages.length > 0 ? (
+                {pinnedMessages && pinnedMessages.length > 0 ? (
                     pinnedMessages.map((msg) => (
                         <Message
                             key={msg._id}
