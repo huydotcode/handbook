@@ -1,35 +1,26 @@
 'use client';
-import { Comment } from '@/components/post';
-import SkeletonComment from '@/components/post/comment/SkeletonComment';
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { Form, FormControl } from '@/components/ui/Form';
 import { Textarea } from '@/components/ui/textarea';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
     deleteComment,
     loveComment,
     sendComment,
 } from '@/lib/actions/comment.action';
-import {
-    getCommentsKey,
-    getPostKey,
-    getReplyCommentsKey,
-} from '@/lib/queryKey';
+import axiosInstance from '@/lib/axios';
+import { getReplyCommentsKey } from '@/lib/queryKey';
+import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
-import {
-    useInfiniteQuery,
-    useMutation,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { timeConvert3 } from '@/utils/timeConvert';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
-import { cn } from '@/lib/utils';
-import { timeConvert, timeConvert2, timeConvert3 } from '@/utils/timeConvert';
-import axiosInstance from '@/lib/axios';
 
 interface Props {
     data: IComment;
@@ -74,7 +65,9 @@ export const useReplyComments = (commentId: string | undefined) =>
 
 const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidateComments, invalidatePost, invalidateReplyComments } =
+        useQueryInvalidation();
+
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
     const form = useForm<FormData>({
         defaultValues: {
@@ -95,6 +88,15 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
         mutationFn: () => handleDeleteComment(),
     });
 
+    const invalidateQueries = () => {
+        invalidateComments(comment.post._id);
+        invalidatePost(comment.post._id);
+
+        if (comment.replyComment) {
+            invalidateReplyComments(comment.replyComment._id);
+        }
+    };
+
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
         if (formState.isSubmitting || formState.isLoading) return;
 
@@ -105,17 +107,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                 postId: comment.post._id,
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getCommentsKey(comment.post._id),
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: getReplyCommentsKey(comment._id),
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: getPostKey(comment.post._id),
-            });
+            await invalidateQueries();
         } catch (error) {
             logger({
                 message: 'Error send reply comments' + error,
@@ -137,39 +129,13 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
         await loveComment({
             commentId: comment._id,
         });
-
-        await queryClient.invalidateQueries({
-            queryKey: getCommentsKey(comment.post._id),
-        });
-
-        await queryClient.invalidateQueries({
-            queryKey: getPostKey(comment.post._id),
-        });
-
-        if (comment.replyComment) {
-            await queryClient.invalidateQueries({
-                queryKey: getReplyCommentsKey(comment.replyComment._id),
-            });
-        }
+        await invalidateQueries();
     };
 
     const handleDeleteComment = async () => {
         try {
             await deleteComment({ commentId: comment._id });
-
-            await queryClient.invalidateQueries({
-                queryKey: getCommentsKey(comment.post._id),
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: getPostKey(comment.post._id),
-            });
-
-            if (comment.replyComment) {
-                await queryClient.invalidateQueries({
-                    queryKey: getReplyCommentsKey(comment.replyComment._id),
-                });
-            }
+            await invalidateQueries();
         } catch (error) {
             logger({
                 message: 'Error delete comment' + error,

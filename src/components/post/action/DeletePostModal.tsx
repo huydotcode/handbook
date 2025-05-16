@@ -1,10 +1,9 @@
 'use client';
+import { ConfirmModal } from '@/components/ui';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { deletePost } from '@/lib/actions/post.action';
-import { useQueryClient } from '@tanstack/react-query';
 import React, { FormEventHandler } from 'react';
 import toast from 'react-hot-toast';
-import { getPostsKey } from '@/lib/queryKey';
-import { ConfirmModal } from '@/components/ui';
 
 interface Props {
     show: boolean;
@@ -19,7 +18,7 @@ const DeletePostModal: React.FC<Props> = ({
     handleClose,
     setShow,
 }) => {
-    const queryClient = useQueryClient();
+    const { invalidatePosts } = useQueryInvalidation();
 
     const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
@@ -37,9 +36,7 @@ const DeletePostModal: React.FC<Props> = ({
                 }
             );
 
-            await queryClient.invalidateQueries({
-                queryKey: getPostsKey(),
-            });
+            await invalidatePosts();
         } catch (error: any) {
             console.log(error);
         } finally {

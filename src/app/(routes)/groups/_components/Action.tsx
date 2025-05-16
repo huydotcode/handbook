@@ -4,27 +4,28 @@ import Icons from '@/components/ui/Icons';
 import { deleteGroup, joinGroup, leaveGroup } from '@/lib/actions/group.action';
 
 import { Button } from '@/components/ui/Button';
+import { useGroupsJoined } from '@/context/AppContext';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getConversationsKey, getGroupsKey } from '@/lib/queryKey';
-import { useGroupsJoined } from '@/context/AppContext';
 
 interface Props {
     group: IGroup;
 }
 
 const Action: React.FC<Props> = ({ group }) => {
+    const groupId = group._id;
     const { data: session } = useSession();
     const router = useRouter();
-    const groupId = group._id;
     const { data: groupJoined } = useGroupsJoined(session?.user.id);
-    const isJoinGroup = groupJoined?.some((item) => item._id === groupId);
     const [isPending, setIsPending] = useState(false);
-    const queryClient = useQueryClient();
+    const { invalidateGroups, invalidateConversations } =
+        useQueryInvalidation();
+
+    const isJoinGroup = groupJoined?.some((item) => item._id === groupId);
 
     const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
 
@@ -43,9 +44,7 @@ const Action: React.FC<Props> = ({ group }) => {
                 groupId: groupId,
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getGroupsKey(session?.user?.id),
-            });
+            await invalidateGroups(session?.user.id as string);
 
             toast.success('Đã tham gia nhóm');
         } catch (error) {
@@ -68,13 +67,9 @@ const Action: React.FC<Props> = ({ group }) => {
                 userId: session?.user?.id as string,
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getGroupsKey(session?.user?.id),
-            });
+            await invalidateGroups(session?.user.id as string);
 
-            await queryClient.invalidateQueries({
-                queryKey: getConversationsKey(session?.user.id),
-            });
+            await invalidateConversations();
 
             toast.success('Đã rời khỏi nhóm');
 
@@ -91,9 +86,8 @@ const Action: React.FC<Props> = ({ group }) => {
         try {
             await deleteGroup({ groupId });
 
-            await queryClient.invalidateQueries({
-                queryKey: getConversationsKey(session?.user.id),
-            });
+            await invalidateGroups(session?.user.id as string);
+            await invalidateConversations();
 
             router.push('/groups');
         } catch (error) {

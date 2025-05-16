@@ -1,15 +1,15 @@
 'use client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { sendReaction } from '@/lib/actions/post.action';
-import logger from '@/utils/logger';
-import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
-import Icons from '../ui/Icons';
-import { Button } from '../ui/Button';
-import { cn } from '@/lib/utils';
-import { getPostKey } from '@/lib/queryKey';
 import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import { sendReaction } from '@/lib/actions/post.action';
+import { cn } from '@/lib/utils';
+import logger from '@/utils/logger';
+import { useMutation } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Button } from '../ui/Button';
+import Icons from '../ui/Icons';
 
 interface Props {
     post: IPost;
@@ -19,7 +19,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
     const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
     const { socketEmitor } = useSocket();
-    const queryClient = useQueryClient();
+    const { invalidatePost } = useQueryInvalidation();
 
     const isReacted = React.useMemo(
         () => loves.find((r) => r === session?.user.id),
@@ -55,9 +55,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                     });
                 }
 
-                queryClient.invalidateQueries({
-                    queryKey: getPostKey(post._id),
-                });
+                await invalidatePost(post._id);
             } catch (error: any) {
                 logger({
                     message: 'Error reaction post' + error,

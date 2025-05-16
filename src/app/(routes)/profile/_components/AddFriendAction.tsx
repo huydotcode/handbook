@@ -4,15 +4,16 @@ import Icons from '@/components/ui/Icons';
 import { useSocket } from '@/context';
 import { useRequests } from '@/context/AppContext';
 import { useFriends } from '@/context/SocialContext';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
     deleteNotificationByUsers,
     sendRequestAddFriend,
 } from '@/lib/actions/notification.action';
 import { unfriend } from '@/lib/actions/user.action';
 import { getFriendsKey, getRequestsKey } from '@/lib/queryKey';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -21,7 +22,7 @@ interface Props {
 
 const AddFriendAction: React.FC<Props> = ({ userId }) => {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidateFriends, invalidateRequests } = useQueryInvalidation();
     const { data: requests, isLoading: isLoadingRequests } = useRequests(
         session?.user.id
     );
@@ -45,13 +46,9 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 position: 'bottom-left',
             });
         },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({
-                queryKey: getFriendsKey(session?.user.id),
-            });
-            queryClient.invalidateQueries({
-                queryKey: getRequestsKey(session?.user.id),
-            });
+        onSuccess: async (data) => {
+            await invalidateRequests(session?.user.id as string);
+            await invalidateFriends(session?.user.id as string);
 
             socketEmitor.sendRequestAddFriend({
                 request: data,
@@ -80,14 +77,9 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 position: 'bottom-left',
             });
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: getFriendsKey(session?.user.id),
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: getRequestsKey(session?.user.id),
-            });
+        onSuccess: async () => {
+            await invalidateFriends(session?.user.id as string);
+            await invalidateRequests(session?.user.id as string);
 
             toast.success('Hủy kết bạn thành công', {
                 id: 'unfriend',
@@ -124,13 +116,8 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
                 type: 'request-add-friend',
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getRequestsKey(session?.user.id),
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: getFriendsKey(session?.user.id),
-            });
+            await invalidateRequests(session?.user.id as string);
+            await invalidateFriends(session?.user.id as string);
 
             toast.success('Đã hủy lời mời kết bạn', {
                 id: 'removeRequest',

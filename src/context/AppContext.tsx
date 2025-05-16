@@ -1,27 +1,21 @@
 'use client';
 import { notificationType } from '@/constants/notificationType';
 import socketEvent from '@/constants/socketEvent.constant';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { getCategories } from '@/lib/actions/category.action';
+import axiosInstance from '@/lib/axios';
 import {
     getCategoriesKey,
-    getFriendsKey,
     getGroupsKey,
     getLocationsKey,
     getNotificationsKey,
     getRequestsKey,
 } from '@/lib/queryKey';
-import {
-    useInfiniteQuery,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
-import axiosInstance from '@/lib/axios';
-
-const PAGE_SIZE = 5;
 
 export const useNotifications = (userId: string | undefined) =>
     useInfiniteQuery({
@@ -149,9 +143,10 @@ export const useLocations = () =>
 
 function AppProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
+    const { invalidateFriends, invalidateNotifications } =
+        useQueryInvalidation();
 
     const { socket } = useSocket();
-    const queryClient = useQueryClient();
 
     // Lắng nghe thông báo mới
     useEffect(() => {
@@ -169,18 +164,13 @@ function AppProvider({ children }: { children: React.ReactNode }) {
                             className: 'text-sm',
                         }
                     );
-
-                    queryClient.invalidateQueries({
-                        queryKey: getFriendsKey(session?.user.id),
-                    });
                 }
 
-                queryClient.invalidateQueries({
-                    queryKey: getNotificationsKey(session?.user.id),
-                });
+                await invalidateFriends(session?.user.id);
+                await invalidateNotifications(session?.user.id as string);
             }
         );
-    }, [socket, session?.user.id, queryClient]);
+    }, [socket, session?.user.id, invalidateFriends, invalidateNotifications]);
 
     useEffect(() => {
         if (!session || !session?.user) {
@@ -195,7 +185,7 @@ function AppProvider({ children }: { children: React.ReactNode }) {
         }
 
         localStorage.setItem('accessToken', session?.user.accessToken);
-    }, [session?.user]);
+    }, [session, session?.user]);
 
     return <>{children}</>;
 }

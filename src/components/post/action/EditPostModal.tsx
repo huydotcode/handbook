@@ -3,21 +3,21 @@ import { useSession } from 'next-auth/react';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Avatar, Modal, TextEditor } from '@/components/ui';
+import { Avatar, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import EditorV2 from '@/components/ui/EditorV2';
 import postAudience from '@/constants/postAudience.constant';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { editPost } from '@/lib/actions/post.action';
-import { getPostKey, getPostsKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { editPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AddToPost from '../AddToPost';
 import Photos from '../Photos';
-import EditorV2 from '@/components/ui/EditorV2';
 
 interface Props {
     post: IPost;
@@ -28,7 +28,7 @@ interface Props {
 
 const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidatePost, invalidatePosts } = useQueryInvalidation();
     const [photos, setPhotos] = useState<string[]>(
         post.images.map((img) => img.url)
     );
@@ -45,9 +45,8 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
 
     const mutation = useMutation({
         onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: getPostKey(post._id),
-            });
+            await invalidatePost(post._id);
+            await invalidatePosts();
         },
         mutationFn: onSubmit,
     });
@@ -86,7 +85,9 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
                 images: newImages,
             });
 
-            queryClient.invalidateQueries({ queryKey: getPostsKey() });
+            await invalidatePost(post._id);
+            await invalidatePosts();
+            handleClose();
         } catch (error: any) {
             logger({
                 message: 'Error send post' + error,

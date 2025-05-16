@@ -1,17 +1,16 @@
 'use client';
 import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
-import { invalidateMessages } from '@/lib/query';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { useSession } from 'next-auth/react';
 
 interface Props {
     currentRoom: IConversation;
@@ -24,9 +23,8 @@ interface IFormData {
 
 const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { socketEmitor } = useSocket();
-    const queryClient = useQueryClient();
     const { data: session } = useSession();
-
+    const { invalidateMessages } = useQueryInvalidation();
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
 
     const {
@@ -88,7 +86,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 images: imagesUpload,
             });
 
-            invalidateMessages(queryClient, currentRoom._id);
+            await invalidateMessages(currentRoom._id);
 
             socketEmitor.sendMessage({
                 roomId: currentRoom._id,

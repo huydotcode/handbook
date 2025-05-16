@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 
 interface Props {
     userId: string;
@@ -13,6 +14,7 @@ interface Props {
 
 const FollowAction: React.FC<Props> = ({ userId }) => {
     const { data: session } = useSession();
+    const { invalidateRequests, invalidateFollowers } = useQueryInvalidation();
 
     const queryClient = useQueryClient();
     const followers = queryClient.getQueryData<IFriend[]>([
@@ -32,9 +34,7 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
                 userId,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getRequestsKey(session?.user.id),
-            });
+            await invalidateRequests(session?.user.id as string);
 
             toast.success('Đã theo dõi');
         } catch (error) {
@@ -48,9 +48,7 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
                 userId,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getFollowersKey(session?.user.id),
-            });
+            await invalidateFollowers(session?.user.id as string);
 
             toast.success('Đã bỏ theo dõi');
         } catch (error) {

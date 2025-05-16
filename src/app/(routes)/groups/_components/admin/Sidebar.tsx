@@ -1,18 +1,15 @@
 'use client';
 import { Avatar, Icons, Modal } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createConversation } from '@/lib/actions/conversation.action';
-import logger from '@/utils/logger';
+import { timeConvert } from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { timeConvert } from '@/utils/timeConvert';
-import socketEvent from '@/constants/socketEvent.constant';
-import group from '@/models/Group';
-import { useQueryClient } from '@tanstack/react-query';
-import { getConversationsKey } from '@/lib/queryKey';
 
 interface Props {
     group: IGroup;
@@ -30,7 +27,7 @@ const Sidebar: React.FC<Props> = ({
 }) => {
     const { socket } = useSocket();
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidateConversations } = useQueryInvalidation();
 
     const [showModalCreateConversation, setShowModalCreateConversation] =
         useState<boolean>(false);
@@ -79,9 +76,7 @@ const Sidebar: React.FC<Props> = ({
                 }
             }
 
-            queryClient.invalidateQueries({
-                queryKey: getConversationsKey(session.user.id),
-            });
+            await invalidateConversations();
         } catch (error) {
             toast.error(
                 'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'

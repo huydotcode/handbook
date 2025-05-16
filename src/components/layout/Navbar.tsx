@@ -1,6 +1,7 @@
 'use client';
 import { Items } from '@/components/shared';
 import { Avatar } from '@/components/ui';
+import { SkeletonAvatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import {
     Popover,
@@ -18,6 +19,7 @@ import { navbarLink, navLink } from '@/constants/navLink';
 import { useSocket } from '@/context';
 import { useNotifications } from '@/context/AppContext';
 import { useDebounce } from '@/hooks';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createConversationAfterAcceptFriend } from '@/lib/actions/conversation.action';
 import {
     acceptFriend,
@@ -28,11 +30,9 @@ import {
     markAllAsRead,
 } from '@/lib/actions/notification.action';
 import { searchUsers } from '@/lib/actions/user.action';
-import { getConversationsKey, getNotificationsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { Collapse } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -47,7 +47,6 @@ import React, {
 import toast from 'react-hot-toast';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import Icons from '../ui/Icons';
-import { SkeletonAvatar } from '@/components/ui/Avatar';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -248,15 +247,13 @@ const NavNotification = () => {
     const { data: notifications, isLoading } = useNotifications(
         session?.user?.id
     );
+    const { invalidateNotifications } = useQueryInvalidation();
     const [open, setOpen] = useState(false);
-    const queryClient = useQueryClient();
 
     const handleMarkAllAsRead = async () => {
         try {
             await markAllAsRead();
-            queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session?.user.id),
-            });
+            await invalidateNotifications(session?.user.id as string);
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
         }
@@ -342,7 +339,8 @@ const NotificationItem = ({
 }) => {
     const { data: session } = useSession();
     const { socket, socketEmitor } = useSocket();
-    const queryClient = useQueryClient();
+    const { invalidateNotifications, invalidateFriends } =
+        useQueryInvalidation();
 
     const [showRemove, setShowRemove] = useState(false);
 
@@ -357,9 +355,7 @@ const NotificationItem = ({
             if (!notificatonRequestAddFriend) {
                 toast.error('Không tìm thấy thông báo. Vui lòng thử lại!');
 
-                queryClient.invalidateQueries({
-                    queryKey: getNotificationsKey(session?.user.id),
-                });
+                await invalidateNotifications(session?.user.id as string);
 
                 return;
             }
@@ -367,10 +363,6 @@ const NotificationItem = ({
             // Chấp nhận lời mời kết bạn
             const acceptSuccess = await acceptFriend({
                 notification,
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session?.user.id),
             });
 
             if (!acceptSuccess) {
@@ -383,9 +375,14 @@ const NotificationItem = ({
                 friendId: notification.sender._id,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getConversationsKey(notification.receiver._id),
-            });
+            if (!newConversation) {
+                toast.error('Tạo cuộc trò chuyện thất bại!');
+                return;
+            }
+
+            // Cập nhật lại danh sách bạn bè
+            await invalidateNotifications(session?.user.id as string);
+            await invalidateFriends(session?.user.id as string);
 
             //Tạo thông báo cho người gửi
             const notificationAcceptFriend =
@@ -418,16 +415,23 @@ const NotificationItem = ({
                 'Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại!'
             );
         }
-    }, [notification, queryClient, session?.user.id, socket, socketEmitor]);
+    }, [
+        invalidateFriends,
+        invalidateNotifications,
+        notification,
+        session?.user.id,
+        socket,
+        socketEmitor,
+    ]);
 
     // Từ chối lời mời kết bạn
     const handleDeclineFriend = async () => {
         try {
             await declineFriend({ notification });
 
-            queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session?.user.id),
-            });
+            await invalidateNotifications(session?.user.id as string);
+            await invalidateFriends(session?.user.id as string);
+            toast.success('Đã từ chối lời mời kết bạn');
         } catch (error) {
             toast.error('Không thể từ chối lời mời kết bạn. Vui lòng thử lại!');
         }
@@ -439,9 +443,8 @@ const NotificationItem = ({
                 notificationId: notification._id,
             });
 
-            queryClient.invalidateQueries({
-                queryKey: getNotificationsKey(session?.user.id),
-            });
+            await invalidateNotifications(session?.user.id as string);
+            toast.success('Đã xóa thông báo');
         } catch (error) {
             toast.error('Không thể xóa thông báo. Vui lòng thử lại!');
         }

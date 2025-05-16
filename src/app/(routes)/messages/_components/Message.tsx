@@ -7,16 +7,14 @@ import {
     PopoverTrigger,
 } from '@/components/ui/Popover';
 import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
     addPinMessage,
     removePinMessage,
 } from '@/lib/actions/conversation.action';
-import { DOMPurify } from 'dompurify';
 import { deleteMessage } from '@/lib/actions/message.action';
-import { invalidateMessages } from '@/lib/query';
 import { cn } from '@/lib/utils';
 import { urlRegex } from '@/utils/regex';
-import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -52,7 +50,7 @@ const Message: React.FC<Props> = React.memo<Props>(
     }) => {
         const { data: session } = useSession();
         const { socket, socketEmitor } = useSocket();
-        const queryClient = useQueryClient();
+        const { invalidateMessages } = useQueryInvalidation();
 
         // State
         const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
@@ -115,7 +113,7 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã ghim tin nhắn!', { id: 'pin-message' });
 
-                invalidateMessages(queryClient, msg.conversation._id);
+                await invalidateMessages(msg.conversation._id);
 
                 socketEmitor.pinMessage({
                     message: msg,
@@ -137,7 +135,7 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã hủy ghim tin nhắn!', { id: 'unpin-message' });
 
-                invalidateMessages(queryClient, msg.conversation._id);
+                await invalidateMessages(msg.conversation._id);
             } catch (error) {
                 toast.error('Đã có lỗi xảy ra!', { id: 'unpin-message' });
             }
@@ -161,7 +159,7 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã xóa tin nhắn!', { id: 'delete-message' });
 
-                invalidateMessages(queryClient, msg.conversation._id);
+                await invalidateMessages(msg.conversation._id);
 
                 socketEmitor.deleteMessage({
                     message: msg,

@@ -1,26 +1,27 @@
 'use client';
-import EditorV2 from '@/components/ui/EditorV2';
-import { Button } from '@/components/ui/Button';
-import React, { ChangeEvent, useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
-import { createPost } from '@/lib/actions/post.action';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createPostValidation } from '@/lib/validation';
-import { useSession } from 'next-auth/react';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import { getPostsKey } from '@/lib/queryKey';
-import Photos from '@/components/post/Photos';
 import AddToPost from '@/components/post/AddToPost';
-import { convertFilesToBase64 } from '@/utils/downloadFile';
+import Photos from '@/components/post/Photos';
+import { Button } from '@/components/ui/Button';
+import EditorV2 from '@/components/ui/EditorV2';
 import postAudience from '@/constants/postAudience.constant';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import { createPost } from '@/lib/actions/post.action';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { createPostValidation } from '@/lib/validation';
+import { convertFilesToBase64 } from '@/utils/downloadFile';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import { ChangeEvent, useCallback, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const TOAST_POSITION = 'bottom-left';
 const TOAST_DURATION = 3000;
 
 const CreatePostPage = () => {
     const { data: session } = useSession();
+    const { invalidatePosts } = useQueryInvalidation();
     const form = useForm<IPostFormData>({
         defaultValues: {
             content: '',
@@ -32,7 +33,6 @@ const CreatePostPage = () => {
     const groupId = null;
     const type = 'default';
     const [photos, setPhotos] = useState<any[]>([]);
-    const queryClient = useQueryClient();
     const { control, register, handleSubmit, reset } = form;
     const resetForm = useCallback(() => {
         reset({
@@ -64,16 +64,14 @@ const CreatePostPage = () => {
                     type,
                 })) as IPost;
 
-                await queryClient.invalidateQueries({
-                    queryKey: getPostsKey(),
-                });
+                await invalidatePosts();
                 resetForm();
                 return newPost;
             } catch (error: any) {
                 throw new Error(error);
             }
         },
-        [session?.user, photos.length, groupId, type, queryClient, resetForm]
+        [session?.user, photos.length, invalidatePosts, resetForm]
     );
 
     const mutation = useMutation({

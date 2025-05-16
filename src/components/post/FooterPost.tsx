@@ -7,19 +7,15 @@ import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useFriends } from '@/context/SocialContext';
 import { usePreventMultiClick } from '@/hooks/usePreventMultiClick';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendComment } from '@/lib/actions/comment.action';
 import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { sendMessage } from '@/lib/actions/message.action';
 import { savePost, unsavePost } from '@/lib/actions/post.action';
 import axiosInstance from '@/lib/axios';
-import { getCommentsKey, getPostKey, getSavedPostsKey } from '@/lib/queryKey';
+import { getCommentsKey, getSavedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
-import {
-    useInfiniteQuery,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React, { useMemo, useRef, useState } from 'react';
@@ -183,7 +179,8 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
         maxCount: 1,
     });
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidateSavedPosts, invalidatePost } = useQueryInvalidation();
+
     const pathName = usePathname();
     const isSavedPage = useMemo(() => {
         return pathName.includes('/saved');
@@ -207,13 +204,8 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
                 await savePost({ postId: post._id, path: pathName });
             }
 
-            await queryClient.invalidateQueries({
-                queryKey: getSavedPostsKey(session?.user.id),
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: getPostKey(post._id),
-            });
+            await invalidatePost(post._id);
+            await invalidateSavedPosts(session.user.id);
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
                 position: 'bottom-left',
@@ -242,7 +234,7 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
 
 const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidatePost, invalidateComments } = useQueryInvalidation();
     const {
         data: comments,
         isLoading: isLoadingComments,
@@ -315,13 +307,8 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
                 replyTo: null,
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getPostKey(post._id),
-            });
-
-            await queryClient.invalidateQueries({
-                queryKey: getCommentsKey(post._id),
-            });
+            await invalidatePost(post._id);
+            await invalidateComments(post._id);
         } catch (error: any) {
             console.log('Error onSubmitComment: ', error);
             toast.error('Không thể gửi bình luận!', {

@@ -13,12 +13,13 @@ import { useSocket } from '@/context';
 import { useLastMessage } from '@/context/SocialContext';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
 import { getMessagesKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, {
@@ -75,7 +76,7 @@ export const useMessages = (conversationId: string) => {
 const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
-    const queryClient = useQueryClient();
+    const { invalidateMessages } = useQueryInvalidation();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
 
@@ -152,9 +153,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 images,
             });
 
-            await queryClient.invalidateQueries({
-                queryKey: getMessagesKey(conversation._id),
-            });
+            await invalidateMessages(conversation._id);
         } catch (error) {
             toast.error('Đã có lỗi xảy ra');
         }

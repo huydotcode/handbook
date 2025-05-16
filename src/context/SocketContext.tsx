@@ -2,15 +2,14 @@
 
 import { Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
-import { invalidateMessages } from '@/lib/query';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
-import { usePathname } from 'next/navigation';
 
 type SocketContextType = {
     socket: Socket | null;
@@ -55,7 +54,8 @@ const SOCKET_API =
 
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidateMessages } = useQueryInvalidation();
+
     const pathname = usePathname();
 
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -161,12 +161,12 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             console.error('Socket connection error:', err);
         });
 
-        socketIO.on(socketEvent.RECEIVE_MESSAGE, (message: IMessage) => {
+        socketIO.on(socketEvent.RECEIVE_MESSAGE, async (message: IMessage) => {
             // Bỏ qua tin nhắn do chính user gửi đi
             if (session.user.id === message.sender._id) return;
 
             if (pathname.includes(`/messages/${message.conversation._id}`)) {
-                invalidateMessages(queryClient, message.conversation._id);
+                await invalidateMessages(message.conversation._id);
                 socketEmitor.readMessage({
                     roomId: message.conversation._id,
                     userId: session.user.id,
@@ -190,20 +190,20 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             }
         });
 
-        socketIO.on(socketEvent.DELETE_MESSAGE, (message: IMessage) => {
+        socketIO.on(socketEvent.DELETE_MESSAGE, async (message: IMessage) => {
             if (session.user.id !== message.sender._id) {
-                invalidateMessages(queryClient, message.conversation._id);
+                await invalidateMessages(message.conversation._id);
             }
         });
 
-        socketIO.on(socketEvent.PIN_MESSAGE, (message: IMessage) => {
-            invalidateMessages(queryClient, message.conversation._id);
+        socketIO.on(socketEvent.PIN_MESSAGE, async (message: IMessage) => {
+            await invalidateMessages(message.conversation._id);
         });
 
         socketIO.on(
             socketEvent.READ_MESSAGE,
-            ({ roomId }: { roomId: string }) => {
-                invalidateMessages(queryClient, roomId);
+            async ({ roomId }: { roomId: string }) => {
+                await invalidateMessages(roomId);
             }
         );
 
@@ -212,7 +212,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socketIO.disconnect();
             setSocket(null);
         };
-    }, [session?.user]);
+    }, [invalidateMessages, pathname, session?.user, socketEmitor]);
 
     const values: SocketContextType = {
         socket,

@@ -6,13 +6,13 @@ import { FC, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createPost } from '@/lib/actions/post.action';
-import { getPostsKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { ModalCreatePost } from '.';
 
 interface Props {
@@ -21,11 +21,10 @@ interface Props {
 }
 
 const TOAST_POSITION = 'bottom-left';
-const TOAST_DURATION = 3000;
 
 const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const { data: session } = useSession();
-    const queryClient = useQueryClient();
+    const { invalidatePosts } = useQueryInvalidation();
 
     const [show, setShow] = useState(false);
     const [photos, setPhotos] = useState<any[]>([]);
@@ -73,15 +72,20 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     type,
                 })) as IPost;
 
-                await queryClient.invalidateQueries({
-                    queryKey: getPostsKey(),
-                });
+                await invalidatePosts();
                 resetForm();
             } catch (error: any) {
                 throw new Error(error);
             }
         },
-        [session?.user, photos.length, groupId, type, queryClient, resetForm]
+        [
+            session?.user,
+            photos.length,
+            groupId,
+            type,
+            invalidatePosts,
+            resetForm,
+        ]
     );
 
     const mutation = useMutation({
