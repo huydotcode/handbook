@@ -67,7 +67,7 @@ import { ImStrikethrough } from 'react-icons/im';
 import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
 import { VscClearAll } from 'react-icons/vsc';
 import { GrRedo, GrUndo } from 'react-icons/gr';
-
+import { IoIosCreate } from 'react-icons/io';
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
     size?: string | number;
@@ -225,6 +225,7 @@ const Icons = {
         />
     ),
     Pin: (props: IconProps) => <BsPinAngleFill {...props} />,
+    CreatePost: (props: IconProps) => <IoIosCreate {...props} />,
 };
 
 export const MenuBarEditorIcons = {

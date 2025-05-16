@@ -363,7 +363,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     // Xử lý tìm kiếm tin nhắn
     useEffect(() => {
         setIsFind(false);
-    }, [findMessage]);
+    }, [findMessage, setIsFind]);
 
     // Nếu màn hình lớn thì đóng cả 2 khung tìm kiếm và thông tin
     useEffect(() => {

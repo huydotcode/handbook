@@ -1,6 +1,8 @@
 'use client';
+import { FriendSection, Sidebar } from '@/components/layout';
 import AddToPost from '@/components/post/AddToPost';
 import Photos from '@/components/post/Photos';
+import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import EditorV2 from '@/components/ui/EditorV2';
 import postAudience from '@/constants/postAudience.constant';
@@ -125,73 +127,83 @@ const CreatePostPage = () => {
     };
 
     return (
-        <form
-            onSubmit={handleSubmit((data) => {
-                mutation.mutate(data);
-            })}
-            className="mx-auto mt-[80px] w-[800px] max-w-screen overflow-y-scroll pb-[200px]"
-        >
-            <div className={'flex items-center gap-4'}>
-                <h1 className={'text-2xl'}>Đăng bài</h1>
+        <div className="relative top-[56px] mx-auto min-h-[calc(100vh-56px)] w-[1200px] max-w-screen md:w-screen">
+            <Sidebar />
 
-                <select
-                    className="h-full cursor-pointer border bg-secondary-1 px-4 py-1.5 text-[10px] dark:bg-dark-secondary-1"
-                    {...register('option')}
+            <div className="mx-auto mt-2 w-[600px] xl:w-[550px] md:w-full">
+                <form
+                    onSubmit={handleSubmit((data) => {
+                        mutation.mutate(data);
+                    })}
                 >
-                    {postAudience.map((audience) => (
-                        <option
-                            key={audience.value}
-                            value={audience.value}
-                            className="text-xs"
+                    <div className={'mb-2 flex items-center gap-4'}>
+                        <h1 className="flex items-end">
+                            <Icons.CreatePost className="mr-2 h-8 w-8" />
+                            Đăng bài
+                        </h1>
+
+                        <select
+                            className="h-full cursor-pointer border bg-secondary-1 px-4 py-1.5 text-[10px] dark:bg-dark-secondary-1"
+                            {...register('option')}
                         >
-                            {audience.label}
-                        </option>
-                    ))}
-                </select>
+                            {postAudience.map((audience) => (
+                                <option
+                                    key={audience.value}
+                                    value={audience.value}
+                                    className="text-xs"
+                                >
+                                    {audience.label}
+                                </option>
+                            ))}
+                        </select>
 
-                <Button
-                    className={'p-0 text-secondary-1'}
-                    variant={'text'}
-                    href={'/'}
-                    size={'sm'}
-                >
-                    Trở về trang chủ
-                </Button>
+                        <Button
+                            className={'p-0 text-secondary-1'}
+                            variant={'text'}
+                            href={'/'}
+                            size={'sm'}
+                        >
+                            Trở về trang chủ
+                        </Button>
+                    </div>
+
+                    <Controller
+                        name={'content'}
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <EditorV2 setContent={onChange} content={value} />
+                        )}
+                    />
+
+                    <Photos
+                        className={
+                            'mt-2 min-h-[50vh] bg-secondary-1 dark:bg-dark-secondary-1'
+                        }
+                        photos={photos}
+                        onClickPhoto={handleRemoveImage}
+                    />
+
+                    <AddToPost
+                        className={
+                            'mr-2 border-none bg-secondary-1 shadow-none dark:bg-dark-secondary-1'
+                        }
+                        handleChangeImage={handleChangeImage}
+                    />
+
+                    <div className={'mt-2 flex justify-center gap-2'}>
+                        <Button
+                            type={'submit'}
+                            className={'w-full max-w-[400px]'}
+                            variant={'primary'}
+                        >
+                            Đăng
+                        </Button>
+                    </div>
+                </form>
             </div>
 
-            <Controller
-                name={'content'}
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                    <EditorV2 setContent={onChange} content={value} />
-                )}
-            />
-
-            <Photos
-                className={
-                    'mt-2 min-h-[50vh] bg-secondary-1 dark:bg-dark-secondary-1'
-                }
-                photos={photos}
-                onClickPhoto={handleRemoveImage}
-            />
-
-            <AddToPost
-                className={
-                    'mr-2 border-none bg-secondary-1 shadow-none dark:bg-dark-secondary-1'
-                }
-                handleChangeImage={handleChangeImage}
-            />
-
-            <div className={'mt-2 flex justify-center gap-2'}>
-                <Button
-                    type={'submit'}
-                    className={'w-full max-w-[400px]'}
-                    variant={'primary'}
-                >
-                    Đăng
-                </Button>
-            </div>
-        </form>
+            {session && <FriendSection session={session} />}
+        </div>
     );
 };
 

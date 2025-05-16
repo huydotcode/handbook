@@ -56,6 +56,12 @@ export const navLink: NavLink[] = [
         icon: <Icons.Bookmark className="h-7 w-7 " />,
         visible: [SIDEBAR],
     },
+    {
+        name: 'Tạo bài viết',
+        path: '/create-post',
+        icon: <Icons.CreatePost className="h-8 w-8 " />,
+        visible: [SIDEBAR],
+    },
 ];
 
 export const navbarLink: NavLink[] = navLink.filter((nav) =>
