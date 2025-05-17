@@ -144,7 +144,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     });
 
     const [openSearch, setOpenSearch] = useState<boolean>(false);
-    const [openInfo, setOpenInfo] = useState<boolean>(true);
+    const [openInfo, setOpenInfo] = useState<boolean>(false);
     const [showScrollDown, setShowScrollDown] = useState<boolean>(false);
 
     // Ref UI

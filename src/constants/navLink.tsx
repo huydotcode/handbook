@@ -53,13 +53,13 @@ export const navLink: NavLink[] = [
     {
         name: 'Đã lưu',
         path: '/saved',
-        icon: <Icons.Bookmark className="h-7 w-7 " />,
+        icon: <Icons.Bookmark className="h-7 w-7" />,
         visible: [SIDEBAR],
     },
     {
         name: 'Tạo bài viết',
         path: '/create-post',
-        icon: <Icons.CreatePost className="h-8 w-8 " />,
+        icon: <Icons.CreatePost className="h-7 w-7" />,
         visible: [SIDEBAR],
     },
 ];
