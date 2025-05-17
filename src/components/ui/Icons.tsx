@@ -35,6 +35,7 @@ import {
     FaEye,
     FaLocationDot,
     FaShirt,
+    FaShop,
 } from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
 import { HiHome } from 'react-icons/hi';
@@ -169,7 +170,7 @@ const Icons = {
     Reply: (props: IconProps) => <FaReply {...props} />,
     Birthday: (props: IconProps) => <FaBirthdayCake {...props} />,
     Plus: (props: IconProps) => <FaPlus {...props} />,
-    Shop: (props: IconProps) => <AiOutlineShop {...props} />,
+    Shop: (props: IconProps) => <FaShop {...props} />,
     Google: (props: IconProps) => (
         <svg
             className={cn('h-6 w-6', props.className)}
