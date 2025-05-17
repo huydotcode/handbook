@@ -27,7 +27,7 @@ export const navLink: NavLink[] = [
         visible: [SIDEBAR, NAVBAR],
     },
     {
-        name: 'News Feed',
+        name: 'Khám phá',
         path: '/news-feed',
         icon: <Icons.Posts className="h-8 w-8 " />,
         visible: [SIDEBAR],

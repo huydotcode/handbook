@@ -1,6 +1,7 @@
 'use client';
 import FileUploader from '@/components/shared/FileUploader';
 import { Loading } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import {
     Form,
     FormControl,
@@ -9,20 +10,7 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/Form';
-import { getCategories } from '@/lib/actions/category.action';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import { createItemValidation, CreateItemValidation } from '@/lib/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { createItem } from '@/lib/actions/item.action';
-import { getCategoriesKey } from '@/lib/queryKey';
 import { Input } from '@/components/ui/Input';
-import React from 'react';
-import { Button } from '@/components/ui/Button';
 import {
     Select,
     SelectContent,
@@ -31,7 +19,18 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useLocations } from '@/context/AppContext';
+import { useCategories, useLocations } from '@/context/AppContext';
+import { getCategories } from '@/lib/actions/category.action';
+import { createItem } from '@/lib/actions/item.action';
+import { getCategoriesKey } from '@/lib/queryKey';
+import { uploadImagesWithFiles } from '@/lib/uploadImage';
+import { createItemValidation, CreateItemValidation } from '@/lib/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const CreateItemPage = () => {
     const { data: session } = useSession();
@@ -49,20 +48,11 @@ const CreateItemPage = () => {
         },
     });
 
-    const { watch, handleSubmit, register, formState, getValues, setValue } =
-        form;
+    const { watch, handleSubmit, formState, getValues, setValue } = form;
 
     const files = getValues('images') || ([] as File[]);
 
-    const { errors } = formState;
-
-    const { data: categories } = useQuery({
-        queryKey: getCategoriesKey(),
-        queryFn: async () => {
-            return await getCategories();
-        },
-    });
-
+    const { data: categories } = useCategories();
     const { data: locations } = useLocations();
 
     const onSubmit = async (data: CreateItemValidation) => {

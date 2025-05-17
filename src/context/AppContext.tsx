@@ -58,10 +58,9 @@ export const useCategories = () =>
         queryKey: getCategoriesKey(),
         queryFn: async () => {
             const categories = await getCategories();
+            console.log({ categories });
             return categories;
         },
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
     });
 
 export const useGroupsJoined = (userId: string | undefined) => {

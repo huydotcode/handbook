@@ -6,8 +6,7 @@ import ListItem from '@tiptap/extension-list-item';
 import TextStyle from '@tiptap/extension-text-style';
 import { EditorProvider, useCurrentEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import React, { useState } from 'react';
-import { undefined } from 'zod';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import Icons, { MenuBarEditorIcons } from '@/components/ui/Icons';
 import { Level } from '@tiptap/extension-heading';
@@ -40,20 +39,62 @@ interface Props {
     className?: string;
     content: string;
     setContent: React.Dispatch<React.SetStateAction<string>>;
+    onEmptyStateChange?: (isEmpty: boolean) => void; // Optional callback for empty state changes
 }
 
-const EditorV2 = ({ className = '', setContent, content }: Props) => {
+// Kiểm tra nội dung trống (loại bỏ tất cả các thẻ HTML và kiểm tra)
+const isEditorEmpty = (html: string) => {
+    // Loại bỏ tất cả các thẻ HTML
+    const textContent = html.replace(/<[^>]*>/g, '');
+    // Kiểm tra xem có text hay không
+    return textContent.trim() === '';
+};
+
+// Kiểm tra nếu nội dung chỉ chứa <p></p> rỗng
+const isOnlyEmptyParagraph = (html: string) => {
+    return html.trim() === '<p></p>' || html.trim() === '';
+};
+
+const EditorV2 = ({
+    className = '',
+    setContent,
+    content,
+    onEmptyStateChange,
+}: Props) => {
+    const [isEmpty, setIsEmpty] = useState(isEditorEmpty(content));
+
+    // Hook cho phép kiểm tra nội dung trống sau mỗi lần cập nhật
+    useEffect(() => {
+        const empty = isEditorEmpty(content);
+        setIsEmpty(empty);
+
+        // Gọi callback nếu có
+        if (onEmptyStateChange) {
+            onEmptyStateChange(empty);
+        }
+    }, [content, onEmptyStateChange]);
+
     return (
         <div className={className + ' overflow-y-scroll'}>
             <EditorProvider
                 slotBefore={<Menubar />}
                 extensions={extensions}
                 content={content}
-                onUpdate={(editor) => {
-                    const html = editor.editor.getHTML();
-                    setContent(html);
+                onUpdate={({ editor }) => {
+                    const html = editor.getHTML();
+
+                    // Nếu editor trống (chỉ có <p></p> rỗng), trả về chuỗi rỗng
+                    if (isOnlyEmptyParagraph(html)) {
+                        setContent('');
+                    } else {
+                        setContent(html);
+                    }
                 }}
             />
+            {/* Hiển thị trạng thái trống (cho mục đích debug) */}
+            {/* <div className="text-xs text-gray-500 mt-2">
+                Editor trống: {isEmpty ? 'Có' : 'Không'}
+            </div> */}
         </div>
     );
 };
@@ -187,14 +228,6 @@ const Menubar = () => {
                 >
                     <MenuBarEditorIcons.BulletList />
                 </Button>
-                {/*<button*/}
-                {/*    onClick={() =>*/}
-                {/*        editor.chain().focus().toggleOrderedList().run()*/}
-                {/*    }*/}
-                {/*    className={getClassName('orderedList')}*/}
-                {/*>*/}
-                {/*    Ordered list*/}
-                {/*</button>*/}
                 <Button
                     variant={'ghost'}
                     onClick={() =>
@@ -245,14 +278,6 @@ const Menubar = () => {
                 >
                     <MenuBarEditorIcons.Redo />
                 </Button>
-                {/*<button*/}
-                {/*    onClick={() =>*/}
-                {/*        editor.chain().focus().setColor('#958DF1').run()*/}
-                {/*    }*/}
-                {/*    className={getClassName('heading')}*/}
-                {/*>*/}
-                {/*    Purple*/}
-                {/*</button>*/}
             </div>
         </div>
     );

@@ -5,6 +5,15 @@ import Photos from '@/components/post/Photos';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import EditorV2 from '@/components/ui/EditorV2';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import postAudience from '@/constants/postAudience.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createPost } from '@/lib/actions/post.action';
@@ -46,12 +55,15 @@ const CreatePostPage = () => {
 
     const sendPost = useCallback(
         async (data: IPostFormData) => {
+            console.log({
+                data,
+            });
             if (!session?.user) return;
 
             try {
                 const { content, option, files } = data;
 
-                if (!content && photos.length === 0) {
+                if (content.trim().length === 0 && photos.length === 0) {
                     toast.error('Nội dung bài viết không được để trống!');
                     return;
                 }
@@ -68,7 +80,6 @@ const CreatePostPage = () => {
 
                 await invalidatePosts();
                 resetForm();
-                return newPost;
             } catch (error: any) {
                 throw new Error(error);
             }
@@ -136,26 +147,39 @@ const CreatePostPage = () => {
                         mutation.mutate(data);
                     })}
                 >
-                    <div className={'mb-2 flex items-center gap-4'}>
-                        <h1 className="flex items-end">
-                            <Icons.CreatePost className="mr-2 h-8 w-8" />
-                            Đăng bài
-                        </h1>
+                    <div
+                        className={
+                            'mb-2 flex items-center justify-between gap-4'
+                        }
+                    >
+                        <div className="flex flex-col gap-4">
+                            <h1 className="flex items-end">
+                                <Icons.CreatePost className="mr-2 h-8 w-8" />
+                                Đăng bài
+                            </h1>
 
-                        <select
-                            className="h-full cursor-pointer border bg-secondary-1 px-4 py-1.5 text-[10px] dark:bg-dark-secondary-1"
-                            {...register('option')}
-                        >
-                            {postAudience.map((audience) => (
-                                <option
-                                    key={audience.value}
-                                    value={audience.value}
-                                    className="text-xs"
+                            <div className="flex w-full items-center justify-between gap-2">
+                                <label htmlFor="">
+                                    <span className="text-sm font-semibold">
+                                        Tùy chọn:
+                                    </span>
+                                </label>
+                                <select
+                                    className="h-full cursor-pointer border bg-secondary-1 px-6 py-2 text-[10px] dark:bg-dark-secondary-1"
+                                    {...register('option')}
                                 >
-                                    {audience.label}
-                                </option>
-                            ))}
-                        </select>
+                                    {postAudience.map((audience) => (
+                                        <option
+                                            key={audience.value}
+                                            value={audience.value}
+                                            className="text-xs"
+                                        >
+                                            {audience.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
 
                         <Button
                             className={'p-0 text-secondary-1'}
@@ -171,9 +195,23 @@ const CreatePostPage = () => {
                         name={'content'}
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                            <EditorV2 setContent={onChange} content={value} />
+                            <EditorV2
+                                setContent={onChange}
+                                content={value}
+                                onEmptyStateChange={(isEmpty) => {
+                                    if (isEmpty) {
+                                        form.setValue('content', '');
+                                    }
+                                }}
+                            />
                         )}
                     />
+
+                    {form.formState.errors.content && (
+                        <p className="mt-2 text-sm text-red-500">
+                            {form.formState.errors.content.message}
+                        </p>
+                    )}
 
                     <Photos
                         className={
@@ -195,8 +233,9 @@ const CreatePostPage = () => {
                             type={'submit'}
                             className={'w-full max-w-[400px]'}
                             variant={'primary'}
+                            disabled={mutation.isPending}
                         >
-                            Đăng
+                            {mutation.isPending ? 'Đang đăng...' : 'Đăng'}
                         </Button>
                     </div>
                 </form>
