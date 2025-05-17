@@ -1,13 +1,13 @@
 'use client';
 
-import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
-import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -166,14 +166,14 @@ const WelcomeBackDialog = () => {
 
 export {
     Dialog,
-    DialogPortal,
-    DialogOverlay,
     DialogClose,
-    DialogTrigger,
     DialogContent,
-    DialogHeader,
-    DialogFooter,
-    DialogTitle,
     DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger,
     WelcomeBackDialog,
 };

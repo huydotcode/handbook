@@ -94,16 +94,13 @@ const ShareModal: React.FC<Props> = ({ post }) => {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle asChild>
-                        <div className="flex items-center gap-2">
-                            <Icons.Share className="text-xl" />
-                            <span>Chia sẻ bài của {post.author.name}</span>
-                        </div>
+                        <span>Chia sẻ bài của {post.author.name}</span>
                     </DialogTitle>
 
                     <DialogClose />
                 </DialogHeader>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex max-h-[400px] flex-col gap-2 overflow-y-scroll">
                     {friends &&
                         friends.map((friend) => {
                             const isSend = sended.includes(friend._id);
