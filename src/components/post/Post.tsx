@@ -1,61 +1,58 @@
 'use client';
+import PhotoGrid from '@/components/post/PhotoGrid';
+import ReviewPost from '@/components/post/ReviewPost';
+import SkeletonPost from '@/components/post/SkeletonPost';
+import { Button } from '@/components/ui/Button';
+import VerifiedUser from '@/components/VerifiedUser';
+import { getPostByPostId } from '@/lib/actions/post.action';
+import { getPostKey } from '@/lib/queryKey';
+import { cn } from '@/lib/utils';
+import { timeConvert3 } from '@/utils/timeConvert';
+import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
-import { timeConvert3 } from '@/utils/timeConvert';
-import { Button } from '@/components/ui/Button';
-import { getPostByPostId } from '@/lib/actions/post.action';
-import { useQuery } from '@tanstack/react-query';
-import { getPostKey } from '@/lib/queryKey';
-import { cn } from '@/lib/utils';
-import PhotoGrid from '@/components/post/PhotoGrid';
-import SkeletonPost from '@/components/post/SkeletonPost';
-import ReviewPost from '@/components/post/ReviewPost';
-import VerifiedUser from '@/components/VerifiedUser';
 
 interface Props {
     data: IPost;
     isManage?: boolean;
-    isSaved?: boolean;
 }
 
-const Post: React.FC<Props> = React.memo(
-    ({ data, isManage = false, isSaved = false }) => {
-        const pathname = usePathname();
-        const { data: session } = useSession();
-        const { data: post } = useQuery<IPost>({
-            queryKey: getPostKey(data._id),
-            queryFn: async () => {
-                const post = await getPostByPostId({ postId: data._id });
-                return post;
-            },
-            refetchInterval: false,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
-            refetchIntervalInBackground: false,
-        });
-        const showInPrivate =
-            post &&
-            post.option === 'private' &&
-            pathname == `/profile/${post.author._id}` &&
-            session?.user?.id == post.author._id;
+const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
+    const pathname = usePathname();
+    const { data: session } = useSession();
+    const { data: post } = useQuery<IPost>({
+        queryKey: getPostKey(data._id),
+        queryFn: async () => {
+            const post = await getPostByPostId({ postId: data._id });
+            return post;
+        },
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchIntervalInBackground: false,
+    });
+    const showInPrivate =
+        post &&
+        post.option === 'private' &&
+        pathname == `/profile/${post.author._id}` &&
+        session?.user?.id == post.author._id;
 
-        if (!post) return <SkeletonPost />;
-        if (post.option == 'private' && !showInPrivate) return null;
+    if (!post) return <SkeletonPost />;
+    if (post.option == 'private' && !showInPrivate) return null;
 
-        return (
-            <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
-                <PostHeader post={post} />
-                <PostContent post={post} />
-                {!isManage && <FooterPost post={post} isSaved={isSaved} />}
-                {isManage && <ReviewPost post={post} />}
-            </div>
-        );
-    }
-);
+    return (
+        <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
+            <PostHeader post={post} />
+            <PostContent post={post} />
+            {!isManage && <FooterPost post={post} />}
+            {isManage && <ReviewPost post={post} />}
+        </div>
+    );
+});
 
 const PostHeader = ({ post }: { post: IPost }) => {
     const { data: session } = useSession();

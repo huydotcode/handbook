@@ -21,7 +21,8 @@ const TabItem: React.FC<Props> = ({ name, path, id, page }) => {
             href={pathPage}
             className={cn(
                 'relative flex h-10 items-center justify-center rounded-md px-3 shadow-none',
-                isActived && 'text-primary-2 dark:text-primary-2'
+                isActived &&
+                    'text-primary-2 hover:text-primary-2 dark:text-primary-2'
             )}
             variant={'ghost'}
         >

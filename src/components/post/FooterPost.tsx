@@ -15,7 +15,12 @@ import { savePost, unsavePost } from '@/lib/actions/post.action';
 import axiosInstance from '@/lib/axios';
 import { getCommentsKey, getSavedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
-import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React, { useMemo, useRef, useState } from 'react';
@@ -34,7 +39,6 @@ import { Textarea } from '../ui/textarea';
 
 interface Props {
     post: IPost;
-    isSaved?: boolean;
 }
 
 type FormData = {
@@ -170,15 +174,18 @@ export const useSavedPosts = (userId: string | undefined) =>
         refetchInterval: false,
     });
 
-const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
+const SavePost: React.FC<Props> = ({ post }) => {
     const { countClick, handleClick, canClick } = usePreventMultiClick({
         message: 'Bạn thao tác quá nhanh, vui lòng thử lại sau 5s!',
         maxCount: 1,
     });
+    const queryClient = useQueryClient();
     const { data: session } = useSession();
     const { invalidateSavedPosts, invalidatePost } = useQueryInvalidation();
 
     const pathName = usePathname();
+    const { data: savedPosts, isLoading } = useSavedPosts(session?.user.id);
+    const isSaved = savedPosts?.posts.find((p) => p._id === post._id);
     const isSavedPage = useMemo(() => {
         return pathName.includes('/saved');
     }, [pathName]);
@@ -186,7 +193,13 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
     const { mutate, isPending } = useMutation({
         mutationFn: handleSave,
         mutationKey: ['savePost', post._id],
+        onSuccess: async () => {
+            if (!session?.user.id) return;
+            await invalidateSavedPosts(session?.user.id);
+            await invalidatePost(post._id);
+        },
     });
+    const isLoadingSavePost = isLoading || isPending;
 
     async function handleSave() {
         handleClick();
@@ -200,9 +213,6 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
             } else {
                 await savePost({ postId: post._id, path: pathName });
             }
-
-            await invalidatePost(post._id);
-            await invalidateSavedPosts(session.user.id);
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
                 position: 'bottom-left',
@@ -219,18 +229,19 @@ const SavePost: React.FC<Props> = ({ post, isSaved = false }) => {
             disabled={isPending}
             variant={'ghost'}
         >
-            {isPending ? <Icons.Loading /> : <Icons.Bookmark />}
-            {isPending && isSaved
+            {isLoadingSavePost ? <Icons.Loading /> : <Icons.Bookmark />}
+            {isLoadingSavePost && isSaved
                 ? 'Đang hủy'
-                : isPending && !isSaved
+                : isLoadingSavePost && !isSaved
                   ? 'Đang lưu'
                   : 'Lưu'}
         </Button>
     );
 };
 
-const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
+const FooterPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
+
     const { invalidatePost, invalidateComments } = useQueryInvalidation();
     const {
         data: comments,
@@ -360,7 +371,7 @@ const FooterPost: React.FC<Props> = ({ post, isSaved }) => {
 
                     <ShareModal post={post} />
 
-                    <SavePost post={post} isSaved={isSaved} />
+                    <SavePost post={post} />
                 </div>
 
                 <div className="mb-2 mt-2 flex items-center">

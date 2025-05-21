@@ -18,7 +18,7 @@ const DeletePostModal: React.FC<Props> = ({
     handleClose,
     setShow,
 }) => {
-    const { invalidatePosts } = useQueryInvalidation();
+    const { invalidatePosts, invalidateNewFeedPosts } = useQueryInvalidation();
 
     const handleDeletePost: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
@@ -37,6 +37,7 @@ const DeletePostModal: React.FC<Props> = ({
             );
 
             await invalidatePosts();
+            await invalidateNewFeedPosts('', '', '', '');
         } catch (error: any) {
             console.log(error);
         } finally {

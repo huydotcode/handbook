@@ -80,7 +80,7 @@ const Items = {
                             />
 
                             <div className="ml-2 flex flex-1 flex-col">
-                                <p className="text-sm dark:text-dark-primary-1 lg:hidden">
+                                <p className="max-w-[calc(100%-40px)] truncate text-sm dark:text-dark-primary-1 lg:hidden">
                                     {group.name}
                                 </p>
 
@@ -93,8 +93,8 @@ const Items = {
                     </TooltipTrigger>
 
                     <TooltipContent>
-                        <div className="flex flex-col">
-                            <p className="text-sm dark:text-dark-primary-1">
+                        <div className="flex flex-1 flex-col">
+                            <p className="max-w-full truncate text-sm dark:text-dark-primary-1">
                                 {group.name}
                             </p>
 

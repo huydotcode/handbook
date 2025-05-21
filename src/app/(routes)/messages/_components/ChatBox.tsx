@@ -256,6 +256,13 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             roomId: conversation._id,
             userId: session?.user.id,
         });
+
+        return () => {
+            socketEmitor.leaveRoom({
+                roomId: conversation._id,
+                userId: session?.user.id,
+            });
+        };
     }, [conversation._id, session?.user.id, socketEmitor]);
 
     // Xử lý đọc tin nhắn

@@ -21,7 +21,7 @@ export default async function SavedPage() {
 
                 <div className="mt-4">
                     {postsSaved.posts.reverse().map((post) => (
-                        <Post key={post._id} data={post} isSaved={true} />
+                        <Post key={post._id} data={post} />
                     ))}
 
                     {postsSaved.posts.length === 0 && (

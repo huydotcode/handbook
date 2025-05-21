@@ -1,5 +1,4 @@
 'use client';
-import { useSavedPosts } from '@/components/post/FooterPost';
 import { Button } from '@/components/ui/Button';
 import axiosInstance from '@/lib/axios';
 import { getNewFeedPostsKey } from '@/lib/queryKey';
@@ -133,7 +132,6 @@ const InfinityPostComponent: React.FC<Props> = ({
         fetchNextPage,
         refetch,
     } = usePosts({ userId, groupId, username, type });
-    const { data: savedPosts } = useSavedPosts(session?.user.id);
 
     const { ref: bottomRef, inView } = useInView({ threshold: 0 });
     const currentUser = session?.user;
@@ -224,18 +222,7 @@ const InfinityPostComponent: React.FC<Props> = ({
 
             {/* Posts list */}
             {data?.map((post) => {
-                const isSaved = savedPosts?.posts?.some(
-                    (p) => p._id === post._id
-                );
-
-                return (
-                    <Post
-                        data={post}
-                        key={post._id}
-                        isManage={isManage}
-                        isSaved={!!isSaved}
-                    />
-                );
+                return <Post data={post} key={post._id} isManage={isManage} />;
             })}
 
             {/* Infinite scroll trigger */}
