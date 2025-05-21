@@ -4,10 +4,9 @@ import apiRouter from './routes/api.route';
 import { connectToMongo } from './services/mongodb';
 
 import cors from 'cors';
-import authMiddleware from './middlewares/auth-middleware';
+import authMiddleware from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
-import limiteMiddlware from './middlewares/limite-middlware';
-
+import limiteMiddlware from './middlewares/limite.middlware';
 
 const morgan = require('morgan');
 
@@ -22,7 +21,7 @@ app.use(cookieParser());
 app.use(
     helmet({
         crossOriginResourcePolicy: { policy: 'cross-origin' },
-    }),
+    })
 );
 app.use(morgan('dev'));
 
@@ -30,7 +29,7 @@ app.use(
     cors({
         origin: ['http://localhost:3000', 'https://handbookk.vercel.app'],
         credentials: true,
-    }),
+    })
 );
 
 app.use('/api/v1', limiteMiddlware, authMiddleware, apiRouter);

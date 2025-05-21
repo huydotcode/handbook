@@ -4,7 +4,10 @@ import redis from '../services/redis';
 
 const limiteMiddlware = rateLimit({
     store: new RedisStore({
-        sendCommand: (...args: string[]) => redis.call(...args as [string, ...string[]]) as Promise<RedisReply>,
+        sendCommand: (...args: string[]) =>
+            redis.call(
+                ...(args as [string, ...string[]])
+            ) as Promise<RedisReply>,
     }),
     windowMs: 60 * 1000, // 1 phút
     max: process.env.NODE_ENV === 'production' ? 50 : 1000, // Tối đa 10 request/phút
