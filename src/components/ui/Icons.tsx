@@ -70,6 +70,9 @@ import { VscClearAll } from 'react-icons/vsc';
 import { GrRedo, GrUndo } from 'react-icons/gr';
 import { IoIosCreate } from 'react-icons/io';
 import { FaBoxArchive } from 'react-icons/fa6';
+import { MdPublic } from 'react-icons/md';
+import { RiGitRepositoryPrivateFill } from 'react-icons/ri';
+
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
     size?: string | number;
@@ -229,6 +232,8 @@ const Icons = {
     Pin: (props: IconProps) => <BsPinAngleFill {...props} />,
     CreatePost: (props: IconProps) => <IoIosCreate {...props} />,
     Archive: (props: IconProps) => <FaBoxArchive {...props} />,
+    Public: (props: IconProps) => <MdPublic {...props} />,
+    Private: (props: IconProps) => <RiGitRepositoryPrivateFill {...props} />,
 };
 
 export const MenuBarEditorIcons = {

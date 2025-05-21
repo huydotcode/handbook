@@ -4,6 +4,7 @@ import ReviewPost from '@/components/post/ReviewPost';
 import SkeletonPost from '@/components/post/SkeletonPost';
 import { Button } from '@/components/ui/Button';
 import VerifiedUser from '@/components/VerifiedUser';
+import postAudience from '@/constants/postAudience.constant';
 import { getPostByPostId } from '@/lib/actions/post.action';
 import { getPostKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
@@ -15,6 +16,12 @@ import { usePathname } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '../ui/tooltip';
 
 interface Props {
     data: IPost;
@@ -60,6 +67,9 @@ const PostHeader = ({ post }: { post: IPost }) => {
     const path = usePathname();
     const isManageGroupPostActive =
         path === `/groups/${post.group?._id}/manage/posts`;
+    const IconType = postAudience.find(
+        (item) => item.value === post.option
+    )?.icon;
 
     return (
         <div className="flex items-center justify-between">
@@ -130,9 +140,35 @@ const PostHeader = ({ post }: { post: IPost }) => {
                             <VerifiedUser className={'ml-1'} />
                         )}
 
-                        <p className="w-full text-xs text-secondary-1">
-                            {timeConvert3(post.createdAt.toString())}
-                        </p>
+                        <div className="flex items-center">
+                            <p className="w-full text-xs text-secondary-1">
+                                {timeConvert3(post.createdAt.toString())}{' '}
+                            </p>
+
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        {IconType && (
+                                            <IconType className="ml-1 text-sm text-secondary-1" />
+                                        )}
+                                    </TooltipTrigger>
+
+                                    <TooltipContent>
+                                        <div className="flex items-center">
+                                            <span className="text-xs">
+                                                {
+                                                    postAudience.find(
+                                                        (item) =>
+                                                            item.value ===
+                                                            post.option
+                                                    )?.label
+                                                }
+                                            </span>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
                     </div>
                 </div>
             </div>
