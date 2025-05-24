@@ -26,7 +26,7 @@ const MessageSchema = new Schema<IMessageModel>(
         },
         media: {
             type: [Schema.Types.ObjectId],
-            ref: 'Media',
+            ref: 'media',
             default: [],
         },
         isRead: {

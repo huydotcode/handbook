@@ -32,6 +32,6 @@ export const MediaSchema = new Schema<IMediaModel>(
 
 MediaSchema.index({ creator: 1 }); // Index for images by creator
 
-const Media = models.Media || model('Media', MediaSchema, 'images');
+const Media = models.Media || model('media', MediaSchema, 'images');
 
 export default Media;
