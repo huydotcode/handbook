@@ -29,7 +29,7 @@ const GroupSchema = new Schema<IGroupModel>(
         },
         avatar: {
             type: Schema.Types.ObjectId,
-            ref: 'image',
+            ref: 'media',
             required: true,
         },
         creator: {

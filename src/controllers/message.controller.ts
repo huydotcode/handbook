@@ -20,11 +20,12 @@ class MessageController {
                 .limit(+pageSize)
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
-                .populate('images')
+                .populate('media')
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);
         } catch (error) {
+            console.log('Error fetching messages:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
     }
@@ -53,7 +54,7 @@ class MessageController {
                 .limit(+pageSize)
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
-                .populate('images')
+                .populate('media')
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);
@@ -80,7 +81,7 @@ class MessageController {
             })
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
-                .populate('images')
+                .populate('media')
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);

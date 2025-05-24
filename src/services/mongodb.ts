@@ -4,7 +4,7 @@ import Conversation from '../models/conversation.model';
 import ConversationRole from '../models/conversationrole.model';
 import Follows from '../models/follow.model';
 import Group from '../models/group.model';
-import Image from '../models/image.model';
+import Media from '../models/media.model';
 import Item from '../models/item.model';
 import Location from '../models/location.model';
 import Message from '../models/message.model';
@@ -35,7 +35,7 @@ export const connectToMongo = async () => {
         await ConversationRole.createCollection();
         await Follows.createCollection();
         await Group.createCollection();
-        await Image.createCollection();
+        await Media.createCollection();
         await Item.createCollection();
         await Location.createCollection();
         await Message.createCollection();

@@ -31,7 +31,7 @@ const ConversationModel = new Schema<IConversationModel>(
         },
         avatar: {
             type: Schema.Types.ObjectId,
-            ref: 'image',
+            ref: 'media',
             required: false,
         },
         type: { type: String, default: 'private', enum: ['private', 'group'] },

@@ -14,9 +14,7 @@ class LocationController {
             }
 
             // Nếu không có trong Redis, truy vấn MongoDB
-            const locations = await Location.find().sort(
-                'name',
-            )
+            const locations = await Location.find().sort('name');
             await redis.set(cacheKey, JSON.stringify(locations));
 
             console.log('✅ Dữ liệu đã lưu vào Redis');
