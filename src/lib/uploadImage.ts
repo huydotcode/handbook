@@ -105,7 +105,7 @@ export const uploadImagesWithFiles = async ({
 
                 const formDataImage = new FormData();
                 formDataImage.append('image', file);
-                const responseImage = await fetch('/api/upload-image', {
+                const responseImage = await fetch('/api/upload/image', {
                     method: 'POST',
                     body: formDataImage,
                 });
@@ -130,7 +130,7 @@ export const uploadImagesWithFiles = async ({
                 const formDataVideo = new FormData();
                 formDataVideo.append('video', file);
 
-                const responseVideo = await fetch('/api/upload-video', {
+                const responseVideo = await fetch('/api/upload/video', {
                     method: 'POST',
                     body: formDataVideo,
                 });
