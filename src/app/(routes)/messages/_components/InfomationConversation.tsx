@@ -31,7 +31,7 @@ const InfomationConversation: React.FC<Props> = ({
         useState(false);
 
     const imagesInRoom = useMemo(() => {
-        return (messages && messages.map((msg) => msg.images).flat()) || [];
+        return (messages && messages.map((msg) => msg.media).flat()) || [];
     }, [messages]);
 
     const pinnedMessages = useMemo(
