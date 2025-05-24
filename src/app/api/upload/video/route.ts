@@ -35,10 +35,6 @@ export async function POST(req: NextRequest) {
 
         // Lấy form data
         const formData = await req.formData();
-        const retries = formData.entries();
-        retries.toArray().forEach((entry) => {
-            console.log('Form data:', entry[0], entry[1]);
-        });
 
         // Lấy file video
         const video = formData.get('video');

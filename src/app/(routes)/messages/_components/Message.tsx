@@ -307,7 +307,6 @@ const Message: React.FC<Props> = React.memo<Props>(
                                     handleClickImage(video.url);
                                 }}
                                 src={video.url}
-                                controls
                             />
                         ))}
                 </>
