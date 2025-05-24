@@ -66,19 +66,20 @@ export async function POST(request: Request) {
         // Lưu vào MongoDB
         await newMedia.save();
 
-        return NextResponse.json({
-            success: true,
-            message: 'Image uploaded successfully',
-            data: newMedia,
-        });
+        return new Response(
+            JSON.stringify({
+                success: true,
+                message: 'Image uploaded successfully',
+                data: newMedia,
+            })
+        );
     } catch (error: any) {
         console.error('Upload error:', error);
-        return NextResponse.json(
-            {
+        return new Response(
+            JSON.stringify({
                 success: false,
-                message: 'Error uploading image',
-                error: error.message,
-            },
+                message: 'Error uploading image: ' + error.message,
+            }),
             { status: 500 }
         );
     }

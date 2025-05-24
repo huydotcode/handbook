@@ -92,22 +92,21 @@ export async function POST(req: NextRequest) {
             creator: session.user.id,
         });
 
-        return NextResponse.json(
-            {
+        return new Response(
+            JSON.stringify({
                 success: true,
-                message: 'Upload video thành công',
+                message: 'Video uploaded successfully',
                 data: newMedia,
-            },
+            }),
             { status: 200 }
         );
     } catch (error: any) {
         console.error('Upload error:', error);
-        return NextResponse.json(
-            {
+        return new Response(
+            JSON.stringify({
                 success: false,
-                message: 'Lỗi khi upload video',
-                error: error.message,
-            },
+                message: 'Error uploading video: ' + error.message,
+            }),
             { status: 500 }
         );
     }
