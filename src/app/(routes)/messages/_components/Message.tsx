@@ -6,6 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/Popover';
+import Video from '@/components/ui/video';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
@@ -59,6 +60,13 @@ const Message: React.FC<Props> = React.memo<Props>(
         const [openModalCofirm, setOpenModalConfirm] = useState<boolean>(false);
         const [openPopover, setOpenPopover] = useState(false);
 
+        const images = msg.media.filter(
+            (media) => media.resourceType === 'image'
+        );
+        const videos = msg.media.filter(
+            (media) => media.resourceType === 'video'
+        );
+
         // Variables
         const isFindMessage = searchMessage && searchMessage === msg._id;
         const index = messages.findIndex((m) => m._id === msg._id);
@@ -68,9 +76,9 @@ const Message: React.FC<Props> = React.memo<Props>(
         const memoizedImages = useMemo(
             () =>
                 messages
-                    .filter((msg) => msg.images.length > 0)
-                    .map((msg) => msg.images)
-                    .flatMap((img) => img),
+                    .filter((msg) => msg.media && msg.media.length > 0)
+                    .flatMap((msg) => msg.media)
+                    .filter((media) => media.resourceType === 'image'),
             [messages]
         );
 
@@ -255,14 +263,14 @@ const Message: React.FC<Props> = React.memo<Props>(
         const renderContentImages = () => {
             return (
                 <>
-                    {msg.images.length > 0 && (
+                    {images.length > 0 && (
                         <div
                             className={cn('flex flex-col flex-wrap', {
                                 'items-end': isOwnMsg,
                                 'items-start': !isOwnMsg,
                             })}
                         >
-                            {msg.images.map((img) => (
+                            {images.map((img) => (
                                 <Image
                                     key={img._id}
                                     className={cn(
@@ -285,6 +293,23 @@ const Message: React.FC<Props> = React.memo<Props>(
                             ))}
                         </div>
                     )}
+
+                    {videos.length > 0 &&
+                        videos.map((video) => (
+                            <Video
+                                key={video._id}
+                                className={cn('max-w-[30vw] cursor-pointer', {
+                                    'rounded-xl rounded-l-md': isOwnMsg,
+                                    'rounded-xl rounded-r-md': !isOwnMsg,
+                                    'w-full': isPin,
+                                })}
+                                onClick={() => {
+                                    handleClickImage(video.url);
+                                }}
+                                src={video.url}
+                                controls
+                            />
+                        ))}
                 </>
             );
         };

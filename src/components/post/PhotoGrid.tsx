@@ -4,7 +4,7 @@ import { FC, useState } from 'react';
 import SlideShow from '../ui/SlideShow';
 
 interface Props {
-    images: IImage[];
+    images: IMedia[];
 }
 
 const PhotoGrid: FC<Props> = ({ images }) => {

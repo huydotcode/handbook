@@ -1,6 +1,7 @@
 'use client';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import Video from '@/components/ui/video';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
@@ -65,6 +66,9 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
 
         const { text, files } = data;
 
+        setValue('files', []);
+        setValue('text', '');
+
         if (!session?.user) return;
 
         if (!text.trim() && files.length === 0) {
@@ -80,10 +84,15 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 });
             }
 
+            console.log({
+                text,
+                imagesUpload,
+            });
+
             const newMsg = await sendMessage({
                 roomId: currentRoom._id,
                 text,
-                images: imagesUpload,
+                images: imagesUpload?.map((image) => image._id),
             });
 
             await invalidateMessages(currentRoom._id);
@@ -174,25 +183,57 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 <div className={cn('flex w-full flex-col')}>
                     {files.length > 0 && (
                         <div className="flex gap-3 px-4 py-2">
-                            {files.map((file, index) => (
-                                <div key={index} className="relative">
-                                    <Image
-                                        src={URL.createObjectURL(file)}
-                                        alt={file.name}
-                                        className="h-16 w-16 rounded-lg object-cover"
-                                        width={64}
-                                        height={64}
-                                        quality={100}
-                                    />
-                                    <Button
-                                        className="absolute right-0 top-0 rounded-full p-1"
-                                        type={'reset'}
-                                        onClick={() => handleRemoveFile(index)}
+                            {files
+                                .filter((file) =>
+                                    file.type.startsWith('image/')
+                                )
+                                .map((file, index) => (
+                                    <div key={index} className="relative">
+                                        <Image
+                                            src={URL.createObjectURL(file)}
+                                            alt={file.name}
+                                            className="h-16 w-16 rounded-lg object-cover"
+                                            width={64}
+                                            height={64}
+                                            quality={100}
+                                        />
+                                        <Button
+                                            className="absolute right-0 top-0 h-6 w-6 rounded-full p-1 "
+                                            type={'reset'}
+                                            onClick={() =>
+                                                handleRemoveFile(index)
+                                            }
+                                        >
+                                            <Icons.Close className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+
+                            {files
+                                .filter((file) =>
+                                    file.type.startsWith('video/')
+                                )
+                                .map((file, index) => (
+                                    <div
+                                        key={index}
+                                        className="dark:bg-dark-200 relative flex items-center gap-2 rounded-lg bg-gray-100 px-2 py-1"
                                     >
-                                        <Icons.Close className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
+                                        <video
+                                            className="h-16 w-16 rounded-lg object-cover"
+                                            src={URL.createObjectURL(file)}
+                                        />
+
+                                        <Button
+                                            className="absolute right-0 top-0 h-6 w-6 rounded-full p-1"
+                                            type={'reset'}
+                                            onClick={() =>
+                                                handleRemoveFile(index)
+                                            }
+                                        >
+                                            <Icons.Close className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
                         </div>
                     )}
 

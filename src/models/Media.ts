@@ -1,7 +1,7 @@
 // TODO CHANGE MODEL
 import { Schema, model, models } from 'mongoose';
 
-interface IImageModel {
+interface IMediaModel {
     publicId: string;
     width: number;
     height: number;
@@ -11,7 +11,7 @@ interface IImageModel {
     creator: Schema.Types.ObjectId;
 }
 
-export const ImageSchema = new Schema<IImageModel>(
+export const MediaSchema = new Schema<IMediaModel>(
     {
         publicId: String,
         width: Number,
@@ -30,8 +30,8 @@ export const ImageSchema = new Schema<IImageModel>(
     }
 );
 
-ImageSchema.index({ creator: 1 }); // Index for images by creator
+MediaSchema.index({ creator: 1 }); // Index for images by creator
 
-const Image = models.Image || model('Image', ImageSchema);
+const Media = models.Media || model('Media', MediaSchema, 'images');
 
-export default Image;
+export default Media;

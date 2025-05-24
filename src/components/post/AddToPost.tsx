@@ -35,7 +35,7 @@ const AddToPost: React.FC<Props> = ({ className = '', handleChangeImage }) => {
                         className="hidden"
                         id="input-file"
                         type="file"
-                        accept="image/*"
+                        accept="image/*, video/*"
                         multiple
                         onChange={handleChangeImage}
                     />

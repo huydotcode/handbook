@@ -9,7 +9,7 @@ export const createItem = async ({
     seller,
     description,
     price,
-    images,
+    imagesIds,
     location,
     category,
     status,
@@ -18,7 +18,7 @@ export const createItem = async ({
     seller: string;
     description: string;
     price: number;
-    images: string[];
+    imagesIds: string[];
     location: string;
     category: string;
     status: string;
@@ -36,7 +36,7 @@ export const createItem = async ({
             seller,
             description,
             price,
-            images,
+            images: imagesIds,
             location,
             category,
             slug,

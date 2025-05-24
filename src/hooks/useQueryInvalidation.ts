@@ -108,12 +108,17 @@ export const useQueryInvalidation = () => {
         });
     };
 
-    const invalidateNewFeedPosts = async (
-        type: string | undefined,
-        userId: string | undefined,
-        groupId: string | undefined,
-        username: string | undefined
-    ) => {
+    const invalidateNewFeedPosts = async ({
+        type,
+        userId,
+        groupId,
+        username,
+    }: {
+        type?: string;
+        userId?: string;
+        groupId?: string;
+        username?: string;
+    }) => {
         await queryClient.invalidateQueries({
             queryKey: getNewFeedPostsKey(type, userId, groupId, username),
         });

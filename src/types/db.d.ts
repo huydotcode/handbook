@@ -29,7 +29,7 @@ interface ILocation {
     code: string;
 }
 
-interface IImage {
+interface IMedia {
     _id: string;
     publicId: string;
     width: number;
@@ -46,7 +46,7 @@ interface IGroup {
     _id: string;
     name: string;
     description: string;
-    avatar: IImage;
+    avatar: IMedia;
     members: IMemberGroup[];
     creator: IUser;
     coverPhoto: string;
@@ -73,7 +73,7 @@ interface IProfile {
 interface IMessage {
     _id: string;
     text: string;
-    images: IImage[];
+    media: IMedia[];
     sender: IUser;
     conversation: IConversation;
     isRead: boolean;
@@ -99,7 +99,7 @@ interface IPost {
     _id: string;
     option: string;
     text: string;
-    images: IImage[];
+    media: IMedia[];
     author: IUser;
     loves: IUser[];
     shares: IUser[];
@@ -159,7 +159,7 @@ interface IConversation {
     group?: IGroup;
     type: string;
     status: string;
-    avatar: IImage;
+    avatar: IMedia;
     pinnedMessages: IMessage[];
     createdAt: Date;
     updatedAt: Date;
@@ -190,7 +190,7 @@ interface IItem {
     seller: IUser;
     description: string;
     price: number;
-    images: IImage[];
+    images: IMedia[];
     location: ILocation;
     category: ICategory;
     slug: string;

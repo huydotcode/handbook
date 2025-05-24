@@ -22,12 +22,9 @@ const ReviewPost = ({ post }: Props) => {
                 path: pathname,
             });
 
-            await invalidateNewFeedPosts(
-                'manage-group-posts',
-                undefined,
-                post.group?._id,
-                undefined
-            );
+            await invalidateNewFeedPosts({
+                groupId: post.group?._id,
+            });
             await invalidatePost(post._id);
 
             toast.success(

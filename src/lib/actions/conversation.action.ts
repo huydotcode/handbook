@@ -336,3 +336,34 @@ export const removePinMessage = async ({
         throw new Error(error);
     }
 };
+
+export const deleteConversationFromTwoUsers = async ({
+    userId,
+    otherUserId,
+}: {
+    userId: string;
+    otherUserId: string;
+}) => {
+    console.log('[LIB-ACTIONS] deleteConversationFromTwoUsers');
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversation = await getConversationByParticipants({
+            userId,
+            otherUserId,
+        });
+
+        if (!conversation) {
+            return false;
+        }
+
+        await Conversation.deleteOne({ _id: conversation._id });
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};

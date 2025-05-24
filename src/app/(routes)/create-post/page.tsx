@@ -5,24 +5,16 @@ import Photos from '@/components/post/Photos';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import EditorV2 from '@/components/ui/EditorV2';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import postAudience from '@/constants/postAudience.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createPost } from '@/lib/actions/post.action';
+import { convertFileToBase64 } from '@/lib/convertFileToBase64';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createPostValidation } from '@/lib/validation';
-import { convertFilesToBase64 } from '@/utils/downloadFile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -31,6 +23,9 @@ const TOAST_POSITION = 'bottom-left';
 const TOAST_DURATION = 3000;
 
 const CreatePostPage = () => {
+    const params = useSearchParams(); // group
+    const groupId = params.get('group_id');
+
     const { data: session } = useSession();
     const { invalidatePosts } = useQueryInvalidation();
     const form = useForm<IPostFormData>({
@@ -41,7 +36,6 @@ const CreatePostPage = () => {
         },
         resolver: zodResolver(createPostValidation),
     });
-    const groupId = null;
     const type = 'default';
     const [photos, setPhotos] = useState<any[]>([]);
     const { control, register, handleSubmit, reset } = form;
@@ -68,16 +62,15 @@ const CreatePostPage = () => {
                     return;
                 }
 
-                const imagesId = await uploadImagesWithFiles({ files });
+                const media = await uploadImagesWithFiles({ files });
 
-                const newPost = (await createPost({
+                await createPost({
                     content,
                     option,
-                    images: imagesId,
+                    mediaIds: media.map((img) => img._id),
                     groupId,
                     type,
-                })) as IPost;
-
+                });
                 await invalidatePosts();
                 resetForm();
             } catch (error: any) {
@@ -119,17 +112,57 @@ const CreatePostPage = () => {
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (fileList) {
-            const files: File[] = Array.from(fileList);
+            const newFiles: File[] = Array.from(fileList);
 
             try {
-                const base64Files = await convertFilesToBase64(files);
+                // Kiểm tra kích thước video
+                const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 
-                setPhotos((prev) => [...prev, ...base64Files]);
+                for (const file of newFiles) {
+                    if (
+                        file.type.startsWith('video/') &&
+                        file.size > MAX_VIDEO_SIZE
+                    ) {
+                        toast.error(
+                            `Video "${file.name}" quá lớn. Vui lòng chọn video nhỏ hơn 50MB.`
+                        );
+                        return;
+                    }
+                }
+
+                // Chuyển đổi files mới sang định dạng hiển thị
+                const mediaFiles = await Promise.all(
+                    newFiles.map(async (file) => {
+                        if (file.type.startsWith('image/')) {
+                            return await convertFileToBase64(file);
+                        } else if (file.type.startsWith('video/')) {
+                            const videoUrl = URL.createObjectURL(file);
+                            return {
+                                url: videoUrl,
+                                type: 'video',
+                                file,
+                            };
+                        }
+                        return null;
+                    })
+                );
+
+                const validMediaFiles = mediaFiles.filter(Boolean);
+
+                // Cập nhật photos để hiển thị
+                setPhotos((prev) => [...prev, ...validMediaFiles]);
+
+                // LẤY TẤT CẢ FILES HIỆN TẠI từ form
+                const currentFiles = form.getValues('files') || [];
+
+                // Thêm files mới vào danh sách files hiện tại
+                const allFiles = [...currentFiles, ...newFiles];
+
+                // Cập nhật form với TẤT CẢ files
+                form.setValue('files', allFiles);
             } catch (error: any) {
-                toast.error(error);
+                toast.error(error.message || 'Có lỗi xảy ra khi tải file');
             }
-
-            form.setValue('files', files);
         }
     };
 
@@ -165,7 +198,7 @@ const CreatePostPage = () => {
                                     </span>
                                 </label>
                                 <select
-                                    className="h-full cursor-pointer border bg-secondary-1 px-6 py-2 text-[10px] dark:bg-dark-secondary-1"
+                                    className="h-full cursor-pointer rounded-md border bg-secondary-1 p-1 text-sm dark:bg-dark-secondary-1"
                                     {...register('option')}
                                 >
                                     {postAudience.map((audience) => (

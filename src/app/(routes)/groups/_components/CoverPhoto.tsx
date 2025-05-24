@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import FileUploader from '@/components/shared/FileUploader';
+import { Button } from '@/components/ui/Button';
 import {
     Dialog,
     DialogContent,
@@ -8,13 +8,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/Button';
-import FileUploader from '@/components/shared/FileUploader';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import { getUrlByImageId } from '@/lib/actions/image.action';
-import toast from 'react-hot-toast';
-import { usePathname } from 'next/navigation';
 import { updateCoverPhoto } from '@/lib/actions/group.action';
+import { getUrlByImageId } from '@/lib/actions/image.action';
+import { uploadImageWithFile } from '@/lib/uploadImage';
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     group: IGroup;
@@ -24,8 +24,7 @@ const CoverPhoto: React.FC<Props> = ({ group }) => {
     const { data: session } = useSession();
     const canChangeCoverPhoto = session?.user.id === group.creator._id;
     const [openModal, setOpenModal] = useState(false);
-    const [files, setFiles] = useState<File[]>([]);
-    const [hover, setHover] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
     const path = usePathname();
 
     const handleChangeCoverPhoto = async () => {
@@ -36,11 +35,21 @@ const CoverPhoto: React.FC<Props> = ({ group }) => {
         });
 
         try {
-            const images = await uploadImagesWithFiles({
-                files,
+            if (!file) {
+                toast.error('Vui lòng chọn ảnh để tải lên');
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                toast.error('Vui lòng chọn tệp hình ảnh');
+                return;
+            }
+
+            const images = await uploadImageWithFile({
+                file,
             });
 
-            const coverPhotoId = images[0];
+            const coverPhotoId = images._id;
             const coverPhotoUrl = await getUrlByImageId({
                 imageId: coverPhotoId,
             });
@@ -90,7 +99,13 @@ const CoverPhoto: React.FC<Props> = ({ group }) => {
 
                             <FileUploader
                                 single
-                                handleChange={(files) => setFiles(files)}
+                                handleChange={(files) => {
+                                    if (files.length > 0) {
+                                        setFile(files[0]);
+                                    } else {
+                                        setFile(null);
+                                    }
+                                }}
                             />
 
                             <DialogFooter>
@@ -99,7 +114,7 @@ const CoverPhoto: React.FC<Props> = ({ group }) => {
                                         className={'min-w-[100px]'}
                                         variant={'primary'}
                                         onClick={handleChangeCoverPhoto}
-                                        disabled={files.length === 0}
+                                        disabled={!file}
                                     >
                                         Lưu
                                     </Button>

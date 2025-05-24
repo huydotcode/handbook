@@ -1,7 +1,7 @@
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
 
-export const downloadImage = (image: IImage) => {
+export const downloadImage = (image: IMedia) => {
     if (!image) {
         toast.error('Không thể tải ảnh');
         return;

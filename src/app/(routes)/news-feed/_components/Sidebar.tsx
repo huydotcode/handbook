@@ -51,7 +51,8 @@ const Sidebar = () => {
                                 className={cn(
                                     'w-full justify-start rounded-xl py-6 text-base font-normal lg:justify-center lg:p-0 lg:text-xl',
                                     {
-                                        'bg-primary-1 text-primary-2': isActive,
+                                        'bg-primary-1 text-primary-2 dark:bg-dark-primary-1':
+                                            isActive,
                                     }
                                 )}
                                 href={item.link}

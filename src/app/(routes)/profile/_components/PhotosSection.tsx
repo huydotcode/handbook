@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { removeImage } from '@/lib/actions/image.action';
 
 interface Props {
-    photos: IImage[];
+    photos: IMedia[];
 }
 
 const PhotosSection: React.FC<Props> = ({ photos }) => {

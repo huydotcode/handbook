@@ -8,7 +8,7 @@ import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 
 interface Props {
-    images: IImage[];
+    images: IMedia[];
 }
 
 const SwiperImagesItem: React.FC<Props> = ({ images }) => {

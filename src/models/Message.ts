@@ -2,7 +2,7 @@ import { Schema, Types, model, models } from 'mongoose';
 
 interface IMessageModel {
     text: string;
-    images: Types.ObjectId[];
+    media: Types.ObjectId[];
     sender: Types.ObjectId;
     conversation: Types.ObjectId;
     isPin: boolean;
@@ -24,9 +24,9 @@ const MessageSchema = new Schema<IMessageModel>(
         text: {
             type: String,
         },
-        images: {
+        media: {
             type: [Schema.Types.ObjectId],
-            ref: 'Image',
+            ref: 'Media',
             default: [],
         },
         isRead: {

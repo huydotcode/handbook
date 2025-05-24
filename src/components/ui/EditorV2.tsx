@@ -1,21 +1,25 @@
 'use client';
 import '@/styles/ui.scss';
 
+import { Button } from '@/components/ui/Button';
+import { MenuBarEditorIcons } from '@/components/ui/Icons';
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+
+import { cn } from '@/lib/utils';
 import { Color } from '@tiptap/extension-color';
+import { Level } from '@tiptap/extension-heading';
 import ListItem from '@tiptap/extension-list-item';
 import TextStyle from '@tiptap/extension-text-style';
 import { EditorProvider, useCurrentEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import Icons, { MenuBarEditorIcons } from '@/components/ui/Icons';
-import { Level } from '@tiptap/extension-heading';
-import { Button } from '@/components/ui/Button';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/Popover';
+import React, { useEffect, useState } from 'react';
 
 const extensions = [
     Color.configure({ types: [TextStyle.name, ListItem.name] }),
@@ -91,19 +95,15 @@ const EditorV2 = ({
                     }
                 }}
             />
-            {/* Hiển thị trạng thái trống (cho mục đích debug) */}
-            {/* <div className="text-xs text-gray-500 mt-2">
-                Editor trống: {isEmpty ? 'Có' : 'Không'}
-            </div> */}
         </div>
     );
 };
 
 const headingLeves = [
-    { level: 1, label: 'Heading 1' },
-    { level: 2, label: 'Heading 2' },
-    { level: 3, label: 'Heading 3' },
-    { level: 4, label: 'Heading 4' },
+    { level: 1, label: 'Tiêu đề 1' },
+    { level: 2, label: 'Tiêu đề 2' },
+    { level: 3, label: 'Tiêu đề 3' },
+    { level: 4, label: 'Tiêu đề 4' },
 ];
 
 const Menubar = () => {
@@ -121,6 +121,17 @@ const Menubar = () => {
             ),
         });
     };
+
+    const activeHeading =
+        headingLeves.find((h) =>
+            editor.isActive('heading', { level: h.level })
+        ) || null;
+
+    const currentHeading = activeHeading
+        ? activeHeading.label
+        : editor.isActive('paragraph')
+          ? 'Văn bản'
+          : 'Định dạng';
 
     return (
         <div className="mb-2 rounded-xl bg-secondary-1 p-2 dark:bg-dark-secondary-1">
@@ -183,41 +194,43 @@ const Menubar = () => {
                     <MenuBarEditorIcons.Paragraph />
                 </Button>
 
-                <Popover>
-                    <PopoverContent>
-                        <div className={'flex flex-col'}>
-                            {headingLeves.map((heading) => (
-                                <Button
-                                    className={getClassName(
-                                        'heading',
-                                        heading.level
-                                    )}
-                                    variant={'text'}
-                                    key={heading.level}
-                                    onClick={() => {
-                                        editor
-                                            .chain()
-                                            .focus()
-                                            .toggleHeading({
-                                                level: heading.level as Level,
-                                            })
-                                            .run();
-                                    }}
-                                >
-                                    {heading.label}
-                                </Button>
-                            ))}
-                        </div>
-                    </PopoverContent>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant={'ghost'}
-                            className={'flex items-center gap-2'}
-                        >
-                            Heading 1 <Icons.ArrowDown />
-                        </Button>
-                    </PopoverTrigger>
-                </Popover>
+                <Select
+                    value={activeHeading ? activeHeading.level.toString() : '0'}
+                    onValueChange={(value) => {
+                        const level = parseInt(value);
+                        if (level === 0) {
+                            editor.chain().focus().setParagraph().run();
+                        } else {
+                            editor
+                                .chain()
+                                .focus()
+                                .toggleHeading({
+                                    level: level as Level,
+                                })
+                                .run();
+                        }
+                    }}
+                >
+                    <SelectTrigger className="w-[140px] gap-2 border border-secondary-2 hover:cursor-pointer dark:border-dark-secondary-2">
+                        <SelectValue placeholder="Định dạng">
+                            {currentHeading}
+                        </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999]">
+                        <SelectItem className="cursor-pointer" value="0">
+                            Văn bản
+                        </SelectItem>
+                        {headingLeves.map((heading) => (
+                            <SelectItem
+                                key={heading.level}
+                                value={heading.level.toString()}
+                                className="cursor-pointer"
+                            >
+                                {heading.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
 
                 <Button
                     variant={'ghost'}

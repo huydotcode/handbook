@@ -190,6 +190,8 @@ const PostContent = ({ post }: { post: IPost }) => {
     const [contentLength, setContentLength] = useState(post.text.length);
 
     const content = post.text.slice(0, contentLength).replace(/\n/g, '<br/>');
+    const images = post.media.filter((m) => m.resourceType === 'image');
+    const videos = post.media.filter((m) => m.resourceType === 'video');
 
     return (
         <div className="post-content my-2">
@@ -216,7 +218,22 @@ const PostContent = ({ post }: { post: IPost }) => {
                 </Button>
             )}
 
-            {post.images.length > 0 && <PhotoGrid images={post.images} />}
+            {images.length > 0 && <PhotoGrid images={images} />}
+
+            {videos.length > 0 && (
+                <div className="mt-3">
+                    {videos.map((video) => (
+                        <video
+                            key={video._id}
+                            className="w-full rounded-md"
+                            controls
+                            src={video.url}
+                        >
+                            Your browser does not support the video tag.
+                        </video>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

@@ -1,6 +1,4 @@
-import Image from 'next/image';
-import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
+import FileUploader from '@/components/shared/FileUploader';
 import { Button } from '@/components/ui/Button';
 import {
     Dialog,
@@ -10,12 +8,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import FileUploader from '@/components/shared/FileUploader';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import toast from 'react-hot-toast';
-import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { updateAvatar } from '@/lib/actions/group.action';
+import { uploadImageWithFile } from '@/lib/uploadImage';
+import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     group: IGroup;
@@ -27,7 +27,7 @@ const Avatar: React.FC<Props> = ({ group }) => {
     const [hover, setHover] = useState(false);
     const canChangeAvatar = session?.user?.id === group.creator._id;
     const [openModal, setOpenModal] = useState(false);
-    const [files, setFiles] = useState<File[]>([]);
+    const [file, setFile] = useState<File | null>(null);
 
     const handleChangeAvatar = async () => {
         setOpenModal(false);
@@ -37,19 +37,24 @@ const Avatar: React.FC<Props> = ({ group }) => {
         });
 
         try {
-            const images = await uploadImagesWithFiles({
-                files,
+            if (!file) {
+                toast.error('Vui lòng chọn ảnh để tải lên');
+                return;
+            }
+
+            const avatar = await uploadImageWithFile({
+                file: file,
             });
 
-            const avatarId = images[0];
-
-            if (!avatarId) {
-                toast.error('Có lỗi xảy ra');
+            if (!avatar?._id) {
+                toast.error(
+                    'Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại sau'
+                );
                 return;
             }
 
             await updateAvatar({
-                avatarId,
+                avatarId: avatar._id,
                 groupId: group._id,
                 path,
             });
@@ -102,7 +107,12 @@ const Avatar: React.FC<Props> = ({ group }) => {
 
                         <FileUploader
                             single
-                            handleChange={(files) => setFiles(files)}
+                            handleChange={(files) => {
+                                if (files.length > 0) {
+                                    setFile(files[0]);
+                                }
+                            }}
+                            onlyImage
                         />
 
                         <DialogFooter>
@@ -111,7 +121,7 @@ const Avatar: React.FC<Props> = ({ group }) => {
                                     className={'min-w-[100px]'}
                                     variant={'primary'}
                                     onClick={handleChangeAvatar}
-                                    disabled={files.length === 0}
+                                    disabled={!file}
                                 >
                                     Lưu
                                 </Button>

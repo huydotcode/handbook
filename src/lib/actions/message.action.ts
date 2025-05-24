@@ -7,7 +7,7 @@ import { getAuthSession } from '../auth';
 /*
     * Message Model: 
     text: string;
-    images: Types.ObjectId[];
+    media: Types.ObjectId[];
     sender: Types.ObjectId;
     conversation: string;
     isRead: boolean;
@@ -27,7 +27,7 @@ export const getMessageByMessageId = async ({
         const message = await Message.findById(messageId)
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('images');
+            .populate('media');
 
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
@@ -58,7 +58,7 @@ export const getMessagesWithConversationId = async ({
         })
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('images')
+            .populate('media')
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .sort({ createdAt: 1 });
@@ -88,9 +88,16 @@ export const sendMessage = async ({
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
+        console.log({
+            text,
+            media: images,
+            sender: session.user.id,
+            conversation: roomId,
+        });
+
         const msg = new Message({
             text,
-            images,
+            media: images,
             sender: session.user.id,
             conversation: roomId,
         });
@@ -100,7 +107,7 @@ export const sendMessage = async ({
         const message = await Message.findById(msg._id)
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('images');
+            .populate('media');
 
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
@@ -144,7 +151,7 @@ export const getMessages = async ({
             .limit(pageSize)
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('images')
+            .populate('media')
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(messages));
@@ -167,7 +174,7 @@ export const getLastMessageByCoversationId = async ({
         })
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('images')
+            .populate('media')
             .sort({ createdAt: -1 });
 
         return JSON.parse(JSON.stringify(message));

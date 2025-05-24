@@ -3,7 +3,7 @@ import mongoose, { Schema, Types, model, models } from 'mongoose';
 interface IPostModel {
     option: string;
     text: string;
-    images: Types.ObjectId[];
+    media: Types.ObjectId[];
     author: Types.ObjectId;
     loves: Types.ObjectId[];
     shares: Types.ObjectId[];
@@ -23,10 +23,10 @@ const PostSchema = new Schema<IPostModel>(
             type: String,
             default: '',
         },
-        images: {
+        media: {
             type: [Types.ObjectId],
             default: [],
-            ref: 'Image',
+            ref: 'Media',
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,

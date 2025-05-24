@@ -40,7 +40,7 @@ const CoverPhoto: React.FC<Props> = ({ profile }) => {
                 files,
             });
 
-            const coverPhotoId = images[0];
+            const coverPhotoId = images[0]._id;
             const coverPhotoUrl = await getUrlByImageId({
                 imageId: coverPhotoId,
             });

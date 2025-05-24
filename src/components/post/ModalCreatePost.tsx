@@ -12,15 +12,20 @@ import {
 
 import { Fade, Modal } from '@mui/material';
 
+import { Button } from '@/components/ui/Button';
 import postAudience from '@/constants/postAudience.constant';
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
 import TextEditor from '../ui/TextEditor';
 import AddToPost from './AddToPost';
 import Photos from './Photos';
-import { Button } from '@/components/ui/Button';
-import { convertFilesToBase64 } from '@/utils/downloadFile';
-import toast from 'react-hot-toast';
+
+interface MediaItem {
+    url: string;
+    type: 'image' | 'video';
+    file?: File; // Chỉ có với video mới upload
+}
 
 interface Props {
     show: boolean;
@@ -30,11 +35,12 @@ interface Props {
     submit: (
         e?: BaseSyntheticEvent<object, any, any> | undefined
     ) => Promise<void>;
-    photos: any;
-    setPhotos: React.Dispatch<React.SetStateAction<any[]>>;
+    photos: MediaItem[];
+    setPhotos: React.Dispatch<React.SetStateAction<MediaItem[]>>;
     form: UseFormReturn<IPostFormData>;
     formState: FormState<IPostFormData>;
     control: Control<IPostFormData, any>;
+    groupId?: string;
 }
 
 const ModalCreatePost: React.FC<Props> = ({
@@ -48,29 +54,87 @@ const ModalCreatePost: React.FC<Props> = ({
     submit,
     photos,
     setPhotos,
+    groupId,
 }) => {
     const { data: session } = useSession();
 
     // Xử lý thay đổi ảnh
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
+        console.log('handleChangeImage', fileList);
         if (fileList) {
-            const files: File[] = Array.from(fileList);
+            const newFiles: File[] = Array.from(fileList);
 
             try {
-                const base64Files = await convertFilesToBase64(files);
+                // Kiểm tra kích thước video
+                const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 
-                setPhotos((prev) => [...prev, ...base64Files]);
+                for (const file of newFiles) {
+                    if (
+                        file.type.startsWith('video/') &&
+                        file.size > MAX_VIDEO_SIZE
+                    ) {
+                        toast.error(
+                            `Video "${file.name}" quá lớn. Vui lòng chọn video nhỏ hơn 50MB.`
+                        );
+                        return;
+                    }
+                }
+
+                const mediaFiles: MediaItem[] = newFiles
+                    .filter(
+                        (file) =>
+                            file.type.startsWith('image/') ||
+                            file.type.startsWith('video/')
+                    )
+                    .map((file) => {
+                        return {
+                            url: URL.createObjectURL(file),
+                            type: file.type.startsWith('video/')
+                                ? 'video'
+                                : 'image',
+                            file: file, // Chỉ có với video mới upload
+                        };
+                    });
+
+                const validMediaFiles = mediaFiles.filter(Boolean); // Loại bỏ các giá trị null
+
+                // Cập nhật photos để hiển thị
+                console.log('validMediaFiles', validMediaFiles);
+                setPhotos((prev) => [...prev, ...validMediaFiles]);
+
+                // LẤY TẤT CẢ FILES HIỆN TẠI từ form
+                const currentFiles = form.getValues('files') || [];
+
+                // Thêm files mới vào danh sách files hiện tại
+                const allFiles = [...currentFiles, ...newFiles];
+
+                console.log('New files added:', allFiles);
+
+                // Cập nhật form với TẤT CẢ files
+                form.setValue('files', allFiles);
             } catch (error: any) {
-                toast.error(error);
+                toast.error(error.message || 'Có lỗi xảy ra khi tải file');
             }
-
-            form.setValue('files', files);
         }
     };
 
     const handleRemoveImage = (index: number) => {
-        setPhotos((prev) => prev.filter((_, i) => i !== index));
+        // Xóa khỏi state photos
+        setPhotos((prev) => {
+            const newPhotos = prev.filter((_, i) => i !== index);
+
+            // Lấy danh sách files hiện tại
+            const currentFiles = form.getValues('files') || [];
+
+            // Xóa file tương ứng (đảm bảo index phù hợp)
+            const newFiles = currentFiles.filter((_, i) => i !== index);
+
+            // Cập nhật form
+            form.setValue('files', newFiles);
+
+            return newPhotos;
+        });
     };
 
     return (
@@ -99,7 +163,7 @@ const ModalCreatePost: React.FC<Props> = ({
 
                         <div className="relative mt-3 flex flex-col">
                             <Button
-                                href={'/create-post'}
+                                href={`/create-post?group_id=${groupId}`}
                                 variant={'text'}
                                 size={'sm'}
                                 className={

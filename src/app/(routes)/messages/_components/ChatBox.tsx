@@ -166,7 +166,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             await sendMessage({
                 roomId: conversation._id,
                 text: '',
-                images,
+                images: images.map((image) => image._id),
             });
 
             await invalidateAfterSendMessage(conversation._id);

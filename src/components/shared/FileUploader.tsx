@@ -17,6 +17,7 @@ interface Props {
     className?: string;
     handleChange?: (files: File[]) => void;
     single?: boolean;
+    onlyImage?: boolean; // Chỉ cho phép hình ảnh
 }
 
 export const FileUploaderWrapper = ({
@@ -146,8 +147,10 @@ const FileUploader: React.FC<Props> = ({
     className,
     handleChange,
     single = false,
+    onlyImage = false, // Chỉ cho phép hình ảnh
 }) => {
     const [files, setFiles] = useState<File[]>([]);
+    const acceptType = onlyImage ? 'image/*' : 'video/*, image/*';
 
     // Function to handle file selection (from both drag-and-drop and browse)
     const handleFileSelect = useCallback(
@@ -226,6 +229,7 @@ const FileUploader: React.FC<Props> = ({
                             className="hidden"
                             onChange={handleFileSelect}
                             multiple={!single}
+                            accept={acceptType}
                         />
                     </label>
                 </>

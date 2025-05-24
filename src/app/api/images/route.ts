@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { Image } from '@/models';
+import { Media } from '@/models';
 import { getAuthSession } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
         const imageUpload = await cloudinary.uploader.upload(image);
 
-        const newImage = await new Image({
+        const newMedia = await new Media({
             publicId: imageUpload.public_id,
             width: imageUpload.width,
             height: imageUpload.height,
@@ -33,9 +33,9 @@ export async function POST(request: Request) {
             creator: session.user.id,
         });
 
-        await newImage.save();
+        await newMedia.save();
 
-        return NextResponse.json(newImage, {
+        return NextResponse.json(newMedia, {
             status: 200,
         });
     } catch (error) {
@@ -64,7 +64,7 @@ export async function DELETE(request: Request) {
             });
         }
 
-        const image = await Image.findOne({
+        const image = await Media.findOne({
             publicId,
             creator: session?.user.id,
         });

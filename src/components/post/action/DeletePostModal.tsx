@@ -37,7 +37,7 @@ const DeletePostModal: React.FC<Props> = ({
             );
 
             await invalidatePosts();
-            await invalidateNewFeedPosts('', '', '', '');
+            await invalidateNewFeedPosts({});
         } catch (error: any) {
             console.log(error);
         } finally {

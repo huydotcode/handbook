@@ -1,5 +1,5 @@
 'use server';
-import { Image, Location, Profile, User } from '@/models';
+import { Media, Location, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
@@ -53,7 +53,7 @@ export const getProfilePicturesAction = async ({
     try {
         await connectToDB();
 
-        const images = await Image.find({ creator: userId });
+        const images = await Media.find({ creator: userId });
         return JSON.parse(JSON.stringify(images));
     } catch (error: any) {
         throw new Error(error);

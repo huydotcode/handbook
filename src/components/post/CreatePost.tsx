@@ -22,12 +22,18 @@ interface Props {
 
 const TOAST_POSITION = 'bottom-left';
 
+interface MediaItem {
+    url: string;
+    type: 'image' | 'video';
+    file?: File;
+}
+
 const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const { data: session } = useSession();
     const { invalidatePosts } = useQueryInvalidation();
 
     const [show, setShow] = useState(false);
-    const [photos, setPhotos] = useState<any[]>([]);
+    const [photos, setPhotos] = useState<MediaItem[]>([]);
 
     const handleClose = useCallback(() => setShow(false), []);
     const handleShow = useCallback(() => setShow(true), []);
@@ -62,19 +68,23 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     return;
                 }
 
-                const imagesId = await uploadImagesWithFiles({ files });
+                const results = await uploadImagesWithFiles({
+                    files: files,
+                });
+                const resultsId = results.map((result) => result._id);
 
-                const newPost = (await createPost({
+                await createPost({
                     content,
                     option,
-                    images: imagesId,
+                    mediaIds: resultsId,
                     groupId,
                     type,
-                })) as IPost;
+                });
 
                 await invalidatePosts();
                 resetForm();
             } catch (error: any) {
+                console.log('Error creating post:', error);
                 throw new Error(error);
             }
         },
@@ -167,6 +177,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     form={form}
                     formState={formState}
                     control={control}
+                    groupId={groupId}
                 />
             )}
         </>

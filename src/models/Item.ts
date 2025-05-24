@@ -40,7 +40,7 @@ export const ItemSchema = new Schema<IItemModel>(
         images: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Image',
+                ref: 'Media',
             },
         ],
         location: {

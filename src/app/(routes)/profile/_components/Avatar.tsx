@@ -1,6 +1,4 @@
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+import FileUploader from '@/components/shared/FileUploader';
 import { Button } from '@/components/ui/Button';
 import {
     Dialog,
@@ -10,13 +8,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import FileUploader from '@/components/shared/FileUploader';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import toast from 'react-hot-toast';
 import { updateAvatar } from '@/lib/actions/profile.action';
-import { usePathname } from 'next/navigation';
-import { getUrlByImageId } from '@/lib/actions/image.action';
+import { uploadImageWithFile } from '@/lib/uploadImage';
+import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     user: IUser;
@@ -28,7 +27,7 @@ const Avatar: React.FC<Props> = ({ user }) => {
     const [hover, setHover] = useState(false);
     const canChangeAvatar = session?.user?.id === user._id;
     const [openModal, setOpenModal] = useState(false);
-    const [files, setFiles] = useState<File[]>([]);
+    const [file, setFile] = useState<File | null>(null);
 
     const handleChangeAvatar = async () => {
         setOpenModal(false);
@@ -38,20 +37,17 @@ const Avatar: React.FC<Props> = ({ user }) => {
         });
 
         try {
-            const images = await uploadImagesWithFiles({
-                files,
-            });
-
-            const avatarId = images[0];
-            const avatarUrl = await getUrlByImageId({ imageId: avatarId });
-
-            if (!avatarUrl) {
-                toast.error('Có lỗi xảy ra');
+            if (!file) {
+                toast.error('Vui lòng chọn ảnh để tải lên');
                 return;
             }
 
+            const image = await uploadImageWithFile({
+                file,
+            });
+
             await updateAvatar({
-                avatar: avatarUrl,
+                avatar: image.url,
                 userId: user._id,
                 path,
             });
@@ -102,7 +98,14 @@ const Avatar: React.FC<Props> = ({ user }) => {
 
                         <FileUploader
                             single
-                            handleChange={(files) => setFiles(files)}
+                            onlyImage
+                            handleChange={(files) => {
+                                if (files.length > 0) {
+                                    setFile(files[0]);
+                                } else {
+                                    setFile(null);
+                                }
+                            }}
                         />
 
                         <DialogFooter>
@@ -111,7 +114,7 @@ const Avatar: React.FC<Props> = ({ user }) => {
                                     className={'min-w-[100px]'}
                                     variant={'primary'}
                                     onClick={handleChangeAvatar}
-                                    disabled={files.length === 0}
+                                    disabled={!file}
                                 >
                                     Lưu
                                 </Button>

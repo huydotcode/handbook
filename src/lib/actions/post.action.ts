@@ -84,7 +84,7 @@ export const getNewFeedPosts = async ({
 
         let posts = await Post.find(query)
             .populate('author', POPULATE_USER)
-            .populate('images')
+            .populate('media')
             .populate(POPULATE_GROUP)
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER)
@@ -128,7 +128,7 @@ export const getPostByPostId = async ({ postId }: { postId: string }) => {
         const post = await Post.findById(postId)
             .populate('author', POPULATE_USER)
             .populate(POPULATE_GROUP)
-            .populate('images')
+            .populate('media')
             .populate('loves', POPULATE_USER)
             .populate('shares', POPULATE_USER);
 
@@ -145,7 +145,7 @@ export const getSavedPosts = async ({ userId }: { userId: string }) => {
         const savedPost = await SavedPost.findOne({ userId })
             .populate('posts')
             .populate('posts.author', POPULATE_USER)
-            .populate('posts.images')
+            .populate('posts.media')
             .populate('posts.group', POPULATE_GROUP)
             .populate('posts.loves', POPULATE_USER)
             .populate('posts.shares', POPULATE_USER);
@@ -158,13 +158,13 @@ export const getSavedPosts = async ({ userId }: { userId: string }) => {
 
 export const createPost = async ({
     content,
-    images,
+    mediaIds,
     option,
     groupId = null,
     type = 'default',
 }: {
     content: string;
-    images: any[];
+    mediaIds: string[];
     option: string;
     groupId?: string | null;
     type?: string;
@@ -177,7 +177,7 @@ export const createPost = async ({
 
         const newPost = new Post({
             text: content,
-            images,
+            media: mediaIds,
             option,
             author: session.user.id,
             group: groupId,
@@ -196,12 +196,12 @@ export const createPost = async ({
 
 export const editPost = async ({
     content,
-    images,
+    mediaIds,
     option,
     postId,
 }: {
     content: string;
-    images: string[];
+    mediaIds: string[];
     option: string;
     postId: string;
 }) => {
@@ -213,7 +213,7 @@ export const editPost = async ({
 
         await Post.findByIdAndUpdate(postId, {
             text: content,
-            images,
+            media: mediaIds,
             option,
         });
 

@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/Button';
 interface Props {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
-    images: IImage[];
+    images: IMedia[];
     startIndex?: number;
 }
 

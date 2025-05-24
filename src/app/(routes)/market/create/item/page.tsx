@@ -20,13 +20,10 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCategories, useLocations } from '@/context/AppContext';
-import { getCategories } from '@/lib/actions/category.action';
 import { createItem } from '@/lib/actions/item.action';
-import { getCategoriesKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createItemValidation, CreateItemValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -63,16 +60,16 @@ const CreateItemPage = () => {
                 files,
             });
 
-            const newItem = (await createItem({
+            await createItem({
                 name: data.name,
                 seller: session?.user.id || '',
                 description: data.description,
                 price: +data.price,
-                images,
+                imagesIds: images.map((image) => image._id),
                 location: data.location,
                 category: data.category,
                 status: 'active',
-            })) as IItem;
+            });
 
             toast.success('Tạo sản phẩm thành công');
         } catch (error) {
