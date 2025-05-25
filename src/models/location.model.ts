@@ -20,6 +20,6 @@ LocationSchema.index({ slug: 1 }, { unique: true }); // Unique index for slug
 LocationSchema.index({ name: 1 }); // Index for name search
 
 const Location =
-    models.Location || model<ILocationModel>('location', LocationSchema);
+    models.Location || model<ILocationModel>('Location', LocationSchema);
 
 export default Location;

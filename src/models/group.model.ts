@@ -29,20 +29,20 @@ const GroupSchema = new Schema<IGroupModel>(
         },
         avatar: {
             type: Schema.Types.ObjectId,
-            ref: 'media',
+            ref: 'Media',
             required: true,
         },
         creator: {
             type: Schema.Types.ObjectId,
             required: true,
-            ref: 'user',
+            ref: 'User',
         },
         members: [
             {
                 user: {
                     type: Schema.Types.ObjectId,
                     required: true,
-                    ref: 'user',
+                    ref: 'User',
                 },
                 role: {
                     type: String,
@@ -77,5 +77,5 @@ GroupSchema.index({ name: 1 }); // Index for name
 GroupSchema.index({ creator: 1 }); // Index for creator
 GroupSchema.index({ 'members.user': 1 }); // Index for members
 
-const Group = models.Group || model<IGroupModel>('group', GroupSchema);
+const Group = models.Group || model<IGroupModel>('Group', GroupSchema);
 export default Group;

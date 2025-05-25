@@ -26,7 +26,7 @@ export const ItemSchema = new Schema<IItemModel>(
         },
         seller: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         description: {
@@ -40,16 +40,16 @@ export const ItemSchema = new Schema<IItemModel>(
         images: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'media',
+                ref: 'Media',
             },
         ],
         location: {
             type: Schema.Types.ObjectId,
-            ref: 'location',
+            ref: 'Location',
             required: true,
         },
         category: {
-            ref: 'category',
+            ref: 'Category',
             type: Schema.Types.ObjectId,
             required: true,
         },
@@ -85,6 +85,6 @@ ItemSchema.index({ name: 1 }); // Index for name search
 ItemSchema.index({ seller: 1 }); // Index for seller
 ItemSchema.index({ category: 1 }); // Index for category
 
-const Item = models.Item || model<IItemModel>('item', ItemSchema);
+const Item = models.Item || model<IItemModel>('Item', ItemSchema);
 
 export default Item;

@@ -18,22 +18,22 @@ export const CommentSchema = new Schema<ICommentModel>(
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         replyComment: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'comment',
+            ref: 'Comment',
             default: null,
         },
         post: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'post',
+            ref: 'Post',
             required: true,
         },
         loves: {
             type: [mongoose.Schema.Types.ObjectId],
-            ref: 'user',
+            ref: 'User',
             default: [],
         },
         isDeleted: {
@@ -55,6 +55,6 @@ CommentSchema.index({ replyComment: 1 }); // Index for replies to a comment
 CommentSchema.index({ post: 1, createdAt: -1 }); // Compound index for comments in a post sorted by date
 
 const Comment =
-    models.Comment || model<ICommentModel>('comment', CommentSchema);
+    models.Comment || model<ICommentModel>('Comment', CommentSchema);
 
 export default Comment;

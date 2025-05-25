@@ -11,12 +11,12 @@ const FollowsSchema = new Schema<IFollowsModel>(
     {
         follower: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         following: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
     },
@@ -49,6 +49,6 @@ FollowsSchema.pre<IFollowsModel>('deleteOne', function (next) {
 });
 
 const Follows =
-    models.Follows || model<IFollowsModel>('follows', FollowsSchema);
+    models.Follows || model<IFollowsModel>('Follows', FollowsSchema);
 
 export default Follows;

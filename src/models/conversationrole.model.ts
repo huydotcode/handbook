@@ -11,12 +11,12 @@ const ConversationRoleSchema = new Schema<IConversationRoleModel>(
     {
         conversationId: {
             type: Schema.Types.ObjectId,
-            ref: 'conversation',
+            ref: 'Conversation',
             required: true,
         },
         userIds: {
             type: [Schema.Types.ObjectId],
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         role: {
@@ -32,6 +32,6 @@ const ConversationRoleSchema = new Schema<IConversationRoleModel>(
 
 const ConversationRole =
     models?.ConversationRole ||
-    model<IConversationRoleModel>('conversationrole', ConversationRoleSchema);
+    model<IConversationRoleModel>('ConversationRole', ConversationRoleSchema);
 
 export default ConversationRole;

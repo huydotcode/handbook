@@ -11,6 +11,7 @@ import locationRouter from './location.route';
 import notificationRouter from './notification.route';
 import requestRouter from './request.route';
 import groupRouter from './group.route';
+import uploadRouter from './upload.route';
 
 const apiRouter = Router();
 
@@ -26,5 +27,6 @@ apiRouter.use('/locations', locationRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/requests', requestRouter);
 apiRouter.use('/groups', groupRouter);
+apiRouter.use('/upload', uploadRouter);
 
 export default apiRouter;

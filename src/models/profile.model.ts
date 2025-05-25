@@ -14,7 +14,7 @@ const ProfileSchema = new Schema<IProfileModel>(
     {
         user: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         coverPhoto: String,
@@ -32,5 +32,5 @@ const ProfileSchema = new Schema<IProfileModel>(
 ProfileSchema.index({ user: 1 });
 
 const Profile =
-    models.Profile || model<IProfileModel>('profile', ProfileSchema);
+    models.Profile || model<IProfileModel>('Profile', ProfileSchema);
 export default Profile;

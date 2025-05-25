@@ -17,33 +17,33 @@ interface IConversationModel {
 const ConversationModel = new Schema<IConversationModel>(
     {
         title: { type: String, default: '' },
-        creator: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+        creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         participants: {
             type: [Schema.Types.ObjectId],
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
         lastMessage: {
             type: Schema.Types.ObjectId,
-            ref: 'message',
+            ref: 'Message',
             required: false,
             default: null,
         },
         avatar: {
             type: Schema.Types.ObjectId,
-            ref: 'media',
+            ref: 'Media',
             required: false,
         },
         type: { type: String, default: 'private', enum: ['private', 'group'] },
         group: {
             type: Schema.Types.ObjectId,
-            ref: 'group',
+            ref: 'Group',
             required: false,
             default: null,
         },
         pinnedMessages: {
             type: [Schema.Types.ObjectId],
-            ref: 'message',
+            ref: 'Message',
             required: false,
             default: [],
         },
@@ -56,6 +56,6 @@ ConversationModel.index({ title: 'text' });
 
 const Conversation =
     models.Conversation ||
-    model<IConversationModel>('conversation', ConversationModel);
+    model<IConversationModel>('Conversation', ConversationModel);
 
 export default Conversation;

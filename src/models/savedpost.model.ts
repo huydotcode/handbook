@@ -11,10 +11,10 @@ const SavedPostSchema = new Schema<SavedPostModel>(
     {
         userId: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
-        posts: [{ type: Schema.Types.ObjectId, ref: 'post' }],
+        posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     },
     {
         timestamps: true,
@@ -24,6 +24,6 @@ const SavedPostSchema = new Schema<SavedPostModel>(
 SavedPostSchema.index({ userId: 1 });
 
 const SavedPost =
-    models.SavedPost || model<SavedPostModel>('savedpost', SavedPostSchema);
+    models.SavedPost || model<SavedPostModel>('SavedPost', SavedPostSchema);
 
 export default SavedPost;

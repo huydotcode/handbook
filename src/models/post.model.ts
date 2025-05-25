@@ -3,7 +3,7 @@ import mongoose, { Schema, Types, model, models } from 'mongoose';
 interface IPostModel {
     option: string;
     text: string;
-    images: Types.ObjectId[];
+    media: Types.ObjectId[];
     author: Types.ObjectId;
     loves: Types.ObjectId[];
     shares: Types.ObjectId[];
@@ -23,21 +23,21 @@ const PostSchema = new Schema<IPostModel>(
             type: String,
             default: '',
         },
-        images: {
+        media: {
             type: [Types.ObjectId],
             default: [],
-            ref: 'media',
+            ref: 'Media',
         },
         author: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'User',
             required: true,
         },
-        loves: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
-        shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+        loves: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         group: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'group',
+            ref: 'Group',
             default: null,
         },
         comments_count: {
@@ -64,6 +64,6 @@ PostSchema.index({ author: 1 }); // Index for posts by author
 PostSchema.index({ createdAt: -1 }); // Index for posts by date
 PostSchema.index({ text: 'text' }); // Index for posts by text
 
-const Post = models.Post || model<IPostModel>('post', PostSchema);
+const Post = models.Post || model<IPostModel>('Post', PostSchema);
 
 export default Post;

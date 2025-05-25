@@ -71,8 +71,8 @@ const UserSchema = new Schema<IUserModel>(
         givenName: String,
         familyName: String,
         locale: String,
-        friends: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-        groups: [{ type: Schema.Types.ObjectId, ref: 'group' }],
+        friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
         followersCount: {
             type: Number,
             default: 0,
@@ -110,6 +110,6 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
-const User = models.user || model<IUserModel>('user', UserSchema);
+const User = models.user || model<IUserModel>('User', UserSchema);
 
 export default User;
