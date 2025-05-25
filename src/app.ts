@@ -6,7 +6,7 @@ import { connectToMongo } from './services/mongodb';
 import cors from 'cors';
 import authMiddleware from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
-import limiteMiddlware from './middlewares/limite.middlware';
+// import limiteMiddlware from './middlewares/limite.middlware';
 
 const morgan = require('morgan');
 
@@ -33,7 +33,8 @@ app.use(
     })
 );
 
-app.use('/api/v1', limiteMiddlware, authMiddleware, apiRouter);
+// app.use('/api/v1', limiteMiddlware, authMiddleware, apiRouter);
+app.use('/api/v1', authMiddleware, apiRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
