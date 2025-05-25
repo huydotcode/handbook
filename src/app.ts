@@ -11,6 +11,7 @@ import limiteMiddlware from './middlewares/limite.middlware';
 const morgan = require('morgan');
 
 const app = express();
+app.set('trust proxy', true);
 
 connectToMongo();
 
