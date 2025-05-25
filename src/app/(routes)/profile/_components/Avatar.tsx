@@ -23,7 +23,7 @@ interface Props {
 
 const Avatar: React.FC<Props> = ({ user }) => {
     const path = usePathname();
-    const { data: session } = useSession();
+    const { data: session, update } = useSession();
     const [hover, setHover] = useState(false);
     const canChangeAvatar = session?.user?.id === user._id;
     const [openModal, setOpenModal] = useState(false);
@@ -51,6 +51,21 @@ const Avatar: React.FC<Props> = ({ user }) => {
                 userId: user._id,
                 path,
             });
+
+            toast.success('Cập nhật ảnh đại diện thành công', {
+                id: 'uplodate-avatar',
+            });
+
+            // Update session data
+            if (session?.user) {
+                update({
+                    ...session,
+                    user: {
+                        ...session.user,
+                        image: image.url,
+                    },
+                });
+            }
         } catch (error) {
             console.log(error);
             toast.error('Có lỗi xảy ra');

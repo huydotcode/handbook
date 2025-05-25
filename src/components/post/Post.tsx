@@ -22,6 +22,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     data: IPost;
@@ -34,8 +35,8 @@ const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
     const { data: post } = useQuery<IPost>({
         queryKey: getPostKey(data._id),
         queryFn: async () => {
-            const post = await getPostByPostId({ postId: data._id });
-            return post;
+            const post = await axiosInstance.get<IPost>(`/posts/${data._id}`);
+            return post.data;
         },
         refetchInterval: false,
         refetchOnWindowFocus: false,

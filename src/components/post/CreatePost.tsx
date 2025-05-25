@@ -14,6 +14,7 @@ import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { ModalCreatePost } from '.';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
     groupId?: string;
@@ -80,6 +81,8 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     groupId,
                     type,
                 });
+
+                // await axiosInstance.post('/posts', postData);
 
                 await invalidatePosts();
                 resetForm();

@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast';
-import { convertFileToBase64 } from '@/lib/convertFileToBase64';
+import axiosInstance from './axios';
 
 export const uploadImages = async ({
     photos,
@@ -36,47 +36,45 @@ export const uploadImageWithFile = async ({
         case 'image':
             const formDataImage = new FormData();
             formDataImage.append('image', file);
-            const responseImage = await fetch('/api/upload/image', {
-                method: 'POST',
-                body: formDataImage,
-            });
 
-            if (!responseImage.ok) {
-                const errorData = await responseImage.json();
+            const response = await axiosInstance.post(
+                '/upload/image',
+                formDataImage,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (!response.data.success) {
                 throw new Error(
-                    errorData.message || 'Lỗi khi tải lên hình ảnh'
+                    response.data.message || 'Lỗi khi tải lên hình ảnh'
                 );
             }
 
-            const resultImage = await responseImage.json();
-            if (!resultImage.success) {
-                throw new Error(
-                    resultImage.message || 'Lỗi khi tải lên hình ảnh'
-                );
-            }
-
-            return resultImage.data;
+            return response.data.data;
 
         case 'video':
             const formDataVideo = new FormData();
             formDataVideo.append('video', file);
+            const responseVideo = await axiosInstance.post(
+                '/upload/video',
+                formDataVideo,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
 
-            const responseVideo = await fetch('/api/upload/video', {
-                method: 'POST',
-                body: formDataVideo,
-            });
-
-            if (!responseVideo.ok) {
-                const errorData = await responseVideo.json();
-                throw new Error(errorData.message || 'Lỗi khi tải lên video');
+            if (!responseVideo.data.success) {
+                throw new Error(
+                    responseVideo.data.message || 'Lỗi khi tải lên video'
+                );
             }
 
-            const resultVideo = await responseVideo.json();
-            if (!resultVideo.success) {
-                throw new Error(resultVideo.message || 'Lỗi khi tải lên video');
-            }
-
-            return resultVideo.data;
+            return responseVideo.data.data;
 
         default:
             throw new Error('Không hỗ trợ định dạng file này');
@@ -105,51 +103,50 @@ export const uploadImagesWithFiles = async ({
 
                 const formDataImage = new FormData();
                 formDataImage.append('image', file);
-                const responseImage = await fetch('/api/upload/image', {
-                    method: 'POST',
-                    body: formDataImage,
-                });
 
-                if (!responseImage.ok) {
-                    const errorData = await responseImage.json();
+                const response = await axiosInstance.post(
+                    '/upload/image',
+                    formDataImage,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                );
+
+                if (!response.data.success) {
                     throw new Error(
-                        errorData.message || 'Lỗi khi tải lên hình ảnh'
+                        response.data.message || 'Lỗi khi tải lên hình ảnh'
                     );
                 }
 
-                const resultImage = await responseImage.json();
-                if (!resultImage.success) {
-                    throw new Error(
-                        resultImage.message || 'Lỗi khi tải lên hình ảnh'
-                    );
-                }
-
-                return resultImage.data;
+                return response.data.data;
 
             case 'video':
+                if (files.length >= 5) {
+                    toast.error('Bạn chỉ có thể tải lên tối đa 5 video!');
+                    throw new Error('Vượt quá số lượng video cho phép');
+                }
+
                 const formDataVideo = new FormData();
                 formDataVideo.append('video', file);
+                const responseVideo = await axiosInstance.post(
+                    '/upload/video',
+                    formDataVideo,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                );
 
-                const responseVideo = await fetch('/api/upload/video', {
-                    method: 'POST',
-                    body: formDataVideo,
-                });
-
-                if (!responseVideo.ok) {
-                    const errorData = await responseVideo.json();
+                if (!responseVideo.data.success) {
                     throw new Error(
-                        errorData.message || 'Lỗi khi tải lên video'
+                        responseVideo.data.message || 'Lỗi khi tải lên video'
                     );
                 }
 
-                const resultVideo = await responseVideo.json();
-                if (!resultVideo.success) {
-                    throw new Error(
-                        resultVideo.message || 'Lỗi khi tải lên video'
-                    );
-                }
-
-                return resultVideo.data;
+                return responseVideo.data.data;
 
             default:
                 throw new Error('Không hỗ trợ định dạng file này');

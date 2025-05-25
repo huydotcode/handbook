@@ -1,18 +1,6 @@
 'use client';
 import { Icons } from '@/components/ui';
 
-import { createGroup } from '@/lib/actions/group.action';
-import { getFriendsByUserId } from '@/lib/actions/user.action';
-import { uploadImages } from '@/lib/uploadImage';
-import { cn } from '@/lib/utils';
-import { createGroupValidation } from '@/lib/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
 import {
     Form,
@@ -23,8 +11,18 @@ import {
     FormMessage,
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-
-interface Props {}
+import { createGroup } from '@/lib/actions/group.action';
+import { getFriendsByUserId } from '@/lib/actions/user.action';
+import { uploadImageWithFile } from '@/lib/uploadImage';
+import { cn } from '@/lib/utils';
+import { createGroupValidation } from '@/lib/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const INPUT_CLASSNAME =
     'my-1 w-full rounded-md border bg-primary-1 p-2 dark:bg-dark-primary-1';
@@ -33,28 +31,31 @@ interface ICreateGroup {
     name: string;
     description: string;
     type: 'public' | 'private';
+    file?: File;
 }
 
-const CreateGroupPage: React.FC<Props> = ({}) => {
+const CreateGroupPage: React.FC = ({}) => {
     const form = useForm<ICreateGroup>({
         defaultValues: {
             type: 'public',
             description: '',
             name: '',
+            file: undefined,
         },
         resolver: zodResolver(createGroupValidation),
     });
     const {
         handleSubmit,
-        register,
+
+        watch,
         formState: { isSubmitting, errors },
     } = form;
-    const [photo, setPhoto] = useState<string>('');
     const [members, setMembers] = useState<string[]>([]);
 
     const [friends, setFriends] = useState<IFriend[]>([]);
     const [searchFriendValue, setSearchFriendValue] = useState<string>('');
     const { data: session } = useSession();
+    const file = watch('file');
 
     const router = useRouter();
 
@@ -72,37 +73,31 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
         if (isSubmitting) return;
 
         try {
-            // Kiểm tra xem người dùng đã chọn ảnh đại diện cho nhóm chưa
-            if (!photo) {
+            if (!data.file) {
                 toast.error('Vui lòng chọn ảnh đại diện cho nhóm!');
                 return;
             }
 
-            const image = await uploadImages({ photos: [photo] });
+            const avatar = await uploadImageWithFile({
+                file: data.file,
+            });
 
-            if (image) {
-                const newGroup = await createGroup({
-                    ...data,
-                    avatar: image[0],
-                    members,
-                });
-
-                toast.success('Tạo nhóm thành công!');
-                router.push(`/groups/${newGroup._id}`);
+            if (!avatar) {
+                toast.error(
+                    'Có lỗi xảy ra khi tải ảnh đại diện, vui lòng thử lại!'
+                );
+                return;
             }
+
+            const newGroup = await createGroup({
+                ...data,
+                avatar: avatar._id,
+                members,
+            });
+            toast.success('Tạo nhóm thành công!');
+            router.push(`/groups/${newGroup._id}`);
         } catch (error) {
             toast.error('Có lỗi xảy ra khi tạo nhóm, vui lòng thử lại!');
-        }
-    };
-
-    const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result as string);
-            };
-            reader.readAsDataURL(file);
         }
     };
 
@@ -164,12 +159,13 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                                 htmlFor="avatar"
                             >
                                 <span className="mr-2 p-2">
-                                    {photo ? (
+                                    {file ? (
                                         <Image
-                                            src={photo}
+                                            src={URL.createObjectURL(file)}
                                             alt="avatar"
                                             width={48}
                                             height={48}
+                                            className="rounded-full"
                                         />
                                     ) : (
                                         <Icons.Images className="h-8 w-8" />
@@ -178,11 +174,25 @@ const CreateGroupPage: React.FC<Props> = ({}) => {
                                 Chọn ảnh đại diện
                             </label>
                             <input
-                                id="avatar"
                                 type="file"
-                                className="hidden rounded-md border p-2"
-                                onChange={handleChangeImage}
+                                id="avatar"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const files = e.target.files;
+                                    if (files && files.length > 0) {
+                                        form.setValue('file', files[0]);
+                                    } else {
+                                        form.setValue('file', undefined);
+                                    }
+                                }}
                             />
+
+                            {errors.file && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.file.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Loại nhóm */}

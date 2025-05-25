@@ -41,14 +41,22 @@ const CoverPhoto: React.FC<Props> = ({ profile }) => {
             });
 
             const coverPhotoId = images[0]._id;
+
+            console.log({
+                coverPhotoId,
+            });
             const coverPhotoUrl = await getUrlByImageId({
                 imageId: coverPhotoId,
             });
+
+            console.log('coverPhotoUrl', coverPhotoUrl);
 
             if (!coverPhotoUrl) {
                 toast.error('Có lỗi xảy ra');
                 return;
             }
+
+            console.log('coverPhotoUrl', coverPhotoUrl);
 
             await updateCoverPhoto({
                 coverPhoto: coverPhotoUrl,
