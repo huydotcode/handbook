@@ -6,7 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/Popover';
-import Video from '@/components/ui/video';
+import VideoPlayer from '@/components/ui/VideoPlayer';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
@@ -294,21 +294,15 @@ const Message: React.FC<Props> = React.memo<Props>(
                         </div>
                     )}
 
-                    {videos.length > 0 &&
-                        videos.map((video) => (
-                            <Video
-                                key={video._id}
-                                className={cn('max-w-[30vw] cursor-pointer', {
-                                    'rounded-xl rounded-l-md': isOwnMsg,
-                                    'rounded-xl rounded-r-md': !isOwnMsg,
-                                    'w-full': isPin,
-                                })}
-                                onClick={() => {
-                                    handleClickImage(video.url);
-                                }}
-                                src={video.url}
-                            />
-                        ))}
+                    {videos.length > 0 && (
+                        <div className="mb-2 flex flex-col gap-2">
+                            {videos.map((video) => (
+                                <div className="max-w-[500px]" key={video._id}>
+                                    <VideoPlayer src={video.url} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </>
             );
         };

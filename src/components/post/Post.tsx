@@ -23,6 +23,7 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip';
 import axiosInstance from '@/lib/axios';
+import VideoPlayer from '../ui/VideoPlayer';
 
 interface Props {
     data: IPost;
@@ -224,14 +225,7 @@ const PostContent = ({ post }: { post: IPost }) => {
             {videos.length > 0 && (
                 <div className="mt-3">
                     {videos.map((video) => (
-                        <video
-                            key={video._id}
-                            className="w-full rounded-md"
-                            controls
-                            src={video.url}
-                        >
-                            Your browser does not support the video tag.
-                        </video>
+                        <VideoPlayer src={video.url} key={video._id} />
                     ))}
                 </div>
             )}

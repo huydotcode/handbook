@@ -1,7 +1,7 @@
 'use client';
-import Image from 'next/image';
 import { FC, useState } from 'react';
 import SlideShow from '../ui/SlideShow';
+import Image from '../ui/image';
 
 interface Props {
     images: IMedia[];
@@ -13,13 +13,14 @@ const PhotoGrid: FC<Props> = ({ images }) => {
     return (
         <>
             <div className="relative mt-3 h-[300px]">
-                <div>
-                    <div
-                        className="h-[300px] w-full cursor-pointer rounded-md bg-cover bg-center bg-no-repeat transition-all hover:opacity-80"
-                        style={{ backgroundImage: `url(${images[0].url})` }}
-                        onClick={() => setShowSlide((prev) => !prev)}
-                    ></div>
-                </div>
+                <Image
+                    className="h-[300px] w-full cursor-pointer rounded-md object-cover"
+                    src={images[0].url || ''}
+                    alt=""
+                    quality={100}
+                    fill
+                    onClick={() => setShowSlide((prev) => !prev)}
+                />
 
                 {images.length > 1 && (
                     <>
