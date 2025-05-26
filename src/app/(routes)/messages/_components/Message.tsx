@@ -1,6 +1,7 @@
 'use client';
 import { Avatar, ConfirmModal, Icons, SlideShow } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import Image from '@/components/ui/image';
 import {
     Popover,
     PopoverContent,
@@ -18,7 +19,6 @@ import { cn } from '@/lib/utils';
 import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
 import React, {
     FormEventHandler,
@@ -203,7 +203,6 @@ const Message: React.FC<Props> = React.memo<Props>(
                                     key={msg._id + index}
                                 >
                                     {msg.text.split(' ').map((text, index) => {
-                                        // Kểm tra url ( hoặc dạng /posts/postId)
                                         if (
                                             text.match(urlRegex) ||
                                             text.match(/\/posts\/\w+/)
@@ -274,7 +273,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 <Image
                                     key={img._id}
                                     className={cn(
-                                        'max-w-[30vw] cursor-pointer',
+                                        'max-w-[50vw] cursor-pointer md:max-w-[60vw]',
                                         {
                                             'rounded-xl rounded-l-md': isOwnMsg,
                                             'rounded-xl rounded-r-md':
