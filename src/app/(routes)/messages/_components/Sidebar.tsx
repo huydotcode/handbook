@@ -6,12 +6,15 @@ import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import ConversationItem from './ConversationItem';
 import SearchConversation from './SearchConversation';
+import { Loading } from '@/components/ui';
 
 interface Props {}
 
 const Sidebar: React.FC<Props> = ({}) => {
     const { data: session } = useSession();
-    const { data: initConversations } = useConversations(session?.user?.id);
+    const { data: initConversations, isLoading } = useConversations(
+        session?.user?.id
+    );
     const [filter, setFilter] = useState<string>('');
 
     const pathName = usePathname();
@@ -37,9 +40,9 @@ const Sidebar: React.FC<Props> = ({}) => {
 
     return (
         <>
-            <div
+            <aside
                 className={cn(
-                    'fixed left-0 z-10 mr-2 flex h-[calc(100vh-72px)] w-[300px] min-w-[80px] flex-col overflow-hidden rounded-xl bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none lg:w-[80px] sm:w-full',
+                    'fixed left-0 top-0 z-10 mr-2 flex h-[calc(100vh-56px)] w-[300px] min-w-[80px] flex-col overflow-hidden bg-secondary-1 shadow-xl transition-all duration-500 dark:bg-dark-secondary-1 dark:shadow-none lg:w-[80px] sm:w-full',
                     !isMessagesPage && 'sm:hidden'
                 )}
             >
@@ -51,7 +54,10 @@ const Sidebar: React.FC<Props> = ({}) => {
                     <SearchConversation setFilter={setFilter} />
                 </div>
 
-                {conversations &&
+                {isLoading && <Loading text="Đang tải cuộc trò chuyện..." />}
+
+                {!isLoading &&
+                    conversations &&
                     conversations.map((conversation: IConversation) => {
                         return (
                             <ConversationItem
@@ -60,7 +66,13 @@ const Sidebar: React.FC<Props> = ({}) => {
                             />
                         );
                     })}
-            </div>
+
+                {!isLoading && conversations && conversations.length === 0 && (
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+                        Không có cuộc trò chuyện nào
+                    </p>
+                )}
+            </aside>
         </>
     );
 };
