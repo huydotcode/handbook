@@ -1,10 +1,10 @@
 'use client';
 import { SlideShow } from '@/components/ui';
+import Image from '@/components/ui/image';
+import { removeImage } from '@/lib/actions/image.action';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
-import { removeImage } from '@/lib/actions/image.action';
 
 interface Props {
     photos: IMedia[];

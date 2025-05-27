@@ -99,7 +99,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
                 />
                 {videoError ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black text-white">
-                        <p className="select-none">Video không khả dụng</p>
+                        <p className="select-none text-center">
+                            Video không khả dụng
+                        </p>
                     </div>
                 ) : (
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-3 text-white">

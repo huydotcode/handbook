@@ -10,7 +10,7 @@ const Image = ({ src, ...props }: IImageProps) => {
         <>
             {imgError ? (
                 <div className="flex h-full w-full items-center justify-center rounded-md bg-secondary-1 dark:bg-dark-secondary-2">
-                    <p className="select-none text-gray-500">
+                    <p className="select-none text-center text-gray-500">
                         Ảnh hiện không khả dụng
                     </p>
                 </div>
