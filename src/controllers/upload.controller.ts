@@ -64,7 +64,7 @@ class UploadController {
                 height: uploadResult.height,
                 resourceType: uploadResult.resource_type,
                 type: uploadResult.format,
-                url: uploadResult.url,
+                url: uploadResult.secure_url,
                 creator: decodedToken.id,
             });
 
@@ -136,7 +136,7 @@ class UploadController {
                 height: uploadResult.height,
                 resourceType: uploadResult.resource_type,
                 type: uploadResult.format,
-                url: uploadResult.url,
+                url: uploadResult.secure_url,
                 creator: decodedToken.id,
             });
 
