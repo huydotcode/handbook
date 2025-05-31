@@ -1,7 +1,6 @@
 'use client';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import Video from '@/components/ui/video';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
@@ -27,6 +26,8 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { data: session } = useSession();
     const { invalidateMessages } = useQueryInvalidation();
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
+    const [formHeight, setFormHeight] = useState<number>(0);
+    const formRef = React.useRef<HTMLFormElement>(null);
 
     const {
         control,
@@ -36,7 +37,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
         setValue,
         watch,
         getValues,
-        formState: { isLoading },
+        formState: { isLoading, isSubmitting },
         setFocus,
     } = useForm<IFormData>({
         defaultValues: {
@@ -109,6 +110,23 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
         }
     };
 
+    useEffect(() => {
+        if (!formRef.current) return;
+
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                setFormHeight(entry.contentRect.height + 16);
+            }
+        });
+
+        observer.observe(formRef.current);
+
+        // Cleanup
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
     // Khi nhấn esc thì thoát khỏi emoji
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -128,14 +146,15 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
 
     return (
         <div
-            className={
-                'flex w-full flex-1 items-center justify-center p-2 md:p-0'
-            }
+            // Lấy chiều cao của form để tránh bị che mất khi có bàn phím ảo
+            className="flex w-full items-center justify-center"
+            style={{ height: formHeight }}
         >
             <form
-                className="md:max-[calc(100vw-100px)] relative mx-2 flex min-w-[500px] overflow-hidden rounded-xl border bg-transparent shadow-xl md:fixed md:bottom-4 md:mx-auto md:min-w-[300px] md:flex-auto"
+                className="max-[calc(100vw-100px)] fixed bottom-4 z-50 flex min-w-[500px] overflow-hidden rounded-xl border bg-secondary-1 shadow-xl dark:border-none dark:bg-dark-secondary-2 md:min-w-0"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="off"
+                ref={formRef}
             >
                 <Controller
                     control={control}
@@ -152,7 +171,21 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                                     }
                                 }}
                                 onChange={(event) => {
-                                    if (event.target.files) {
+                                    // Kiểm tra nếu có file được chọn
+                                    if (!event.target.files) return;
+
+                                    if (files && event.target.files) {
+                                        if (
+                                            files.length +
+                                                event.target.files.length >=
+                                            11
+                                        ) {
+                                            toast.error(
+                                                'Bạn chỉ có thể gửi tối đa 5 tệp tin!'
+                                            );
+                                            return;
+                                        }
+
                                         onChange(
                                             Array.from(
                                                 files.concat(
@@ -174,73 +207,81 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 />
 
                 <label
-                    className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-hover-1 dark:hover:bg-dark-hover-1"
+                    className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-hover-1 dark:hover:bg-dark-secondary-1"
                     htmlFor="files"
                 >
                     <Icons.Upload className={'h-6 w-6'} />
                 </label>
 
-                <div className={cn('flex w-full flex-col')}>
-                    {files.length > 0 && (
-                        <div className="flex gap-3 px-4 py-2">
-                            {files
-                                .filter((file) =>
-                                    file.type.startsWith('image/')
-                                )
-                                .map((file, index) => (
-                                    <div key={index} className="relative">
-                                        <Image
-                                            src={URL.createObjectURL(file)}
-                                            alt={file.name}
-                                            className="h-16 w-16 rounded-lg object-cover"
-                                            width={64}
-                                            height={64}
-                                            quality={100}
-                                        />
-                                        <Button
-                                            className="absolute right-0 top-0 h-6 w-6 rounded-full p-1 "
-                                            type={'reset'}
-                                            onClick={() =>
-                                                handleRemoveFile(index)
-                                            }
-                                        >
-                                            <Icons.Close className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
+                <div
+                    className={cn('flex w-full flex-col', {
+                        'p-2': files.length > 0,
+                    })}
+                >
+                    {!isSubmitting && files.length > 0 && (
+                        <div className="dark:bg-dark-200 flex w-full flex-col overflow-hidden">
+                            <div className="flex max-h-[200px] max-w-[50vw] flex-wrap gap-3 overflow-y-auto md:max-w-full">
+                                {files.map((file, index) => {
+                                    const fileUrl = URL.createObjectURL(file);
+                                    const isImage =
+                                        file.type.startsWith('image/');
+                                    const isVideo =
+                                        file.type.startsWith('video/');
 
-                            {files
-                                .filter((file) =>
-                                    file.type.startsWith('video/')
-                                )
-                                .map((file, index) => (
-                                    <div
-                                        key={index}
-                                        className="dark:bg-dark-200 relative flex items-center gap-2 rounded-lg bg-gray-100 px-2 py-1"
-                                    >
-                                        <video
-                                            className="h-16 w-16 rounded-lg object-cover"
-                                            src={URL.createObjectURL(file)}
-                                        />
+                                    return (
+                                        <div key={index} className="relative">
+                                            {isImage && (
+                                                <Image
+                                                    src={fileUrl}
+                                                    alt={file.name}
+                                                    className="h-16 w-16 rounded-lg object-cover"
+                                                    width={64}
+                                                    height={64}
+                                                    quality={100}
+                                                />
+                                            )}
 
-                                        <Button
-                                            className="absolute right-0 top-0 h-6 w-6 rounded-full p-1"
-                                            type={'reset'}
-                                            onClick={() =>
-                                                handleRemoveFile(index)
-                                            }
-                                        >
-                                            <Icons.Close className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
+                                            {isVideo && (
+                                                <video
+                                                    className="h-16 w-16 rounded-lg object-cover"
+                                                    src={URL.createObjectURL(
+                                                        file
+                                                    )}
+                                                />
+                                            )}
+
+                                            <Button
+                                                className="absolute right-0 top-0 h-6 w-6 rounded-full p-1"
+                                                type={'reset'}
+                                                onClick={() =>
+                                                    handleRemoveFile(index)
+                                                }
+                                            >
+                                                <Icons.Close className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <span className="mt-2 text-sm text-secondary-1">
+                                Số file đã chọn: {files.length}
+                            </span>
                         </div>
                     )}
 
-                    <div className={'flex w-full items-center justify-between'}>
+                    <div
+                        className={cn(
+                            'flex w-full items-center justify-between overflow-hidden rounded-xl',
+                            {
+                                'mt-2 border border-primary-1 dark:border dark:border-dark-primary-1':
+                                    files && files.length > 0,
+                            }
+                        )}
+                    >
                         <input
                             {...register('text')}
-                            className="text-md flex-1 bg-transparent px-4 py-2 md:w-[50px]  "
+                            className="text-md flex-1 bg-transparent px-4 py-2"
                             type="text"
                             placeholder="Nhắn tin"
                             spellCheck={false}
@@ -260,16 +301,15 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                             }}
                         />
 
-                        <Button
-                            className={
-                                'h-full rounded-none bg-transparent p-2 shadow-none hover:bg-hover-1 dark:hover:bg-dark-hover-1'
-                            }
+                        {/* <Button
+                            className={'h-full rounded-none p-2'}
+                            variant={'ghost'}
                             onClick={() => {
                                 setShowEmoji((prev) => !prev);
                             }}
                         >
                             <Icons.Emoji className={'h-4 w-4'} />
-                        </Button>
+                        </Button> */}
 
                         {/* {showEmoji && (
                             <div className={'fixed bottom-20 right-10'}>
@@ -285,8 +325,8 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                         )} */}
 
                         <Button
-                            className="h-full rounded-none border-l px-4 py-2 text-base"
-                            variant={'event'}
+                            className="h-full rounded-none px-4 py-2"
+                            variant={'ghost'}
                             type="submit"
                         >
                             {isLoading ? (

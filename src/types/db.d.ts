@@ -153,7 +153,7 @@ interface IMemberGroup {
 interface IConversation {
     _id: string;
     title: string;
-    creator: string;
+    creator: IUser;
     participants: IUser[];
     lastMessage: IMessage;
     group?: IGroup;
@@ -161,6 +161,7 @@ interface IConversation {
     status: string;
     avatar: IMedia;
     pinnedMessages: IMessage[];
+    isDeletedBy: string[];
     createdAt: Date;
     updatedAt: Date;
 }

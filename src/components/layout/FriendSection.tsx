@@ -18,8 +18,9 @@ import { useConversations, useFriends } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
 import { Session } from 'next-auth';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     session: Session;
@@ -27,6 +28,7 @@ interface Props {
 
 const FriendSection: React.FC<Props> = ({ session }) => {
     const path = usePathname();
+    const router = useRouter();
 
     const { data: conversations } = useConversations(session?.user.id);
     const { data: friends } = useFriends(session?.user.id);
@@ -64,23 +66,23 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                     </div>
 
                     <div className="flex flex-col">
-                        {privateConversations &&
-                            privateConversations.map((conversation) => {
-                                const friend = conversation.participants.find(
-                                    (part) => part._id !== session.user.id
+                        {friends &&
+                            friends.map((friend) => {
+                                const conversation = privateConversations.find(
+                                    (c) =>
+                                        c.participants.some(
+                                            (p) =>
+                                                p._id === friend._id &&
+                                                p._id !== session?.user.id
+                                        ) &&
+                                        c.participants.some(
+                                            (p) => p._id === session?.user.id
+                                        ) &&
+                                        c.type === 'private'
                                 );
 
-                                if (!friend) return null;
-
-                                if (
-                                    friends?.find(
-                                        (f) => friend._id === f._id
-                                    ) === undefined
-                                )
-                                    return null;
-
                                 return (
-                                    <TooltipProvider key={conversation._id}>
+                                    <TooltipProvider key={friend._id}>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <DropdownMenu>
@@ -152,7 +154,15 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                                                                     'ghost'
                                                                 }
                                                                 size={'md'}
-                                                                href={`/messages/${conversation._id}`}
+                                                                onClick={() => {
+                                                                    if (
+                                                                        conversation
+                                                                    ) {
+                                                                        router.push(
+                                                                            `/messages/${conversation._id}`
+                                                                        );
+                                                                    }
+                                                                }}
                                                             >
                                                                 <Icons.Message />
                                                                 Nhắn tin

@@ -1,6 +1,13 @@
 'use client';
 import { Items } from '@/components/shared';
-import { Avatar, Collapse, Icons, Modal, SlideShow } from '@/components/ui';
+import {
+    Avatar,
+    Collapse,
+    ConfirmModal,
+    Icons,
+    Modal,
+    SlideShow,
+} from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -9,6 +16,13 @@ import SideHeader from './SideHeader';
 import Message from './Message';
 import { useRouter } from 'next/navigation';
 import { usePinnedMessages } from './ChatBox';
+import {
+    deleteConversationByUserId,
+    leaveConversation,
+} from '@/lib/actions/conversation.action';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import toast from 'react-hot-toast';
+import { useSocket } from '@/context';
 
 interface Props {
     conversation: IConversation;
@@ -22,6 +36,9 @@ const InfomationConversation: React.FC<Props> = ({
     messages,
 }) => {
     const { data: session } = useSession();
+    const { socketEmitor } = useSocket();
+    const router = useRouter();
+    const { invalidateConversations } = useQueryInvalidation();
 
     const [openSlideShow, setOpenSlideShow] = useState<boolean>(false);
     const [startImageIndex, setStartImageIndex] = useState<number>(0);
@@ -29,6 +46,16 @@ const InfomationConversation: React.FC<Props> = ({
     const [openPinnedMessageModal, setOpenPinnedMessageModal] = useState(false);
     const [openArchiveMessageModal, setOpenArchiveMessageModal] =
         useState(false);
+
+    const isGroup = useMemo(() => {
+        return conversation.group ? true : false;
+    }, [conversation.group]);
+    const isPrivate = useMemo(() => {
+        return conversation.type === 'private';
+    }, [conversation.type]);
+
+    const [openModalDeleteConversation, setOpenModalDeleteConversation] =
+        useState<boolean>(false);
 
     const imagesInRoom = useMemo(() => {
         return (messages && messages.map((msg) => msg.media).flat()) || [];
@@ -66,6 +93,43 @@ const InfomationConversation: React.FC<Props> = ({
             return partner?.avatar;
         }
     }, [conversation.group, partner?.avatar]);
+
+    const handleOutConversation = async () => {
+        if (!conversation._id || !session?.user) return;
+
+        try {
+            if (isPrivate) {
+                await deleteConversationByUserId({
+                    conversationId: conversation._id,
+                    userId: session.user.id,
+                });
+
+                toast.success('Xóa đoạn hội thoại thành công');
+            }
+
+            if (isGroup) {
+                await leaveConversation({
+                    conversationId: conversation._id,
+                    userId: session.user.id,
+                });
+
+                toast.success('Rời đoạn hội thoại thành công');
+            }
+
+            router.push('/messages');
+
+            await invalidateConversations();
+
+            socketEmitor.leaveRoom({
+                roomId: conversation._id,
+                userId: session?.user?.id,
+            });
+        } catch (error) {
+            toast.error(
+                'Có lỗi khi rời hoặc xóa đoạn hội thoại. Vui lòng thử lại sau!'
+            );
+        }
+    };
 
     const items = [
         {
@@ -179,6 +243,23 @@ const InfomationConversation: React.FC<Props> = ({
                     className={'mt-2 w-full bg-transparent text-xs'}
                     items={items}
                 />
+
+                <Button
+                    className={'w-full justify-start'}
+                    variant={'ghost'}
+                    onClick={() => {
+                        setOpenModalDeleteConversation(true);
+                    }}
+                >
+                    <Icons.Delete className="h-5 w-5" />
+                    <p className="ml-2 text-xs">
+                        {isPrivate
+                            ? 'Xóa đoạn chat'
+                            : isGroup
+                              ? 'Rời nhóm'
+                              : 'Xóa đoạn chat'}
+                    </p>
+                </Button>
             </div>
 
             <SlideShow
@@ -194,6 +275,25 @@ const InfomationConversation: React.FC<Props> = ({
                     handleClose={() => setOpenPinnedMessageModal(false)}
                 />
             )}
+
+            <ConfirmModal
+                cancelText="Huỷ"
+                confirmText={
+                    isPrivate
+                        ? 'Xóa đoạn chat'
+                        : isGroup
+                          ? 'Rời đoạn chat'
+                          : 'Xóa đoạn chat'
+                }
+                message={`Bạn có chắc chắn muốn ${
+                    isPrivate ? 'xóa' : isGroup ? 'rời' : 'xóa'
+                } đoạn chat này?`}
+                onClose={() => setOpenModalDeleteConversation(false)}
+                onConfirm={handleOutConversation}
+                open={openModalDeleteConversation}
+                setShow={setOpenModalDeleteConversation}
+                title={`${isPrivate ? 'Xóa' : isGroup ? 'Rời' : 'Xóa'} đoạn chat`}
+            />
         </div>
     );
 };

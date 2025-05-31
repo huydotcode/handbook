@@ -744,7 +744,7 @@ const NavUser = () => {
                         referrerPolicy="no-referrer"
                     />
                 </PopoverTrigger>
-                <PopoverContent align="start">
+                <PopoverContent className="w-[300px]">
                     <div className="relative flex flex-col">
                         <div className="flex w-full items-center">
                             {currentHistory == history[0] ? (

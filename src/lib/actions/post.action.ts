@@ -1,5 +1,5 @@
 'use server';
-import { Comment, Group, Post, User } from '@/models';
+import { Comment, Group, Media, Post, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import { revalidatePath } from 'next/cache';
@@ -259,8 +259,27 @@ export const sendReaction = async ({ postId }: { postId: string }) => {
 export const deletePost = async ({ postId }: { postId: string }) => {
     try {
         await connectToDB();
-        await Post.findByIdAndDelete(postId);
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            throw new Error('Post not found');
+        }
+
+        // Xóa media liên quan đến bài viết
+        if (post.media && post.media.length > 0) {
+            for (const mediaId of post.media) {
+                const media = await Media.findById(mediaId);
+                if (media) {
+                    await Media.findByIdAndDelete(mediaId);
+                }
+            }
+        }
+
+        // Xóa comment
         await Comment.deleteMany({ postId: postId });
+
+        // Xóa bài viết
+        await Post.findByIdAndDelete(postId);
     } catch (error: any) {
         throw new Error(error);
     }

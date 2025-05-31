@@ -71,6 +71,39 @@ export const createConversationAfterAcceptFriend = async ({
     }
 };
 
+export const joinConversation = async ({
+    conversationId,
+    userId,
+}: {
+    conversationId: string;
+    userId: string;
+}) => {
+    console.log('[LIB-ACTIONS] joinConversation');
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            throw new Error('Cuộc trò chuyện không tồn tại');
+        }
+
+        if (conversation.participants.includes(userId)) {
+            throw new Error('Bạn đã là thành viên của cuộc trò chuyện này');
+        }
+
+        conversation.participants.push(userId);
+        await conversation.save();
+
+        return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const getConversationById = async ({
     conversationId,
 }: {
@@ -89,7 +122,7 @@ export const getConversationById = async ({
                 path: 'group',
                 populate: {
                     path: 'avatar', // Populate đến model Image
-                    model: 'Image', // Đảm bảo tên model chính xác
+                    model: 'Media', // Đảm bảo tên model chính xác
                 },
             });
 
@@ -204,6 +237,7 @@ export const getConversationByParticipants = async ({
             participants: {
                 $all: [userId, otherUserId],
             },
+            type: 'private',
         });
 
         return JSON.parse(JSON.stringify(conversation));
@@ -227,6 +261,36 @@ export const deleteConversation = async ({
         await Conversation.deleteOne({ _id: conversationId });
 
         return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const deleteConversationByUserId = async ({
+    conversationId,
+    userId,
+}: {
+    conversationId: string;
+    userId: string;
+}) => {
+    console.log('[LIB-ACTIONS] deleteConversationByUserId');
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversation = await Conversation.findByIdAndUpdate(
+            conversationId,
+            {
+                $addToSet: {
+                    isDeletedBy: userId,
+                },
+            },
+            { new: true }
+        );
+
+        return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -337,6 +401,45 @@ export const removePinMessage = async ({
     }
 };
 
+export const leaveConversation = async ({
+    conversationId,
+    userId,
+}: {
+    conversationId: string;
+    userId: string;
+}) => {
+    console.log('[LIB-ACTIONS] leaveConversation');
+
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            throw new Error('Cuộc trò chuyện không tồn tại');
+        }
+
+        if (!conversation.participants.includes(userId)) {
+            throw new Error(
+                'Bạn không phải là thành viên của cuộc trò chuyện này'
+            );
+        }
+
+        conversation.participants = conversation.participants.filter(
+            (participant: string) => participant.toString() !== userId
+        );
+
+        await conversation.save();
+
+        return JSON.parse(JSON.stringify(conversation));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
 export const deleteConversationFromTwoUsers = async ({
     userId,
     otherUserId,
@@ -363,6 +466,36 @@ export const deleteConversationFromTwoUsers = async ({
         await Conversation.deleteOne({ _id: conversation._id });
 
         return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const undeleteConversationByUserId = async ({
+    conversationId,
+    userId,
+}: {
+    conversationId: string;
+    userId: string;
+}) => {
+    console.log('[LIB-ACTIONS] undeleteConversationByUserId');
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Chưa đăng nhập');
+
+        const conversation = await Conversation.findByIdAndUpdate(
+            conversationId,
+            {
+                $pull: {
+                    isDeletedBy: userId,
+                },
+            },
+            { new: true }
+        );
+
+        return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
         throw new Error(error);
     }

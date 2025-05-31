@@ -36,6 +36,7 @@ import {
     FaLocationDot,
     FaShirt,
     FaShop,
+    FaSort,
 } from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
 import { HiHome } from 'react-icons/hi';
@@ -234,6 +235,12 @@ const Icons = {
     Archive: (props: IconProps) => <FaBoxArchive {...props} />,
     Public: (props: IconProps) => <MdPublic {...props} />,
     Private: (props: IconProps) => <RiGitRepositoryPrivateFill {...props} />,
+    Sort: (props: IconProps) => (
+        <FaSort
+            className={cn('text-secondary-1', props.className)}
+            {...props}
+        />
+    ),
 };
 
 export const MenuBarEditorIcons = {

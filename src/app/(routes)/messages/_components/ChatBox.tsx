@@ -374,7 +374,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </div>
                         )}
 
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-58px)]">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-16px)]">
                             <div ref={bottomRef} />
 
                             {renderMessages()}

@@ -1,8 +1,11 @@
 import React, { useRef, useState, useEffect, MouseEvent } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useVideoVolume } from '@/hooks/useVideoVolume';
 
 interface VideoPlayerProps {
     src: string;
+    videoClassName?: string;
 }
 
 const formatTime = (time: number): string => {
@@ -11,12 +14,15 @@ const formatTime = (time: number): string => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+    src,
+    videoClassName = '',
+}) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const progressRef = useRef<HTMLDivElement>(null);
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [volume, setVolume] = useState<number>(1);
+    const [volume, setVolume] = useVideoVolume();
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
 
@@ -87,13 +93,51 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
         setVideoError(true);
     };
 
+    useEffect(() => {
+        const video = videoRef.current;
+        if (video) {
+            video.volume = volume;
+            video.muted = volume === 0;
+        }
+    }, [volume]);
+
+    useEffect(() => {
+        const savedVolume = localStorage.getItem('videoVolume');
+        const video = videoRef.current;
+        if (video && savedVolume !== null) {
+            const parsedVolume = parseFloat(savedVolume);
+            video.volume = parsedVolume;
+            video.muted = parsedVolume === 0;
+            setVolume(parsedVolume);
+        }
+    }, [setVolume]);
+
+    useEffect(() => {
+        if (!videoRef.current) return;
+
+        const video = videoRef.current;
+        const updateVolume = () => {
+            if (video) {
+                setVolume(video.volume);
+            }
+        };
+
+        video?.addEventListener('volumechange', updateVolume);
+
+        return () => {
+            if (video) {
+                video.removeEventListener('volumechange', updateVolume);
+            }
+        };
+    }, [setVolume, videoRef]);
+
     return (
         <div className="w-full overflow-hidden rounded-xl bg-black shadow-2xl">
             <div className="relative">
                 <video
                     ref={videoRef}
                     src={src}
-                    className="h-auto w-full"
+                    className={cn('h-auto max-h-screen w-full', videoClassName)}
                     onClick={togglePlay}
                     onError={handleError}
                 />
@@ -121,7 +165,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
 
                         {/* Controls */}
                         <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-3">
+                            <div className="group flex items-center gap-3">
                                 <button onClick={togglePlay}>
                                     {isPlaying ? (
                                         <Pause size={22} />
@@ -129,13 +173,34 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
                                         <Play size={22} />
                                     )}
                                 </button>
-                                <button onClick={handleVolume}>
-                                    {volume === 0 ? (
-                                        <VolumeX size={22} />
-                                    ) : (
-                                        <Volume2 size={22} />
-                                    )}
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={handleVolume}>
+                                        {volume === 0 ? (
+                                            <VolumeX size={22} />
+                                        ) : (
+                                            <Volume2 size={22} />
+                                        )}
+                                    </button>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={1}
+                                        step={0.01}
+                                        value={volume}
+                                        onChange={(e) => {
+                                            const newVolume = parseFloat(
+                                                e.target.value
+                                            );
+                                            const video = videoRef.current;
+                                            if (video) {
+                                                video.volume = newVolume;
+                                                video.muted = newVolume === 0;
+                                            }
+                                            setVolume(newVolume);
+                                        }}
+                                        className="h-1 w-0 cursor-pointer accent-primary-1 opacity-0 transition-all duration-200 ease-in-out group-hover:h-1 group-hover:w-20 group-hover:opacity-100"
+                                    />
+                                </div>
                                 <span>
                                     {formatTime(currentTime)} /{' '}
                                     {formatTime(duration)}

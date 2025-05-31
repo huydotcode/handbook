@@ -267,6 +267,20 @@ export const joinGroup = async ({
     try {
         await connectToDB();
 
+        // Kiểm tra xem người dùng đã là thành viên của nhóm chưa
+        const group = await Group.findById(groupId);
+        if (!group) {
+            throw new Error('Nhóm không tồn tại');
+        }
+
+        const isMember = group.members.some(
+            (member: IMemberGroup) => member.user.toString() === userId
+        );
+
+        if (isMember) {
+            throw new Error('Bạn đã là thành viên của nhóm này');
+        }
+
         await Group.updateOne(
             {
                 _id: groupId,

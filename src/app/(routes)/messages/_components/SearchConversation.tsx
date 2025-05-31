@@ -9,9 +9,10 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { IFilterConversation } from './Sidebar';
 
 interface Props {
-    setFilter: React.Dispatch<React.SetStateAction<string>>;
+    setFilter: React.Dispatch<React.SetStateAction<IFilterConversation>>;
 }
 
 const SearchConversation: React.FC<Props> = ({ setFilter }) => {
@@ -21,7 +22,10 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
 
     // Xử lý với debounce value để lấy ra các cuộc trò chuyện
     useEffect(() => {
-        setFilter(debounceValue);
+        setFilter((prev) => ({
+            ...prev,
+            query: debounceValue.trim(),
+        }));
     }, [debounceValue, setFilter]);
 
     return (

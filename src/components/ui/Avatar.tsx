@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Props {
     className?: string;
@@ -33,6 +33,7 @@ const Avatar: React.FC<Props> = ({
     onlyImage = false,
 }) => {
     const isUser = session?.user.id || userUrl;
+    const [isError, setIsError] = useState<boolean>(false);
     const sizeProps = fill
         ? { fill: true }
         : {
@@ -44,9 +45,14 @@ const Avatar: React.FC<Props> = ({
         return (
             <Image
                 className={cn(`rounded-${rounded}`, className)}
-                src={session?.user.image || imgSrc || ''}
+                src={
+                    isError
+                        ? '/assets/img/user-profile.jpg'
+                        : session?.user.image || imgSrc || ''
+                }
                 alt={session?.user.name || alt || ''}
                 priority={true}
+                onError={() => setIsError(true)}
                 {...sizeProps}
             />
         );
@@ -63,9 +69,14 @@ const Avatar: React.FC<Props> = ({
         >
             <Image
                 className={cn(`rounded-${rounded}`, className)}
-                src={session?.user.image || imgSrc || ''}
+                src={
+                    isError
+                        ? '/assets/img/user-profile.jpg'
+                        : session?.user.image || imgSrc || ''
+                }
                 alt={session?.user.name || alt || ''}
                 priority={true}
+                onError={() => setIsError(true)}
                 {...sizeProps}
             />
         </Link>

@@ -9,6 +9,10 @@ export const getConversationsKey = (userId: string | undefined) => [
     'conversations',
     userId,
 ];
+export const getConversationKey = (conversationId: string | undefined) => [
+    'conversation',
+    conversationId,
+];
 export const getMessagesKey = (conversationId: string | undefined) => [
     'messages',
     conversationId,

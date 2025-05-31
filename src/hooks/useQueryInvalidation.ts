@@ -1,6 +1,7 @@
 import {
     getCategoriesKey,
     getCommentsKey,
+    getConversationKey,
     getConversationsKey,
     getFollowersKey,
     getFriendsKey,
@@ -55,7 +56,7 @@ export const useQueryInvalidation = () => {
 
     const invalidateConversation = async (conversationId: string) => {
         await queryClient.invalidateQueries({
-            queryKey: getMessagesKey(conversationId),
+            queryKey: getConversationKey(conversationId),
         });
     };
 

@@ -6,6 +6,7 @@ import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { createConversation } from '@/lib/actions/conversation.action';
 import { timeConvert } from '@/utils/timeConvert';
+import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -47,42 +48,75 @@ const Sidebar: React.FC<Props> = ({
         formState: { errors },
     } = useForm<FormData>();
 
-    const isCreator = currentGroup.creator._id === session?.user?.id;
+    const { mutate: createGroupConversation, isPending } = useMutation({
+        mutationFn: createConversation,
+        onSuccess: (newConversation) => {
+            toast.success('Tạo cuộc hội thoại thành công!');
+            setShowModalCreateConversation(false);
+            setConversations((prev) => [...prev, newConversation]);
 
-    const createGroupConversation = async (data: FormData) => {
-        if (!session) return toast.error('Chưa đăng nhập');
-
-        try {
-            const newConversation = await createConversation({
-                creator: session.user.id,
-                participantsUserId: currentGroup.members.map(
-                    (mem) => mem.user._id
-                ),
-                title: data.name,
-                groupId: currentGroup._id,
-                type: 'group',
-            });
-
-            if (newConversation) {
-                toast.success('Tạo cuộc hội thoại thành công!');
-                setShowModalCreateConversation(false);
-                setConversations([...conversations, newConversation]);
-
-                for (const mem of currentGroup.members) {
-                    socket?.emit(socketEvent.JOIN_ROOM, {
-                        roomId: newConversation._id,
-                        userId: mem.user._id,
-                    });
-                }
+            for (const mem of currentGroup.members) {
+                socket?.emit(socketEvent.JOIN_ROOM, {
+                    roomId: newConversation._id,
+                    userId: mem.user._id,
+                });
             }
-
-            await invalidateConversations();
-        } catch (error) {
+        },
+        onError: () => {
             toast.error(
                 'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'
             );
-        }
+        },
+    });
+
+    const mutateCreateConversation = (data: FormData) => {
+        if (!session) return toast.error('Chưa đăng nhập');
+        createGroupConversation({
+            creator: session.user.id,
+            participantsUserId: currentGroup.members.map((mem) => mem.user._id),
+            title: data.name,
+            groupId: currentGroup._id,
+            type: 'group',
+            status: 'active',
+        });
     };
+
+    const isCreator = currentGroup.creator._id === session?.user?.id;
+
+    // const createGroupConversation = async (data: FormData) => {
+    //     if (!session) return toast.error('Chưa đăng nhập');
+
+    //     try {
+    //         const newConversation = await createConversation({
+    //             creator: session.user.id,
+    //             participantsUserId: currentGroup.members.map(
+    //                 (mem) => mem.user._id
+    //             ),
+    //             title: data.name,
+    //             groupId: currentGroup._id,
+    //             type: 'group',
+    //         });
+
+    //         if (newConversation) {
+    //             toast.success('Tạo cuộc hội thoại thành công!');
+    //             setShowModalCreateConversation(false);
+    //             setConversations([...conversations, newConversation]);
+
+    //             for (const mem of currentGroup.members) {
+    //                 socket?.emit(socketEvent.JOIN_ROOM, {
+    //                     roomId: newConversation._id,
+    //                     userId: mem.user._id,
+    //                 });
+    //             }
+    //         }
+
+    //         await invalidateConversations();
+    //     } catch (error) {
+    //         toast.error(
+    //             'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'
+    //         );
+    //     }
+    // };
 
     return (
         <>
@@ -183,7 +217,7 @@ const Sidebar: React.FC<Props> = ({
                 handleClose={() => setShowModalCreateConversation(false)}
             >
                 <form
-                    onSubmit={handleSubmit(createGroupConversation)}
+                    onSubmit={handleSubmit(mutateCreateConversation)}
                     className="p-4"
                 >
                     <div>
@@ -223,7 +257,12 @@ const Sidebar: React.FC<Props> = ({
                     </div>
 
                     <div className="mt-2">
-                        <Button variant="primary" className="w-full">
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            className="w-full"
+                            disabled={isPending}
+                        >
                             Tạo
                         </Button>
                     </div>

@@ -7,6 +7,11 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/Popover';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+} from '@/components/ui/tooltip';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
@@ -18,6 +23,7 @@ import { deleteMessage } from '@/lib/actions/message.action';
 import { cn } from '@/lib/utils';
 import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
+import { TooltipTrigger } from '@radix-ui/react-tooltip';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, {
@@ -183,14 +189,13 @@ const Message: React.FC<Props> = React.memo<Props>(
                 msg.text.trim().length > 0 && (
                     <div
                         className={cn(
-                            'max-w-[70%] break-words rounded-xl px-4 py-2',
+                            'relative max-w-[70%] break-words rounded-xl px-3 py-2',
                             {
                                 'bg-primary-2 text-white': isOwnMsg,
-                                'bg-primary-1 pl-4 dark:bg-dark-secondary-2':
+                                'bg-primary-1 dark:bg-dark-secondary-2':
                                     !isOwnMsg,
-                                'mt-1': isGroupMsg,
-                                'pl-4': isGroupMsg && isOwnMsg,
-                                'pr-4': isGroupMsg && !isOwnMsg,
+                                'mt-1': isGroupMsg || msg.media.length > 0,
+                                'min-w-[100px]': isGroupMsg,
                                 'w-full max-w-full rounded-md bg-primary-1 text-primary-1 dark:bg-dark-secondary-2 dark:text-dark-primary-1':
                                     isPin,
                             }
@@ -199,7 +204,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                         <div onClick={handleClick}>
                             <div className="flex max-w-full flex-col flex-wrap">
                                 <p
-                                    className={'max-w-full break-words'}
+                                    className="max-w-full break-words"
                                     key={msg._id + index}
                                 >
                                     {msg.text.split(' ').map((text, index) => {
@@ -239,6 +244,26 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 </p>
                             </div>
                         </div>
+
+                        {msg.isPin && !isPin && (
+                            <div
+                                className={cn('absolute top-0 z-10', {
+                                    '-left-1': !isOwnMsg,
+                                    '-right-1': isOwnMsg,
+                                })}
+                            >
+                                <Icons.Pin className="h-4 w-4 text-dark-secondary-1 dark:text-secondary-1" />
+                            </div>
+                        )}
+
+                        <div
+                            className={cn('flex text-xs text-secondary-2', {
+                                'text-secondary-1': !isOwnMsg,
+                                'justify-end': isOwnMsg,
+                            })}
+                        >
+                            {FormatDate.formatISODateToHHMM(msg.createdAt)}
+                        </div>
                     </div>
                 )
             );
@@ -270,25 +295,95 @@ const Message: React.FC<Props> = React.memo<Props>(
                             })}
                         >
                             {images.map((img) => (
-                                <Image
-                                    key={img._id}
-                                    className={cn(
-                                        'max-w-[50vw] cursor-pointer md:max-w-[60vw]',
-                                        {
-                                            'rounded-xl rounded-l-md': isOwnMsg,
-                                            'rounded-xl rounded-r-md':
-                                                !isOwnMsg,
-                                            'w-full': isPin,
-                                        }
-                                    )}
-                                    onClick={() => {
-                                        handleClickImage(img.url);
-                                    }}
-                                    src={img.url}
-                                    alt="image"
-                                    width={img.width}
-                                    height={img.height}
-                                />
+                                <TooltipProvider key={img._id}>
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <Image
+                                                className={cn(
+                                                    'max-w-[30vw] cursor-pointer md:max-w-[60vw]',
+                                                    {
+                                                        'rounded-xl rounded-l-md':
+                                                            isOwnMsg,
+                                                        'rounded-xl rounded-r-md':
+                                                            !isOwnMsg,
+                                                        'w-full': isPin,
+                                                    }
+                                                )}
+                                                onClick={() => {
+                                                    handleClickImage(img.url);
+                                                }}
+                                                src={img.url}
+                                                alt="image"
+                                                width={img.width}
+                                                height={img.height}
+                                            />
+                                        </TooltipTrigger>
+
+                                        {isOwnMsg &&
+                                            !isPin &&
+                                            !isSearchMessage && (
+                                                <TooltipContent
+                                                    className={'p-1'}
+                                                    side={
+                                                        isOwnMsg
+                                                            ? 'left'
+                                                            : 'right'
+                                                    }
+                                                    asChild
+                                                >
+                                                    <div
+                                                        className={
+                                                            'flex max-w-[150px] flex-col items-center'
+                                                        }
+                                                    >
+                                                        <Button
+                                                            className={
+                                                                'w-full justify-start rounded-none'
+                                                            }
+                                                            variant={'ghost'}
+                                                            onClick={() =>
+                                                                setOpenModalConfirm(
+                                                                    true
+                                                                )
+                                                            }
+                                                            size={'xs'}
+                                                        >
+                                                            <Icons.Delete
+                                                                className={
+                                                                    'h-4 w-4'
+                                                                }
+                                                            />
+                                                            Xóa tin nhắn
+                                                        </Button>
+
+                                                        <Button
+                                                            className={
+                                                                'w-full justify-start rounded-none'
+                                                            }
+                                                            variant={'ghost'}
+                                                            onClick={() => {
+                                                                if (msg.isPin) {
+                                                                    handleUnPinMessage();
+                                                                } else {
+                                                                    handlePinMessage();
+                                                                }
+                                                            }}
+                                                            size={'xs'}
+                                                        >
+                                                            <Icons.Pin
+                                                                className={
+                                                                    'h-4 w-4'
+                                                                }
+                                                            />{' '}
+                                                            {msg.isPin
+                                                                ? 'Hủy ghim'
+                                                                : 'Ghim tin nhắn'}
+                                                        </Button>
+                                                    </div>
+                                                </TooltipContent>
+                                            )}
+                                    </Tooltip>
+                                </TooltipProvider>
                             ))}
                         </div>
                     )}
@@ -296,7 +391,10 @@ const Message: React.FC<Props> = React.memo<Props>(
                     {videos.length > 0 && (
                         <div className="mb-2 flex flex-col gap-2">
                             {videos.map((video) => (
-                                <div className="max-w-[500px]" key={video._id}>
+                                <div
+                                    className="max-w-[30vw] md:max-w-[60vw]"
+                                    key={video._id}
+                                >
                                     <VideoPlayer src={video.url} />
                                 </div>
                             ))}
@@ -322,85 +420,81 @@ const Message: React.FC<Props> = React.memo<Props>(
                 })}
                 ref={messageRef}
             >
-                <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                <div
+                    className={cn('relative flex w-full', {
+                        'flex-row-reverse': isOwnMsg,
+                        'w-full items-center': isGroupMsg,
+                    })}
+                >
                     <div
-                        className={cn('relative flex w-full', {
-                            'flex-row-reverse': isOwnMsg,
-                            'w-full items-center': isGroupMsg,
-                        })}
+                        className={cn(
+                            'relative mb-1 flex w-full items-center text-xs',
+                            {
+                                'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
+                                    isOwnMsg,
+                                'rounded-xl rounded-l-md': !isOwnMsg,
+                                'border-2 border-yellow-300': isFindMessage,
+                                'cursor-pointer': isSearchMessage,
+                                'bg-transparent': msg.text.length === 0,
+                                'px-2': isGroupMsg,
+                                'mx-2 border-none': isPin,
+                            }
+                        )}
                     >
-                        {msg.isPin && !isPin && (
+                        {msg.conversation.group && !isOwnMsg && (
                             <div
-                                className={cn('absolute top-0 z-10', {
-                                    '-left-1': !isOwnMsg,
-                                    '-right-1': isOwnMsg,
-                                })}
+                                className={cn(
+                                    'relative flex h-8 w-8 items-center p-2',
+                                    {
+                                        'mr-2 pr-4': !isOwnMsg,
+                                        'ml-2 pl-4': isOwnMsg,
+                                    }
+                                )}
                             >
-                                <Icons.Pin />
+                                <Avatar imgSrc={msg.sender.avatar} fill />
                             </div>
                         )}
 
                         <div
-                            className={cn(
-                                'relative mb-1 flex w-full items-center text-xs',
-                                {
-                                    'flex-row-reverse items-end rounded-xl rounded-r-md text-white':
-                                        isOwnMsg,
-                                    'rounded-xl rounded-l-md': !isOwnMsg,
-                                    'border-2 border-yellow-300': isFindMessage,
-                                    'cursor-pointer': isSearchMessage,
-                                    'bg-transparent': msg.text.length === 0,
-                                    'px-2': isGroupMsg,
-                                    'mx-2 border-none': isPin,
-                                }
-                            )}
+                            className={cn('flex w-full flex-1 flex-col', {
+                                'items-end': isOwnMsg,
+                                'items-start': !isOwnMsg,
+                            })}
                         >
-                            {msg.conversation.group && (
+                            {!isPin && msg.conversation.group && !isOwnMsg && (
                                 <div
                                     className={cn(
-                                        'relative flex h-8 w-8 items-center p-2',
+                                        'text-xs text-primary-1 dark:text-dark-primary-1',
                                         {
-                                            'mr-2 pr-4': !isOwnMsg,
-                                            'ml-2 pl-4': isOwnMsg,
+                                            'ml-1': !isOwnMsg,
+                                            'mr-1': isOwnMsg,
                                         }
                                     )}
                                 >
-                                    <Avatar imgSrc={msg.sender.avatar} fill />
+                                    {msg.sender.name}
                                 </div>
                             )}
 
-                            <div
-                                className={cn('flex w-full flex-1 flex-col', {
-                                    'items-end': isOwnMsg && !isPin,
-                                    'items-start': !isOwnMsg && !isPin,
-                                })}
-                            >
-                                {msg.conversation.group && (
-                                    <div
-                                        className={cn('text-xs', {
+                            {isPin && (
+                                <div
+                                    className={cn(
+                                        'text-xs text-primary-1 dark:text-dark-primary-1',
+                                        {
                                             'ml-1': !isOwnMsg,
                                             'mr-1': isOwnMsg,
-                                        })}
-                                    >
-                                        {msg.sender.name}
-                                    </div>
-                                )}
+                                        }
+                                    )}
+                                >
+                                    {msg.sender.name}
+                                </div>
+                            )}
 
-                                {isPin && (
-                                    <div
-                                        className={cn(
-                                            'text-xs text-primary-1 dark:text-dark-primary-1',
-                                            {
-                                                'ml-1': !isOwnMsg,
-                                                'mr-1': isOwnMsg,
-                                            }
-                                        )}
-                                    >
-                                        {msg.sender.name}
-                                    </div>
-                                )}
+                            {renderContentImages()}
 
-                                {renderContentImages()}
+                            <Popover
+                                open={openPopover}
+                                onOpenChange={setOpenPopover}
+                            >
                                 <PopoverTrigger
                                     asChild
                                     onMouseEnter={handleMouseEnter}
@@ -409,67 +503,73 @@ const Message: React.FC<Props> = React.memo<Props>(
                                     {renderMessageText()}
                                 </PopoverTrigger>
 
-                                {isPin && (
-                                    <div
-                                        className={
-                                            'p-1 text-xs text-primary-1 dark:text-dark-primary-1'
-                                        }
+                                {isOwnMsg && !isPin && !isSearchMessage && (
+                                    <PopoverContent
+                                        className={'p-1'}
+                                        side={isOwnMsg ? 'left' : 'right'}
+                                        asChild
                                     >
-                                        {FormatDate.formatISODateToDateTime(
-                                            msg.createdAt
-                                        )}
-                                    </div>
+                                        <div
+                                            className={
+                                                'flex max-w-[150px] flex-col items-center'
+                                            }
+                                        >
+                                            <Button
+                                                className={
+                                                    'w-full justify-start rounded-none'
+                                                }
+                                                variant={'ghost'}
+                                                onClick={() =>
+                                                    setOpenModalConfirm(true)
+                                                }
+                                                size={'xs'}
+                                            >
+                                                <Icons.Delete
+                                                    className={'h-4 w-4'}
+                                                />{' '}
+                                                Xóa tin nhắn
+                                            </Button>
+
+                                            <Button
+                                                className={
+                                                    'w-full justify-start rounded-none'
+                                                }
+                                                variant={'ghost'}
+                                                onClick={() => {
+                                                    if (msg.isPin) {
+                                                        handleUnPinMessage();
+                                                    } else {
+                                                        handlePinMessage();
+                                                    }
+                                                }}
+                                                size={'xs'}
+                                            >
+                                                <Icons.Pin
+                                                    className={'h-4 w-4'}
+                                                />{' '}
+                                                {msg.isPin
+                                                    ? 'Hủy ghim'
+                                                    : 'Ghim tin nhắn'}
+                                            </Button>
+                                        </div>
+                                    </PopoverContent>
                                 )}
+                            </Popover>
 
-                                {renderReadMessage()}
-                            </div>
-                        </div>
-                    </div>
-
-                    {isOwnMsg && !isPin && !isSearchMessage && (
-                        <PopoverContent
-                            className={'p-1'}
-                            side={isOwnMsg ? 'left' : 'right'}
-                            asChild
-                        >
-                            <div
+                            {/* {isPin && ( */}
+                            {/* <div
                                 className={
-                                    'flex max-w-[150px] flex-col items-center'
+                                    'p-1 text-xs text-primary-1 dark:text-dark-primary-1'
                                 }
                             >
-                                <Button
-                                    className={
-                                        'w-full justify-start rounded-none'
-                                    }
-                                    variant={'ghost'}
-                                    onClick={() => setOpenModalConfirm(true)}
-                                    size={'xs'}
-                                >
-                                    <Icons.Delete className={'h-4 w-4'} /> Xóa
-                                    tin nhắn
-                                </Button>
+                                {FormatDate.formatISODateToHHMM(msg.createdAt)}
+                            </div> */}
+                            {/* )} */}
 
-                                <Button
-                                    className={
-                                        'w-full justify-start rounded-none'
-                                    }
-                                    variant={'ghost'}
-                                    onClick={() => {
-                                        if (msg.isPin) {
-                                            handleUnPinMessage();
-                                        } else {
-                                            handlePinMessage();
-                                        }
-                                    }}
-                                    size={'xs'}
-                                >
-                                    <Icons.Pin className={'h-4 w-4'} />{' '}
-                                    {msg.isPin ? 'Hủy ghim' : 'Ghim tin nhắn'}
-                                </Button>
-                            </div>
-                        </PopoverContent>
-                    )}
-                </Popover>
+                            {renderReadMessage()}
+                        </div>
+                    </div>
+                </div>
 
                 <SlideShow
                     show={showSlideShow}

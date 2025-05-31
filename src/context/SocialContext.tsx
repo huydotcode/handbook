@@ -1,6 +1,7 @@
 'use client';
 import { getLastMessageByCoversationId } from '@/lib/actions/message.action';
 import {
+    getConversationKey,
     getConversationsKey,
     getFriendsKey,
     getLastMessagesKey,
@@ -71,6 +72,28 @@ export const useConversations = (userId: string | undefined) =>
         enabled: !!userId,
     });
 
+export const useConversation = (conversationId: string | undefined) => {
+    const { data: session } = useSession();
+
+    return useQuery<IConversation>({
+        queryKey: getConversationKey(conversationId),
+        queryFn: async () => {
+            try {
+                const res = await axiosInstance.get(
+                    `/conversations/${conversationId}`
+                );
+
+                const data = res.data;
+                return data;
+            } catch (error) {
+                console.error('Error fetching conversation:', error);
+                return null;
+            }
+        },
+        enabled: !!conversationId && !!session?.user.id,
+    });
+};
+
 export const useMessages = (conversationId: string | undefined) =>
     useInfiniteQuery({
         queryKey: getMessagesKey(conversationId),
@@ -122,6 +145,14 @@ function SocialProvider({ children }: { children: React.ReactNode }) {
         if (!session?.user?.id || !conversations || !isConnected) return;
 
         conversations.forEach((conversation) => {
+            if (
+                !conversation.participants.some(
+                    (p) => p._id === session.user.id
+                )
+            )
+                return;
+            if (conversation.isDeletedBy?.includes(session.user.id)) return;
+
             socketEmitor.joinRoom({
                 roomId: conversation._id,
                 userId: session?.user.id,

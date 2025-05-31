@@ -5,7 +5,7 @@ import SkeletonPost from '@/components/post/SkeletonPost';
 import { Button } from '@/components/ui/Button';
 import VerifiedUser from '@/components/VerifiedUser';
 import postAudience from '@/constants/postAudience.constant';
-import { getPostByPostId } from '@/lib/actions/post.action';
+import axiosInstance from '@/lib/axios';
 import { getPostKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { timeConvert3 } from '@/utils/timeConvert';
@@ -22,7 +22,6 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '../ui/tooltip';
-import axiosInstance from '@/lib/axios';
 import VideoPlayer from '../ui/VideoPlayer';
 
 interface Props {
@@ -225,7 +224,11 @@ const PostContent = ({ post }: { post: IPost }) => {
             {videos.length > 0 && (
                 <div className="mt-3">
                     {videos.map((video) => (
-                        <VideoPlayer src={video.url} key={video._id} />
+                        <VideoPlayer
+                            videoClassName="max-h-[70vh]"
+                            src={video.url}
+                            key={video._id}
+                        />
                     ))}
                 </div>
             )}
