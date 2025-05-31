@@ -105,95 +105,155 @@ const LoginPage = () => {
 
     return (
         <>
-            <div className="bg-glass relative w-[450px] max-w-screen rounded-xl px-6 py-10 shadow-lg">
-                <h2 className="flex justify-center text-center text-2xl font-semibold uppercase tracking-tight">
-                    Đăng nhập
-                </h2>
+            <div className="relative mx-auto w-full max-w-md">
+                {/* Glassmorphism container with modern design */}
+                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/80 shadow-2xl backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-800/80">
+                    {/* Gradient overlay */}
+                    <div className="from-blue-50/50 dark:from-blue-900/20 absolute inset-0 bg-gradient-to-br via-cyan-50/30 to-teal-50/50 dark:via-cyan-900/10 dark:to-teal-900/20"></div>
 
-                <div className="mt-4">
-                    <Form {...form}>
-                        <form onSubmit={handleSubmit(loginWithCrenditals)}>
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email của bạn</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Email của bạn"
-                                                {...field}
-                                            />
-                                        </FormControl>
+                    {/* Animated background elements */}
+                    <div className="from-blue-400/20 absolute right-0 top-0 h-32 w-32 -translate-y-16 translate-x-16 rounded-full bg-gradient-to-br to-cyan-400/20 blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full bg-gradient-to-br from-teal-400/20 to-emerald-400/20 blur-2xl"></div>
 
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    <div className="relative z-10 px-8 py-10">
+                        {/* Header with gradient text */}
+                        <div className="mb-8 text-center">
+                            <h2 className="mb-2 text-3xl font-bold">
+                                <span className="text-cyan-600">Đăng nhập</span>
+                            </h2>
+                            <div className="from-blue-500 mx-auto h-1 w-16 rounded-full bg-gradient-to-r to-cyan-500"></div>
+                        </div>
 
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Mật khẩu</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                placeholder="Mật khẩu của bạn"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                        <div className="space-y-6">
+                            <Form {...form}>
+                                <form
+                                    onSubmit={handleSubmit(loginWithCrenditals)}
+                                    className="space-y-5"
+                                >
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel className="font-medium text-slate-700 dark:text-slate-300">
+                                                    Email của bạn
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Input
+                                                            placeholder="Nhập email của bạn"
+                                                            // className="focus:border-blue-400 focus:ring-blue-400/20 h-12 rounded-xl border-slate-200 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70 dark:border-slate-600 dark:bg-slate-700/50 dark:hover:bg-slate-700/70"
+                                                            {...field}
+                                                        />
+                                                        <div className="from-blue-500/10 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage className="text-sm text-red-500" />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                            <FormMessage className="h-4">
-                                {errors.root && errors.root.message}
-                            </FormMessage>
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel className="font-medium text-slate-700 dark:text-slate-300">
+                                                    Mật khẩu
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="password"
+                                                            placeholder="••••••••"
+                                                            // className="focus:border-blue-400 focus:ring-blue-400/20 h-12 rounded-xl border-slate-200 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70 dark:border-slate-600 dark:bg-slate-700/50 dark:hover:bg-slate-700/70"
+                                                            {...field}
+                                                        />
+                                                        <div className="from-blue-500/10 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage className="text-sm text-red-500" />
+                                            </FormItem>
+                                        )}
+                                    />
 
+                                    {errors.root && (
+                                        <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20">
+                                            <FormMessage className="text-sm font-medium text-red-600 dark:text-red-400">
+                                                {errors.root.message}
+                                            </FormMessage>
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        variant={'primary'}
+                                        type="submit"
+                                        className="from-blue-600 hover:from-blue-700 h-12 w-full transform rounded-xl bg-gradient-to-r to-cyan-600 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:to-cyan-700 hover:shadow-xl active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50"
+                                        disabled={isSubmitting}
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="flex items-center justify-center">
+                                                <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                                Đang đăng nhập...
+                                            </div>
+                                        ) : (
+                                            'Đăng nhập'
+                                        )}
+                                    </Button>
+                                </form>
+                            </Form>
+                        </div>
+
+                        {/* Divider with gradient */}
+                        <div className="my-8 flex items-center">
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-600"></div>
+                            <span className="px-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                hoặc
+                            </span>
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-600"></div>
+                        </div>
+
+                        {/* Google login button */}
+                        <Button
+                            onClick={loginWithGoogle}
+                            disabled={isLoading}
+                            className="h-12 w-full transform rounded-xl border-2 border-slate-200 bg-white font-semibold text-slate-700 shadow-md transition-all duration-300 hover:scale-[1.02] hover:border-slate-300 hover:shadow-lg active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
+                        >
+                            <div className="flex items-center justify-center">
+                                <Icons.Google className="mr-3 h-5 w-5" />
+                                <span>Đăng nhập với Google</span>
+                            </div>
+                        </Button>
+
+                        {/* Sign up link */}
+                        <div className="mt-8 text-center">
+                            <span className="text-slate-600 dark:text-slate-400">
+                                Chưa có tài khoản?{' '}
+                            </span>
                             <Button
-                                variant={'primary'}
-                                type="submit"
-                                className="mt-4 w-full"
-                                disabled={isSubmitting}
+                                href={'/auth/sign-up'}
+                                className="text-sm font-bold text-primary-2"
+                                variant={'text'}
+                                size={'md'}
                             >
-                                Đăng nhập
+                                Đăng ký ngay
                             </Button>
-                        </form>
-                    </Form>
+                        </div>
+                    </div>
+
+                    {/* Animated border */}
+                    <div className="border-gradient-to-r from-blue-400/30 pointer-events-none absolute inset-0 rounded-3xl border via-cyan-400/30 to-teal-400/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
                 </div>
 
-                <div className={'my-6 h-[1px] w-full bg-secondary-2'}></div>
-
-                <Button
-                    className="w-full"
-                    variant={'secondary'}
-                    size={'lg'}
-                    onClick={loginWithGoogle}
-                    disabled={isLoading}
-                >
-                    <Icons.Google className="mr-2" />
-                    <h5 className="text-base">Đăng nhập với Google</h5>
-                </Button>
-
-                <div className="flex items-center justify-center">
-                    <h5 className={'text-sm text-secondary-1'}>
-                        Chưa có tài khoản?
-                    </h5>
-                    <Button
-                        href={'/auth/sign-up'}
-                        className="text-sm font-bold text-primary-2"
-                        variant={'text'}
-                        size={'md'}
-                    >
-                        Đăng ký ngay
-                    </Button>
-                </div>
+                {/* Floating decoration elements */}
+                <div className="from-blue-400 absolute -right-2 -top-2 h-4 w-4 animate-pulse rounded-full bg-gradient-to-r to-cyan-400 opacity-60"></div>
+                <div
+                    className="absolute -bottom-2 -left-2 h-3 w-3 animate-pulse rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 opacity-60"
+                    style={{ animationDelay: '0.5s' }}
+                ></div>
             </div>
 
-            {isSubmitting && <Loading overlay fullScreen />}
+            {/* {isSubmitting && <Loading overlay fullScreen />} */}
         </>
     );
 };
