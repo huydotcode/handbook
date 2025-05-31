@@ -10,6 +10,7 @@ interface IConversationModel {
     type: string;
     status: string;
     pinnedMessages: Types.ObjectId[];
+    isDeletedBy: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -44,6 +45,12 @@ const ConversationModel = new Schema<IConversationModel>(
         pinnedMessages: {
             type: [Schema.Types.ObjectId],
             ref: 'Message',
+            required: false,
+            default: [],
+        },
+        isDeletedBy: {
+            type: [Schema.Types.ObjectId],
+            ref: 'User',
             required: false,
             default: [],
         },

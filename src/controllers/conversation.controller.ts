@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Conversation from '../models/conversation.model';
 import { POPULATE_USER } from '../utils/populate';
+import path from 'path';
 
 class ConversationController {
     public async getConversations(
@@ -15,6 +16,9 @@ class ConversationController {
                 participants: {
                     $elemMatch: { $eq: user_id },
                 },
+                // isDeletedBy: {
+                //     $nin: [user_id],
+                // },
             })
                 .populate('participants', POPULATE_USER + ' lastAccessed')
                 .populate('creator', POPULATE_USER)
@@ -42,21 +46,37 @@ class ConversationController {
     ): Promise<void> {
         try {
             const conversation_id = req.params.id;
+            if (!conversation_id) {
+                res.status(400).json({
+                    message: 'Conversation ID is required',
+                });
+
+                return;
+            }
 
             const conversation = await Conversation.findOne({
                 _id: conversation_id,
             })
-                .populate('participants')
-                .populate('creator')
+                .populate('participants', POPULATE_USER + ' lastAccessed')
+                .populate('creator', POPULATE_USER)
+                .populate('lastMessage')
+                .populate('avatar')
                 .populate({
                     path: 'group',
-                    populate: {
-                        path: 'avatar',
-                        model: 'Image',
-                    },
+                    populate: [
+                        {
+                            path: 'avatar',
+                        },
+                        {
+                            path: 'members.user',
+                        },
+                        {
+                            path: 'creator',
+                        },
+                    ],
                 });
 
-            return JSON.parse(JSON.stringify(conversation));
+            res.status(200).json(conversation);
         } catch (error: any) {
             next(error);
         }
