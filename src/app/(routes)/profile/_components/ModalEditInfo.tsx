@@ -4,7 +4,7 @@ import { getLocationsKey } from '@/lib/queryKey';
 import logger from '@/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
@@ -24,7 +24,7 @@ type FormInfo = {
 };
 
 const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
-    const { data } = useQuery<ILocation[]>({
+    const { data: locations } = useQuery<ILocation[]>({
         queryKey: getLocationsKey(),
         queryFn: async () => {
             const locations = await getLocations();
@@ -136,10 +136,10 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             id="location"
                             {...register('location')}
                         >
-                            {data &&
-                                data.map((item) => (
+                            {locations &&
+                                locations.map((item) => (
                                     <option
-                                        key={item._id}
+                                        key={item.slug}
                                         value={item.nameWithType}
                                     >
                                         {item.nameWithType}
