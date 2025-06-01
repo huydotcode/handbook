@@ -1,5 +1,4 @@
 'use client';
-import { ReactionPost } from '@/components/post';
 import Comment from '@/components/post/comment/CommentItem';
 import SkeletonComment from '@/components/post/comment/SkeletonComment';
 import { Avatar, Icons } from '@/components/ui';
@@ -11,10 +10,11 @@ import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendComment } from '@/lib/actions/comment.action';
 import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { sendMessage } from '@/lib/actions/message.action';
-import { savePost, unsavePost } from '@/lib/actions/post.action';
+import { savePost, sendReaction, unsavePost } from '@/lib/actions/post.action';
 import axiosInstance from '@/lib/axios';
 import { getCommentsKey, getSavedPostsKey } from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
+import logger from '@/utils/logger';
 import {
     useInfiniteQuery,
     useMutation,
@@ -89,7 +89,7 @@ const ShareModal: React.FC<Props> = ({ post }) => {
             <DialogTrigger asChild>
                 <Button className="flex-1 md:p-1" variant={'ghost'}>
                     <Icons.Share className="text-xl" />
-                    <span className="ml-1 mr-2 min-w-[10px] text-sm">
+                    <span className="ml-1 mr-2 min-w-[10px] text-sm sm:hidden">
                         Chia sẻ
                     </span>
                 </Button>
@@ -230,11 +230,100 @@ const SavePost: React.FC<Props> = ({ post }) => {
             variant={'ghost'}
         >
             {isLoadingSavePost ? <Icons.Loading /> : <Icons.Bookmark />}
-            {isLoadingSavePost && isSaved
-                ? 'Đang hủy'
-                : isLoadingSavePost && !isSaved
-                  ? 'Đang lưu'
-                  : 'Lưu'}
+            <span className="sm:hidden">
+                {isLoadingSavePost && isSaved
+                    ? 'Đang hủy'
+                    : isLoadingSavePost && !isSaved
+                      ? 'Đang lưu'
+                      : 'Lưu'}
+            </span>
+        </Button>
+    );
+};
+
+interface ReactionPostProps {
+    post: IPost;
+}
+
+const ReactionPost: React.FC<ReactionPostProps> = ({ post }) => {
+    const { data: session } = useSession();
+    const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
+    const { socketEmitor } = useSocket();
+    const { invalidatePost } = useQueryInvalidation();
+
+    const isReacted = React.useMemo(
+        () => loves.find((r) => r === session?.user.id),
+        [loves, session?.user.id]
+    );
+
+    const mutation = useMutation({
+        mutationFn: async () => {
+            if (!session?.user) {
+                toast.error('Bạn cần đăng nhập để thực hiện chức năng này!');
+                return;
+            }
+
+            try {
+                if (isReacted) {
+                    setLoves((prev) =>
+                        prev.filter((r) => r !== session?.user.id)
+                    );
+                } else {
+                    setLoves((prev) => {
+                        return [...prev, session?.user.id];
+                    });
+                }
+
+                await sendReaction({
+                    postId: post._id,
+                });
+
+                if (!isReacted) {
+                    socketEmitor.likePost({
+                        postId: post._id,
+                        authorId: post.author._id,
+                    });
+                }
+
+                await invalidatePost(post._id);
+            } catch (error: any) {
+                logger({
+                    message: 'Error reaction post' + error,
+                    type: 'error',
+                });
+            }
+        },
+        onError: () => {
+            toast.error('Không thể thực hiện chức năng này!');
+        },
+    });
+
+    return (
+        <Button
+            className="like-container mr-2 flex flex-1 items-center md:p-1"
+            variant={'ghost'}
+            onClick={() => mutation.mutate()}
+        >
+            <div className="con-like">
+                <input
+                    className="like"
+                    type="checkbox"
+                    title="like"
+                    checked={isReacted ? true : false}
+                    onChange={() => {}}
+                />
+                <div className="checkmark flex">
+                    <Icons.Heart />
+                </div>
+            </div>
+
+            <span
+                className={cn('ml-1 mr-2 min-w-[10px] text-sm sm:hidden', {
+                    'text-red-500': isReacted,
+                })}
+            >
+                Yêu thích
+            </span>
         </Button>
     );
 };
