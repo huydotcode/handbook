@@ -6,6 +6,7 @@ import { useVideoVolume } from '@/hooks/useVideoVolume';
 interface VideoPlayerProps {
     src: string;
     videoClassName?: string;
+    containerClassName?: string;
 }
 
 const formatTime = (time: number): string => {
@@ -17,11 +18,14 @@ const formatTime = (time: number): string => {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
     videoClassName = '',
+    containerClassName = '',
 }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const progressRef = useRef<HTMLDivElement>(null);
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
     const [volume, setVolume] = useVideoVolume();
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
@@ -131,13 +135,43 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         };
     }, [setVolume, videoRef]);
 
+    useEffect(() => {
+        const handleFullScreenChange = () => {
+            setIsFullScreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullScreenChange);
+        return () => {
+            document.removeEventListener(
+                'fullscreenchange',
+                handleFullScreenChange
+            );
+        };
+    }, []);
+
     return (
-        <div className="w-full overflow-hidden rounded-xl bg-black shadow-2xl">
-            <div className="relative">
+        <div
+            className={cn(
+                'relative w-full overflow-hidden rounded-xl bg-black shadow-2xl',
+                containerClassName,
+                {
+                    'h-screen': isFullScreen,
+                    'max-h-[80vh]': !isFullScreen,
+                }
+            )}
+        >
+            <div className="relative max-h-full w-full">
                 <video
                     ref={videoRef}
                     src={src}
-                    className={cn('h-auto max-h-screen w-full', videoClassName)}
+                    className={cn(
+                        'h-full max-h-screen w-full object-contain',
+                        videoClassName,
+                        {
+                            'h-screen': isFullScreen,
+                            'max-h-[80vh]': !isFullScreen,
+                        }
+                    )}
                     onClick={togglePlay}
                     onError={handleError}
                 />

@@ -224,11 +224,7 @@ const PostContent = ({ post }: { post: IPost }) => {
             {videos.length > 0 && (
                 <div className="mt-3">
                     {videos.map((video) => (
-                        <VideoPlayer
-                            videoClassName="max-h-[70vh]"
-                            src={video.url}
-                            key={video._id}
-                        />
+                        <VideoPlayer src={video.url} key={video._id} />
                     ))}
                 </div>
             )}
