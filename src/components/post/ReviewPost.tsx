@@ -3,6 +3,7 @@ import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { updateStatusPost } from '@/lib/actions/post.action';
 import { usePathname } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { PostTypes } from './InfinityPostComponent';
 
 interface Props {
     post: IPost;
@@ -24,6 +25,7 @@ const ReviewPost = ({ post }: Props) => {
 
             await invalidateNewFeedPosts({
                 groupId: post.group?._id,
+                type: PostTypes.MANAGE_GROUP_POSTS_PENDING,
             });
             await invalidatePost(post._id);
 

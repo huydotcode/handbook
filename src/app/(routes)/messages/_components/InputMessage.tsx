@@ -190,7 +190,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                                             Array.from(
                                                 files.concat(
                                                     Array.from(
-                                                        event.target.files
+                                                        event.target.files || []
                                                     )
                                                 )
                                             )

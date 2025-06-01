@@ -55,7 +55,7 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
                 <Sidebar group={group} conversations={conversations} />
             )}
 
-            <div className="ml-[300px] px-4 lg:ml-[200px] md:ml-[72px]">
+            <div className="ml-[300px] px-4 md:ml-0">
                 <div className="mx-auto w-full max-w-[1000px]">
                     <Header group={group} />
 

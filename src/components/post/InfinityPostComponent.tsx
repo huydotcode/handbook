@@ -21,6 +21,17 @@ export type PostType =
     | 'manage-group-posts-pending'
     | 'post-by-member';
 
+export const PostTypes = {
+    NEW_FEED: 'new-feed' as PostType,
+    PROFILE: 'profile' as PostType,
+    GROUP: 'group' as PostType,
+    NEW_FEED_GROUP: 'new-feed-group' as PostType,
+    NEW_FEED_FRIEND: 'new-feed-friend' as PostType,
+    MANAGE_GROUP_POSTS: 'manage-group-posts' as PostType,
+    MANAGE_GROUP_POSTS_PENDING: 'manage-group-posts-pending' as PostType,
+    POST_BY_MEMBER: 'post-by-member' as PostType,
+};
+
 interface Props {
     className?: string;
     userId?: string;
@@ -93,7 +104,7 @@ const usePosts = ({
             });
             return data;
         },
-        [session?.user.id, type, isFeedType, getEndpoint]
+        [session?.user.id, getEndpoint, type, isFeedType, userId, groupId]
     );
 
     return useInfiniteQuery({
@@ -149,7 +160,7 @@ const InfinityPostComponent: React.FC<Props> = ({
             ((type === 'new-feed' && currentUser) ||
                 (type === 'profile' && isCurrentUser) ||
                 (type === 'group' && currentUser && groupId)),
-        [isManage, type, currentUser, isCurrentUser, groupId]
+        [showCreatePost, isManage, type, currentUser, isCurrentUser, groupId]
     );
 
     const handleFetchNextPage = useCallback(async () => {

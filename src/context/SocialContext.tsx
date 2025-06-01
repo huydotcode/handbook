@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
 import axiosInstance from '@/lib/axios';
 import { getProfileByUserId } from '@/lib/actions/profile.action';
+import { AxiosError } from 'axios';
 
 const PAGE_SIZE = 10;
 
@@ -75,22 +76,20 @@ export const useConversations = (userId: string | undefined) =>
 export const useConversation = (conversationId: string | undefined) => {
     const { data: session } = useSession();
 
-    return useQuery<IConversation>({
+    return useQuery<IConversation | null>({
         queryKey: getConversationKey(conversationId),
         queryFn: async () => {
             try {
                 const res = await axiosInstance.get(
                     `/conversations/${conversationId}`
                 );
-
-                const data = res.data;
-                return data;
+                return res.data;
             } catch (error) {
-                console.error('Error fetching conversation:', error);
                 return null;
             }
         },
         enabled: !!conversationId && !!session?.user.id,
+        retry: false,
     });
 };
 

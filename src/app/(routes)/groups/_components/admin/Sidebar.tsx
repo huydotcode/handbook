@@ -3,12 +3,13 @@ import { Avatar, Icons, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import useBreakPoint from '@/hooks/useBreakpoint';
 import { createConversation } from '@/lib/actions/conversation.action';
+import { cn } from '@/lib/utils';
 import { timeConvert } from '@/utils/timeConvert';
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -19,7 +20,6 @@ interface Props {
 
 interface FormData {
     name: string;
-    desc: string;
 }
 
 const Sidebar: React.FC<Props> = ({
@@ -28,12 +28,14 @@ const Sidebar: React.FC<Props> = ({
 }) => {
     const { socket } = useSocket();
     const { data: session } = useSession();
-    const { invalidateConversations } = useQueryInvalidation();
+    const { breakpoint } = useBreakPoint();
+    const isMobile = breakpoint === 'sm' || breakpoint === 'md';
 
     const [showModalCreateConversation, setShowModalCreateConversation] =
         useState<boolean>(false);
     const [conversations, setConversations] =
         useState<IConversation[]>(initConversations);
+    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
     const canCreateConversation = useMemo(() => {
         return currentGroup.members.some(
@@ -73,7 +75,7 @@ const Sidebar: React.FC<Props> = ({
         if (!session) return toast.error('Chưa đăng nhập');
         createGroupConversation({
             creator: session.user.id,
-            participantsUserId: currentGroup.members.map((mem) => mem.user._id),
+            participantsUserId: [session.user.id],
             title: data.name,
             groupId: currentGroup._id,
             type: 'group',
@@ -83,110 +85,150 @@ const Sidebar: React.FC<Props> = ({
 
     const isCreator = currentGroup.creator._id === session?.user?.id;
 
-    // const createGroupConversation = async (data: FormData) => {
-    //     if (!session) return toast.error('Chưa đăng nhập');
-
-    //     try {
-    //         const newConversation = await createConversation({
-    //             creator: session.user.id,
-    //             participantsUserId: currentGroup.members.map(
-    //                 (mem) => mem.user._id
-    //             ),
-    //             title: data.name,
-    //             groupId: currentGroup._id,
-    //             type: 'group',
-    //         });
-
-    //         if (newConversation) {
-    //             toast.success('Tạo cuộc hội thoại thành công!');
-    //             setShowModalCreateConversation(false);
-    //             setConversations([...conversations, newConversation]);
-
-    //             for (const mem of currentGroup.members) {
-    //                 socket?.emit(socketEvent.JOIN_ROOM, {
-    //                     roomId: newConversation._id,
-    //                     userId: mem.user._id,
-    //                 });
-    //             }
-    //         }
-
-    //         await invalidateConversations();
-    //     } catch (error) {
-    //         toast.error(
-    //             'Có lỗi xảy ra khi tạo hội thoại, vui lòng thử lại sau!'
-    //         );
-    //     }
-    // };
+    useEffect(() => {
+        if (isMobile) {
+            setIsSidebarOpen(false);
+        }
+    }, [isMobile]);
 
     return (
         <>
-            <div className="no-scrollbar fixed left-0 top-[56px] h-[calc(100vh-56px)] w-[300px] overflow-scroll border-r-2 bg-secondary-1 p-2 dark:border-none dark:bg-dark-secondary-1 lg:w-[200px] md:w-[72px]">
-                <div className="flex h-full flex-col">
-                    <div className="flex p-2">
-                        <div className="relative h-8 w-8">
-                            <Avatar
-                                imgSrc={currentGroup.avatar.url}
-                                rounded="sm"
-                            />
-                        </div>
+            <div
+                className={cn(
+                    'fixed left-0 top-[64px] z-50 hidden items-center justify-center transition-all duration-300 ease-in-out md:flex',
+                    {
+                        'left-[300px]': isSidebarOpen,
+                    }
+                )}
+            >
+                <Button
+                    className="rounded-l-none rounded-r-md bg-secondary-1 dark:bg-dark-secondary-1"
+                    variant={'secondary'}
+                    onClick={() => setIsSidebarOpen((prev) => !prev)}
+                >
+                    <Icons.Menu className="h-5 w-5" />
+                </Button>
+            </div>
+
+            <div
+                className={cn(
+                    'no-scrollbar fixed left-0 top-[56px] z-10 h-[calc(100vh-56px)] w-[300px] overflow-scroll border-r-2 bg-secondary-1 p-2 transition-transform duration-300 ease-in-out dark:border-none dark:bg-dark-secondary-1',
+                    {
+                        'translate-x-0': isSidebarOpen,
+                        '-translate-x-full': !isSidebarOpen && isMobile,
+                    }
+                )}
+            >
+                <div className="flex h-full flex-col p-2">
+                    <div className="flex">
+                        <Avatar
+                            imgSrc={currentGroup.avatar.url}
+                            rounded="sm"
+                            width={40}
+                            height={40}
+                        />
 
                         <div className="ml-2 flex flex-1 flex-col">
-                            <p className="text-sm dark:text-dark-primary-1 md:hidden">
+                            <p className="dark:text-dark-primary-1">
                                 {currentGroup.name}
                             </p>
 
-                            <p className="text-xs text-secondary-1 lg:hidden">
-                                Hoạt động gần nhất:
+                            <p className="text-xs text-secondary-1">
+                                Hoạt động gần nhất:{' '}
                                 {timeConvert(currentGroup.updatedAt.toString())}
                             </p>
                         </div>
                     </div>
 
                     {isCreator && (
-                        <div className={'flex w-full flex-col gap-2'}>
+                        <div className={'mt-4 flex w-full flex-col'}>
+                            <h1 className="font-semibold">Quản lý nhóm</h1>
+
                             <Button
+                                className="justify-start"
                                 href={`/groups/${currentGroup._id}/manage/posts`}
-                                variant={'secondary'}
+                                variant={'ghost'}
                                 size={'sm'}
                             >
-                                <Icons.Posts />
-                                <span className={'md:hidden'}>
-                                    Quản lý bài viết
-                                </span>
+                                <Icons.Posts className="h-6 w-6" />
+                                <span>Quản lý bài viết</span>
                             </Button>
 
                             <Button
+                                className="justify-start"
                                 href={`/groups/${currentGroup._id}/manage`}
-                                variant={'secondary'}
+                                variant={'ghost'}
                                 size={'sm'}
                             >
-                                <Icons.Edit />
-                                <span className={'md:hidden'}>
-                                    Cài đặt nhóm
-                                </span>
+                                <Icons.Edit className="h-6 w-6" />
+                                <span>Cài đặt nhóm</span>
                             </Button>
                         </div>
                     )}
 
-                    <div className="mt-2 flex-1">
-                        <h5 className="md:hidden">
-                            Các cuộc hội thoại của nhóm
-                        </h5>
+                    <div className="flex-1 overflow-y-auto">
+                        <div className="mt-2">
+                            <h1 className="font-semibold">
+                                Đoạn chat đã tham gia
+                            </h1>
 
-                        <div className="flex flex-col space-y-2 pt-1">
-                            {conversations.map((conversation) => (
-                                <Button
-                                    href={`/messages/${conversation._id}`}
-                                    key={conversation._id}
-                                    variant={'default'}
-                                >
-                                    <div className="ml-2 flex flex-1 flex-col md:hidden">
-                                        <p className="text-sm dark:text-dark-primary-1">
-                                            {conversation.title}
-                                        </p>
-                                    </div>
-                                </Button>
-                            ))}
+                            <div className="flex flex-col pt-1">
+                                {conversations
+                                    .filter(
+                                        (conversation) =>
+                                            conversation.participants.some(
+                                                (p) =>
+                                                    p._id === session?.user.id
+                                            ) && conversation.type === 'group'
+                                    )
+                                    .map((conversation) => (
+                                        <Button
+                                            href={`/messages/${conversation._id}`}
+                                            key={conversation._id}
+                                            variant={'ghost'}
+                                            size={'sm'}
+                                        >
+                                            <Icons.Message className="h-6 w-6" />
+                                            <div className="flex flex-1 flex-col">
+                                                <p className="text-sm dark:text-dark-primary-1">
+                                                    {conversation.title}
+                                                </p>
+                                            </div>
+                                        </Button>
+                                    ))}
+                            </div>
+                        </div>
+
+                        <div className="mt-2">
+                            <h1 className="font-semibold">
+                                Các đoạn chat của nhóm
+                            </h1>
+
+                            <div className="flex flex-col pt-1">
+                                {conversations
+                                    .filter(
+                                        (conversation) =>
+                                            conversation.participants.some(
+                                                (p) =>
+                                                    p._id !== session?.user.id
+                                            ) && conversation.type === 'group'
+                                    )
+                                    .map((conversation) => (
+                                        <Button
+                                            href={`/messages/${conversation._id}`}
+                                            key={conversation._id}
+                                            variant={'ghost'}
+                                            size={'sm'}
+                                        >
+                                            <Icons.Message className="h-6 w-6" />
+                                            <div className="flex flex-1 flex-col">
+                                                <p className="text-sm dark:text-dark-primary-1">
+                                                    {conversation.title}
+                                                </p>
+                                            </div>
+                                        </Button>
+                                    ))}
+                            </div>
                         </div>
                     </div>
 
@@ -199,11 +241,8 @@ const Sidebar: React.FC<Props> = ({
                                     setShowModalCreateConversation(true)
                                 }
                             >
-                                <span className="text-sm md:hidden">
+                                <span className="text-sm">
                                     Tạo cuộc hội thoại
-                                </span>
-                                <span className="hidden md:block">
-                                    <Icons.Plus className="h-4 w-4" />
                                 </span>
                             </Button>
                         </div>
@@ -234,24 +273,6 @@ const Sidebar: React.FC<Props> = ({
                         />
                         <span className="text-red-500">
                             {errors.name &&
-                                'Tên cuộc hội thoại không trống và không được quá 50 ký tự'}
-                        </span>
-                    </div>
-
-                    <div>
-                        <label htmlFor="desc">Mô tả</label>
-                        <input
-                            id="desc"
-                            className="my-1 w-full rounded-md border bg-primary-1 p-2 dark:bg-dark-primary-1"
-                            type="text"
-                            placeholder="Tên cuộc hội thoại"
-                            {...register('desc', {
-                                required: true,
-                                maxLength: 100,
-                            })}
-                        />
-                        <span className="text-red-500">
-                            {errors.desc &&
                                 'Tên cuộc hội thoại không trống và không được quá 50 ký tự'}
                         </span>
                     </div>

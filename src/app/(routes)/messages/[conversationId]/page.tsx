@@ -61,6 +61,7 @@ const ConversationPage: React.FC<Props> = ({}) => {
         isLoading: isLoadingConversation,
         isFetching,
         isPending,
+        error: conversationError,
     } = useConversation(conversationId as string);
 
     const error = useMemo(() => {
@@ -160,6 +161,15 @@ const ConversationPage: React.FC<Props> = ({}) => {
 
     if (!conversation || error?.type === NOT_FOUND) {
         return <ErrorDisplay title={error?.message || ''} />;
+    }
+
+    if (conversationError) {
+        return (
+            <ErrorDisplay
+                title={conversationError.message || 'Đã có lỗi xảy ra'}
+                message={conversationError.message}
+            />
+        );
     }
 
     if (error?.type === IS_DELETED) {

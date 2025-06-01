@@ -47,7 +47,7 @@ export const FileUploaderWrapper = ({
         (e: React.DragEvent) => {
             e.preventDefault();
             const droppedFiles = e.dataTransfer.files;
-            handleNewFiles(Array.from(droppedFiles));
+            handleNewFiles(Array.from(droppedFiles || []));
             setIsDragging(false);
         },
         [handleNewFiles]
@@ -71,7 +71,9 @@ export const FileUploaderWrapper = ({
     // Xử lý chọn file từ input
     const handleFileSelect = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newFiles = e.target.files ? Array.from(e.target.files) : [];
+            const newFiles = e.target.files
+                ? Array.from(e.target.files || [])
+                : [];
             handleNewFiles(newFiles);
         },
         [handleNewFiles]
@@ -156,7 +158,7 @@ const FileUploader: React.FC<Props> = ({
     const handleFileSelect = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
             const newFiles = event.target.files
-                ? Array.from(event.target.files)
+                ? Array.from(event.target.files || [])
                 : [];
             setFiles((prevFiles) => [...prevFiles, ...newFiles]);
             if (handleChange) {
@@ -171,7 +173,7 @@ const FileUploader: React.FC<Props> = ({
         (event) => {
             event.preventDefault();
             const droppedFiles = event.dataTransfer.files
-                ? Array.from(event.dataTransfer.files)
+                ? Array.from(event.dataTransfer.files || [])
                 : [];
             setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
             if (handleChange) {

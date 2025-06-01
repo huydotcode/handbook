@@ -90,11 +90,11 @@ const Sidebar: React.FC<Props> = ({}) => {
                                 }));
                             }}
                         >
-                            <SelectTrigger className="mt-2 h-8 max-w-[150px] bg-secondary-2 text-xs md:w-fit">
-                                <div className="flex items-center md:hidden">
+                            <SelectTrigger className="mt-2 h-8 w-fit max-w-[150px] bg-secondary-2 text-xs dark:bg-dark-secondary-2">
+                                {/* <div className="flex items-center md:hidden">
                                     <SelectValue placeholder="Sắp xếp theo" />
-                                </div>
-                                <div className="hidden items-center md:flex">
+                                </div> */}
+                                <div className="flex items-center pr-2">
                                     <Icons.Sort className="h-4 w-4" />
                                 </div>
                             </SelectTrigger>
@@ -110,31 +110,33 @@ const Sidebar: React.FC<Props> = ({}) => {
 
                 {isLoading && <Loading text="Đang tải cuộc trò chuyện..." />}
 
-                {!isLoading &&
-                    conversations &&
-                    conversations
-                        .sort((a, b) => {
-                            if (filter.sortBy === 'createdAt') {
-                                return filter.sortOrder === 'desc'
-                                    ? new Date(b.createdAt).getTime() -
-                                          new Date(a.createdAt).getTime()
-                                    : new Date(a.createdAt).getTime() -
-                                          new Date(b.createdAt).getTime();
-                            } else if (filter.sortBy === 'title') {
-                                return filter.sortOrder === 'asc'
-                                    ? a.title.localeCompare(b.title)
-                                    : b.title.localeCompare(a.title);
-                            }
-                            return 0;
-                        })
-                        .map((conversation: IConversation) => {
-                            return (
-                                <ConversationItem
-                                    data={conversation}
-                                    key={conversation._id}
-                                />
-                            );
-                        })}
+                <div className="flex flex-col gap-1 overflow-y-auto pb-10">
+                    {!isLoading &&
+                        conversations &&
+                        conversations
+                            .sort((a, b) => {
+                                if (filter.sortBy === 'createdAt') {
+                                    return filter.sortOrder === 'desc'
+                                        ? new Date(b.createdAt).getTime() -
+                                              new Date(a.createdAt).getTime()
+                                        : new Date(a.createdAt).getTime() -
+                                              new Date(b.createdAt).getTime();
+                                } else if (filter.sortBy === 'title') {
+                                    return filter.sortOrder === 'asc'
+                                        ? a.title.localeCompare(b.title)
+                                        : b.title.localeCompare(a.title);
+                                }
+                                return 0;
+                            })
+                            .map((conversation: IConversation) => {
+                                return (
+                                    <ConversationItem
+                                        data={conversation}
+                                        key={conversation._id}
+                                    />
+                                );
+                            })}
+                </div>
 
                 {!isLoading && conversations && conversations.length === 0 && (
                     <p className="text-center text-sm text-gray-500 dark:text-gray-400">

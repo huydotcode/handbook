@@ -43,9 +43,9 @@ const Video = React.forwardRef<HTMLVideoElement, IVideoProps>(
                     onVideoDrop
                 ) {
                     // Lọc chỉ các file video
-                    const videoFiles = Array.from(e.dataTransfer.files).filter(
-                        (file) => file.type.startsWith('video/')
-                    );
+                    const videoFiles = Array.from(
+                        e.dataTransfer.files || []
+                    ).filter((file) => file.type.startsWith('video/'));
 
                     if (videoFiles.length > 0) {
                         // Tạo FileList tương đương từ mảng video files

@@ -136,8 +136,41 @@ const InfomationConversation: React.FC<Props> = ({
             key: 'infomation-chat',
             label: 'Thông tin về đoạn chat',
             children: (
-                // Tin nhắn đã ghim tin nhắn lưu trữ
                 <div>
+                    {isGroup && (
+                        <>
+                            <Button
+                                className={'mb-2 w-full justify-start'}
+                                variant={'ghost'}
+                                href={`/groups/${conversation.group?._id}`}
+                            >
+                                <Icons.Group className="h-5 w-5" />
+                                <p className="ml-2 text-xs">
+                                    Truy cập {conversation?.group?.name}
+                                </p>
+                            </Button>
+
+                            <Button
+                                className={'mb-2 w-full justify-start'}
+                                variant={'ghost'}
+                                onClick={() => {
+                                    window.navigator.clipboard.writeText(
+                                        `${window.location.origin}/messages/${conversation?._id}`
+                                    );
+
+                                    toast.success(
+                                        'Đã sao chép liên kết đoạn chat'
+                                    );
+                                }}
+                            >
+                                <Icons.Link className="h-5 w-5" />
+                                <p className="ml-2 text-xs">
+                                    Sao chép liên kết
+                                </p>
+                            </Button>
+                        </>
+                    )}
+
                     <Button
                         className={'mb-2 w-full justify-start'}
                         variant={'ghost'}
@@ -147,13 +180,6 @@ const InfomationConversation: React.FC<Props> = ({
                     >
                         <Icons.Pin className="h-5 w-5" />
                         <p className="ml-2 text-xs">Tin nhắn đã ghim</p>
-                    </Button>
-                    <Button
-                        className={'mb-2 w-full justify-start'}
-                        variant={'ghost'}
-                    >
-                        <Icons.Archive className="h-5 w-5" />
-                        <p className="ml-2 text-xs">Tin nhắn đã lưu trữ</p>
                     </Button>
                 </div>
             ),
@@ -256,7 +282,7 @@ const InfomationConversation: React.FC<Props> = ({
                         {isPrivate
                             ? 'Xóa đoạn chat'
                             : isGroup
-                              ? 'Rời nhóm'
+                              ? 'Rời đoạn chat'
                               : 'Xóa đoạn chat'}
                     </p>
                 </Button>

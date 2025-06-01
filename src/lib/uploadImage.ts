@@ -86,7 +86,7 @@ export const uploadImagesWithFiles = async ({
 }: {
     files: File[];
 }): Promise<IMedia[]> => {
-    const uploadTasks = Array.from(files).map(async (file) => {
+    const uploadTasks = Array.from(files || []).map(async (file) => {
         if (file.size > 100 * 1024 * 1024) {
             toast.error('Kích thước file không được vượt quá 100MB!');
             throw new Error('File quá lớn');

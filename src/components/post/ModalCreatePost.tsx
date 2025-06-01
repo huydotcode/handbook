@@ -63,7 +63,7 @@ const ModalCreatePost: React.FC<Props> = ({
         const fileList = e.target.files;
         console.log('handleChangeImage', fileList);
         if (fileList) {
-            const newFiles: File[] = Array.from(fileList);
+            const newFiles: File[] = Array.from(fileList || []);
 
             try {
                 // Kiểm tra kích thước video

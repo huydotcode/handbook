@@ -112,7 +112,7 @@ const CreatePostPage = () => {
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (fileList) {
-            const newFiles: File[] = Array.from(fileList);
+            const newFiles: File[] = Array.from(fileList || []);
 
             try {
                 // Kiểm tra kích thước video

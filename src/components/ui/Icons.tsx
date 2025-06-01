@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { AiOutlineLoading, AiOutlineMenu, AiOutlineShop } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineMenu } from 'react-icons/ai';
 import { BiEdit, BiLogOut } from 'react-icons/bi';
 import {
     BsFileEarmarkPost,
@@ -29,22 +29,26 @@ import {
 } from 'react-icons/fa';
 import {
     FaBookmark,
+    FaBoxArchive,
     FaCar,
     FaCode,
     FaDownload,
     FaEye,
+    FaLink,
     FaLocationDot,
     FaShirt,
     FaShop,
-    FaSort,
 } from 'react-icons/fa6';
 import { GoSearch } from 'react-icons/go';
+import { GrRedo, GrUndo } from 'react-icons/gr';
 import { HiHome } from 'react-icons/hi';
+import { ImStrikethrough } from 'react-icons/im';
 import {
     IoIosArrowBack,
     IoIosArrowDown,
     IoIosArrowForward,
     IoIosArrowUp,
+    IoIosCreate,
     IoMdLaptop,
     IoMdSchool,
 } from 'react-icons/io';
@@ -57,22 +61,19 @@ import {
     MdNotifications,
     MdNotificationsActive,
     MdOutlineKeyboardArrowRight,
+    MdPublic,
+    MdSort,
     MdWork,
 } from 'react-icons/md';
 import {
     RiAdminFill,
     RiDeleteBin5Fill,
+    RiGitRepositoryPrivateFill,
     RiVerifiedBadgeFill,
 } from 'react-icons/ri';
-import { TiTick } from 'react-icons/ti';
-import { ImStrikethrough } from 'react-icons/im';
 import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
+import { TiTick } from 'react-icons/ti';
 import { VscClearAll } from 'react-icons/vsc';
-import { GrRedo, GrUndo } from 'react-icons/gr';
-import { IoIosCreate } from 'react-icons/io';
-import { FaBoxArchive } from 'react-icons/fa6';
-import { MdPublic } from 'react-icons/md';
-import { RiGitRepositoryPrivateFill } from 'react-icons/ri';
 
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
@@ -236,7 +237,13 @@ const Icons = {
     Public: (props: IconProps) => <MdPublic {...props} />,
     Private: (props: IconProps) => <RiGitRepositoryPrivateFill {...props} />,
     Sort: (props: IconProps) => (
-        <FaSort
+        <MdSort
+            className={cn('text-secondary-1', props.className)}
+            {...props}
+        />
+    ),
+    Link: (props: IconProps) => (
+        <FaLink
             className={cn('text-secondary-1', props.className)}
             {...props}
         />

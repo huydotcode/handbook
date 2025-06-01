@@ -101,15 +101,7 @@ const Message: React.FC<Props> = React.memo<Props>(
 
         // Xử lý click vào ảnh
         const handleClickImage = (url: string) => {
-            console.log('memoizedImages', memoizedImages);
             const index = memoizedImages.findIndex((img) => img.url === url);
-
-            memoizedImages.forEach((img, idx) => {
-                console.log('img', img);
-                console.log('idx', idx);
-            });
-
-            console.log('index', index);
 
             setStartIndex(() => {
                 return index;
@@ -292,6 +284,12 @@ const Message: React.FC<Props> = React.memo<Props>(
             );
         };
 
+        useEffect(() => {
+            console.log({
+                messages,
+            });
+        }, [messages]);
+
         const renderContentImages = () => {
             return (
                 <>
@@ -459,7 +457,10 @@ const Message: React.FC<Props> = React.memo<Props>(
                                     }
                                 )}
                             >
-                                <Avatar imgSrc={msg.sender.avatar} fill />
+                                {messages[index + 1]?.sender._id !==
+                                    msg?.sender?._id && (
+                                    <Avatar imgSrc={msg.sender.avatar} fill />
+                                )}
                             </div>
                         )}
 
@@ -469,19 +470,23 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 'items-start': !isOwnMsg,
                             })}
                         >
-                            {!isPin && msg.conversation.group && !isOwnMsg && (
-                                <div
-                                    className={cn(
-                                        'text-xs text-primary-1 dark:text-dark-primary-1',
-                                        {
-                                            'ml-1': !isOwnMsg,
-                                            'mr-1': isOwnMsg,
-                                        }
-                                    )}
-                                >
-                                    {msg.sender.name}
-                                </div>
-                            )}
+                            {!isPin &&
+                                msg.conversation.group &&
+                                messages[index + 1]?.sender._id !==
+                                    msg?.sender?._id &&
+                                !isOwnMsg && (
+                                    <div
+                                        className={cn(
+                                            'text-xs text-primary-1 dark:text-dark-primary-1',
+                                            {
+                                                'ml-1': !isOwnMsg,
+                                                'mr-1': isOwnMsg,
+                                            }
+                                        )}
+                                    >
+                                        {msg.sender.name}
+                                    </div>
+                                )}
 
                             {isPin && (
                                 <div

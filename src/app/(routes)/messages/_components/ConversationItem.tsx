@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, ConfirmModal, Icons } from '@/components/ui';
+import { Avatar, ConfirmModal, Icons, Loading } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useLastMessage } from '@/context/SocialContext';
 
@@ -31,7 +31,7 @@ interface Props {
 
 const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     const { data: session } = useSession();
-    const { data: lastMessage } = useLastMessage(conversation._id);
+    const { data: lastMessage, isLoading } = useLastMessage(conversation._id);
     const { socketEmitor } = useSocket();
     const { invalidateConversations } = useQueryInvalidation();
     const path = usePathname();
@@ -74,6 +74,10 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                 conversationId: conversation._id,
                 userId: session.user.id,
             });
+
+            if (path.includes(conversation._id)) {
+                router.push('/messages');
+            }
 
             await invalidateConversations();
 
@@ -136,11 +140,17 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                     </h3>
                                 </div>
                                 <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">
-                                    {!lastMessage ? (
+                                    {isLoading && (
+                                        <Loading text="Đang tải tin nhắn..." />
+                                    )}
+
+                                    {!isLoading && !lastMessage && (
                                         <span className="text-secondary-1">
                                             Chưa có tin nhắn
                                         </span>
-                                    ) : (
+                                    )}
+
+                                    {!isLoading && lastMessage && (
                                         <>
                                             <div
                                                 className={

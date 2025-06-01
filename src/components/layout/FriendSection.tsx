@@ -182,7 +182,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
 
                     <div className="mt-2 flex items-center justify-between px-2">
                         <h1 className="text-md font-bold lg:hidden">
-                            Nhóm
+                            Hội thoại nhóm
                             <span className="ml-2 text-sm text-secondary-1">
                                 {groupConversations.length}
                             </span>
