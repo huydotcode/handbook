@@ -101,7 +101,15 @@ const Message: React.FC<Props> = React.memo<Props>(
 
         // Xử lý click vào ảnh
         const handleClickImage = (url: string) => {
+            console.log('memoizedImages', memoizedImages);
             const index = memoizedImages.findIndex((img) => img.url === url);
+
+            memoizedImages.forEach((img, idx) => {
+                console.log('img', img);
+                console.log('idx', idx);
+            });
+
+            console.log('index', index);
 
             setStartIndex(() => {
                 return index;
@@ -556,16 +564,6 @@ const Message: React.FC<Props> = React.memo<Props>(
                                 )}
                             </Popover>
 
-                            {/* {isPin && ( */}
-                            {/* <div
-                                className={
-                                    'p-1 text-xs text-primary-1 dark:text-dark-primary-1'
-                                }
-                            >
-                                {FormatDate.formatISODateToHHMM(msg.createdAt)}
-                            </div> */}
-                            {/* )} */}
-
                             {renderReadMessage()}
                         </div>
                     </div>
@@ -574,7 +572,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                 <SlideShow
                     show={showSlideShow}
                     setShow={setShowSlideShow}
-                    images={memoizedImages.reverse()}
+                    images={memoizedImages}
                     startIndex={startIndex}
                 />
 
