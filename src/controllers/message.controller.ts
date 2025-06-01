@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import Message from '../models/message.model';
 import { POPULATE_USER } from '../utils/populate';
+import { getDecodedTokenFromHeaders } from '../utils/jwt';
+import Conversation from '../models/conversation.model';
 
 class MessageController {
     public async getMessages(req: Request, res: Response): Promise<void> {
@@ -13,6 +15,23 @@ class MessageController {
         }
 
         try {
+            const user = await getDecodedTokenFromHeaders(req.headers);
+            if (!user) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: {
+                    $in: [user.id],
+                },
+            });
+            if (!conversation) {
+                res.status(404).json({ message: 'Conversation not found' });
+                return;
+            }
+
             const messages = await Message.find({
                 conversation: conversationId,
             })
@@ -35,17 +54,30 @@ class MessageController {
         const page = req.query.page || 1;
         const pageSize = req.query.page_size || 10;
 
-        console.log({
-            conversationId,
-            page,
-            pageSize,
-        });
-
-        if (!conversationId) {
-            res.status(400).json({ message: 'Conversation ID is required' });
-        }
-
         try {
+            const user = await getDecodedTokenFromHeaders(req.headers);
+            if (!user) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            if (!conversationId) {
+                res.status(400).json({
+                    message: 'Conversation ID is required',
+                });
+            }
+
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: {
+                    $in: [user.id],
+                },
+            });
+            if (!conversation) {
+                res.status(404).json({ message: 'Conversation not found' });
+                return;
+            }
+
             const messages = await Message.find({
                 conversation: conversationId,
                 isPin: true,
@@ -72,6 +104,24 @@ class MessageController {
         const conversationId = req.query.conversation_id;
 
         try {
+            const user = await getDecodedTokenFromHeaders(req.headers);
+            if (!user) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: {
+                    $in: [user.id],
+                },
+            });
+
+            if (!conversation) {
+                res.status(404).json({ message: 'Conversation not found' });
+                return;
+            }
+
             const messages = await Message.find({
                 conversation: conversationId,
                 text: {

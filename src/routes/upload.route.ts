@@ -3,7 +3,7 @@ import uploadController from '../controllers/upload.controller';
 import {
     multerImageMiddleware,
     multerVideoMiddleware,
-} from '../middlewares/multer.middlware';
+} from '../middlewares/multer.middleware';
 
 const uploadRouter = Router();
 

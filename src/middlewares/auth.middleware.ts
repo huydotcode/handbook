@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { JwtDecoded } from '../types/jwt';
 
 export default async function authMiddleware(
     req: Request,
@@ -22,7 +23,7 @@ export default async function authMiddleware(
         return res.status(500).json({ message: 'Internal server error' });
     }
 
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token, secretKey) as JwtDecoded;
 
     if (!decoded) {
         return res.status(401).json({ message: 'Unauthorized' });

@@ -6,7 +6,6 @@ import { connectToMongo } from './services/mongodb';
 import cors from 'cors';
 import authMiddleware from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
-// import limiteMiddlware from './middlewares/limite.middlware';
 
 const morgan = require('morgan');
 
