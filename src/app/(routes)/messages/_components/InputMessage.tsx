@@ -24,10 +24,11 @@ interface IFormData {
 const InputMessage: React.FC<Props> = ({ currentRoom }) => {
     const { socketEmitor } = useSocket();
     const { data: session } = useSession();
-    const { invalidateMessages } = useQueryInvalidation();
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
     const [formHeight, setFormHeight] = useState<number>(0);
     const formRef = React.useRef<HTMLFormElement>(null);
+    const { queryClientAddMessage, invalidateConversation } =
+        useQueryInvalidation();
 
     const {
         control,
@@ -85,18 +86,13 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
                 });
             }
 
-            console.log({
-                text,
-                imagesUpload,
-            });
-
             const newMsg = await sendMessage({
                 roomId: currentRoom._id,
                 text,
                 images: imagesUpload?.map((image) => image._id),
             });
 
-            await invalidateMessages(currentRoom._id);
+            queryClientAddMessage(newMsg);
 
             socketEmitor.sendMessage({
                 roomId: currentRoom._id,

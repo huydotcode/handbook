@@ -3,6 +3,8 @@
 import { Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import { getLastMessagesKey, getMessagesKey } from '@/lib/queryKey';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,6 +21,7 @@ type SocketContextType = {
         receiveNotification: (args: { notification: INotification }) => void;
         deleteMessage: (args: { message: IMessage }) => void;
         pinMessage: (args: { message: IMessage }) => void;
+        unpinMessage: (args: { message: IMessage }) => void;
         sendRequestAddFriend: (args: { request: INotification }) => void;
         readMessage: (args: { roomId: string; userId: string }) => void;
         likePost: (args: { postId: string; authorId: string }) => void;
@@ -38,6 +41,7 @@ export const SocketContext = createContext<SocketContextType>({
         sendRequestAddFriend: () => {},
         readMessage: () => {},
         pinMessage: () => {},
+        unpinMessage: () => {},
         likePost: () => {},
         leaveRoom: () => {},
     },
@@ -54,8 +58,15 @@ const SOCKET_API =
 
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
-    const { invalidateMessages, invalidateLastMessages } =
-        useQueryInvalidation();
+    const {
+        queryClientAddMessage,
+        queryClientAddPinnedMessage,
+        queryClientDeleteMessage,
+        queryClientReadMessage,
+        queryClientRemovePinnedMessage,
+        invalidateLastMessages,
+    } = useQueryInvalidation();
+    const queryClient = useQueryClient();
 
     const pathname = usePathname();
 
@@ -111,6 +122,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             pinMessage: ({ message }: { message: IMessage }) => {
                 socket?.emit(socketEvent.PIN_MESSAGE, { message });
             },
+            unpinMessage: ({ message }: { message: IMessage }) => {
+                socket?.emit(socketEvent.UN_PIN_MESSAGE, { message });
+            },
             likePost: ({
                 postId,
                 authorId,
@@ -163,18 +177,25 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socketIO.on(socketEvent.RECEIVE_MESSAGE, async (message: IMessage) => {
-            await invalidateLastMessages(message.conversation._id);
+            // await invalidateLastMessages(message.conversation._id);
+            queryClient.setQueryData(
+                getLastMessagesKey(message.conversation._id),
+                message
+            );
 
             // Bỏ qua tin nhắn do chính user gửi đi
             if (session.user.id === message.sender._id) return;
 
             if (pathname.includes(`/messages/${message.conversation._id}`)) {
-                await invalidateMessages(message.conversation._id);
+                queryClientAddMessage(message);
+
                 socketEmitor.readMessage({
                     roomId: message.conversation._id,
                     userId: session.user.id,
                 });
             } else {
+                queryClientAddMessage(message);
+
                 toast(
                     <Link
                         className="flex items-center text-primary-2"
@@ -194,21 +215,29 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socketIO.on(socketEvent.DELETE_MESSAGE, async (message: IMessage) => {
-            if (session.user.id !== message.sender._id) {
-                await invalidateMessages(message.conversation._id);
-            }
-
-            if (pathname.includes(`/messages/${message.conversation._id}`)) {
-                await invalidateMessages(message.conversation._id);
+            if (
+                session.user.id !== message.sender._id ||
+                pathname.includes(`/messages/${message.conversation._id}`)
+            ) {
+                queryClientDeleteMessage(message);
             }
         });
 
         socketIO.on(socketEvent.PIN_MESSAGE, async (message: IMessage) => {
-            if (session.user.id !== message.sender._id) {
-                await invalidateMessages(message.conversation._id);
+            if (
+                session.user.id !== message.sender._id ||
+                pathname.includes(`/messages/${message.conversation._id}`)
+            ) {
+                queryClientAddPinnedMessage(message);
             }
-            if (pathname.includes(`/messages/${message.conversation._id}`)) {
-                await invalidateMessages(message.conversation._id);
+        });
+
+        socketIO.on(socketEvent.UN_PIN_MESSAGE, async (message: IMessage) => {
+            if (
+                session.user.id !== message.sender._id ||
+                pathname.includes(`/messages/${message.conversation._id}`)
+            ) {
+                queryClientRemovePinnedMessage(message);
             }
         });
 
@@ -216,9 +245,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socketEvent.READ_MESSAGE,
             async ({ roomId }: { roomId: string }) => {
                 if (pathname.includes(`/messages/${roomId}`)) {
-                    await invalidateMessages(roomId);
+                    queryClientReadMessage(roomId);
                 }
-                await invalidateLastMessages(roomId);
+                // await invalidateLastMessages(roomId);
             }
         );
 

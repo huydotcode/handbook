@@ -148,12 +148,12 @@ const ConversationPage: React.FC<Props> = ({}) => {
         };
     }, [conversation, error?.type, session, socketEmitor]);
 
-    useEffect(() => {
-        if (!conversation) return;
-        if (!session) return;
+    // useEffect(() => {
+    //     if (!conversation) return;
+    //     if (!session?.user.id) return;
 
-        invalidateMessages(conversation._id);
-    }, [conversation, invalidateMessages, session]);
+    //     invalidateMessages(conversation._id);
+    // }, [conversation, invalidateMessages, session?.user.id]);
 
     if (isLoadingConversation || isFetching || isPending) {
         return <Loading fullScreen />;

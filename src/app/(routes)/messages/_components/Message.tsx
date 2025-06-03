@@ -58,7 +58,11 @@ const Message: React.FC<Props> = React.memo<Props>(
     }) => {
         const { data: session } = useSession();
         const { socket, socketEmitor } = useSocket();
-        const { invalidateMessages } = useQueryInvalidation();
+        const {
+            queryClientAddPinnedMessage,
+            queryClientDeleteMessage,
+            queryClientRemovePinnedMessage,
+        } = useQueryInvalidation();
 
         // State
         const [showSlideShow, setShowSlideShow] = useState<boolean>(false);
@@ -128,12 +132,13 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã ghim tin nhắn!', { id: 'pin-message' });
 
-                await invalidateMessages(msg.conversation._id);
+                queryClientAddPinnedMessage(msg);
 
                 socketEmitor.pinMessage({
                     message: msg,
                 });
             } catch (error) {
+                console.log(error);
                 toast.error('Đã có lỗi xảy ra!', { id: 'pin-message' });
             }
         };
@@ -150,7 +155,11 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã hủy ghim tin nhắn!', { id: 'unpin-message' });
 
-                await invalidateMessages(msg.conversation._id);
+                queryClientRemovePinnedMessage(msg);
+
+                socketEmitor.unpinMessage({
+                    message: msg,
+                });
             } catch (error) {
                 toast.error('Đã có lỗi xảy ra!', { id: 'unpin-message' });
             }
@@ -163,7 +172,13 @@ const Message: React.FC<Props> = React.memo<Props>(
             try {
                 if (!socket) return;
 
-                await deleteMessage({ messageId: msg._id });
+                await deleteMessage({
+                    messageId: msg._id,
+                    conversationId: msg.conversation._id,
+                    prevMessageId: messages[index - 1]
+                        ? messages[index - 1]._id
+                        : null,
+                });
 
                 if (msg.isPin) {
                     await removePinMessage({
@@ -174,7 +189,7 @@ const Message: React.FC<Props> = React.memo<Props>(
 
                 toast.success('Đã xóa tin nhắn!', { id: 'delete-message' });
 
-                await invalidateMessages(msg.conversation._id);
+                queryClientDeleteMessage(msg);
 
                 socketEmitor.deleteMessage({
                     message: msg,
@@ -283,12 +298,6 @@ const Message: React.FC<Props> = React.memo<Props>(
                 </>
             );
         };
-
-        useEffect(() => {
-            console.log({
-                messages,
-            });
-        }, [messages]);
 
         const renderContentImages = () => {
             return (

@@ -54,12 +54,6 @@ const Sidebar: React.FC<Props> = ({}) => {
         );
     });
 
-    useEffect(() => {
-        console.log({
-            filter,
-        });
-    }, [filter]);
-
     return (
         <>
             <aside
@@ -91,9 +85,6 @@ const Sidebar: React.FC<Props> = ({}) => {
                             }}
                         >
                             <SelectTrigger className="mt-2 h-8 w-fit max-w-[150px] bg-secondary-2 text-xs dark:bg-dark-secondary-2">
-                                {/* <div className="flex items-center md:hidden">
-                                    <SelectValue placeholder="Sắp xếp theo" />
-                                </div> */}
                                 <div className="flex items-center pr-2">
                                     <Icons.Sort className="h-4 w-4" />
                                 </div>

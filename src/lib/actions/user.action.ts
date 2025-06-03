@@ -1,14 +1,10 @@
 'use server';
 import { User } from '@/models';
+import Follows from '@/models/Follows';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
-import { FilterQuery, SortOrder, Types } from 'mongoose';
+import { SortOrder } from 'mongoose';
 import { getAuthSession } from '../auth';
-import Follows from '@/models/Follows';
-import {
-    deleteConversation,
-    deleteConversationFromTwoUsers,
-} from './conversation.action';
 
 /*
     * Notification Model: 
@@ -129,11 +125,6 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
                 },
             }
         );
-
-        await deleteConversationFromTwoUsers({
-            otherUserId: friendId,
-            userId: session.user.id,
-        });
 
         return true;
     } catch (error: any) {

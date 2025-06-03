@@ -1,29 +1,28 @@
 'use client';
-import { Avatar, ConfirmModal, Icons, Loading } from '@/components/ui';
+import { Avatar, ConfirmModal, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { useLastMessage } from '@/context/SocialContext';
 
-import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
-import { splitName } from '@/utils/splitName';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/Popover';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/Popover';
-import toast from 'react-hot-toast';
-import { deleteConversationByUserId } from '@/lib/actions/conversation.action';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import { deleteConversationByUserId } from '@/lib/actions/conversation.action';
+import { cn } from '@/lib/utils';
+import { splitName } from '@/utils/splitName';
+import { timeConvert3 } from '@/utils/timeConvert';
+import { useSession } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     data: IConversation;
@@ -31,7 +30,7 @@ interface Props {
 
 const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
     const { data: session } = useSession();
-    const { data: lastMessage, isLoading } = useLastMessage(conversation._id);
+    const lastMessage = conversation?.lastMessage;
     const { socketEmitor } = useSocket();
     const { invalidateConversations } = useQueryInvalidation();
     const path = usePathname();
@@ -140,17 +139,13 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                     </h3>
                                 </div>
                                 <div className="ml-2 max-w-full overflow-ellipsis whitespace-nowrap text-start text-xs">
-                                    {isLoading && (
-                                        <Loading text="Đang tải tin nhắn..." />
-                                    )}
-
-                                    {!isLoading && !lastMessage && (
+                                    {!lastMessage && (
                                         <span className="text-secondary-1">
                                             Chưa có tin nhắn
                                         </span>
                                     )}
 
-                                    {!isLoading && lastMessage && (
+                                    {lastMessage && (
                                         <>
                                             <div
                                                 className={

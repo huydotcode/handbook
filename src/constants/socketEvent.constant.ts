@@ -1,18 +1,4 @@
-interface SocketEvent {
-    SEND_REQUEST_ADD_FRIEND: string;
-    ACCEPT_FRIEND: string;
-    RECEIVE_NOTIFICATION: string;
-    JOIN_ROOM: string;
-    LEAVE_ROOM: string;
-    READ_MESSAGE: string;
-    SEND_MESSAGE: string;
-    PIN_MESSAGE: string;
-    RECEIVE_MESSAGE: string;
-    DELETE_MESSAGE: string;
-    LIKE_POST: string;
-}
-
-const socketEvent: SocketEvent = {
+const socketEvent = {
     // FRIEND REQUEST
     SEND_REQUEST_ADD_FRIEND: 'send-request-add-friend',
     ACCEPT_FRIEND: 'accept-friend',
@@ -29,6 +15,7 @@ const socketEvent: SocketEvent = {
     RECEIVE_MESSAGE: 'receive-message',
     DELETE_MESSAGE: 'delete-message',
     PIN_MESSAGE: 'pin-message',
+    UN_PIN_MESSAGE: 'un-pin-message',
 
     // Post
     LIKE_POST: 'like-post',

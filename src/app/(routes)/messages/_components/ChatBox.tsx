@@ -5,7 +5,6 @@ import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { API_ROUTES } from '@/config/api';
 import { useSocket } from '@/context';
-import { useLastMessage } from '@/context/SocialContext';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
@@ -115,7 +114,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         fetchNextPage,
     } = useMessageHandling(conversation._id);
 
-    const { data: lastMessage } = useLastMessage(conversation._id);
+    const lastMessage = conversation?.lastMessage;
 
     // Memoize grouped messages with date formatting
     const groupedMessages = useMemo(() => {

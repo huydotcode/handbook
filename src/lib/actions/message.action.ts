@@ -1,5 +1,5 @@
 'use server';
-import { Message } from '@/models';
+import { Conversation, Message } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 import { getAuthSession } from '../auth';
@@ -88,13 +88,6 @@ export const sendMessage = async ({
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
-        console.log({
-            text,
-            media: images,
-            sender: session.user.id,
-            conversation: roomId,
-        });
-
         const msg = new Message({
             text,
             media: images,
@@ -109,6 +102,14 @@ export const sendMessage = async ({
             .populate('conversation')
             .populate('media');
 
+        await Conversation.updateOne(
+            { _id: roomId },
+            {
+                lastMessage: msg._id,
+                updatedAt: new Date(),
+            }
+        );
+
         return JSON.parse(JSON.stringify(message));
     } catch (error) {
         logger({
@@ -118,12 +119,27 @@ export const sendMessage = async ({
     }
 };
 
-export const deleteMessage = async ({ messageId }: { messageId: string }) => {
+export const deleteMessage = async ({
+    messageId,
+    prevMessageId,
+    conversationId,
+}: {
+    messageId: string;
+    conversationId: string;
+    prevMessageId?: string | null;
+}) => {
     console.log('[LIB-ACTIONS] deleteMessage');
     try {
         await connectToDB();
 
         await Message.findByIdAndDelete(messageId);
+
+        await Conversation.updateOne(
+            {
+                _id: conversationId,
+            },
+            { lastMessage: messageId }
+        );
 
         return true;
     } catch (error: any) {

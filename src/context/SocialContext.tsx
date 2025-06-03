@@ -1,5 +1,7 @@
 'use client';
 import { getLastMessageByCoversationId } from '@/lib/actions/message.action';
+import { getProfileByUserId } from '@/lib/actions/profile.action';
+import axiosInstance from '@/lib/axios';
 import {
     getConversationKey,
     getConversationsKey,
@@ -12,9 +14,6 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
-import axiosInstance from '@/lib/axios';
-import { getProfileByUserId } from '@/lib/actions/profile.action';
-import { AxiosError } from 'axios';
 
 const PAGE_SIZE = 10;
 
