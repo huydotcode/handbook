@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import Conversation from '../models/conversation.model';
-import { POPULATE_USER } from '../utils/populate';
 import { IConversation } from '../types';
 import { getDecodedTokenFromHeaders } from '../utils/jwt';
+import { POPULATE_USER } from '../utils/populate';
 
 class ConversationController {
     public async getConversations(
@@ -17,13 +17,18 @@ class ConversationController {
                 participants: {
                     $elemMatch: { $eq: user_id },
                 },
-                // isDeletedBy: {
-                //     $nin: [user_id],
-                // },
             })
                 .populate('participants', POPULATE_USER + ' lastAccessed')
                 .populate('creator', POPULATE_USER)
-                .populate('lastMessage')
+                .populate({
+                    path: 'lastMessage',
+                    populate: [
+                        {
+                            path: 'sender',
+                            select: POPULATE_USER,
+                        },
+                    ],
+                })
                 .populate('avatar')
                 .populate({
                     path: 'group',
@@ -71,6 +76,7 @@ class ConversationController {
                 .populate('participants', POPULATE_USER + ' lastAccessed')
                 .populate('creator', POPULATE_USER)
                 .populate('lastMessage')
+                .populate('lastMessage.sender', POPULATE_USER)
                 .populate('avatar')
                 .populate({
                     path: 'group',
