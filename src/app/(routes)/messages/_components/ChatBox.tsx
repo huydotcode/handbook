@@ -10,10 +10,14 @@ import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
-import { getMessagesKey, getPinnedMessagesKey } from '@/lib/queryKey';
+import {
+    getConversationsKey,
+    getMessagesKey,
+    getPinnedMessagesKey,
+} from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, {
@@ -99,7 +103,9 @@ export const usePinnedMessages = (conversationId: string) => {
 const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     const { data: session } = useSession();
     const { socketEmitor } = useSocket();
-    const { invalidateAfterSendMessage } = useQueryInvalidation();
+    const queryClient = useQueryClient();
+    const { invalidateAfterSendMessage, queryClientReadMessage } =
+        useQueryInvalidation();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
 
@@ -269,14 +275,22 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         if (!session?.user?.id) return;
 
         if (!lastMessage) return;
-        if (lastMessage.isRead) return;
+
         if (lastMessage.sender._id !== session?.user?.id) {
+            queryClientReadMessage(conversation._id, session?.user.id);
+
             socketEmitor.readMessage({
                 roomId: conversation._id,
                 userId: session?.user.id,
             });
         }
-    }, [lastMessage, session?.user?.id, socketEmitor, conversation._id]);
+    }, [
+        lastMessage,
+        session?.user.id,
+        socketEmitor,
+        conversation._id,
+        queryClientReadMessage,
+    ]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     // Optimize scroll observer

@@ -21,7 +21,7 @@ import { splitName } from '@/utils/splitName';
 import { timeConvert3 } from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -53,6 +53,17 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         if (conversation.title) return conversation.title;
         if (conversation.group) return conversation.group.name;
     }, [conversation, partner]);
+
+    const isReadLastMessage = useMemo(() => {
+        if (!lastMessage) return false;
+
+        return (
+            lastMessage.sender._id === session?.user.id ||
+            lastMessage.readBy.some(
+                (read) => read.user._id === session?.user.id
+            )
+        );
+    }, [lastMessage, session]);
 
     const handleShowProfile = () => {
         if (partner) {
@@ -90,6 +101,12 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
             toast.error('Xoá cuộc trò chuyện thất bại');
         }
     };
+
+    useEffect(() => {
+        console.log({
+            lastMessage,
+        });
+    }, [lastMessage]);
 
     return (
         <div className="group relative w-full">
@@ -170,22 +187,13 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                                     </span>
 
                                                     <span
-                                                        className={cn('ml-1', {
-                                                            'font-bold':
-                                                                !lastMessage?.isRead &&
-                                                                lastMessage
-                                                                    .sender
-                                                                    ._id !==
-                                                                    session
-                                                                        ?.user
-                                                                        .id,
-                                                            'font-normal text-secondary-1':
-                                                                lastMessage
-                                                                    .sender
-                                                                    ._id ==
-                                                                session?.user
-                                                                    .id,
-                                                        })}
+                                                        className={cn(
+                                                            'ml-1 font-bold',
+                                                            {
+                                                                'font-normal text-secondary-1':
+                                                                    isReadLastMessage,
+                                                            }
+                                                        )}
                                                     >
                                                         {lastMessage.text.trim()
                                                             .length > 0
@@ -198,22 +206,13 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
 
                                                 {lastMessage.createdAt && (
                                                     <span
-                                                        className={cn('ml-2', {
-                                                            'font-bold':
-                                                                !lastMessage?.isRead &&
-                                                                lastMessage
-                                                                    .sender
-                                                                    ._id !==
-                                                                    session
-                                                                        ?.user
-                                                                        .id,
-                                                            'font-normal text-secondary-1':
-                                                                lastMessage
-                                                                    .sender
-                                                                    ._id ==
-                                                                session?.user
-                                                                    .id,
-                                                        })}
+                                                        className={cn(
+                                                            'ml-2 font-bold',
+                                                            {
+                                                                'font-normal text-secondary-1':
+                                                                    isReadLastMessage,
+                                                            }
+                                                        )}
                                                     >
                                                         {timeConvert3(
                                                             lastMessage.createdAt.toString(),

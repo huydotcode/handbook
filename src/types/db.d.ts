@@ -76,8 +76,11 @@ interface IMessage {
     media: IMedia[];
     sender: IUser;
     conversation: IConversation;
-    isRead: boolean;
     isPin: boolean;
+    readBy: {
+        user: IUser;
+        readAt: Date;
+    }[];
     createdAt: Date;
     updatedAt: Date;
 }

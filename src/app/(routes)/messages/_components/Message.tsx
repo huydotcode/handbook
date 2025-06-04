@@ -143,6 +143,18 @@ const Message: React.FC<Props> = React.memo<Props>(
             }
         };
 
+        useEffect(() => {
+            if (index == 0) {
+                console.log(
+                    msg.conversation.type === 'group' &&
+                        msg.readBy.length > 0 &&
+                        `Đã xem ${msg.readBy.length} ${
+                            msg.readBy.length > 1 ? 'người' : 'người'
+                        }`
+                );
+            }
+        }, [index, msg.conversation.type, msg.readBy.length]);
+
         // Xử lý hủy ghim tin nhắn
         const handleUnPinMessage = async () => {
             try {
@@ -287,14 +299,20 @@ const Message: React.FC<Props> = React.memo<Props>(
         const renderReadMessage = () => {
             return (
                 <>
-                    {index == 0 &&
-                        !isGroupMsg &&
-                        !isSearchMessage &&
-                        msg.sender._id === session?.user.id && (
-                            <span className="text-xs text-secondary-1">
-                                {msg.isRead && 'Đã xem'}
-                            </span>
-                        )}
+                    {index == 0 && !isSearchMessage && (
+                        <span className="text-xs text-secondary-1">
+                            {msg.sender._id === session?.user.id &&
+                                msg.conversation.type === 'private' &&
+                                msg.readBy.length > 0 &&
+                                'Đã xem'}
+
+                            {msg.conversation.type === 'group' &&
+                                msg.readBy.length > 0 &&
+                                `Đã xem ${msg.readBy.length} ${
+                                    msg.readBy.length > 1 ? 'người' : 'người'
+                                }`}
+                        </span>
+                    )}
                 </>
             );
         };
@@ -315,7 +333,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                                         <TooltipTrigger>
                                             <Image
                                                 className={cn(
-                                                    'max-w-[30vw] cursor-pointer md:max-w-[60vw]',
+                                                    'max-h-[60vh] max-w-[30vw] cursor-pointer object-cover md:max-w-[60vw]',
                                                     {
                                                         'rounded-xl rounded-l-md':
                                                             isOwnMsg,

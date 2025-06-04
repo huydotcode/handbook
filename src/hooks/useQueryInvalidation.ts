@@ -275,34 +275,36 @@ export const useQueryInvalidation = () => {
         );
     };
 
-    const queryClientReadMessage = (conversationId: string) => {
+    const queryClientReadMessage = (conversationId: string, userId: string) => {
         console.log('[LIB-HOOKS] queryClientReadMessage', conversationId);
+        queryClient.invalidateQueries({
+            queryKey: getMessagesKey(conversationId),
+        });
+
         queryClient.setQueryData(
-            getMessagesKey(conversationId),
-            (
-                oldMessages:
-                    | {
-                          pages: IMessage[][];
-                          pageParams: (number | undefined)[];
-                      }
-                    | undefined
-            ) => {
-                if (!oldMessages) return oldMessages;
+            getConversationsKey(session?.user.id as string),
+            (oldConversations: IConversation[] | undefined | null) => {
+                if (!oldConversations) return oldConversations;
 
-                const newPage = oldMessages.pages[0].map((msg) => {
-                    if (msg.isRead || msg.sender._id === session?.user.id) {
-                        return msg;
+                return oldConversations.map((conversation) => {
+                    if (conversation._id === conversationId) {
+                        const user = conversation.participants.find(
+                            (user) => user._id === userId
+                        );
+
+                        if (user) {
+                            return {
+                                ...conversation,
+                                lastAccessed: new Date(),
+                                readBy: conversation.lastMessage.readBy.push({
+                                    user: user,
+                                    readAt: new Date(),
+                                }),
+                            };
+                        }
                     }
-                    return {
-                        ...msg,
-                        isRead: true,
-                    };
+                    return conversation;
                 });
-
-                return {
-                    pages: [newPage, ...oldMessages.pages.slice(1)],
-                    pageParams: oldMessages.pageParams,
-                };
             }
         );
     };

@@ -117,6 +117,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 roomId: string;
                 userId: string;
             }) => {
+                console.log('socketEmitor.readMessage', roomId, userId);
                 socket?.emit(socketEvent.READ_MESSAGE, { roomId, userId });
             },
             pinMessage: ({ message }: { message: IMessage }) => {
@@ -243,11 +244,11 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
 
         socketIO.on(
             socketEvent.READ_MESSAGE,
-            async ({ roomId }: { roomId: string }) => {
+            async ({ roomId, userId }: { roomId: string; userId: string }) => {
+                console.log('Đã đọc tin nhắn trong phòng:', roomId);
                 if (pathname.includes(`/messages/${roomId}`)) {
-                    queryClientReadMessage(roomId);
+                    queryClientReadMessage(roomId, userId);
                 }
-                // await invalidateLastMessages(roomId);
             }
         );
 

@@ -100,7 +100,8 @@ export const sendMessage = async ({
         const message = await Message.findById(msg._id)
             .populate('sender', POPULATE_USER)
             .populate('conversation')
-            .populate('media');
+            .populate('media')
+            .populate('readBy.user', POPULATE_USER);
 
         await Conversation.updateOne(
             { _id: roomId },
