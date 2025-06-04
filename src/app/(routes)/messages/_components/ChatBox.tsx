@@ -1,6 +1,7 @@
 'use client';
 import SearchMessage from '@/app/(routes)/messages/_components/SearchMessage';
 import { FileUploaderWrapper } from '@/components/shared/FileUploader';
+import MessageSkeleton from '@/components/skeleton/MessageSkeleton';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { API_ROUTES } from '@/config/api';
@@ -10,11 +11,7 @@ import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
-import {
-    getConversationsKey,
-    getMessagesKey,
-    getPinnedMessagesKey,
-} from '@/lib/queryKey';
+import { getMessagesKey, getPinnedMessagesKey } from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,6 +24,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
 import ChatHeader from './ChatHeader';
@@ -38,6 +36,11 @@ interface Props {
     className?: string;
     conversation: IConversation;
     findMessage?: string;
+}
+
+interface IFormData {
+    text: string;
+    files: File[];
 }
 
 const PAGE_SIZE = 30;
@@ -119,6 +122,13 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setIsFind,
         fetchNextPage,
     } = useMessageHandling(conversation._id);
+
+    const form = useForm<IFormData>({
+        defaultValues: {
+            text: '',
+            files: [],
+        },
+    });
 
     const lastMessage = conversation?.lastMessage;
 
@@ -208,6 +218,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setOpenInfo((prev) => !prev);
     };
 
+    useEffect(() => {
+        console.log('form.formState.isSubmitting', {
+            submitting: form.formState.isSubmitting,
+        });
+    }, [form.formState.isSubmitting]);
+
     // Xử lý render tin nhắn
     const renderMessages = () => {
         return (
@@ -220,6 +236,14 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                 {date}
                             </div>
                             <div className={'flex flex-col-reverse'}>
+                                {form.formState.isSubmitting && (
+                                    <div className="flex w-full justify-end">
+                                        <div className="maxw-full w-[200px]">
+                                            <MessageSkeleton />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {groupedMessages[date].map((message) => (
                                     <Message
                                         key={message._id}
@@ -275,6 +299,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         if (!session?.user?.id) return;
 
         if (!lastMessage) return;
+
+        console.log({
+            lastMessage,
+            sessionUserId: session?.user.id,
+            conversationId: conversation._id,
+        });
 
         if (lastMessage.sender._id !== session?.user?.id) {
             queryClientReadMessage(conversation._id, session?.user.id);
@@ -423,7 +453,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </Button>
                         )}
 
-                        <InputMessage currentRoom={conversation} />
+                        <InputMessage currentRoom={conversation} form={form} />
                     </div>
                 </FileUploaderWrapper>
 

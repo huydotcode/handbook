@@ -9,11 +9,12 @@ import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormReturn } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 interface Props {
     currentRoom: IConversation;
+    form: UseFormReturn<IFormData>;
 }
 
 interface IFormData {
@@ -21,7 +22,7 @@ interface IFormData {
     files: File[];
 }
 
-const InputMessage: React.FC<Props> = ({ currentRoom }) => {
+const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
     const { socketEmitor } = useSocket();
     const { data: session } = useSession();
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
@@ -40,12 +41,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom }) => {
         getValues,
         formState: { isLoading, isSubmitting },
         setFocus,
-    } = useForm<IFormData>({
-        defaultValues: {
-            text: '',
-            files: [],
-        },
-    });
+    } = form;
     const files = getValues('files');
 
     const handleRemoveFile = (index: number) => {
