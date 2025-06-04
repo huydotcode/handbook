@@ -27,6 +27,10 @@ class ConversationController {
                             path: 'sender',
                             select: POPULATE_USER,
                         },
+                        {
+                            path: 'readBy.user',
+                            select: POPULATE_USER,
+                        },
                     ],
                 })
                 .populate('avatar')

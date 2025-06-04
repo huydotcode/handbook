@@ -40,6 +40,7 @@ class MessageController {
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
                 .populate('media')
+                .populate('readBy.user', POPULATE_USER)
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);
@@ -87,6 +88,7 @@ class MessageController {
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
                 .populate('media')
+                .populate('readBy.user', POPULATE_USER)
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);
@@ -132,6 +134,7 @@ class MessageController {
                 .populate('sender', POPULATE_USER)
                 .populate('conversation')
                 .populate('media')
+                .populate('readBy.user', POPULATE_USER)
                 .sort({ createdAt: -1 });
 
             res.status(200).json(messages);
