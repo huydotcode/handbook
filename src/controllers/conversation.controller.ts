@@ -79,21 +79,26 @@ class ConversationController {
             })
                 .populate('participants', POPULATE_USER + ' lastAccessed')
                 .populate('creator', POPULATE_USER)
-                .populate('lastMessage')
-                .populate('lastMessage.sender', POPULATE_USER)
+                .populate({
+                    path: 'lastMessage',
+                    populate: [
+                        {
+                            path: 'sender',
+                            select: POPULATE_USER,
+                        },
+                        {
+                            path: 'readBy.user',
+                            select: POPULATE_USER,
+                        },
+                    ],
+                })
                 .populate('avatar')
                 .populate({
                     path: 'group',
                     populate: [
-                        {
-                            path: 'avatar',
-                        },
-                        {
-                            path: 'members.user',
-                        },
-                        {
-                            path: 'creator',
-                        },
+                        { path: 'avatar' },
+                        { path: 'members.user' },
+                        { path: 'creator' },
                     ],
                 })) as IConversation;
 
