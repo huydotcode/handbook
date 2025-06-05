@@ -8,9 +8,10 @@ import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
+import { SidebarCollapseContext } from './SidebarContext';
 
 const PAGE_SIZE = 10;
 
@@ -144,6 +145,7 @@ function AppProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const { invalidateFriends, invalidateNotifications } =
         useQueryInvalidation();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const { socket } = useSocket();
 
@@ -186,7 +188,16 @@ function AppProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('accessToken', session?.user.accessToken);
     }, [session, session?.user]);
 
-    return <>{children}</>;
+    return (
+        <SidebarCollapseContext.Provider
+            value={{
+                isSidebarOpen,
+                setIsSidebarOpen,
+            }}
+        >
+            {children}
+        </SidebarCollapseContext.Provider>
+    );
 }
 
 export default AppProvider;

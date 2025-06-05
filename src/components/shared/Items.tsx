@@ -67,7 +67,7 @@ const Items = {
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
-                            className="mb-2 flex h-14 w-full items-center justify-start md:h-10"
+                            className="mb-2 flex h-14 w-full items-center justify-start"
                             variant={'default'}
                             href={`/groups/${group._id}`}
                         >
@@ -80,11 +80,11 @@ const Items = {
                             />
 
                             <div className="ml-2 flex flex-1 flex-col">
-                                <p className="max-w-[calc(100%-40px)] truncate text-sm dark:text-dark-primary-1 lg:hidden">
+                                <p className="max-w-[calc(100%-40px)] truncate text-sm dark:text-dark-primary-1">
                                     {group.name}
                                 </p>
 
-                                <p className="text-xs text-secondary-1 lg:hidden">
+                                <p className="text-xs text-secondary-1">
                                     Hoạt động gần nhất:{' '}
                                     {timeConvert(group.lastActivity.toString())}
                                 </p>

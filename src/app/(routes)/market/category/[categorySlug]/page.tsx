@@ -12,9 +12,28 @@ const CategoryPage: React.FC<Props> = async ({ params }) => {
     const category = await getCategoryBySlug({
         slug: categorySlug,
     });
+
+    if (!category) {
+        return (
+            <div className={'h-full min-h-screen w-full p-4'}>
+                <h1 className="text-xl font-bold">Danh mục không tồn tại</h1>
+            </div>
+        );
+    }
+
     const items = await getItemsByCategoryId({
         categoryId: category._id,
     });
+
+    if (!items || items.length === 0) {
+        return (
+            <div className={'h-full min-h-screen w-full p-4'}>
+                <h1 className="text-xl font-bold">
+                    Không có mặt hàng nào thuộc danh mục {category.name}
+                </h1>
+            </div>
+        );
+    }
 
     return (
         <div className={'h-full min-h-screen w-full p-4'}>

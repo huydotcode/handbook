@@ -1,5 +1,4 @@
 import { FullLayout } from '@/components/layout';
-import { getCategories } from '@/lib/actions/category.action';
 import React from 'react';
 import Sidebar from './_components/Sidebar';
 
@@ -19,7 +18,7 @@ const MarketLayout: React.FC<Props> = async ({ children }) => {
             <Sidebar />
             <div
                 className={
-                    'ml-[300px] mt-[56px] min-h-[calc(100vh-56px)] bg-primary-1 dark:bg-dark-primary-1 md:ml-[80px]'
+                    'ml-[300px] mt-[56px] min-h-[calc(100vh-56px)] bg-primary-1 dark:bg-dark-primary-1 md:ml-0'
                 }
             >
                 {children}
