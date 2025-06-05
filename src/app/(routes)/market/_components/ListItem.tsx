@@ -1,12 +1,12 @@
 'use client';
 
-import { getItemsKey } from '@/lib/queryKey';
+import { API_ROUTES } from '@/config/api';
+import axiosInstance from '@/lib/axios';
+import queryKey from '@/lib/queryKey';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import Item from './Item';
 import React, { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import axiosInstance from '@/lib/axios';
-import { API_ROUTES } from '@/config/api';
+import Item from './Item';
 
 interface Props {}
 
@@ -18,7 +18,7 @@ const ListItem: React.FC<Props> = () => {
         hasNextPage,
         fetchNextPage,
     } = useInfiniteQuery<IItem[]>({
-        queryKey: getItemsKey(),
+        queryKey: queryKey.items.index,
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axiosInstance.get(
                 API_ROUTES.ITEMS.QUERY(pageParam as number, PAGE_SIZE)

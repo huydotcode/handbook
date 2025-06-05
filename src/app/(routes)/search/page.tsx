@@ -1,22 +1,17 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import {
-    InfiniteData,
-    useInfiniteQuery,
-    useQuery,
-} from '@tanstack/react-query';
-import { getSearchKey } from '@/lib/queryKey';
-import axiosInstance from '@/lib/axios';
-import { Avatar, Loading } from '@/components/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { useSession } from 'next-auth/react';
-import { useFriends } from '@/context/SocialContext';
 import AddFriendAction from '@/app/(routes)/profile/_components/AddFriendAction';
 import { Post } from '@/components/post';
+import { Avatar, Loading } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { API_ROUTES } from '@/config/api';
+import { useFriends } from '@/context/SocialContext';
+import axiosInstance from '@/lib/axios';
+import queryKey from '@/lib/queryKey';
+import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 
 interface SearchData {
     users: IUser[];
@@ -45,7 +40,7 @@ const SearchPage = () => {
     }, [q, type, page]);
 
     const { data, isLoading } = useQuery<SearchData>({
-        queryKey: getSearchKey(q, type),
+        queryKey: queryKey.search({ q, type }),
         queryFn: async () => {
             if (!searchEndpoint) return { users: [], posts: [], groups: [] };
 

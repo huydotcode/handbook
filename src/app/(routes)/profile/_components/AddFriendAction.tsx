@@ -10,7 +10,6 @@ import {
     sendRequestAddFriend,
 } from '@/lib/actions/notification.action';
 import { unfriend } from '@/lib/actions/user.action';
-import { getFriendsKey, getRequestsKey } from '@/lib/queryKey';
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';

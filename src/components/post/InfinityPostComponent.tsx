@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/Button';
 import axiosInstance from '@/lib/axios';
-import { getNewFeedPostsKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
@@ -108,7 +108,12 @@ const usePosts = ({
     );
 
     return useInfiniteQuery({
-        queryKey: getNewFeedPostsKey(type, userId, groupId, username),
+        queryKey: queryKey.posts.newFeed({
+            groupId,
+            type,
+            userId,
+            username,
+        }),
         queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam),
         getNextPageParam: (lastPage, allPages) => {
             return lastPage.length === PAGE_SIZE

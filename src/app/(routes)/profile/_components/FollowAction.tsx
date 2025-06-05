@@ -1,12 +1,11 @@
 'use client';
+import { Button } from '@/components/ui/Button';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { follow, unfollow } from '@/lib/actions/user.action';
-import { getFollowersKey, getRequestsKey } from '@/lib/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 
 interface Props {
     userId: string;
@@ -83,7 +82,7 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
             size="md"
             onClick={handleFollowClick}
         >
-            {isFollow ? 'Đang Follow' : 'Theo dõi'}
+            {isFollow ? 'Đang Follow' : 'Follow'}
         </Button>
     );
 };

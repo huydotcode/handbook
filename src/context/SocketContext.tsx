@@ -3,7 +3,6 @@
 import { Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { getLastMessagesKey, getMessagesKey } from '@/lib/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -64,7 +63,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         queryClientDeleteMessage,
         queryClientReadMessage,
         queryClientRemovePinnedMessage,
-        invalidateLastMessages,
     } = useQueryInvalidation();
     const queryClient = useQueryClient();
 
@@ -178,12 +176,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socketIO.on(socketEvent.RECEIVE_MESSAGE, async (message: IMessage) => {
-            // await invalidateLastMessages(message.conversation._id);
-            queryClient.setQueryData(
-                getLastMessagesKey(message.conversation._id),
-                message
-            );
-
             // Bỏ qua tin nhắn do chính user gửi đi
             if (session.user.id === message.sender._id) return;
 

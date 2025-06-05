@@ -1,13 +1,12 @@
 'use client';
 import { Items } from '@/components/shared';
 import { Icons, Loading } from '@/components/ui';
-import React from 'react';
 import { Button } from '@/components/ui/Button';
-import { Separator } from '@radix-ui/react-menu';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { getGroupsByUserId } from '@/lib/actions/group.action';
+import queryKey from '@/lib/queryKey';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { getGroupsKey } from '@/lib/queryKey';
+import React from 'react';
 
 interface Props {}
 
@@ -15,7 +14,7 @@ const PAGE_SIZE = 10;
 
 export const useGroups = (userId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getGroupsKey(userId),
+        queryKey: queryKey.user.groups(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 

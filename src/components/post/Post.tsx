@@ -4,9 +4,10 @@ import ReviewPost from '@/components/post/ReviewPost';
 import SkeletonPost from '@/components/post/SkeletonPost';
 import { Button } from '@/components/ui/Button';
 import VerifiedUser from '@/components/VerifiedUser';
+import { API_ROUTES } from '@/config/api';
 import postAudience from '@/constants/postAudience.constant';
 import axiosInstance from '@/lib/axios';
-import { getPostKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { timeConvert3 } from '@/utils/timeConvert';
 import { useQuery } from '@tanstack/react-query';
@@ -23,7 +24,6 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip';
 import VideoPlayer from '../ui/VideoPlayer';
-import { API_ROUTES } from '@/config/api';
 
 interface Props {
     data: IPost;
@@ -34,7 +34,7 @@ const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
     const pathname = usePathname();
     const { data: session } = useSession();
     const { data: post } = useQuery<IPost>({
-        queryKey: getPostKey(data._id),
+        queryKey: queryKey.posts.id(data._id),
         queryFn: async () => {
             const post = await axiosInstance.get<IPost>(
                 API_ROUTES.POSTS.ID(data._id)

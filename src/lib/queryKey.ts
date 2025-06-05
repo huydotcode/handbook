@@ -1,83 +1,77 @@
-/* Search */
-export const getSearchKey = (
-    q: string | undefined,
-    type: string | undefined
-) => ['search', q, type];
+export const queryKey = {
+    search: ({
+        q,
+        type,
+    }: {
+        q: string | undefined;
+        type: string | undefined;
+    }) => ['search', q, type],
 
-/* Conversation & message key */
-export const getConversationsKey = (userId: string | undefined) => [
-    'conversations',
-    userId,
-];
-export const getConversationKey = (conversationId: string | undefined) => [
-    'conversation',
-    conversationId,
-];
-export const getMessagesKey = (conversationId: string | undefined) => [
-    'messages',
-    conversationId,
-];
-export const getLastMessagesKey = (conversationId: string | undefined) => [
-    'lastMessage',
-    conversationId,
-];
-export const getPinnedMessagesKey = (conversationId: string | undefined) => [
-    'pinnedMessages',
-    conversationId,
-];
+    conversations: {
+        index: ['conversations'],
+        userId: (userId: string | undefined) => ['conversations', userId],
+        id: (conversationId: string | undefined) => [
+            'conversation',
+            conversationId,
+        ],
+    },
 
-export const getUserKey = (userId: string | undefined) => ['user', userId];
-export const getProfileKey = (userId: string | undefined) => [
-    'profile',
-    userId,
-];
+    messages: {
+        conversationId: (conversationId: string | undefined) => [
+            'messages',
+            conversationId,
+        ],
+        lastMessage: (conversationId: string | undefined) => [
+            'lastMessage',
+            conversationId,
+        ],
+        pinnedMessages: (conversationId: string | undefined) => [
+            'pinnedMessages',
+            conversationId,
+        ],
+    },
 
-/* Followers & friends key */
-export const getFollowersKey = (userId: string | undefined) => [
-    'followers',
-    userId,
-];
+    user: {
+        id: (userId: string | undefined) => ['user', userId],
+        profile: (userId: string | undefined) => ['profile', userId],
+        followers: (userId: string | undefined) => ['followers', userId],
+        friends: (userId: string | undefined) => ['friends', userId],
+        requests: (userId: string | undefined) => ['requests', userId],
+        notifications: (userId: string | undefined) => [
+            'notifications',
+            userId,
+        ],
+        groups: (userId: string | undefined) => ['groups', userId],
+    },
 
-export const getFriendsKey = (userId: string | undefined) => [
-    'friends',
-    userId,
-];
+    posts: {
+        newFeed: ({
+            type,
+            userId,
+            groupId,
+            username,
+        }: {
+            type: string | undefined;
+            userId: string | undefined;
+            groupId: string | undefined;
+            username: string | undefined;
+        }) => ['posts', type, userId, groupId, username],
+        id: (postId: string | undefined) => ['post', postId],
+        all: () => ['posts'],
+        saved: (userId: string | undefined) => ['savedPosts', userId],
+        comments: (postId: string | undefined) => ['comments', postId],
+        replyComments: (commentId: string | undefined) => [
+            'replyComments',
+            commentId,
+        ],
+    },
 
-/* Notification & request keys */
-export const getRequestsKey = (userId: string | undefined) => [
-    'requests',
-    userId,
-];
-export const getNotificationsKey = (userId: string | undefined) => [
-    'notifications',
-    userId,
-];
+    locations: ['locations'],
+    categories: ['categories'],
+    items: {
+        index: ['items'],
+        id: (itemId: string | undefined) => ['item', itemId],
+    },
+};
 
-export const getGroupsKey = (userId: string | undefined) => ['groups', userId];
-
-/* Posts Key */
-export const getNewFeedPostsKey = (
-    type: string | undefined,
-    userId: string | undefined,
-    groupId: string | undefined,
-    username: string | undefined
-) => ['posts', type, userId, groupId, username];
-export const getPostKey = (postId: string | undefined) => ['post', postId];
-export const getPostsKey = () => ['posts'];
-export const getSavedPostsKey = (userId: string | undefined) => [
-    'savedPosts',
-    userId,
-];
-export const getCommentsKey = (postId: string | undefined) => [
-    'comments',
-    postId,
-];
-export const getReplyCommentsKey = (commentId: string | undefined) => [
-    'replyComments',
-    commentId,
-];
-
-/* Other keys */
-export const getLocationsKey = () => ['locations'];
-export const getCategoriesKey = () => ['categories'];
-export const getItemsKey = () => ['items'];
+export default queryKey;

@@ -1,28 +1,22 @@
 'use client';
+import { API_ROUTES } from '@/config/api';
 import { notificationType } from '@/constants/notificationType';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { getCategories } from '@/lib/actions/category.action';
 import axiosInstance from '@/lib/axios';
-import {
-    getCategoriesKey,
-    getGroupsKey,
-    getLocationsKey,
-    getNotificationsKey,
-    getRequestsKey,
-} from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
-import { API_ROUTES } from '@/config/api';
 
 const PAGE_SIZE = 10;
 
 export const useNotifications = (userId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getNotificationsKey(userId),
+        queryKey: queryKey.user.notifications(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
@@ -59,7 +53,7 @@ export const useNotifications = (userId: string | undefined) =>
 
 export const useCategories = () =>
     useQuery<ICategory[]>({
-        queryKey: getCategoriesKey(),
+        queryKey: queryKey.categories,
         queryFn: async () => {
             const categories = await getCategories();
             console.log({ categories });
@@ -69,7 +63,7 @@ export const useCategories = () =>
 
 export const useGroupsJoined = (userId: string | undefined) => {
     return useInfiniteQuery({
-        queryKey: getGroupsKey(userId),
+        queryKey: queryKey.user.groups(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
@@ -103,7 +97,7 @@ export const useGroupsJoined = (userId: string | undefined) => {
 
 export const useRequests = (userId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getRequestsKey(userId),
+        queryKey: queryKey.user.requests(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
@@ -136,7 +130,7 @@ export const useRequests = (userId: string | undefined) =>
 
 export const useLocations = () =>
     useQuery<ILocation[]>({
-        queryKey: getLocationsKey(),
+        queryKey: queryKey.locations,
         queryFn: async () => {
             const res = await axiosInstance.get(API_ROUTES.LOCATIONS.INDEX);
 

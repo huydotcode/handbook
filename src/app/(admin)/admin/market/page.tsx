@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import { Button } from '@/components/ui/Button';
 import {
     Form,
     FormControl,
@@ -8,14 +8,14 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/Form';
-import { useForm } from 'react-hook-form';
-import { useQuery } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 import { IconsArray } from '@/components/ui/Icons';
-import { createCategory, getCategories } from '@/lib/actions/category.action';
-import { getCategoriesKey } from '@/lib/queryKey';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { createCategory, getCategories } from '@/lib/actions/category.action';
+import queryKey from '@/lib/queryKey';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 interface CategoryForm {
     name: string;
@@ -26,7 +26,7 @@ interface CategoryForm {
 
 const CategoryPage: React.FC = () => {
     const { data, refetch } = useQuery({
-        queryKey: getCategoriesKey(),
+        queryKey: queryKey.categories,
         queryFn: async () => {
             return await getCategories();
         },

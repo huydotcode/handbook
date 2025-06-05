@@ -1,26 +1,18 @@
 'use client';
-import { getLastMessageByCoversationId } from '@/lib/actions/message.action';
+import { API_ROUTES } from '@/config/api';
 import { getProfileByUserId } from '@/lib/actions/profile.action';
 import axiosInstance from '@/lib/axios';
-import {
-    getConversationKey,
-    getConversationsKey,
-    getFriendsKey,
-    getLastMessagesKey,
-    getMessagesKey,
-    getProfileKey,
-} from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
-import { API_ROUTES } from '@/config/api';
 
 const PAGE_SIZE = 10;
 
 export const useProfile = (userId: string) =>
     useQuery<IProfile>({
-        queryKey: getProfileKey(userId),
+        queryKey: queryKey.user.profile(userId),
         queryFn: async () => {
             const data = await getProfileByUserId({
                 query: userId,
@@ -34,7 +26,7 @@ export const useProfile = (userId: string) =>
 
 export const useFriends = (userId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getFriendsKey(userId),
+        queryKey: queryKey.user.friends(userId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
@@ -60,7 +52,7 @@ export const useFriends = (userId: string | undefined) =>
 
 export const useConversations = (userId: string | undefined) =>
     useQuery<IConversation[]>({
-        queryKey: getConversationsKey(userId),
+        queryKey: queryKey.conversations.userId(userId),
         queryFn: async () => {
             if (!userId) return [];
 
@@ -77,7 +69,7 @@ export const useConversation = (conversationId: string | undefined) => {
     const { data: session } = useSession();
 
     return useQuery<IConversation | null>({
-        queryKey: getConversationKey(conversationId),
+        queryKey: queryKey.conversations.id(conversationId),
         queryFn: async () => {
             try {
                 const res = await axiosInstance.get(
@@ -95,7 +87,7 @@ export const useConversation = (conversationId: string | undefined) => {
 
 export const useMessages = (conversationId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getMessagesKey(conversationId),
+        queryKey: queryKey.messages.conversationId(conversationId),
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
@@ -123,16 +115,9 @@ export const useMessages = (conversationId: string | undefined) =>
         refetchOnMount: false,
     });
 
-export const useLastMessage = (conversationId: string) =>
-    useQuery<IMessage>({
-        queryKey: getLastMessagesKey(conversationId),
-        queryFn: async () => {
-            const lastMessage = await getLastMessageByCoversationId({
-                conversationId: conversationId,
-            });
-            return lastMessage;
-        },
-        enabled: !!conversationId,
+export const useFollowing = (userId: string | undefined) =>
+    useQuery<IFriend[]>({
+        queryKey: ['following', userId],
     });
 
 function SocialProvider({ children }: { children: React.ReactNode }) {

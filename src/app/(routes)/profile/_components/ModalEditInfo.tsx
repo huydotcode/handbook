@@ -1,14 +1,14 @@
 import { Modal } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/textarea';
 import { getLocations, updateInfo } from '@/lib/actions/profile.action';
-import { getLocationsKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import logger from '@/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
     profile: IProfile;
@@ -25,7 +25,7 @@ type FormInfo = {
 
 const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
     const { data: locations } = useQuery<ILocation[]>({
-        queryKey: getLocationsKey(),
+        queryKey: queryKey.locations,
         queryFn: async () => {
             const locations = await getLocations();
             return locations;

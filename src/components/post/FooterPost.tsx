@@ -3,6 +3,7 @@ import Comment from '@/components/post/comment/CommentItem';
 import SkeletonComment from '@/components/post/comment/SkeletonComment';
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { API_ROUTES } from '@/config/api';
 import { useSocket } from '@/context';
 import { useFriends } from '@/context/SocialContext';
 import { usePreventMultiClick } from '@/hooks/usePreventMultiClick';
@@ -12,7 +13,7 @@ import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
 import { sendMessage } from '@/lib/actions/message.action';
 import { savePost, sendReaction, unsavePost } from '@/lib/actions/post.action';
 import axiosInstance from '@/lib/axios';
-import { getCommentsKey, getSavedPostsKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import {
@@ -36,7 +37,6 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
-import { API_ROUTES } from '@/config/api';
 
 interface Props {
     post: IPost;
@@ -160,7 +160,7 @@ const ShareModal: React.FC<Props> = ({ post }) => {
 
 export const useSavedPosts = (userId: string | undefined) =>
     useQuery<ISavedPost>({
-        queryKey: getSavedPostsKey(userId),
+        queryKey: queryKey.posts.saved(userId),
         queryFn: async () => {
             if (!userId) return [];
 
@@ -339,7 +339,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         hasNextPage,
         fetchNextPage,
     } = useInfiniteQuery({
-        queryKey: getCommentsKey(post._id),
+        queryKey: queryKey.posts.comments(post._id),
         queryFn: async ({ pageParam = 1 }) => {
             if (!post._id) return [];
 

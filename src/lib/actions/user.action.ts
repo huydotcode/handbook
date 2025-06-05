@@ -229,10 +229,6 @@ export const follow = async ({ userId }: { userId: string }) => {
         });
 
         await newFollow.save();
-
-        const user = await User.findById(userId).exec();
-
-        return JSON.parse(JSON.stringify(user));
     } catch (error: any) {
         logger({
             message: 'Error follow' + error,

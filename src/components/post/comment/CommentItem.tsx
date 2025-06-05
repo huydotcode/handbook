@@ -3,6 +3,7 @@ import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { Form, FormControl } from '@/components/ui/Form';
 import { Textarea } from '@/components/ui/textarea';
+import { API_ROUTES } from '@/config/api';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import {
     deleteComment,
@@ -10,7 +11,7 @@ import {
     sendComment,
 } from '@/lib/actions/comment.action';
 import axiosInstance from '@/lib/axios';
-import { getReplyCommentsKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { timeConvert3 } from '@/utils/timeConvert';
@@ -21,7 +22,6 @@ import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
-import { API_ROUTES } from '@/config/api';
 
 interface Props {
     data: IComment;
@@ -35,7 +35,7 @@ const PAGE_SIZE = 5;
 
 export const useReplyComments = (commentId: string | undefined) =>
     useInfiniteQuery({
-        queryKey: getReplyCommentsKey(commentId),
+        queryKey: queryKey.posts.replyComments(commentId),
         queryFn: async ({ pageParam = 1 }) => {
             if (!commentId) return [];
 

@@ -11,7 +11,7 @@ import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
-import { getMessagesKey, getPinnedMessagesKey } from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -47,7 +47,7 @@ const PAGE_SIZE = 30;
 
 export const useMessages = (conversationId: string) => {
     return useInfiniteQuery({
-        queryKey: getMessagesKey(conversationId),
+        queryKey: queryKey.messages.conversationId(conversationId),
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
@@ -76,7 +76,7 @@ export const useMessages = (conversationId: string) => {
 
 export const usePinnedMessages = (conversationId: string) => {
     return useInfiniteQuery({
-        queryKey: getPinnedMessagesKey(conversationId),
+        queryKey: queryKey.messages.pinnedMessages(conversationId),
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 

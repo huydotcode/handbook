@@ -1,27 +1,4 @@
-import {
-    getCategoriesKey,
-    getCommentsKey,
-    getConversationKey,
-    getConversationsKey,
-    getFollowersKey,
-    getFriendsKey,
-    getGroupsKey,
-    getItemsKey,
-    getLastMessagesKey,
-    getLocationsKey,
-    getMessagesKey,
-    getNewFeedPostsKey,
-    getNotificationsKey,
-    getPinnedMessagesKey,
-    getPostKey,
-    getPostsKey,
-    getProfileKey,
-    getReplyCommentsKey,
-    getRequestsKey,
-    getSavedPostsKey,
-    getSearchKey,
-    getUserKey,
-} from '@/lib/queryKey';
+import queryKey from '@/lib/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 
@@ -33,14 +10,14 @@ export const useQueryInvalidation = () => {
     const invalidateMessages = async (conversationId: string) => {
         console.log('[LIB-HOOKS] invalidateMessages', conversationId);
         await queryClient.invalidateQueries({
-            queryKey: getMessagesKey(conversationId),
+            queryKey: queryKey.messages.conversationId(conversationId),
         });
     };
 
     const queryClientAddMessage = (message: IMessage) => {
         console.log('[LIB-HOOKS] queryClientAddMessage', message);
         queryClient.setQueryData(
-            getMessagesKey(message.conversation._id),
+            queryKey.messages.conversationId(message.conversation._id),
             (
                 oldMessages:
                     | {
@@ -73,7 +50,7 @@ export const useQueryInvalidation = () => {
         );
 
         queryClient.setQueryData(
-            getConversationKey(message.conversation._id),
+            queryKey.conversations.userId(message.conversation._id),
             (oldConversation: IConversation | undefined) => {
                 if (!oldConversation) return oldConversation;
 
@@ -85,7 +62,7 @@ export const useQueryInvalidation = () => {
         );
 
         queryClient.setQueryData(
-            getConversationsKey(session?.user.id as string),
+            queryKey.conversations.userId(session?.user.id as string),
             (oldConversations: IConversation[] | undefined | null) => {
                 if (!oldConversations) return oldConversations;
 
@@ -105,7 +82,7 @@ export const useQueryInvalidation = () => {
     const queryClientAddPinnedMessage = (message: IMessage) => {
         console.log('[LIB-HOOKS] queryClientAddPinnedMessage', message);
         queryClient.setQueryData(
-            getMessagesKey(message.conversation._id),
+            queryKey.messages.conversationId(message.conversation._id),
             (
                 oldMessages:
                     | {
@@ -145,7 +122,7 @@ export const useQueryInvalidation = () => {
     const queryClientRemovePinnedMessage = (message: IMessage) => {
         console.log('[LIB-HOOKS] queryClientRemovePinnedMessage', message);
         queryClient.setQueryData(
-            getMessagesKey(message.conversation._id),
+            queryKey.messages.conversationId(message.conversation._id),
             (
                 oldMessages:
                     | {
@@ -177,7 +154,7 @@ export const useQueryInvalidation = () => {
     const queryClientDeleteMessage = (message: IMessage) => {
         console.log('[LIB-HOOKS] queryClientDeleteMessage', message);
         queryClient.setQueryData(
-            getMessagesKey(message.conversation._id),
+            queryKey.messages.conversationId(message.conversation._id),
             (
                 oldMessages:
                     | {
@@ -200,14 +177,14 @@ export const useQueryInvalidation = () => {
         );
 
         queryClient.setQueryData(
-            getConversationKey(message.conversation._id),
+            queryKey.conversations.id(message.conversation._id),
             (oldConversation: IConversation | undefined) => {
                 if (!oldConversation) return oldConversation;
 
                 const messages = queryClient.getQueryData<{
                     pages: IMessage[][];
                     pageParams: (number | undefined)[];
-                }>(getMessagesKey(message.conversation._id));
+                }>(queryKey.messages.conversationId(message.conversation._id));
 
                 const allMessages = messages?.pages.flat() || [];
 
@@ -235,7 +212,7 @@ export const useQueryInvalidation = () => {
         );
 
         queryClient.setQueryData(
-            getConversationsKey(session?.user.id as string),
+            queryKey.conversations.userId(session?.user.id as string),
             (oldConversations: IConversation[] | undefined | null) => {
                 if (!oldConversations) return oldConversations;
 
@@ -244,7 +221,7 @@ export const useQueryInvalidation = () => {
                         const messages = queryClient.getQueryData<{
                             pages: IMessage[][];
                             pageParams: (number | undefined)[];
-                        }>(getMessagesKey(conversation._id));
+                        }>(queryKey.messages.conversationId(conversation._id));
 
                         const allMessages = messages?.pages.flat() || [];
 
@@ -278,11 +255,11 @@ export const useQueryInvalidation = () => {
     const queryClientReadMessage = (conversationId: string, userId: string) => {
         console.log('[LIB-HOOKS] queryClientReadMessage', conversationId);
         queryClient.invalidateQueries({
-            queryKey: getMessagesKey(conversationId),
+            queryKey: queryKey.messages.conversationId(conversationId),
         });
 
         queryClient.setQueryData(
-            getConversationsKey(session?.user.id as string),
+            queryKey.conversations.userId(session?.user.id as string),
             (oldConversations: IConversation[] | undefined | null) => {
                 if (!oldConversations) return oldConversations;
 
@@ -312,41 +289,41 @@ export const useQueryInvalidation = () => {
     const invalidatePinnedMessages = async (conversationId: string) => {
         console.log('[LIB-HOOKS] invalidatePinnedMessages', conversationId);
         await queryClient.invalidateQueries({
-            queryKey: getPinnedMessagesKey(conversationId),
+            queryKey: queryKey.messages.pinnedMessages(conversationId),
         });
     };
 
     const invalidateConversations = async () => {
         console.log('[LIB-HOOKS] invalidateConversations');
         await queryClient.invalidateQueries({
-            queryKey: getConversationsKey(session?.user.id as string),
+            queryKey: queryKey.conversations.userId(session?.user.id as string),
         });
     };
 
     const invalidateProfile = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateProfile', userId);
         await queryClient.invalidateQueries({
-            queryKey: getProfileKey(userId),
+            queryKey: queryKey.user.profile(userId),
         });
     };
 
     const invalidateConversation = async (conversationId: string) => {
         console.log('[LIB-HOOKS] invalidateConversation', conversationId);
         await queryClient.invalidateQueries({
-            queryKey: getConversationKey(conversationId),
+            queryKey: queryKey.conversations.id(conversationId),
         });
     };
 
     const invalidateAfterSendMessage = async (conversationId: string) => {
         console.log('[LIB-HOOKS] invalidateAfterSendMessage', conversationId);
         await queryClient.invalidateQueries({
-            queryKey: getMessagesKey(conversationId),
+            queryKey: queryKey.messages.conversationId(conversationId),
         });
         await queryClient.invalidateQueries({
-            queryKey: getConversationsKey(session?.user.id as string),
+            queryKey: queryKey.conversations.userId(session?.user.id as string),
         });
         await queryClient.invalidateQueries({
-            queryKey: getPinnedMessagesKey(conversationId),
+            queryKey: queryKey.messages.pinnedMessages(conversationId),
         });
     };
 
@@ -354,42 +331,45 @@ export const useQueryInvalidation = () => {
     const invalidateSearch = async (q: string, type: string) => {
         console.log('[LIB-HOOKS] invalidateSearch', { q, type });
         await queryClient.invalidateQueries({
-            queryKey: getSearchKey(q, type),
+            queryKey: queryKey.search({
+                q,
+                type,
+            }),
         });
     };
 
     const invalidateFollowers = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateFollowers', userId);
         await queryClient.invalidateQueries({
-            queryKey: getFollowersKey(userId),
+            queryKey: queryKey.user.followers(userId),
         });
     };
 
     const invalidateFriends = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateFriends', userId);
         await queryClient.invalidateQueries({
-            queryKey: getFriendsKey(userId),
+            queryKey: queryKey.user.friends(userId),
         });
     };
 
     const invalidateRequests = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateRequests', userId);
         await queryClient.invalidateQueries({
-            queryKey: getRequestsKey(userId),
+            queryKey: queryKey.user.requests(userId),
         });
     };
 
     const invalidateNotifications = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateNotifications', userId);
         await queryClient.invalidateQueries({
-            queryKey: getNotificationsKey(userId),
+            queryKey: queryKey.user.notifications(userId),
         });
     };
 
     const invalidateGroups = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateGroups', userId);
         await queryClient.invalidateQueries({
-            queryKey: getGroupsKey(userId),
+            queryKey: queryKey.user.groups(userId),
         });
     };
 
@@ -411,77 +391,75 @@ export const useQueryInvalidation = () => {
             username,
         });
         await queryClient.invalidateQueries({
-            queryKey: getNewFeedPostsKey(type, userId, groupId, username),
+            queryKey: queryKey.posts.newFeed({
+                type,
+                userId,
+                groupId,
+                username,
+            }),
         });
     };
 
     const invalidatePosts = async () => {
         console.log('[LIB-HOOKS] invalidatePosts');
         await queryClient.invalidateQueries({
-            queryKey: getPostsKey(),
+            queryKey: queryKey.posts.all(),
         });
     };
 
     const invalidatePost = async (postId: string) => {
         console.log('[LIB-HOOKS] invalidatePost', postId);
         await queryClient.invalidateQueries({
-            queryKey: getPostKey(postId),
+            queryKey: queryKey.posts.id(postId),
         });
     };
 
     const invalidateSavedPosts = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateSavedPosts', userId);
         await queryClient.invalidateQueries({
-            queryKey: getSavedPostsKey(userId),
+            queryKey: queryKey.posts.saved(userId),
         });
     };
 
     const invalidateComments = async (postId: string) => {
         console.log('[LIB-HOOKS] invalidateComments', postId);
         await queryClient.invalidateQueries({
-            queryKey: getCommentsKey(postId),
+            queryKey: queryKey.posts.comments(postId),
         });
     };
 
     const invalidateReplyComments = async (commentId: string) => {
         console.log('[LIB-HOOKS] invalidateReplyComments', commentId);
         await queryClient.invalidateQueries({
-            queryKey: getReplyCommentsKey(commentId),
+            queryKey: queryKey.posts.replyComments(commentId),
         });
     };
 
     const invalidateLocations = async () => {
         console.log('[LIB-HOOKS] invalidateLocations');
         await queryClient.invalidateQueries({
-            queryKey: getLocationsKey(),
+            queryKey: queryKey.locations,
         });
     };
 
     const invalidateCategories = async () => {
         console.log('[LIB-HOOKS] invalidateCategories');
         await queryClient.invalidateQueries({
-            queryKey: getCategoriesKey(),
+            queryKey: queryKey.categories,
         });
     };
 
     const invalidateItems = async () => {
         console.log('[LIB-HOOKS] invalidateItems');
         await queryClient.invalidateQueries({
-            queryKey: getItemsKey(),
-        });
-    };
-
-    const invalidateLastMessages = async (conversationId: string) => {
-        console.log('[LIB-HOOKS] invalidateLastMessages', conversationId);
-        await queryClient.invalidateQueries({
-            queryKey: getLastMessagesKey(conversationId),
+            queryKey: queryKey.items.index,
         });
     };
 
     const invalidateUser = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateUser', userId);
         await queryClient.invalidateQueries({
-            queryKey: getUserKey(userId),
+            queryKey: queryKey.user.id(userId),
         });
     };
 
@@ -512,7 +490,6 @@ export const useQueryInvalidation = () => {
         invalidateLocations,
         invalidateCategories,
         invalidateItems,
-        invalidateLastMessages,
         invalidateUser,
     };
 };
