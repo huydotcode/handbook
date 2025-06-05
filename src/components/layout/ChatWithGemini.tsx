@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
 import { Avatar, Icons, Loading } from '@/components/ui';
 import { useMutation } from '@tanstack/react-query';
+import { API_ROUTES } from '@/config/api';
 
 interface IFormData {
     text: string;
@@ -48,7 +49,7 @@ const ChatWithGemini = () => {
 
             resetField('text');
 
-            const textFromGemini = await fetch('/api/gemini', {
+            const textFromGemini = await fetch(API_ROUTES.GEMINI.CHAT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

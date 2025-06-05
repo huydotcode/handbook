@@ -18,6 +18,7 @@ import {
     FormMessage,
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
+import { API_ROUTES } from '@/config/api';
 
 type FormSignupData = {
     email: string;
@@ -65,7 +66,7 @@ const SignUpPage = () => {
         }
 
         try {
-            const res = await fetch('/api/auth/signup', {
+            const res = await fetch(API_ROUTES.AUTH.SIGN_UP, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

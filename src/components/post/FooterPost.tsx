@@ -36,6 +36,7 @@ import {
 } from '../ui/dialog';
 import { Form, FormControl } from '../ui/Form';
 import { Textarea } from '../ui/textarea';
+import { API_ROUTES } from '@/config/api';
 
 interface Props {
     post: IPost;
@@ -163,7 +164,7 @@ export const useSavedPosts = (userId: string | undefined) =>
         queryFn: async () => {
             if (!userId) return [];
 
-            const res = await axiosInstance.get(`/saved-posts`, {
+            const res = await axiosInstance.get(API_ROUTES.SAVED_POSTS.INDEX, {
                 params: { user_id: userId },
             });
 
@@ -342,7 +343,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         queryFn: async ({ pageParam = 1 }) => {
             if (!post._id) return [];
 
-            const res = await axiosInstance.get(`/comments`, {
+            const res = await axiosInstance.get(API_ROUTES.COMMENTS.INDEX, {
                 params: {
                     post_id: post._id,
                     page: pageParam,

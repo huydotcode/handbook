@@ -21,6 +21,7 @@ import React, { useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
+import { API_ROUTES } from '@/config/api';
 
 interface Props {
     data: IComment;
@@ -38,7 +39,7 @@ export const useReplyComments = (commentId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!commentId) return [];
 
-            const res = await axiosInstance.get(`/comments/reply`, {
+            const res = await axiosInstance.get(API_ROUTES.COMMENTS.REPLY, {
                 params: {
                     comment_id: commentId,
                     page: pageParam,

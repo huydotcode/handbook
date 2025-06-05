@@ -6,6 +6,7 @@ import Item from './Item';
 import React, { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import axiosInstance from '@/lib/axios';
+import { API_ROUTES } from '@/config/api';
 
 interface Props {}
 
@@ -20,7 +21,7 @@ const ListItem: React.FC<Props> = () => {
         queryKey: getItemsKey(),
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axiosInstance.get(
-                `/items?page=${pageParam}&page_size=${PAGE_SIZE}`
+                API_ROUTES.ITEMS.QUERY(pageParam as number, PAGE_SIZE)
             );
             return res.data;
         },

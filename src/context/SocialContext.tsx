@@ -14,6 +14,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSocket } from './SocketContext';
+import { API_ROUTES } from '@/config/api';
 
 const PAGE_SIZE = 10;
 
@@ -37,7 +38,7 @@ export const useFriends = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await axiosInstance.get('/user/friends', {
+            const res = await axiosInstance.get(API_ROUTES.USER.FRIENDS, {
                 params: {
                     user_id: userId,
                     page: pageParam,
@@ -64,7 +65,7 @@ export const useConversations = (userId: string | undefined) =>
             if (!userId) return [];
 
             const res = await axiosInstance.get(
-                `/conversations?user_id=${userId}`
+                API_ROUTES.CONVERSATIONS.GET_BY_USER(userId)
             );
             const conversations = res.data;
             return conversations;
@@ -80,7 +81,7 @@ export const useConversation = (conversationId: string | undefined) => {
         queryFn: async () => {
             try {
                 const res = await axiosInstance.get(
-                    `/conversations/${conversationId}`
+                    API_ROUTES.CONVERSATIONS.ID(conversationId as string)
                 );
                 return res.data;
             } catch (error) {
@@ -98,7 +99,7 @@ export const useMessages = (conversationId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
-            const res = await axiosInstance.get('/message', {
+            const res = await axiosInstance.get(API_ROUTES.MESSAGES.INDEX, {
                 params: {
                     conversation_id: conversationId,
                     page: pageParam,

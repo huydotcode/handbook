@@ -82,8 +82,6 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                     type,
                 });
 
-                // await axiosInstance.post('/posts', postData);
-
                 await invalidatePosts();
                 resetForm();
             } catch (error: any) {

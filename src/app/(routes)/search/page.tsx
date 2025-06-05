@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react';
 import { useFriends } from '@/context/SocialContext';
 import AddFriendAction from '@/app/(routes)/profile/_components/AddFriendAction';
 import { Post } from '@/components/post';
+import { API_ROUTES } from '@/config/api';
 
 interface SearchData {
     users: IUser[];
@@ -35,7 +36,12 @@ const SearchPage = () => {
 
     const searchEndpoint = useMemo(() => {
         if (!q) return '';
-        return `/search${type ? `/${type}` : ''}?q=${encodeURIComponent(q)}&page=${page}&page_size=${PAGE_SIZE}`;
+        return API_ROUTES.MESSAGES.SEARCH_QUERY({
+            type,
+            q,
+            page,
+            pageSize: PAGE_SIZE,
+        });
     }, [q, type, page]);
 
     const { data, isLoading } = useQuery<SearchData>({

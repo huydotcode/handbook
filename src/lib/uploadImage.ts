@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast';
 import axiosInstance from './axios';
+import { API_ROUTES } from '@/config/api';
 
 export const uploadImages = async ({
     photos,
@@ -7,7 +8,7 @@ export const uploadImages = async ({
     photos: string[];
 }): Promise<string[]> => {
     const imagesUpload = photos.map((photo) => {
-        return fetch('/api/images', {
+        return fetch(API_ROUTES.IMAGES.INDEX, {
             method: 'POST',
             body: JSON.stringify({ image: photo }),
             headers: { 'Content-Type': 'application/json' },
@@ -38,7 +39,7 @@ export const uploadImageWithFile = async ({
             formDataImage.append('image', file);
 
             const response = await axiosInstance.post(
-                '/upload/image',
+                API_ROUTES.UPLOAD.IMAGE,
                 formDataImage,
                 {
                     headers: {
@@ -59,7 +60,7 @@ export const uploadImageWithFile = async ({
             const formDataVideo = new FormData();
             formDataVideo.append('video', file);
             const responseVideo = await axiosInstance.post(
-                '/upload/video',
+                API_ROUTES.UPLOAD.VIDEO,
                 formDataVideo,
                 {
                     headers: {
@@ -105,7 +106,7 @@ export const uploadImagesWithFiles = async ({
                 formDataImage.append('image', file);
 
                 const response = await axiosInstance.post(
-                    '/upload/image',
+                    API_ROUTES.UPLOAD.IMAGE,
                     formDataImage,
                     {
                         headers: {
@@ -131,7 +132,7 @@ export const uploadImagesWithFiles = async ({
                 const formDataVideo = new FormData();
                 formDataVideo.append('video', file);
                 const responseVideo = await axiosInstance.post(
-                    '/upload/video',
+                    API_ROUTES.UPLOAD.VIDEO,
                     formDataVideo,
                     {
                         headers: {

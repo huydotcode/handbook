@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
+import { API_ROUTES } from '@/config/api';
 
 const PAGE_SIZE = 10;
 
@@ -25,13 +26,16 @@ export const useNotifications = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await axiosInstance.get('/notifications', {
-                params: {
-                    user_id: userId,
-                    page: pageParam,
-                    page_size: PAGE_SIZE,
-                },
-            });
+            const res = await axiosInstance.get(
+                API_ROUTES.NOTIFICATIONS.INDEX,
+                {
+                    params: {
+                        user_id: userId,
+                        page: pageParam,
+                        page_size: PAGE_SIZE,
+                    },
+                }
+            );
 
             return res.data;
         },
@@ -69,7 +73,7 @@ export const useGroupsJoined = (userId: string | undefined) => {
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await axiosInstance.get('/groups/joined', {
+            const res = await axiosInstance.get(API_ROUTES.GROUP.JOINED, {
                 params: {
                     user_id: userId,
                     page: pageParam,
@@ -103,7 +107,7 @@ export const useRequests = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const res = await axiosInstance.get('/requests', {
+            const res = await axiosInstance.get(API_ROUTES.REQUESTS.INDEX, {
                 params: {
                     user_id: userId,
                     page: pageParam,
@@ -134,7 +138,7 @@ export const useLocations = () =>
     useQuery<ILocation[]>({
         queryKey: getLocationsKey(),
         queryFn: async () => {
-            const res = await axiosInstance.get('/locations');
+            const res = await axiosInstance.get(API_ROUTES.LOCATIONS.INDEX);
 
             return res.data;
         },

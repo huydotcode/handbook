@@ -51,7 +51,7 @@ export const useMessages = (conversationId: string) => {
         queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
             if (!conversationId) return [];
 
-            const res = await axiosInstance.get('/message', {
+            const res = await axiosInstance.get(API_ROUTES.MESSAGES.INDEX, {
                 params: {
                     conversation_id: conversationId,
                     page: pageParam,

@@ -11,6 +11,7 @@ import { Form, FormField } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/lib/axios';
+import { API_ROUTES } from '@/config/api';
 
 interface Props {
     openSearch: boolean;
@@ -40,7 +41,7 @@ const SearchMessage: React.FC<Props> = ({
 
             setSearchMessages([]);
 
-            const res = await axiosInstance.get(`/message/search`, {
+            const res = await axiosInstance.get(API_ROUTES.MESSAGES.SEARCH, {
                 params: {
                     q: searchValue,
                     conversation_id: conversationId,

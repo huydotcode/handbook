@@ -23,6 +23,7 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip';
 import VideoPlayer from '../ui/VideoPlayer';
+import { API_ROUTES } from '@/config/api';
 
 interface Props {
     data: IPost;
@@ -35,7 +36,9 @@ const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
     const { data: post } = useQuery<IPost>({
         queryKey: getPostKey(data._id),
         queryFn: async () => {
-            const post = await axiosInstance.get<IPost>(`/posts/${data._id}`);
+            const post = await axiosInstance.get<IPost>(
+                API_ROUTES.POSTS.ID(data._id)
+            );
             return post.data;
         },
         refetchInterval: false,
