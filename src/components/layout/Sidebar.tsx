@@ -1,5 +1,6 @@
 'use client';
 import { navLink } from '@/constants/navLink';
+import { UserRole } from '@/enums/UserRole';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -45,7 +46,10 @@ const Sidebar = () => {
                         return link.icon;
                     };
 
-                    if (link.role === 'admin' && session?.user.role !== 'admin')
+                    if (
+                        link.role === UserRole.ADMIN &&
+                        session?.user.role !== UserRole.ADMIN
+                    )
                         return null;
 
                     return (

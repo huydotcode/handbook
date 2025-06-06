@@ -5,6 +5,7 @@ import { InfinityPostComponent } from '@/components/post';
 import { getUserByUserId } from '@/lib/actions/user.action';
 import { notFound, redirect } from 'next/navigation';
 import ActionMember from '@/app/(routes)/groups/_components/ActionMember';
+import { GroupUserRole } from '@/enums/GroupRole';
 
 interface Props {
     params: Promise<{ memberId: string; groupId: string }>;
@@ -28,7 +29,7 @@ const MemberPage = async ({ params }: Props) => {
 
     const isAdmin =
         group.members.find((member) => member.user._id === session?.user.id)
-            ?.role === 'admin';
+            ?.role === GroupUserRole.ADMIN;
 
     const isShowAction = isAdmin && memberId !== session?.user.id;
 

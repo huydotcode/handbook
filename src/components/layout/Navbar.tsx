@@ -47,6 +47,7 @@ import React, {
 import toast from 'react-hot-toast';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import Icons from '../ui/Icons';
+import { UserRole } from '@/enums/UserRole';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -107,8 +108,8 @@ const Navbar = () => {
                     >
                         {navbarLink.map((link) => {
                             if (
-                                link.role === 'admin' &&
-                                session?.user.role !== 'admin'
+                                link.role === UserRole.ADMIN &&
+                                session?.user.role !== UserRole.ADMIN
                             )
                                 return null;
 
@@ -170,8 +171,8 @@ const Navbar = () => {
                     >
                         {navLink.map((link, index) => {
                             if (
-                                link.role === 'admin' &&
-                                session?.user.role !== 'admin'
+                                link.role === UserRole.ADMIN &&
+                                session?.user.role !== UserRole.ADMIN
                             )
                                 return null;
 

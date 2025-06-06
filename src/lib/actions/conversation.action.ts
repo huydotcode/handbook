@@ -4,11 +4,12 @@ import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
 import ConversationRole from '@/models/ConversationRole';
 import { pinMessage, unPinMessage } from '@/lib/actions/message.action';
+import { UserRole } from '@/enums/UserRole';
 
 export const createConversationRoleAdmin = async ({
     userId,
     conversationId,
-    role = 'admin',
+    role = UserRole.ADMIN,
 }: {
     userId: string;
     conversationId: string;

@@ -199,7 +199,6 @@ const InfomationConversation: React.FC<Props> = ({
                 </div>
             ),
         },
-
         {
             key: 'file-attachment',
             label: 'File đính kèm',

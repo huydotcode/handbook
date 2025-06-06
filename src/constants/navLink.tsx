@@ -1,4 +1,5 @@
 import Icons from '@/components/ui/Icons';
+import { UserRole } from '@/enums/UserRole';
 import React from 'react';
 
 interface NavLink {
@@ -17,7 +18,7 @@ export const navLink: NavLink[] = [
         name: 'Admin',
         path: '/admin',
         icon: <Icons.Admin className="h-8 w-8 " />,
-        role: 'admin',
+        role: UserRole.ADMIN,
         visible: [SIDEBAR, NAVBAR],
     },
     {
@@ -74,7 +75,7 @@ export const sidebarLink: NavLink[] = navLink.filter((nav) =>
 export const navAdmin: NavLink[] = [
     {
         name: 'Trang chủ',
-        path: '/',
+        path: '/admin',
         icon: <Icons.Home className="h-8 w-8 " />,
     },
     {

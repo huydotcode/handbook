@@ -7,6 +7,7 @@ import {
     models,
 } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { UserRole } from '@/enums/UserRole';
 
 interface IUserModel {
     isModified(arg0: string): unknown;
@@ -15,7 +16,7 @@ interface IUserModel {
     email: string;
     avatar: string;
     password: string;
-    role: string;
+    role: UserRole;
     givenName: string;
     familyName: string;
     locale: string;
@@ -50,8 +51,8 @@ const UserSchema = new Schema<IUserModel>(
         },
         role: {
             type: String,
-            enum: ['admin', 'user'],
-            default: 'user',
+            enum: Object.values(UserRole),
+            default: UserRole.USER,
         },
         isOnline: {
             type: Boolean,

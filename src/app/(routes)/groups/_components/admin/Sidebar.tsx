@@ -4,6 +4,7 @@ import { Avatar, Icons, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
+import { GroupUserRole } from '@/enums/GroupRole';
 import useBreakPoint from '@/hooks/useBreakpoint';
 import { createConversation } from '@/lib/actions/conversation.action';
 import { cn } from '@/lib/utils';
@@ -41,7 +42,8 @@ const Sidebar: React.FC<Props> = ({
     const canCreateConversation = useMemo(() => {
         return currentGroup.members.some(
             (member) =>
-                member.user._id === session?.user?.id && member.role === 'admin'
+                member.user._id === session?.user?.id &&
+                member.role === GroupUserRole.ADMIN
         );
     }, [currentGroup, session]);
 

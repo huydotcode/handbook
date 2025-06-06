@@ -1,5 +1,6 @@
 import { Avatar } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { GroupUserRole } from '@/enums/GroupRole';
 import {
     getGroupByGroupId,
     getMembersByGroupId,
@@ -28,7 +29,7 @@ const GroupPage = async ({
                 <h1 className="text-sm font-bold">Quản trị viên</h1>
                 <div className="mt-2">
                     {members
-                        .filter((m) => m.role == 'admin')
+                        .filter((m) => m.role == GroupUserRole.ADMIN)
                         .map((member) => (
                             <Button
                                 href={`/groups/${group._id}/members/${member.user._id}`}
@@ -55,7 +56,7 @@ const GroupPage = async ({
                 <h1 className="text-sm font-bold">Thành viên</h1>
                 <div className="mt-2 grid grid-cols-3 gap-2 lg:grid-cols-2 md:grid-cols-1">
                     {members
-                        .filter((m) => m.role == 'member')
+                        .filter((m) => m.role == GroupUserRole.MEMBER)
                         .slice(0, MAX_MEMBERS)
                         .map((member) => (
                             <Button

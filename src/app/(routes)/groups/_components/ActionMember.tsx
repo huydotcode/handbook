@@ -7,6 +7,7 @@ import { ConfirmModal, Icons } from '@/components/ui';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { timeConvert4 } from '@/utils/timeConvert';
+import { GroupUserRole } from '@/enums/GroupRole';
 
 interface Props {
     member: IMemberGroup;
@@ -45,9 +46,9 @@ const ActionMember = ({ member, group }: Props) => {
             </p>
             <p className={'text-secondary-3 text-sm'}>
                 Vai trò:{' '}
-                {member.role === 'member'
+                {member.role === GroupUserRole.MEMBER
                     ? 'Thành viên'
-                    : member.role === 'admin'
+                    : member.role === GroupUserRole.ADMIN
                       ? 'Quản trị viên'
                       : 'Chủ nhóm'}
             </p>
