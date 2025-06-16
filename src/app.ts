@@ -2,10 +2,13 @@ import express from 'express';
 import helmet from 'helmet';
 import apiRouter from './routes/api.route';
 import { connectToMongo } from './services/mongodb';
+import dotenv from 'dotenv';
 
 import cors from 'cors';
 import authMiddleware from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
+
+dotenv.config();
 
 const morgan = require('morgan');
 

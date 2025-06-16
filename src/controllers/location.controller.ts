@@ -8,14 +8,14 @@ class LocationController {
             const cacheKey = 'locations';
 
             // Kiểm tra xem Redis có dữ liệu không
-            const cachedData = await redis.get(cacheKey);
-            if (cachedData) {
-                return res.status(200).json(JSON.parse(cachedData));
-            }
+            // const cachedData = await redis.get(cacheKey);
+            // if (cachedData) {
+            //     return res.status(200).json(JSON.parse(cachedData));
+            // }
 
             // Nếu không có trong Redis, truy vấn MongoDB
             const locations = await Location.find().sort('name');
-            await redis.set(cacheKey, JSON.stringify(locations));
+            // await redis.set(cacheKey, JSON.stringify(locations));
 
             console.log('✅ Dữ liệu đã lưu vào Redis');
             return res.status(200).json(locations);

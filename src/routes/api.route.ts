@@ -12,6 +12,8 @@ import notificationRouter from './notification.route';
 import requestRouter from './request.route';
 import groupRouter from './group.route';
 import uploadRouter from './upload.route';
+import followRouter from './follow.route';
+import categoryRouter from './category.route';
 
 const apiRouter = Router();
 
@@ -22,11 +24,13 @@ apiRouter.use('/search', searchRouter);
 apiRouter.use('/items', itemRouter);
 apiRouter.use('/message', messageRouter);
 apiRouter.use('/saved-posts', savedPostRouter);
+apiRouter.use('/user/follow', followRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/locations', locationRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/requests', requestRouter);
 apiRouter.use('/groups', groupRouter);
 apiRouter.use('/upload', uploadRouter);
+apiRouter.use('/categories', categoryRouter);
 
 export default apiRouter;

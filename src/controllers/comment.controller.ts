@@ -6,7 +6,7 @@ class CommentController {
     public async getCommentsByPost(
         req: Request,
         res: Response,
-        next: NextFunction,
+        next: NextFunction
     ): Promise<void> {
         try {
             const postId = req.query.post_id as string;
@@ -34,7 +34,7 @@ class CommentController {
     public async getReplyComments(
         req: Request,
         res: Response,
-        next: NextFunction,
+        next: NextFunction
     ): Promise<void> {
         try {
             const commentId = req.query.comment_id as string;

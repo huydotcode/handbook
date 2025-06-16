@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { NextFunction, Request, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import { jwt } from '../utils/jwt';
