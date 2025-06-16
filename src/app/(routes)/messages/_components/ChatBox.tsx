@@ -130,7 +130,9 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         },
     });
 
-    const lastMessage = conversation?.lastMessage;
+    const lastMessage = useMemo(() => {
+        return messages && messages.length > 0 ? messages[0] : null;
+    }, [messages]);
 
     // Memoize grouped messages with date formatting
     const groupedMessages = useMemo(() => {
@@ -315,7 +317,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     ]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
-    // Optimize scroll observer
     useEffect(() => {
         if (!bottomRef.current) return;
 
@@ -326,7 +327,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
         observer.observe(bottomRef.current);
         return () => observer.disconnect();
-    }, []); // Remove showScrollDown dependency
+    }, []);
 
     // Xử lý tìm kiếm tin nhắn
     useEffect(() => {
@@ -364,8 +365,10 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
     // Scroll tới tin nhắn cuối cùng
     useEffect(() => {
-        if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({
+        if (!lastMessage) return;
+
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({
                 behavior: 'smooth',
             });
         }

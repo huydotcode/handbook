@@ -61,7 +61,7 @@ const SearchConversation: React.FC<Props> = ({ setFilter }) => {
                 />
 
                 <Input
-                    className="bg-transparent text-sm dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden sm:block"
+                    className="bg-transparent text-sm dark:bg-transparent dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1 lg:hidden sm:block"
                     value={searchValue}
                     placeholder="Tìm cuộc trò chuyện"
                     onChange={(e) => {
