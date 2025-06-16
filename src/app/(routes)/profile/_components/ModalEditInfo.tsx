@@ -1,8 +1,8 @@
 import { Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { Textarea } from '@/components/ui/textarea';
-import { getLocations, updateInfo } from '@/lib/actions/profile.action';
+import { Input } from '@/components/ui/Input';
 import queryKey from '@/lib/queryKey';
+import ProfileService from '@/lib/services/profile.service';
 import logger from '@/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
@@ -27,7 +27,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
     const { data: locations } = useQuery<ILocation[]>({
         queryKey: queryKey.locations,
         queryFn: async () => {
-            const locations = await getLocations();
+            const locations = await ProfileService.getLocations();
             return locations;
         },
     });
@@ -50,7 +50,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
         if (isSubmitting) return;
 
         try {
-            await updateInfo({
+            await ProfileService.updateInfo({
                 ...data,
                 profileId: profile._id,
                 path,
@@ -83,7 +83,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             Nơi làm việc
                         </label>
 
-                        <Textarea
+                        <Input
                             id="work"
                             spellCheck={false}
                             autoComplete="off"
@@ -107,7 +107,7 @@ const ModalEditInfo: React.FC<Props> = ({ profile, show, handleClose }) => {
                             Từng học tại
                         </label>
 
-                        <Textarea
+                        <Input
                             id="education"
                             spellCheck={false}
                             autoComplete="off"

@@ -8,12 +8,12 @@ import { useSocket } from '@/context';
 import { useFriends } from '@/context/SocialContext';
 import { usePreventMultiClick } from '@/hooks/usePreventMultiClick';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { sendComment } from '@/lib/actions/comment.action';
-import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
-import { sendMessage } from '@/lib/actions/message.action';
-import { savePost, sendReaction, unsavePost } from '@/lib/actions/post.action';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
+import CommentService from '@/lib/services/comment.service';
+import ConversationService from '@/lib/services/conversation.service';
+import MessageService from '@/lib/services/message.service';
+import PostService from '@/lib/services/post.service';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import {
@@ -59,19 +59,24 @@ const ShareModal: React.FC<Props> = ({ post }) => {
         if (!session?.user) return;
 
         try {
-            const data = await getConversationWithTwoUsers({
-                otherUserId: friendId,
-                userId: session?.user.id,
-            });
-            const conversation = data.conversation;
+            const { isNew, conversation } =
+                await ConversationService.getPrivateConversation({
+                    userId: session.user.id,
+                    friendId,
+                });
 
             if (conversation) {
                 setSended([...sended, friendId]);
 
-                const newMsg = await sendMessage({
+                const newMsg = await MessageService.send({
                     roomId: conversation._id,
                     text: `${BASE_URL}/posts/${post._id}`,
                 });
+
+                if (!newMsg) {
+                    toast.error('Không thể chia sẻ bài viết!');
+                    return;
+                }
 
                 socketEmitor.sendMessage({
                     roomId: conversation._id,
@@ -210,9 +215,15 @@ const SavePost: React.FC<Props> = ({ post }) => {
 
         try {
             if (isSaved) {
-                await unsavePost({ postId: post._id, path: pathName });
+                await PostService.unsavePost({
+                    postId: post._id,
+                    path: pathName,
+                });
             } else {
-                await savePost({ postId: post._id, path: pathName });
+                await PostService.savePost({
+                    postId: post._id,
+                    path: pathName,
+                });
             }
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
@@ -275,9 +286,7 @@ const ReactionPost: React.FC<ReactionPostProps> = ({ post }) => {
                     });
                 }
 
-                await sendReaction({
-                    postId: post._id,
-                });
+                await PostService.sendReaction(post._id);
 
                 if (!isReacted) {
                     socketEmitor.likePost({
@@ -399,10 +408,10 @@ const FooterPost: React.FC<Props> = ({ post }) => {
         setValue('text', '');
 
         try {
-            await sendComment({
+            await CommentService.create({
                 content: text,
-                postId: post._id,
                 replyTo: null,
+                postId: post._id,
             });
 
             await invalidatePost(post._id);

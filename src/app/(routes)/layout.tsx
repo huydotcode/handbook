@@ -1,8 +1,9 @@
-import FullLayout from '@/components/layout/FullLayout';
+import { Navbar } from '@/components/layout';
+import ChatWithGemini from '@/components/layout/ChatWithGemini';
+import { WelcomeBackDialog } from '@/components/ui/dialog';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
-import { WelcomeBackDialog } from '@/components/ui/dialog';
 
 interface Props {
     children: React.ReactNode;
@@ -13,10 +14,16 @@ const HomeLayout: React.FC<Props> = async ({ children }) => {
     if (!session) redirect('/auth/login');
 
     return (
-        <FullLayout>
-            <WelcomeBackDialog />
-            {children}
-        </FullLayout>
+        <div className="w-screen">
+            <Navbar />
+
+            <main className={'bg-primary-1 dark:bg-dark-primary-1'}>
+                <WelcomeBackDialog />
+                {children}
+            </main>
+
+            <ChatWithGemini />
+        </div>
     );
 };
 

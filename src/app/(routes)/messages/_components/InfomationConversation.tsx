@@ -9,20 +9,18 @@ import {
     SlideShow,
 } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { useSocket } from '@/context';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import { leaveConversation } from '@/lib/actions/conversation.action';
+import ConversationService from '@/lib/services/conversation.service';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import React, { useMemo, useState } from 'react';
-import SideHeader from './SideHeader';
-import Message from './Message';
 import { useRouter } from 'next/navigation';
-import { usePinnedMessages } from './ChatBox';
-import {
-    deleteConversationByUserId,
-    leaveConversation,
-} from '@/lib/actions/conversation.action';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useSocket } from '@/context';
+import { usePinnedMessages } from './ChatBox';
+import Message from './Message';
+import SideHeader from './SideHeader';
 
 interface Props {
     conversation: IConversation;
@@ -99,7 +97,7 @@ const InfomationConversation: React.FC<Props> = ({
 
         try {
             if (isPrivate) {
-                await deleteConversationByUserId({
+                await ConversationService.deleteByUser({
                     conversationId: conversation._id,
                     userId: session.user.id,
                 });

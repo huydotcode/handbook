@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { AiOutlineLoading, AiOutlineMenu } from 'react-icons/ai';
-import { BiEdit, BiLogOut } from 'react-icons/bi';
+import { BiDetail, BiEdit, BiLogOut } from 'react-icons/bi';
 import {
     BsFileEarmarkPost,
     BsFillFileBreakFill,
@@ -248,6 +248,14 @@ const Icons = {
             {...props}
         />
     ),
+    Detail: (props: IconProps) => {
+        return (
+            <BiDetail
+                className={cn('text-secondary-1', props.className)}
+                {...props}
+            />
+        );
+    },
 };
 
 export const MenuBarEditorIcons = {
@@ -479,6 +487,30 @@ export const IconsArray = [
     {
         name: 'Pin',
         icon: Icons.Pin,
+    },
+    {
+        name: 'CreatePost',
+        icon: Icons.CreatePost,
+    },
+    {
+        name: 'Archive',
+        icon: Icons.Archive,
+    },
+    {
+        name: 'Public',
+        icon: Icons.Public,
+    },
+    {
+        name: 'Private',
+        icon: Icons.Private,
+    },
+    {
+        name: 'Sort',
+        icon: Icons.Sort,
+    },
+    {
+        name: 'Link',
+        icon: Icons.Link,
     },
 ].sort((a, b) => a.name.localeCompare(b.name));
 

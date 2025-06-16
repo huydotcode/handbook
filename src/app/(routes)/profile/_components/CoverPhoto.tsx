@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import FileUploader from '@/components/shared/FileUploader';
+import { Button } from '@/components/ui/Button';
 import {
     Dialog,
     DialogContent,
@@ -8,13 +8,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/Button';
-import FileUploader from '@/components/shared/FileUploader';
+import ImageService from '@/lib/services/image.service';
+import ProfileService from '@/lib/services/profile.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import { getUrlByImageId } from '@/lib/actions/image.action';
-import toast from 'react-hot-toast';
-import { updateAvatar, updateCoverPhoto } from '@/lib/actions/profile.action';
+import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     profile: IProfile;
@@ -45,9 +45,8 @@ const CoverPhoto: React.FC<Props> = ({ profile }) => {
             console.log({
                 coverPhotoId,
             });
-            const coverPhotoUrl = await getUrlByImageId({
-                imageId: coverPhotoId,
-            });
+            const coverPhotoUrl =
+                await ImageService.getUrlByImageId(coverPhotoId);
 
             console.log('coverPhotoUrl', coverPhotoUrl);
 
@@ -58,7 +57,7 @@ const CoverPhoto: React.FC<Props> = ({ profile }) => {
 
             console.log('coverPhotoUrl', coverPhotoUrl);
 
-            await updateCoverPhoto({
+            await ProfileService.updateCoverPhoto({
                 coverPhoto: coverPhotoUrl,
                 userId: profile.user._id,
                 path,

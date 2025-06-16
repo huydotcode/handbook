@@ -1,22 +1,23 @@
 'use server';
+import { POPULATE_GROUP, POPULATE_USER } from '@/lib/populate';
 import { Post } from '@/models';
 import logger from '@/utils/logger';
 import { revalidatePath } from 'next/cache';
 
-export const fetchAllPosts = async ({
-    limit,
-    page,
-}: {
-    page: number;
-    limit: number;
-}) => {
+export const fetchAllPosts = async () => {
     console.log('[LIB-ACTIONS] fetchAllPosts');
     try {
         const posts = await Post.find()
-            .populate('creator', '_id name avatar')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+            .populate('author', POPULATE_USER)
+            .populate('group', POPULATE_GROUP)
+            .populate('media')
+            .sort({ createdAt: -1 });
+
+        console.log(
+            '[LIB-ACTIONS] fetchAllPosts',
+            posts.length,
+            'posts fetched'
+        );
 
         return JSON.parse(JSON.stringify(posts));
     } catch (error) {

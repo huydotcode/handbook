@@ -1,5 +1,5 @@
 import { InfinityPostComponent } from '@/components/post';
-import { getGroupByGroupId } from '@/lib/actions/group.action';
+import GroupService from '@/lib/services/group.service';
 import React from 'react';
 import Infomation from '../_components/Infomation';
 
@@ -9,7 +9,7 @@ interface Props {
 
 const page: React.FC<Props> = async ({ params }) => {
     const { groupId } = await params;
-    const group = (await getGroupByGroupId({ groupId })) as IGroup;
+    const group = await GroupService.getById(groupId);
 
     if (!group) return null;
 

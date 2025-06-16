@@ -6,21 +6,19 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Avatar, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import EditorV2 from '@/components/ui/EditorV2';
+import Icons from '@/components/ui/Icons';
 import postAudience from '@/constants/postAudience.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { editPost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { editPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AddToPost from '../AddToPost';
-import Photos from '../Photos';
-import { convertFileToBase64 } from '@/lib/convertFileToBase64';
-import Icons from '@/components/ui/Icons';
-import Image from 'next/image';
 
 interface Props {
     post: IPost;
@@ -103,7 +101,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
             setRemoveImages([]);
 
             // Gọi API cập nhật bài viết
-            await editPost({
+            await PostService.update({
                 content: content,
                 option: option,
                 postId: post._id,

@@ -3,13 +3,13 @@ import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { sendMessage } from '@/lib/actions/message.action';
+import MessageService from '@/lib/services/message.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { Controller, useForm, UseFormReturn } from 'react-hook-form';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -82,11 +82,16 @@ const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
                 });
             }
 
-            const newMsg = await sendMessage({
+            const newMsg = await MessageService.send({
                 roomId: currentRoom._id,
                 text,
                 images: imagesUpload?.map((image) => image._id),
             });
+
+            if (!newMsg) {
+                toast.error('Không thể gửi tin nhắn!');
+                return;
+            }
 
             queryClientAddMessage(newMsg);
 

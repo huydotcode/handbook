@@ -338,10 +338,10 @@ export const useQueryInvalidation = () => {
         });
     };
 
-    const invalidateFollowers = async (userId: string) => {
-        console.log('[LIB-HOOKS] invalidateFollowers', userId);
+    const invalidateFollowings = async (userId: string) => {
+        console.log('[LIB-HOOKS] invalidateFollowings', userId);
         await queryClient.invalidateQueries({
-            queryKey: queryKey.user.followers(userId),
+            queryKey: queryKey.user.followings(userId),
         });
     };
 
@@ -456,6 +456,13 @@ export const useQueryInvalidation = () => {
         });
     };
 
+    const invalidateItemsBySeller = async (sellerId: string) => {
+        console.log('[LIB-HOOKS] invalidateItemsBySeller', sellerId);
+        await queryClient.invalidateQueries({
+            queryKey: queryKey.items.bySeller(sellerId),
+        });
+    };
+
     const invalidateUser = async (userId: string) => {
         console.log('[LIB-HOOKS] invalidateUser', userId);
         await queryClient.invalidateQueries({
@@ -476,7 +483,7 @@ export const useQueryInvalidation = () => {
         invalidateProfile,
         invalidateAfterSendMessage,
         invalidateSearch,
-        invalidateFollowers,
+        invalidateFollowings,
         invalidateFriends,
         invalidateRequests,
         invalidateNotifications,
@@ -490,6 +497,7 @@ export const useQueryInvalidation = () => {
         invalidateLocations,
         invalidateCategories,
         invalidateItems,
+        invalidateItemsBySeller,
         invalidateUser,
     };
 };

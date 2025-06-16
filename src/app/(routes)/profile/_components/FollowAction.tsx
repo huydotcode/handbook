@@ -1,39 +1,39 @@
 'use client';
 import { Button } from '@/components/ui/Button';
+import { useFollowing } from '@/context/SocialContext';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { follow, unfollow } from '@/lib/actions/user.action';
+import UserService from '@/lib/services/user.service';
+import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
+    className?: string;
     userId: string;
 }
 
-const FollowAction: React.FC<Props> = ({ userId }) => {
+const FollowAction: React.FC<Props> = ({ className = '', userId }) => {
     const { data: session } = useSession();
-    const { invalidateRequests, invalidateFollowers } = useQueryInvalidation();
+    const { invalidateRequests, invalidateFollowings } = useQueryInvalidation();
 
     const queryClient = useQueryClient();
-    const followers = queryClient.getQueryData<IFriend[]>([
-        'followers',
-        session?.user.id,
-    ]);
+    const { data: followings } = useFollowing(session?.user.id as string);
 
     const [countClick, setCountClick] = useState<number>(0);
 
     // Kiểm tra xem có thể gửi lời mời kết bạn không
     const isFollow =
-        followers && followers.some((follower) => follower._id === userId);
+        followings &&
+        followings.some((follower) => follower.following._id === userId);
 
     const followUser = async () => {
         try {
-            await follow({
-                userId,
-            });
+            await UserService.follow(userId);
 
             await invalidateRequests(session?.user.id as string);
+            await invalidateFollowings(session?.user.id as string);
 
             toast.success('Đã theo dõi');
         } catch (error) {
@@ -43,11 +43,9 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
 
     const unfollowUser = async () => {
         try {
-            await unfollow({
-                userId,
-            });
+            await UserService.unfollow(userId);
 
-            await invalidateFollowers(session?.user.id as string);
+            await invalidateFollowings(session?.user.id as string);
 
             toast.success('Đã bỏ theo dõi');
         } catch (error) {
@@ -77,7 +75,10 @@ const FollowAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
+            className={cn(
+                'min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1',
+                className
+            )}
             variant={isFollow ? 'secondary' : 'primary'}
             size="md"
             onClick={handleFollowClick}

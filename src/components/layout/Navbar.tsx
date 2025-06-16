@@ -18,18 +18,12 @@ import {
 import { navbarLink, navLink } from '@/constants/navLink';
 import { useSocket } from '@/context';
 import { useNotifications } from '@/context/AppContext';
+import { UserRole } from '@/enums/UserRole';
 import { useDebounce } from '@/hooks';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { createConversationAfterAcceptFriend } from '@/lib/actions/conversation.action';
-import {
-    acceptFriend,
-    createNotificationAcceptFriend,
-    declineFriend,
-    deleteNotification,
-    getNotificationAddFriendByUserId,
-    markAllAsRead,
-} from '@/lib/actions/notification.action';
-import { searchUsers } from '@/lib/actions/user.action';
+import ConversationService from '@/lib/services/conversation.service';
+import NotificationService from '@/lib/services/notification.service';
+import UserService from '@/lib/services/user.service';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { Collapse } from '@mui/material';
@@ -47,7 +41,6 @@ import React, {
 import toast from 'react-hot-toast';
 import DarkmodeButton from '../ui/DarkmodeButton';
 import Icons from '../ui/Icons';
-import { UserRole } from '@/enums/UserRole';
 
 const Navbar = () => {
     const { data: session } = useSession();
@@ -115,7 +108,9 @@ const Navbar = () => {
 
                             const isActived =
                                 path === link.path ||
-                                (path.includes(link.path) && link.path !== '/');
+                                (path.includes(link.path) &&
+                                    link.path !== '/' &&
+                                    !path.includes('/admin'));
                             const Icon = () => {
                                 return link.icon;
                             };
@@ -178,7 +173,9 @@ const Navbar = () => {
 
                             const isActived =
                                 path === link.path ||
-                                (path.includes(link.path) && link.path !== '/');
+                                (path.includes(link.path) &&
+                                    link.path !== '/' &&
+                                    !path.includes('/admin'));
                             const Icon = () => {
                                 return link.icon;
                             };
@@ -253,7 +250,7 @@ const NavNotification = () => {
 
     const handleMarkAllAsRead = async () => {
         try {
-            await markAllAsRead();
+            await NotificationService.markAllAsRead();
             await invalidateNotifications(session?.user.id as string);
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
@@ -349,9 +346,9 @@ const NotificationItem = ({
     const handleAcceptFriend = useCallback(async () => {
         try {
             const notificatonRequestAddFriend =
-                await getNotificationAddFriendByUserId({
-                    receiverId: notification.receiver._id,
-                });
+                await NotificationService.getTypeAcceptFriendByUser(
+                    session?.user.id as string
+                );
 
             if (!notificatonRequestAddFriend) {
                 toast.error('Không tìm thấy thông báo. Vui lòng thử lại!');
@@ -362,8 +359,9 @@ const NotificationItem = ({
             }
 
             // Chấp nhận lời mời kết bạn
-            const acceptSuccess = await acceptFriend({
-                notification,
+            const acceptSuccess = await NotificationService.acceptFriend({
+                senderId: notification.sender._id,
+                notificationId: notificatonRequestAddFriend._id,
             });
 
             if (!acceptSuccess) {
@@ -371,10 +369,11 @@ const NotificationItem = ({
                 return;
             }
 
-            const newConversation = await createConversationAfterAcceptFriend({
-                userId: notification.receiver._id,
-                friendId: notification.sender._id,
-            });
+            const newConversation =
+                await ConversationService.createAfterAcceptFriend({
+                    userId: notification.receiver._id,
+                    friendId: notification.sender._id,
+                });
 
             if (!newConversation) {
                 toast.error('Tạo cuộc trò chuyện thất bại!');
@@ -387,14 +386,14 @@ const NotificationItem = ({
 
             //Tạo thông báo cho người gửi
             const notificationAcceptFriend =
-                await createNotificationAcceptFriend({
+                await NotificationService.createNotificationAcceptFriend({
                     type: 'accept-friend',
                     senderId: notification.receiver._id,
                     receiverId: notification.sender._id,
                     message: 'Đã chấp nhận lời mời kết bạn',
                 });
 
-            if (socket) {
+            if (socket && notificationAcceptFriend) {
                 // Join room
                 socketEmitor.joinRoom({
                     roomId: newConversation._id,
@@ -428,7 +427,10 @@ const NotificationItem = ({
     // Từ chối lời mời kết bạn
     const handleDeclineFriend = async () => {
         try {
-            await declineFriend({ notification });
+            await NotificationService.declineFriend({
+                notificationId: notification._id,
+                senderId: notification.sender._id,
+            });
 
             await invalidateNotifications(session?.user.id as string);
             await invalidateFriends(session?.user.id as string);
@@ -440,9 +442,7 @@ const NotificationItem = ({
 
     const removeNotification = async () => {
         try {
-            await deleteNotification({
-                notificationId: notification._id,
-            });
+            await NotificationService.deleteNotification(notification._id);
 
             await invalidateNotifications(session?.user.id as string);
             toast.success('Đã xóa thông báo');
@@ -513,7 +513,7 @@ const Searchbar = () => {
     const { data: session } = useSession();
     const [showModal, setShowModal] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
+    const [searchResult, setSearchResult] = useState<IUser[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const debounceValue = useDebounce(searchValue, 300);
     const inputRef = useRef(null) as React.RefObject<HTMLInputElement | null>;
@@ -542,7 +542,7 @@ const Searchbar = () => {
             if (!session?.user.id) return;
 
             try {
-                const { users, isNext } = await searchUsers({
+                const { users, isNext } = await UserService.searchUsers({
                     userId: session?.user.id,
                     pageNumber: page,
                     pageSize: pageSize,

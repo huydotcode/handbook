@@ -1,11 +1,6 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { checkAuth } from '@/lib/actions/user.action';
-import { signIn } from 'next-auth/react';
-import toast from 'react-hot-toast';
-import { Icons, Loading } from '@/components/ui';
-import React from 'react';
+import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import {
     Form,
     FormControl,
@@ -15,9 +10,13 @@ import {
     FormMessage,
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { checkAuth } from '@/lib/actions/user.action';
 import { loginValidation } from '@/lib/validation';
-import { Button } from '@/components/ui/Button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 interface FormLoginData {
     email: string;

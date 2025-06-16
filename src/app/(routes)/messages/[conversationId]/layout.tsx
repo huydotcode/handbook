@@ -1,5 +1,5 @@
-import { getConversationById } from '@/lib/actions/conversation.action';
 import { getAuthSession } from '@/lib/auth';
+import ConversationService from '@/lib/services/conversation.service';
 import React from 'react';
 
 interface Props {
@@ -10,9 +10,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
     try {
         const { conversationId } = await params;
-        const conversation = (await getConversationById({
-            conversationId,
-        })) as IConversation;
+        const conversation = await ConversationService.getById(conversationId);
         const session = await getAuthSession();
 
         if (!conversation) {

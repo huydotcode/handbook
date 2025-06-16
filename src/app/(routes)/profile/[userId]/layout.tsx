@@ -1,4 +1,4 @@
-import { getProfileByUserId } from '@/lib/actions/profile.action';
+import ProfileService from '@/lib/services/profile.service';
 import { notFound } from 'next/navigation';
 import { Header } from '../_components';
 
@@ -9,9 +9,12 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
     const { userId } = await params;
-    const profile = (await getProfileByUserId({
-        query: userId,
-    })) as IProfile;
+    const profile = await ProfileService.getByUserId(userId);
+    if (!profile) {
+        return {
+            title: 'Trang cá nhân không tồn tại',
+        };
+    }
 
     return {
         title: `${profile.user.name} | Trang cá nhân`,
@@ -20,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
 
 const ProfileLayout = async ({ params, children }: Props) => {
     const { userId } = await params;
-    const profile = await getProfileByUserId({ query: userId });
+    const profile = await ProfileService.getByUserId(userId);
     if (!profile) notFound();
 
     return (

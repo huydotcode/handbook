@@ -31,6 +31,14 @@ interface IFriend {
     lastAccessed: Date;
 }
 
+interface IFollow {
+    _id: string;
+    follower: IUser;
+    following: IUser;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 interface IRoomChat {
     id: string;
     name: string;

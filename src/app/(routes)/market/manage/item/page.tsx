@@ -1,30 +1,37 @@
+'use client';
 import ListItem from '@/app/(routes)/market/_components/ListItem';
-import React from 'react';
-import { getAuthSession } from '@/lib/auth';
-import { notFound } from 'next/navigation';
-import { getItemsBySeller } from '@/lib/actions/item.action';
-import Item from '@/app/(routes)/market/_components/Item';
+import { Loading } from '@/components/ui';
+import { API_ROUTES } from '@/config/api';
+import axiosInstance from '@/lib/axios';
+import queryKey from '@/lib/queryKey';
+import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
-const ManageItemPage = async () => {
-    const session = await getAuthSession();
+const ManageItemPage = () => {
+    const { data: session } = useSession();
+    const { data: items, isLoading } = useQuery<IItem[]>({
+        queryKey: queryKey.items.bySeller(session?.user.id),
+        queryFn: async () => {
+            try {
+                const res = await axiosInstance.get(
+                    API_ROUTES.ITEMS.BY_SELLER(session?.user.id as string)
+                );
 
-    if (!session) notFound();
-
-    const items = await getItemsBySeller({ seller: session.user.id });
+                return res.data;
+            } catch (error) {
+                console.log('[ERROR] Failed to fetch items by seller:', error);
+            }
+        },
+        enabled: !!session?.user.id,
+    });
 
     return (
-        <div className={'h-full min-h-screen w-full p-4'}>
+        <div className={'h-full w-full'}>
             <h1 className="text-xl font-bold">Các mặt hàng của bạn</h1>
 
-            <div
-                className={
-                    'grid grid-cols-3 gap-2 xl:grid-cols-2 lg:grid-cols-1'
-                }
-            >
-                {items.map((item, index) => (
-                    <Item data={item} key={item._id} isManage />
-                ))}
-            </div>
+            {isLoading && <Loading fullScreen />}
+
+            {!isLoading && items && <ListItem data={items} isManage />}
         </div>
     );
 };

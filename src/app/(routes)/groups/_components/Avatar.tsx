@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { updateAvatar } from '@/lib/actions/group.action';
+import GroupService from '@/lib/services/group.service';
 import { uploadImageWithFile } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
@@ -53,7 +53,7 @@ const Avatar: React.FC<Props> = ({ group }) => {
                 return;
             }
 
-            await updateAvatar({
+            await GroupService.updateAvatar({
                 avatarId: avatar._id,
                 groupId: group._id,
                 path,

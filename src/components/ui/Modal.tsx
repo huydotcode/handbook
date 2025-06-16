@@ -24,11 +24,16 @@ const Modal: React.FC<Props> = ({
 }) => {
     const renderHeader = () => {
         return (
-            <div className="flex h-12 items-center border-b-2">
+            <div className="relative flex h-12 items-center border-b-2">
                 <div className="w-full text-center text-xl font-extrabold">
                     {title}
                 </div>
-                <Button className="text-2xl" onClick={handleClose}>
+                <Button
+                    variant={'secondary'}
+                    size={'sm'}
+                    className="absolute right-2 text-2xl"
+                    onClick={handleClose}
+                >
                     <Icons.Close />
                 </Button>
             </div>

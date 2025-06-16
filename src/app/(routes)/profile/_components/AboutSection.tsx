@@ -47,7 +47,7 @@ const AboutSection: React.FC<Props> = ({ profile }) => {
                 isAboutPage && 'flex'
             )}
         >
-            <article className={cn(isAboutPage && 'w-[30%] border-r')}>
+            <article className={cn(isAboutPage && 'w-[30%] border-r pr-4')}>
                 <h5 className="text-xl font-bold">Giới thiệu</h5>
                 <p className="text-sm">{bio}</p>
 

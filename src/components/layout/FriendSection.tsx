@@ -19,8 +19,7 @@ import { cn } from '@/lib/utils';
 import { Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import toast from 'react-hot-toast';
+import React from 'react';
 
 interface Props {
     session: Session;
@@ -67,7 +66,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
 
                     <div className="flex flex-col">
                         {friends &&
-                            friends.map((friend) => {
+                            friends.map((friend, index) => {
                                 const conversation = privateConversations.find(
                                     (c) =>
                                         c.participants.some(
@@ -82,7 +81,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                                 );
 
                                 return (
-                                    <TooltipProvider key={friend._id}>
+                                    <TooltipProvider key={friend._id + index}>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <DropdownMenu>

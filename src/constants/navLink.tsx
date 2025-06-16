@@ -8,6 +8,7 @@ interface NavLink {
     icon: React.ReactNode;
     role?: string;
     visible?: string[];
+    children?: NavLink[];
 }
 
 export const SIDEBAR = 'sidebar';
@@ -89,8 +90,8 @@ export const navAdmin: NavLink[] = [
         icon: <Icons.Posts className="h-8 w-8 " />,
     },
     {
-        name: 'Hình ảnh',
-        path: '/admin/photos',
+        name: 'Media',
+        path: '/admin/media',
         icon: <Icons.Images className="h-8 w-8 " />,
     },
     {
@@ -102,6 +103,18 @@ export const navAdmin: NavLink[] = [
         name: 'Chợ',
         path: '/admin/market',
         icon: <Icons.Shop className="h-8 w-8 " />,
+        children: [
+            {
+                name: 'Quản lý danh mục',
+                icon: <Icons.Shop className="h-8 w-8 " />,
+                path: '/admin/market/categories',
+            },
+        ],
+    },
+    {
+        name: 'Địa điểm',
+        path: '/admin/locations',
+        icon: <Icons.Location className="h-8 w-8 " />,
     },
 ];
 

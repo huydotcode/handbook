@@ -5,21 +5,20 @@ import { useSocket } from '@/context';
 import { useRequests } from '@/context/AppContext';
 import { useFriends } from '@/context/SocialContext';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import {
-    deleteNotificationByUsers,
-    sendRequestAddFriend,
-} from '@/lib/actions/notification.action';
-import { unfriend } from '@/lib/actions/user.action';
+import NotificationService from '@/lib/services/notification.service';
+import UserService from '@/lib/services/user.service';
+import { cn } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
+    className?: string;
     userId: string;
 }
 
-const AddFriendAction: React.FC<Props> = ({ userId }) => {
+const AddFriendAction: React.FC<Props> = ({ className = '', userId }) => {
     const { data: session } = useSession();
     const { invalidateFriends, invalidateRequests } = useQueryInvalidation();
     const { data: requests, isLoading: isLoadingRequests } = useRequests(
@@ -35,7 +34,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     const { mutateAsync: sendRequest, isPending } = useMutation({
         mutationFn: async ({ receiverId }: { receiverId: string }) => {
-            const request = await sendRequestAddFriend({ receiverId });
+            const request = await NotificationService.sendRequestFriend({
+                receiverId: receiverId,
+                senderId: session?.user.id as string,
+            });
 
             return request;
         },
@@ -48,6 +50,8 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
         onSuccess: async (data) => {
             await invalidateRequests(session?.user.id as string);
             await invalidateFriends(session?.user.id as string);
+
+            if (!data) return;
 
             socketEmitor.sendRequestAddFriend({
                 request: data,
@@ -68,7 +72,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     const { mutate: mutationUnFriend } = useMutation({
         mutationFn: async ({ friendId }: { friendId: string }) => {
-            await unfriend({ friendId });
+            await UserService.unfriend(friendId);
         },
         onMutate: () => {
             toast('Đang hủy kết bạn...', {
@@ -109,7 +113,7 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
         if (!session) return;
 
         try {
-            await deleteNotificationByUsers({
+            await NotificationService.deleteNotificationByUsers({
                 senderId: session.user.id,
                 receiverId: userId,
                 type: 'request-add-friend',
@@ -173,7 +177,10 @@ const AddFriendAction: React.FC<Props> = ({ userId }) => {
 
     return (
         <Button
-            className="min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1"
+            className={cn(
+                'min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1',
+                className
+            )}
             variant={
                 isFriend ? 'secondary' : !isRequest ? 'primary' : 'secondary'
             }

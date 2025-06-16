@@ -1,69 +1,32 @@
 'use client';
 
-import { API_ROUTES } from '@/config/api';
-import axiosInstance from '@/lib/axios';
-import queryKey from '@/lib/queryKey';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React from 'react';
 import Item from './Item';
+import { cn } from '@/lib/utils';
 
-interface Props {}
+interface Props {
+    className?: string;
+    itemClassName?: string;
+    data: IItem[];
+    isManage?: boolean;
+}
 
-const PAGE_SIZE = 10;
-
-const ListItem: React.FC<Props> = () => {
-    const {
-        data: items,
-        hasNextPage,
-        fetchNextPage,
-    } = useInfiniteQuery<IItem[]>({
-        queryKey: queryKey.items.index,
-        queryFn: async ({ pageParam = 1 }) => {
-            const res = await axiosInstance.get(
-                API_ROUTES.ITEMS.QUERY(pageParam as number, PAGE_SIZE)
-            );
-            return res.data;
-        },
-        getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.length < PAGE_SIZE) return undefined;
-            return allPages.length + 1;
-        },
-        getPreviousPageParam: (firstPage, allPages) => {
-            if (firstPage.length < PAGE_SIZE) return undefined;
-            return allPages.length + 1;
-        },
-        initialPageParam: 1,
-    });
-
-    const { ref: bottomRef, inView } = useInView({
-        threshold: 0,
-    });
-
-    useEffect(() => {
-        if (inView) {
-            fetchNextPage();
-        }
-    }, [inView, fetchNextPage]);
-
+const ListItem: React.FC<Props> = ({
+    className = '',
+    itemClassName,
+    data,
+    isManage = false,
+}) => {
     return (
-        <div
-            className={
-                'grid grid-cols-4 gap-2 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1'
-            }
-        >
-            {items &&
-                items.pages.map((page, index) => (
-                    <React.Fragment key={index}>
-                        {page.map((item) => (
-                            <Item key={item._id} data={item} />
-                        ))}
-
-                        {hasNextPage && (
-                            <div ref={bottomRef} className={'w-full'} />
-                        )}
-                    </React.Fragment>
-                ))}
+        <div className={cn('flex flex-wrap gap-2', className)}>
+            {data.map((item: IItem) => (
+                <Item
+                    data={item}
+                    key={item._id}
+                    isManage={isManage}
+                    className={itemClassName}
+                />
+            ))}
         </div>
     );
 };

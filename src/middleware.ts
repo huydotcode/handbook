@@ -21,5 +21,6 @@ export const config = {
         '/profile/:path*',
         '/saved/:path*',
         '/search/:path*',
+        '/admin/:path*',
     ],
 };

@@ -1,16 +1,14 @@
 import { FriendSection, Sidebar } from '@/components/layout';
 import { Post } from '@/components/post';
-import { getSavedPosts } from '@/lib/actions/post.action';
 import { getAuthSession } from '@/lib/auth';
+import PostService from '@/lib/services/post.service';
 import { notFound } from 'next/navigation';
 
 export default async function SavedPage() {
     const session = await getAuthSession();
     if (!session) notFound();
 
-    const postsSaved = (await getSavedPosts({
-        userId: session.user.id,
-    })) as ISavedPost;
+    const postsSaved = await PostService.getSavedByUserId(session.user.id);
 
     return (
         <div className="relative top-[56px] mx-auto min-h-[calc(100vh-56px)] w-[1200px] max-w-screen md:w-screen">

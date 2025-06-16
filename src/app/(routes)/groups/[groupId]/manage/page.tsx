@@ -1,5 +1,5 @@
 import ManageGroupForm from '@/app/(routes)/groups/_components/ManageGroupForm';
-import { getGroupByGroupId } from '@/lib/actions/group.action';
+import GroupService from '@/lib/services/group.service';
 import { redirect } from 'next/navigation';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 
 const ManageGroup = async ({ params }: Props) => {
     const { groupId } = await params;
-    const group = await getGroupByGroupId({ groupId });
+    const group = await GroupService.getById(groupId);
 
     if (!group) redirect('/groups');
 

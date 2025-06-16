@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { Avatar, Icons, Loading } from '@/components/ui';
 import { useMutation } from '@tanstack/react-query';
 import { API_ROUTES } from '@/config/api';
+import MessageSkeleton from '../skeleton/MessageSkeleton';
 
 interface IFormData {
     text: string;
@@ -155,15 +156,8 @@ const ChatWithGemini = () => {
                             <div className="relative flex h-[30vh] w-full flex-col-reverse overflow-y-auto overflow-x-hidden p-2">
                                 <div ref={bottomRef}></div>
                                 {isPending && (
-                                    <div
-                                        className={
-                                            'flex h-10 w-[70%] items-center justify-center rounded-xl bg-skeleton dark:bg-dark-secondary-2'
-                                        }
-                                    >
-                                        <Loading
-                                            className={'h-10 bg-transparent'}
-                                            overlay={false}
-                                        />
+                                    <div className="w-[70%]">
+                                        <MessageSkeleton />
                                     </div>
                                 )}
 

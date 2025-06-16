@@ -19,11 +19,14 @@ const SearchMarket: React.FC<Props> = ({ className = '' }) => {
     return (
         <>
             <div
-                className={cn('mt-2 flex w-full items-center px-2 ', className)}
+                className={cn(
+                    'mt-2 flex w-full items-center overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2',
+                    className
+                )}
             >
                 <Input
                     className={cn(
-                        'rounded-l-xl rounded-r-none bg-primary-1 text-sm dark:bg-dark-primary-1 dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1'
+                        'bg-transparent text-sm dark:bg-transparent dark:text-dark-primary-1 dark:placeholder:text-dark-primary-1'
                     )}
                     value={searchValue}
                     placeholder="Tìm kiếm trên market"
@@ -33,11 +36,11 @@ const SearchMarket: React.FC<Props> = ({ className = '' }) => {
                 />
 
                 <Button
-                    className="rounded-l-none rounded-r-xl"
+                    className="rounded-l-none bg-transparent"
                     variant={'secondary'}
                     onClick={() => {
                         if (debounceValue.trim() === '') return;
-                        router.push(`/market/search/${debounceValue}`);
+                        router.push(`/market/search?q=${debounceValue}`);
                     }}
                 >
                     <Icons.Search />

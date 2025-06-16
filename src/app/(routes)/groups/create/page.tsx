@@ -11,8 +11,8 @@ import {
     FormMessage,
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { createGroup } from '@/lib/actions/group.action';
-import { getFriendsByUserId } from '@/lib/actions/user.action';
+import GroupService from '@/lib/services/group.service';
+import UserService from '@/lib/services/user.service';
 import { uploadImageWithFile } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { createGroupValidation } from '@/lib/validation';
@@ -62,7 +62,7 @@ const CreateGroupPage: React.FC = ({}) => {
 
     useEffect(() => {
         (async () => {
-            const friends = await getFriendsByUserId({
+            const friends = await UserService.getFriendsByUserId({
                 userId: session?.user.id as string,
             });
 
@@ -90,11 +90,12 @@ const CreateGroupPage: React.FC = ({}) => {
                 return;
             }
 
-            const newGroup = await createGroup({
+            const newGroup = await GroupService.create({
                 ...data,
                 avatar: avatar._id,
                 members,
             });
+
             toast.success('Tạo nhóm thành công!');
             router.push(`/groups/${newGroup._id}`);
         } catch (error) {

@@ -1,19 +1,15 @@
 'use client';
 import { Loading } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useConversation } from '@/context/SocialContext';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import ConversationService from '@/lib/services/conversation.service';
 import { useSession } from 'next-auth/react';
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo } from 'react';
-import { ChatBox } from '../_components';
-import { Button } from '@/components/ui/Button';
-import { joinGroup } from '@/lib/actions/group.action';
-import {
-    joinConversation,
-    undeleteConversationByUserId,
-} from '@/lib/actions/conversation.action';
 import toast from 'react-hot-toast';
+import { ChatBox } from '../_components';
 
 interface Props {}
 
@@ -193,10 +189,13 @@ const ConversationPage: React.FC<Props> = ({}) => {
                                             return;
                                         }
 
-                                        await undeleteConversationByUserId({
-                                            conversationId: conversation._id,
-                                            userId: session?.user.id,
-                                        });
+                                        await ConversationService.undeleteConversationByUserId(
+                                            {
+                                                conversationId:
+                                                    conversation._id,
+                                                userId: session?.user.id,
+                                            }
+                                        );
 
                                         await invalidateConversation(
                                             conversation._id
@@ -254,7 +253,7 @@ const ConversationPage: React.FC<Props> = ({}) => {
                                             return;
                                         }
 
-                                        await joinConversation({
+                                        await ConversationService.join({
                                             conversationId: conversation._id,
                                             userId: session?.user.id,
                                         });

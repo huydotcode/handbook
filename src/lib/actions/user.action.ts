@@ -15,6 +15,55 @@ import { getAuthSession } from '../auth';
     type: string;
 */
 
+export const checkAuth = async ({
+    email,
+    password,
+}: {
+    email: string;
+    password: string;
+}) => {
+    try {
+        await connectToDB();
+
+        const user = (await User.findOne({
+            email: email,
+        })) as User;
+
+        if (user && user.password === undefined) {
+            return {
+                error: {
+                    type: 'password',
+                    message: 'Đăng nhập thất bại',
+                },
+            };
+        }
+
+        if (!user) {
+            return {
+                error: {
+                    type: 'email',
+                    message: 'Người dùng không tồn tại',
+                },
+            };
+        }
+
+        const isValid = await user.comparePassword(password);
+
+        if (!isValid) {
+            return {
+                error: {
+                    type: 'password',
+                    message: 'Mật khẩu không đúng',
+                },
+            };
+        }
+
+        return true;
+    } catch (error: any) {
+        throw new Error('Error checking authentication: ' + error.message);
+    }
+};
+
 export const searchUsers = async ({
     userId,
     searchString = '',
@@ -128,83 +177,7 @@ export const unfriend = async ({ friendId }: { friendId: string }) => {
 
         return true;
     } catch (error: any) {
-        logger({
-            message: 'Error un friend' + error,
-            type: 'error',
-        });
-    }
-};
-
-export const checkAuth = async ({
-    email,
-    password,
-}: {
-    email: string;
-    password: string;
-}) => {
-    try {
-        await connectToDB();
-
-        const user = (await User.findOne({
-            email: email,
-        })) as User;
-
-        if (user && user.password === undefined) {
-            return {
-                error: {
-                    type: 'password',
-                    message: 'Đăng nhập thất bại',
-                },
-            };
-        }
-
-        if (!user) {
-            return {
-                error: {
-                    type: 'email',
-                    message: 'Người dùng không tồn tại',
-                },
-            };
-        }
-
-        const isValid = await user.comparePassword(password);
-
-        if (!isValid) {
-            return {
-                error: {
-                    type: 'password',
-                    message: 'Mật khẩu không đúng',
-                },
-            };
-        }
-    } catch (error: any) {
-        console.log(error);
-    }
-
-    return null;
-};
-
-export const getFollowersByUserId = async ({ userId }: { userId: string }) => {
-    try {
-        await connectToDB();
-        const user = await User.findById(userId).exec();
-        if (!user) throw new Error('Đã có lỗi xảy ra');
-
-        const follows = await Follows.find({
-            following: userId,
-        }).populate(
-            'follower',
-            '_id name avatar username isOnline lastAccessed'
-        );
-
-        const followers = follows.map((follow) => follow.follower);
-
-        return JSON.parse(JSON.stringify(followers));
-    } catch (error: any) {
-        logger({
-            message: 'Error get followers' + error,
-            type: 'error',
-        });
+        throw new Error('Error unfriending user: ' + error.message);
     }
 };
 
@@ -229,11 +202,10 @@ export const follow = async ({ userId }: { userId: string }) => {
         });
 
         await newFollow.save();
+
+        return true;
     } catch (error: any) {
-        logger({
-            message: 'Error follow' + error,
-            type: 'error',
-        });
+        throw new Error('Error following user: ' + error.message);
     }
 };
 
@@ -243,35 +215,13 @@ export const unfollow = async ({ userId }: { userId: string }) => {
         const session = await getAuthSession();
         if (!session) throw new Error('Đã có lỗi xảy ra');
 
-        await User.updateOne(
-            {
-                _id: session.user.id,
-            },
-            {
-                $pull: {
-                    followings: userId,
-                },
-            }
-        );
-
-        await User.updateOne(
-            {
-                _id: userId,
-            },
-            {
-                $pull: {
-                    followers: session.user.id,
-                },
-            }
-        );
+        await Follows.deleteOne({
+            follower: session.user.id,
+            following: userId,
+        });
 
         return true;
     } catch (error: any) {
-        logger({
-            message: 'Error unfollow' + error,
-            type: 'error',
-        });
+        throw new Error('Error unfollowing user: ' + error.message);
     }
-
-    return false;
 };

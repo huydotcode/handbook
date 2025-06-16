@@ -1,6 +1,7 @@
 'use server';
-import { Post, User } from '@/models';
+import { User } from '@/models';
 import connectToDB from '@/services/mongoose';
+
 import logger from '@/utils/logger';
 import { revalidatePath } from 'next/cache';
 

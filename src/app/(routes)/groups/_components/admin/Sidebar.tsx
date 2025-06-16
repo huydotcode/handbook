@@ -7,6 +7,7 @@ import { useSocket } from '@/context';
 import { GroupUserRole } from '@/enums/GroupRole';
 import useBreakPoint from '@/hooks/useBreakpoint';
 import { createConversation } from '@/lib/actions/conversation.action';
+import ConversationService from '@/lib/services/conversation.service';
 import { cn } from '@/lib/utils';
 import { timeConvert } from '@/utils/timeConvert';
 import { useMutation } from '@tanstack/react-query';
@@ -54,7 +55,7 @@ const Sidebar: React.FC<Props> = ({
     } = useForm<FormData>();
 
     const { mutate: createGroupConversation, isPending } = useMutation({
-        mutationFn: createConversation,
+        mutationFn: ConversationService.create,
         onSuccess: (newConversation) => {
             toast.success('Tạo cuộc hội thoại thành công!');
             setShowModalCreateConversation(false);

@@ -1,5 +1,5 @@
 'use client';
-import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/Button';
 import {
     Form,
     FormControl,
@@ -9,17 +9,12 @@ import {
     FormMessage,
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import Image from 'next/image';
-import { Icons } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
-import React from 'react';
-import toast from 'react-hot-toast';
-import { uploadImages } from '@/lib/uploadImage';
-import { createGroup, updateGroup } from '@/lib/actions/group.action';
-import { zodResolver } from '@hookform/resolvers/zod';
+import GroupService from '@/lib/services/group.service';
 import { createGroupValidation } from '@/lib/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const INPUT_CLASSNAME =
     'my-1 w-full rounded-md border bg-primary-1 p-2 dark:bg-dark-primary-1';
@@ -54,7 +49,7 @@ const ManageGroupForm = ({ group }: Props) => {
         if (isSubmitting) return;
 
         try {
-            await updateGroup({
+            await GroupService.update({
                 groupId: group._id,
                 name: data.name,
                 description: data.description,

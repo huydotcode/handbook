@@ -1,7 +1,7 @@
 'use client';
 import { ConfirmModal } from '@/components/ui';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { deletePost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import React, { FormEventHandler } from 'react';
 import toast from 'react-hot-toast';
 
@@ -25,7 +25,7 @@ const DeletePostModal: React.FC<Props> = ({
 
         try {
             await toast.promise(
-                deletePost({ postId }),
+                PostService.delete(postId),
                 {
                     success: 'Xóa bài viết thành công',
                     error: 'Xóa bài viết không thành công',

@@ -74,14 +74,23 @@ const Header: React.FC<Props> = ({ profile }) => {
                                 className={'hidden md:block'}
                                 align={'start'}
                             >
-                                <DropdownMenuItem asChild>
-                                    <MessageAction messageTo={user._id} />
+                                <DropdownMenuItem>
+                                    <MessageAction
+                                        className="justify-start"
+                                        messageTo={user._id}
+                                    />
                                 </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <FollowAction userId={user._id} />
+                                <DropdownMenuItem>
+                                    <FollowAction
+                                        className="justify-start"
+                                        userId={user._id}
+                                    />
                                 </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <AddFriendAction userId={user._id} />
+                                <DropdownMenuItem>
+                                    <AddFriendAction
+                                        className="justify-start"
+                                        userId={user._id}
+                                    />
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

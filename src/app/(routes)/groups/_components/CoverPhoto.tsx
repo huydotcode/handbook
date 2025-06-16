@@ -8,8 +8,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { updateCoverPhoto } from '@/lib/actions/group.action';
-import { getUrlByImageId } from '@/lib/actions/image.action';
+import GroupService from '@/lib/services/group.service';
+import ImageService from '@/lib/services/image.service';
 import { uploadImageWithFile } from '@/lib/uploadImage';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
@@ -50,18 +50,17 @@ const CoverPhoto: React.FC<Props> = ({ group }) => {
             });
 
             const coverPhotoId = images._id;
-            const coverPhotoUrl = await getUrlByImageId({
-                imageId: coverPhotoId,
-            });
+            const coverPhotoUrl =
+                await ImageService.getUrlByImageId(coverPhotoId);
 
             if (!coverPhotoUrl) {
                 toast.error('Có lỗi xảy ra');
                 return;
             }
 
-            await updateCoverPhoto({
-                coverPhoto: coverPhotoUrl,
+            await GroupService.updateCoverPhoto({
                 groupId: group._id,
+                coverPhoto: coverPhotoUrl,
                 path,
             });
         } catch (error) {

@@ -1,5 +1,5 @@
 'use server';
-import { Media, Location, Profile, User } from '@/models';
+import { Location, Media, Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
@@ -38,6 +38,8 @@ export const updateBio = async ({
         if (!sesson) throw new Error('Unauthorized');
 
         await Profile.updateOne({ user: userId }, { bio: newBio });
+
+        return true;
     } catch (error: any) {
         throw new Error('Error updating bio', error);
     } finally {
@@ -86,6 +88,8 @@ export const updateInfo = async ({
         });
 
         revalidatePath(path);
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -123,6 +127,8 @@ export const updateAvatar = async ({
                 avatar,
             }
         );
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     } finally {
@@ -150,6 +156,8 @@ export const updateCoverPhoto = async ({
                 coverPhoto,
             }
         );
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     } finally {

@@ -1,9 +1,9 @@
 'use server';
-import { Comment, Group, Media, Post, User } from '@/models';
-import connectToDB from '@/services/mongoose';
-import { getAuthSession } from '../auth';
-import { revalidatePath } from 'next/cache';
+import { Comment, Media, Post } from '@/models';
 import SavedPost from '@/models/SavedPost';
+import connectToDB from '@/services/mongoose';
+import { revalidatePath } from 'next/cache';
+import { getAuthSession } from '../auth';
 
 const POPULATE_USER = 'name username avatar friends isVerified';
 const POPULATE_GROUP = {
@@ -13,112 +13,6 @@ const POPULATE_GROUP = {
         { path: 'members.user' },
         { path: 'creator' },
     ],
-};
-
-export const getNewFeedPosts = async ({
-    groupId,
-    page,
-    pageSize,
-    type,
-    userId,
-    username,
-    isManage = false,
-}: {
-    page: string;
-    pageSize: string;
-    groupId?: string;
-    userId?: string;
-    username?: string;
-    type?: string;
-    isManage?: boolean;
-}) => {
-    try {
-        await connectToDB();
-
-        const session = await getAuthSession();
-        const query: any = {};
-
-        // Kiểm tra xem có phải là user hiện tại không
-        const isCurrentUser =
-            userId === session?.user.id || username === session?.user.username;
-
-        // Kiểm tra xem có phải là user hiện tại không
-        if (userId !== 'undefined' && userId && type !== 'group') {
-            query.author = isCurrentUser ? session?.user.id : userId;
-        } else if (username !== 'undefined') {
-            const user = await User.findOne({ username });
-            if (user) {
-                query.author = user.id;
-            }
-        }
-
-        query.option = isCurrentUser
-            ? { $in: ['public', 'private'] }
-            : 'public';
-
-        if (type === 'group') {
-            query.type = 'group';
-
-            if (groupId !== 'undefined') {
-                query.group = groupId;
-            } else {
-                const groupsHasJoin = await Group.find({
-                    members: { $elemMatch: { user: session?.user.id } },
-                }).distinct('_id');
-
-                if (groupsHasJoin.length === 0) {
-                    query.group = null;
-                } else {
-                    query.group = { $in: groupsHasJoin };
-                }
-            }
-        } else {
-            query.type = 'default';
-        }
-
-        if (isManage) {
-            query.status = 'pending';
-        } else {
-            query.status = 'active';
-        }
-
-        let posts = await Post.find(query)
-            .populate('author', POPULATE_USER)
-            .populate('media')
-            .populate(POPULATE_GROUP)
-            .populate('loves', POPULATE_USER)
-            .populate('shares', POPULATE_USER)
-            .skip((+page - 1) * +pageSize)
-            .limit(+pageSize)
-            .sort({ createdAt: -1 });
-
-        // Filter posts by privacy settings
-        if (posts.length > 0) {
-            posts = posts.filter((post) => {
-                if (post.group && isManage) {
-                    return (
-                        post.group.creator._id.toString() === session?.user.id
-                    );
-                }
-
-                if (post.group) {
-                    return post.group.members.some(
-                        (member: any) => member.user === session?.user.id
-                    );
-                } else if (post.option === 'friends') {
-                    return (
-                        post.author.friends.includes(session?.user.id) ||
-                        post.author._id.equals(session?.user.id)
-                    );
-                }
-                return true;
-            });
-        }
-
-        return JSON.parse(JSON.stringify(posts));
-    } catch (error: any) {
-        throw new Error(error);
-    }
 };
 
 export const getPostByPostId = async ({ postId }: { postId: string }) => {
@@ -251,6 +145,8 @@ export const sendReaction = async ({ postId }: { postId: string }) => {
         }
 
         await post.save();
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -280,6 +176,8 @@ export const deletePost = async ({ postId }: { postId: string }) => {
 
         // Xóa bài viết
         await Post.findByIdAndDelete(postId);
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -305,6 +203,8 @@ export const updateStatusPost = async ({
         }
 
         revalidatePath(path);
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

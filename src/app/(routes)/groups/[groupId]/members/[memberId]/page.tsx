@@ -1,11 +1,10 @@
-import { getAuthSession } from '@/lib/auth';
-import axiosInstance from '@/lib/axios';
-import { getGroupByGroupId } from '@/lib/actions/group.action';
-import { InfinityPostComponent } from '@/components/post';
-import { getUserByUserId } from '@/lib/actions/user.action';
-import { notFound, redirect } from 'next/navigation';
 import ActionMember from '@/app/(routes)/groups/_components/ActionMember';
+import { InfinityPostComponent } from '@/components/post';
 import { GroupUserRole } from '@/enums/GroupRole';
+import { getAuthSession } from '@/lib/auth';
+import GroupService from '@/lib/services/group.service';
+import UserService from '@/lib/services/user.service';
+import { notFound, redirect } from 'next/navigation';
 
 interface Props {
     params: Promise<{ memberId: string; groupId: string }>;
@@ -14,12 +13,8 @@ interface Props {
 const MemberPage = async ({ params }: Props) => {
     const { memberId, groupId } = await params;
     const session = await getAuthSession();
-    const user = await getUserByUserId({
-        userId: memberId,
-    });
-    const group = (await getGroupByGroupId({
-        groupId,
-    })) as IGroup;
+    const user = await UserService.getById(memberId);
+    const group = await GroupService.getById(groupId);
     const member = group.members.find((member) => member.user._id === memberId);
 
     if (!group || !user) return notFound();

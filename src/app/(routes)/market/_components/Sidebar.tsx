@@ -1,13 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { IconsArray } from '@/components/ui/Icons';
+import Icons, { IconsArray } from '@/components/ui/Icons';
 import { useCategories } from '@/context/AppContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import SearchMarket from './SearchMarket';
 import { useSidebarCollapse } from '@/context/SidebarContext';
 import SidebarCollapse from '@/components/layout/SidebarCollapse';
+import Link from 'next/link';
 
 interface Props {}
 
@@ -19,12 +20,18 @@ const Sidebar: React.FC<Props> = () => {
     return (
         <>
             <SidebarCollapse>
-                <h1 className="text-2xl font-bold">Market</h1>
+                <Button
+                    className="justify-start p-0"
+                    variant={'custom'}
+                    href={'/market'}
+                >
+                    <h1 className="text-2xl font-bold">Market</h1>
+                </Button>
 
                 <SearchMarket />
 
                 <Button
-                    className="mt-2 w-full"
+                    className="mt-2 w-full justify-start pl-4"
                     variant={'primary'}
                     onClick={() => {
                         setIsSidebarOpen(false);
@@ -32,19 +39,20 @@ const Sidebar: React.FC<Props> = () => {
                     }}
                     size={'sm'}
                 >
-                    Tạo mặt hàng cần bán
+                    <Icons.CreatePost className="h-5 w-5" /> Tạo mặt hàng cần
+                    bán
                 </Button>
 
                 <Button
-                    className="mt-2 w-full"
+                    className="mt-2 w-full justify-start pl-4"
                     variant={'secondary'}
                     onClick={() => {
                         setIsSidebarOpen(false);
-                        router.push('/market/manage/items');
+                        router.push('/market/manage/item');
                     }}
                     size={'sm'}
                 >
-                    Quản lý mặt hàng
+                    <Icons.Edit className="h-5 w-5" /> Quản lý mặt hàng
                 </Button>
 
                 <h1>Danh mục</h1>
@@ -61,7 +69,7 @@ const Sidebar: React.FC<Props> = () => {
                                 onClick={() => {
                                     setIsSidebarOpen(false);
                                     router.push(
-                                        `/market/category/${category._id}`
+                                        `/market/category/${category.slug}`
                                     );
                                 }}
                                 key={category._id}

@@ -1,8 +1,8 @@
 'use client';
 import { API_ROUTES } from '@/config/api';
-import { getProfileByUserId } from '@/lib/actions/profile.action';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
+import ProfileService from '@/lib/services/profile.service';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
@@ -14,9 +14,10 @@ export const useProfile = (userId: string) =>
     useQuery<IProfile>({
         queryKey: queryKey.user.profile(userId),
         queryFn: async () => {
-            const data = await getProfileByUserId({
-                query: userId,
-            });
+            const data = await ProfileService.getByUserId(userId);
+            if (!data) {
+                throw new Error('Profile not found');
+            }
             return data;
         },
         enabled: !!userId,
@@ -116,8 +117,21 @@ export const useMessages = (conversationId: string | undefined) =>
     });
 
 export const useFollowing = (userId: string | undefined) =>
-    useQuery<IFriend[]>({
-        queryKey: ['following', userId],
+    useQuery<IFollow[]>({
+        queryKey: queryKey.user.followings(userId),
+        queryFn: async () => {
+            if (!userId) return [];
+
+            const res = await axiosInstance.get(
+                API_ROUTES.USER.FOLLOWINGS(userId)
+            );
+
+            return res.data;
+        },
+        enabled: !!userId,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
     });
 
 function SocialProvider({ children }: { children: React.ReactNode }) {

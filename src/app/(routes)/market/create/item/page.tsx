@@ -20,7 +20,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCategories, useLocations } from '@/context/AppContext';
-import { createItem } from '@/lib/actions/item.action';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import ItemService from '@/lib/services/item.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createItemValidation, CreateItemValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,7 @@ import toast from 'react-hot-toast';
 const CreateItemPage = () => {
     const { data: session } = useSession();
     const router = useRouter();
+    const { invalidateItems } = useQueryInvalidation();
 
     const form = useForm<CreateItemValidation>({
         resolver: zodResolver(createItemValidation),
@@ -53,26 +55,31 @@ const CreateItemPage = () => {
     const { data: locations } = useLocations();
 
     const onSubmit = async (data: CreateItemValidation) => {
-        router.push('/market');
+        console.log('Files to upload:', files);
 
         try {
-            let images = await uploadImagesWithFiles({
+            const images = await uploadImagesWithFiles({
                 files,
             });
 
-            await createItem({
+            await ItemService.create({
                 name: data.name,
                 seller: session?.user.id || '',
                 description: data.description,
-                price: +data.price,
+                price: +data.price.replace(/\D/g, ''), // Chuyển đổi giá thành số
                 imagesIds: images.map((image) => image._id),
                 location: data.location,
                 category: data.category,
                 status: 'active',
             });
 
+            invalidateItems();
+
+            router.push('/market');
+
             toast.success('Tạo sản phẩm thành công');
         } catch (error) {
+            console.log(error);
             toast.error('Có lỗi xảy ra');
         }
     };
@@ -85,7 +92,7 @@ const CreateItemPage = () => {
 
     return (
         <>
-            <div className="mx-auto mt-2 h-full w-[600px] max-w-full pt-4">
+            <div className="mx-auto w-[550px] max-w-screen lg:ml-0 lg:w-full">
                 <Form {...form}>
                     <form
                         className="rounded-xl bg-secondary-1 p-6 dark:bg-dark-secondary-1"
@@ -113,7 +120,7 @@ const CreateItemPage = () => {
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
-                                    <FormItem className={'flex-1'}>
+                                    <FormItem className={'flex-1 md:w-full'}>
                                         <FormLabel>Tên</FormLabel>
                                         <FormControl>
                                             <Input
@@ -133,15 +140,32 @@ const CreateItemPage = () => {
                                 control={form.control}
                                 name="price"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="md:w-full">
                                         <FormLabel>Giá</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className={
-                                                    'bg-primary-1 dark:bg-dark-primary-1'
-                                                }
+                                                className="w-full bg-primary-1 dark:bg-dark-primary-1"
                                                 placeholder="Giá"
-                                                {...field}
+                                                value={
+                                                    field.value
+                                                        ? Number(
+                                                              field.value
+                                                          ).toLocaleString(
+                                                              'vi-VN'
+                                                          )
+                                                        : ''
+                                                }
+                                                onChange={(e) => {
+                                                    const rawValue =
+                                                        e.target.value.replace(
+                                                            /\D/g,
+                                                            ''
+                                                        ); // bỏ tất cả ký tự không phải số
+                                                    field.onChange(rawValue); // lưu giá trị thô vào form
+                                                }}
+                                                onBlur={field.onBlur}
+                                                name={field.name}
+                                                ref={field.ref}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -154,7 +178,7 @@ const CreateItemPage = () => {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem className={'mt-2'}>
+                                <FormItem className={'mt-2 w-full'}>
                                     <FormLabel>Mô tả</FormLabel>
                                     <FormControl>
                                         <Textarea
@@ -178,7 +202,7 @@ const CreateItemPage = () => {
                                 control={form.control}
                                 name="category"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="md:w-full">
                                         <FormLabel>Danh mục</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
@@ -187,7 +211,7 @@ const CreateItemPage = () => {
                                             <FormControl>
                                                 <SelectTrigger
                                                     className={
-                                                        'min-w-[200px] bg-primary-1 dark:bg-dark-primary-1'
+                                                        'w-[200px] bg-primary-1 dark:bg-dark-primary-1 md:w-full'
                                                     }
                                                 >
                                                     <SelectValue placeholder="Chọn một danh mục" />
@@ -216,7 +240,7 @@ const CreateItemPage = () => {
                                 control={form.control}
                                 name="location"
                                 render={({ field }) => (
-                                    <FormItem className={'flex-1'}>
+                                    <FormItem className={'flex-1 md:w-full'}>
                                         <FormLabel>Địa điểm</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}

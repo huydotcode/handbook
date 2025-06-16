@@ -1,7 +1,7 @@
-import Item from '@/app/(routes)/market/_components/Item';
-import { getCategoryBySlug } from '@/lib/actions/category.action';
+import CategoryService from '@/lib/services/category.service';
+import ItemService from '@/lib/services/item.service';
 import React from 'react';
-import { getItemsByCategoryId } from '@/lib/actions/item.action';
+import ListItem from '../../_components/ListItem';
 
 interface Props {
     params: Promise<{ categorySlug: string }>;
@@ -9,9 +9,7 @@ interface Props {
 
 const CategoryPage: React.FC<Props> = async ({ params }) => {
     const { categorySlug } = await params;
-    const category = await getCategoryBySlug({
-        slug: categorySlug,
-    });
+    const category = await CategoryService.getBySlug(categorySlug);
 
     if (!category) {
         return (
@@ -21,9 +19,7 @@ const CategoryPage: React.FC<Props> = async ({ params }) => {
         );
     }
 
-    const items = await getItemsByCategoryId({
-        categoryId: category._id,
-    });
+    const items = await ItemService.getItemsByCategoryId(category._id);
 
     if (!items || items.length === 0) {
         return (
@@ -36,19 +32,12 @@ const CategoryPage: React.FC<Props> = async ({ params }) => {
     }
 
     return (
-        <div className={'h-full min-h-screen w-full p-4'}>
+        <div>
             <h1 className="text-xl font-bold">
                 Các mặt hàng thuộc danh mục {category.name}
             </h1>
-            <div
-                className={
-                    'grid grid-cols-4 gap-2 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1'
-                }
-            >
-                {items.map((item: IItem) => (
-                    <Item data={item} key={item._id} />
-                ))}
-            </div>
+
+            <ListItem data={items} />
         </div>
     );
 };

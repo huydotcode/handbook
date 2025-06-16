@@ -1,10 +1,7 @@
 import { Avatar } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { GroupUserRole } from '@/enums/GroupRole';
-import {
-    getGroupByGroupId,
-    getMembersByGroupId,
-} from '@/lib/actions/group.action';
+import GroupService from '@/lib/services/group.service';
 import { FormatDate } from '@/utils/formatDate';
 import { splitName } from '@/utils/splitName';
 
@@ -16,10 +13,8 @@ const GroupPage = async ({
     params: Promise<{ groupId: string }>;
 }) => {
     const { groupId } = await params;
-    const group = (await getGroupByGroupId({ groupId })) as IGroup;
-    const members = (await getMembersByGroupId({
-        groupId,
-    })) as IMemberGroup[];
+    const group = await GroupService.getById(groupId);
+    const members = await GroupService.getMembers(groupId);
 
     if (!members || !group) return null;
 

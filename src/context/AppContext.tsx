@@ -3,7 +3,6 @@ import { API_ROUTES } from '@/config/api';
 import { notificationType } from '@/constants/notificationType';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { getCategories } from '@/lib/actions/category.action';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
@@ -56,8 +55,8 @@ export const useCategories = () =>
     useQuery<ICategory[]>({
         queryKey: queryKey.categories,
         queryFn: async () => {
-            const categories = await getCategories();
-            console.log({ categories });
+            const res = await axiosInstance.get(API_ROUTES.CATEGORIES.INDEX);
+            const categories = res.data;
             return categories;
         },
     });

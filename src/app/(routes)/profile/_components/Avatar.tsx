@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { updateAvatar } from '@/lib/actions/profile.action';
+import ProfileService from '@/lib/services/profile.service';
 import { uploadImageWithFile } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
@@ -46,7 +46,7 @@ const Avatar: React.FC<Props> = ({ user }) => {
                 file,
             });
 
-            await updateAvatar({
+            await ProfileService.updateAvatar({
                 avatar: image.url,
                 userId: user._id,
                 path,

@@ -1,9 +1,9 @@
 import { Avatar } from '@/components/ui';
-import { getProfilePicturesAction } from '@/lib/actions/profile.action';
-import { getFriendsByUserId } from '@/lib/actions/user.action';
+import { Button } from '@/components/ui/Button';
+import ProfileService from '@/lib/services/profile.service';
+import UserService from '@/lib/services/user.service';
 import React from 'react';
 import { PhotosSection } from '../../_components';
-import { Button } from '@/components/ui/Button';
 
 interface Props {
     params: Promise<{ userId: string }>;
@@ -11,13 +11,11 @@ interface Props {
 
 const FriendsPage: React.FC<Props> = async ({ params }) => {
     const { userId } = await params;
-    const friends = (await getFriendsByUserId({
-        userId: userId,
-    })) as IFriend[];
-
-    const images = await getProfilePicturesAction({
+    const friends = await UserService.getFriendsByUserId({
         userId: userId,
     });
+
+    const images = await ProfileService.getProfilePicturesAction(userId);
 
     return (
         <>

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { updateStatusPost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { usePathname } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { PostTypes } from './InfinityPostComponent';
@@ -17,7 +17,7 @@ const ReviewPost = ({ post }: Props) => {
         if (!post) return;
 
         try {
-            await updateStatusPost({
+            await PostService.updateStatus({
                 postId: post._id,
                 status: accept ? 'active' : 'rejected',
                 path: pathname,

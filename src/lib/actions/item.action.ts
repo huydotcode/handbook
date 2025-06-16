@@ -1,8 +1,8 @@
 'use server';
 import { Item } from '@/models';
 import connectToDB from '@/services/mongoose';
-import { getAuthSession } from '../auth';
 import { revalidatePath } from 'next/cache';
+import { getAuthSession } from '../auth';
 
 export const createItem = async ({
     name,
@@ -107,6 +107,58 @@ export const getItemsByCategoryId = async ({
             .populate('images');
 
         return JSON.parse(JSON.stringify(items));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const updateItem = async ({
+    itemId,
+    name,
+    description,
+    price,
+    imagesIds,
+    location,
+    category,
+    status,
+    path,
+}: {
+    itemId: string;
+    name: string;
+    description: string;
+    price: number;
+    imagesIds: string[];
+    location: string;
+    category: string;
+    status: string;
+    path: string;
+}) => {
+    console.log('[LIB-ACTIONS] updateItem');
+    try {
+        await connectToDB();
+
+        const session = await getAuthSession();
+        if (!session) throw new Error('Đã có lỗi xảy ra');
+
+        await Item.updateOne(
+            {
+                _id: itemId,
+                seller: session.user.id,
+            },
+            {
+                name,
+                description,
+                price,
+                images: imagesIds,
+                location,
+                category,
+                status,
+            }
+        );
+
+        revalidatePath(path);
+
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

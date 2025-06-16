@@ -1,13 +1,13 @@
 import { Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { updateBio } from '@/lib/actions/profile.action';
+import { Input } from '@/components/ui/Input';
+import ProfileService from '@/lib/services/profile.service';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
     show: boolean;
@@ -38,7 +38,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
         }
 
         try {
-            await updateBio({
+            await ProfileService.updateBio({
                 newBio: newBio,
                 path: path,
                 userId: session.user.id,
@@ -64,7 +64,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
             handleClose={handleClose}
         >
             <form onSubmit={handleSubmitBio(changeBio)}>
-                <Textarea
+                <Input
                     placeholder="Nhập tiểu sử"
                     {...registerBio('bio', {
                         maxLength: 300,
@@ -80,6 +80,7 @@ const ModalEditBio: React.FC<Props> = ({ show, bio, handleClose }) => {
                     size={'sm'}
                     type="submit"
                     variant={'primary'}
+                    disabled={isSubmitting}
                 >
                     {isSubmitting ? 'Đang thay đổi...' : 'Thay đổi'}
                 </Button>

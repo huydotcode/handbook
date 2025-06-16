@@ -34,31 +34,6 @@ export async function getNotificationByNotiId({
     }
 }
 
-export const getNotificationAddFriendByUsers = async ({
-    senderId,
-    receiverId,
-}: {
-    senderId: string;
-    receiverId: string;
-}) => {
-    console.log('[LIB-ACTIONS] getNotificationAddFriendByUsers');
-    try {
-        await connectToDB();
-
-        const notifications = await Notification.find({
-            sender: senderId,
-            receiver: receiverId,
-        })
-            .populate('sender', POPULATE_SENDER)
-            .populate('receiver', POPULATE_SENDER)
-            .sort({ createdAt: -1 });
-
-        return JSON.parse(JSON.stringify(notifications));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
 // Lấy các noti kết bạn được gửi đến user
 export async function getNotificationAddFriendByUserId({
     receiverId,
@@ -83,48 +58,12 @@ export async function getNotificationAddFriendByUserId({
     }
 }
 
-export async function getNotificationByUserId({ userId }: { userId: string }) {
-    console.log('[LIB-ACTIONS] getNotificationByUserId');
-    try {
-        await connectToDB();
-
-        const notifications = await Notification.find({
-            receiver: userId,
-        })
-            .populate('sender', POPULATE_SENDER)
-            .populate('receiver', POPULATE_SENDER)
-            .sort({ createdAt: -1 });
-
-        return JSON.parse(JSON.stringify(notifications));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-}
-
-export async function getRequestByUserId({ userId }: { userId: string }) {
-    console.log('[LIB-ACTIONS] getRequestByUserId');
-    try {
-        await connectToDB();
-
-        const notifications = await Notification.find({
-            sender: userId,
-        })
-            .populate('sender', POPULATE_SENDER)
-            .populate('receiver', POPULATE_SENDER)
-            .sort({ createdAt: -1 });
-
-        return JSON.parse(JSON.stringify(notifications));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-}
-
 export async function markAllAsRead() {
     console.log('[LIB-ACTIONS] markAllAsRead');
     try {
         await connectToDB();
         const session = await getAuthSession();
-        if (!session?.user) return;
+        if (!session?.user) return false;
 
         await Notification.updateMany(
             { receiver: session.user.id },
@@ -136,9 +75,12 @@ export async function markAllAsRead() {
         throw new Error(error);
     }
 }
+
 export async function sendRequestAddFriend({
+    senderId,
     receiverId,
 }: {
+    senderId: string;
     receiverId: string;
 }) {
     console.log('[LIB-ACTIONS] sendRequestAddFriend');
@@ -149,7 +91,7 @@ export async function sendRequestAddFriend({
 
         // Kiểm tra xem đã gửi lời mời kết bạn chưa
         const isExistRequest = await Notification.findOne({
-            sender: session?.user.id,
+            sender: senderId,
             receiver: receiverId,
             type: 'request-add-friend',
         });
@@ -158,7 +100,7 @@ export async function sendRequestAddFriend({
 
         // Tạo notification mới
         const newNotification = new Notification({
-            sender: session?.user.id,
+            sender: senderId,
             receiver: receiverId,
             message: 'Đã gửi lời mời kết bạn',
             type: 'request-add-friend',
@@ -178,9 +120,11 @@ export async function sendRequestAddFriend({
 }
 
 export async function acceptFriend({
-    notification,
+    senderId,
+    notificationId,
 }: {
-    notification: INotification;
+    senderId: string;
+    notificationId: string;
 }) {
     console.log('[LIB-ACTIONS] acceptFriend');
     const ERROR_MESSAGE = 'Đã có lỗi xảy ra';
@@ -200,13 +144,16 @@ export async function acceptFriend({
         // Tìm kiếm user và friend đồng thời
         const [user, friend] = await Promise.all([
             findUserById(session.user.id),
-            findUserById(notification.sender._id),
+            findUserById(senderId),
         ]);
 
-        await Notification.deleteOne({ _id: notification._id });
+        await Notification.deleteOne({
+            _id: notificationId,
+            receiver: user._id,
+        });
 
         // Kiểm tra nếu đã là bạn bè, kết thúc sớm
-        if (user.friends.includes(friend._id)) return;
+        if (user.friends.includes(friend._id)) return false;
 
         // Thêm bạn bè cho cả hai người dùng
         user.friends.push(friend._id);
@@ -254,9 +201,11 @@ export async function createNotificationAcceptFriend({
 }
 
 export async function declineFriend({
-    notification,
+    senderId,
+    notificationId,
 }: {
-    notification: INotification;
+    senderId: string;
+    notificationId: string;
 }) {
     console.log('[LIB-ACTIONS] declineFriend');
     try {
@@ -267,10 +216,14 @@ export async function declineFriend({
         const user = await User.findById(session.user.id).exec();
         if (!user) throw new Error('Đã có lỗi xảy ra');
 
-        const friend = await User.findById(notification.sender._id).exec();
+        const friend = await User.findById(senderId).exec();
         if (!friend) throw new Error('Đã có lỗi xảy ra');
 
-        await Notification.deleteOne({ _id: notification._id });
+        // Xóa thông báo kết bạn
+        await Notification.deleteOne({
+            _id: notificationId,
+            receiver: user._id,
+        });
 
         return true;
     } catch (error: any) {
@@ -318,30 +271,4 @@ export async function deleteNotificationByUsers({
     } catch (error: any) {
         throw new Error(error);
     }
-}
-
-export async function canRequestAddFriend({ userId }: { userId: string }) {
-    try {
-        await connectToDB();
-        const session = await getAuthSession();
-
-        const notification = await Notification.findOne({
-            sender: session?.user.id,
-            receiver: userId,
-        });
-
-        if (notification) return false;
-
-        const currentUser = await User.findById(session?.user.id);
-
-        if (
-            currentUser?.friends.includes(new mongoose.Types.ObjectId(userId))
-        ) {
-            return false;
-        }
-    } catch (error: any) {
-        throw new Error(error);
-    }
-
-    return true;
 }

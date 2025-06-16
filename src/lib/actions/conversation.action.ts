@@ -1,10 +1,10 @@
 'use server';
+import { UserRole } from '@/enums/UserRole';
 import { Conversation } from '@/models';
+import ConversationRole from '@/models/ConversationRole';
 import connectToDB from '@/services/mongoose';
 import { getAuthSession } from '../auth';
-import ConversationRole from '@/models/ConversationRole';
-import { pinMessage, unPinMessage } from '@/lib/actions/message.action';
-import { UserRole } from '@/enums/UserRole';
+import MessageService from '../services/message.service';
 
 export const createConversationRoleAdmin = async ({
     userId,
@@ -98,8 +98,6 @@ export const joinConversation = async ({
 
         conversation.participants.push(userId);
         await conversation.save();
-
-        return JSON.parse(JSON.stringify(conversation));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -194,30 +192,6 @@ export const createConversation = async ({
         });
 
         return JSON.parse(JSON.stringify(newConversation));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const getConversationsByUserId = async ({
-    userId,
-}: {
-    userId: string;
-}) => {
-    console.log('[LIB-ACTIONS] getConversationsByUserId');
-    try {
-        await connectToDB();
-
-        const conversations = await Conversation.find({
-            participants: {
-                $elemMatch: { $eq: userId },
-            },
-        })
-            .populate('participants')
-            .populate('creator')
-            .populate('group');
-
-        return JSON.parse(JSON.stringify(conversations));
     } catch (error: any) {
         throw new Error(error);
     }
@@ -362,9 +336,7 @@ export const addPinMessage = async ({
             }
         );
 
-        await pinMessage({
-            messageId,
-        });
+        await MessageService.pin(messageId);
 
         return true;
     } catch (error: any) {
@@ -394,7 +366,7 @@ export const removePinMessage = async ({
             }
         );
 
-        await unPinMessage({ messageId });
+        await MessageService.unpin(messageId);
 
         return true;
     } catch (error: any) {
@@ -436,37 +408,6 @@ export const leaveConversation = async ({
         await conversation.save();
 
         return JSON.parse(JSON.stringify(conversation));
-    } catch (error: any) {
-        throw new Error(error);
-    }
-};
-
-export const deleteConversationFromTwoUsers = async ({
-    userId,
-    otherUserId,
-}: {
-    userId: string;
-    otherUserId: string;
-}) => {
-    console.log('[LIB-ACTIONS] deleteConversationFromTwoUsers');
-    try {
-        await connectToDB();
-
-        const session = await getAuthSession();
-        if (!session) throw new Error('Chưa đăng nhập');
-
-        const conversation = await getConversationByParticipants({
-            userId,
-            otherUserId,
-        });
-
-        if (!conversation) {
-            return false;
-        }
-
-        await Conversation.deleteOne({ _id: conversation._id });
-
-        return true;
     } catch (error: any) {
         throw new Error(error);
     }

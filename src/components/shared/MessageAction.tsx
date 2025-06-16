@@ -1,16 +1,18 @@
 'use client';
+import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
-import { getConversationWithTwoUsers } from '@/lib/actions/conversation.action';
+import ConversationService from '@/lib/services/conversation.service';
+import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
 
 interface Props {
+    className?: string;
     messageTo: string;
 }
 
-const MessageAction = ({ messageTo }: Props) => {
+const MessageAction = ({ className = '', messageTo }: Props) => {
     const { data: session } = useSession();
     const router = useRouter();
     const { socketEmitor } = useSocket();
@@ -18,10 +20,11 @@ const MessageAction = ({ messageTo }: Props) => {
     const handleClick = async () => {
         if (!session) return;
 
-        const { isNew, conversation } = await getConversationWithTwoUsers({
-            userId: session?.user?.id,
-            otherUserId: messageTo,
-        });
+        const { isNew, conversation } =
+            await ConversationService.getPrivateConversation({
+                userId: session.user.id,
+                friendId: messageTo,
+            });
 
         if (!conversation) {
             toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
@@ -45,9 +48,10 @@ const MessageAction = ({ messageTo }: Props) => {
 
     return (
         <Button
-            className={
-                'min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1'
-            }
+            className={cn(
+                'min-w-[48px] md:w-full md:bg-transparent md:text-black md:hover:bg-transparent md:dark:text-dark-primary-1',
+                className
+            )}
             onClick={handleClick}
             variant={'primary'}
             size={'md'}

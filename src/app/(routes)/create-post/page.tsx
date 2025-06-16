@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/Button';
 import EditorV2 from '@/components/ui/EditorV2';
 import postAudience from '@/constants/postAudience.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { createPost } from '@/lib/actions/post.action';
 import { convertFileToBase64 } from '@/lib/convertFileToBase64';
+import PostService from '@/lib/services/post.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createPostValidation } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,7 +64,7 @@ const CreatePostPage = () => {
 
                 const media = await uploadImagesWithFiles({ files });
 
-                await createPost({
+                await PostService.create({
                     content,
                     option,
                     mediaIds: media.map((img) => img._id),
@@ -77,7 +77,7 @@ const CreatePostPage = () => {
                 throw new Error(error);
             }
         },
-        [session?.user, photos.length, invalidatePosts, resetForm]
+        [session?.user, photos.length, groupId, invalidatePosts, resetForm]
     );
 
     const mutation = useMutation({

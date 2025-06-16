@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { deleteConversationByUserId } from '@/lib/actions/conversation.action';
+import ConversationService from '@/lib/services/conversation.service';
 import { cn } from '@/lib/utils';
 import { splitName } from '@/utils/splitName';
 import { timeConvert3 } from '@/utils/timeConvert';
@@ -80,7 +80,7 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         }
 
         try {
-            await deleteConversationByUserId({
+            await ConversationService.deleteByUser({
                 conversationId: conversation._id,
                 userId: session.user.id,
             });

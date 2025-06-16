@@ -3,7 +3,10 @@ export const API_ROUTES = {
         SIGN_UP: '/api/auth/signup',
     },
     USER: {
+        INDEX: '/api/user',
         FRIENDS: '/user/friends',
+        FOLLOWINGS: (userId: string) =>
+            `/user/follow/followings?user_id=${userId}`,
     },
     GEMINI: {
         CHAT: '/api/gemini',
@@ -59,8 +62,14 @@ export const API_ROUTES = {
     ITEMS: {
         QUERY: (page: number, pageSize: number) =>
             `/items?page=${page}&page_size=${pageSize}`,
+        SEARCH: (query: string, page: number, pageSize: number) =>
+            `/items/search?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`,
+        BY_SELLER: (sellerId: string) => `/items/seller/${sellerId}`,
     },
     LOCATIONS: {
         INDEX: '/locations',
+    },
+    CATEGORIES: {
+        INDEX: '/categories',
     },
 };

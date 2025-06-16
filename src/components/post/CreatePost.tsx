@@ -7,14 +7,13 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { createPost } from '@/lib/actions/post.action';
+import PostService from '@/lib/services/post.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { createPostValidation } from '@/lib/validation';
 import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { ModalCreatePost } from '.';
-import axiosInstance from '@/lib/axios';
 
 interface Props {
     groupId?: string;
@@ -74,7 +73,7 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
                 });
                 const resultsId = results.map((result) => result._id);
 
-                await createPost({
+                await PostService.create({
                     content,
                     option,
                     mediaIds: resultsId,

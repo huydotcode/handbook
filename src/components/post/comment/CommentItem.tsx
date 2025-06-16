@@ -5,13 +5,9 @@ import { Form, FormControl } from '@/components/ui/Form';
 import { Textarea } from '@/components/ui/textarea';
 import { API_ROUTES } from '@/config/api';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import {
-    deleteComment,
-    loveComment,
-    sendComment,
-} from '@/lib/actions/comment.action';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
+import CommentService from '@/lib/services/comment.service';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { timeConvert3 } from '@/utils/timeConvert';
@@ -102,7 +98,7 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
         if (formState.isSubmitting || formState.isLoading) return;
 
         try {
-            await sendComment({
+            await CommentService.create({
                 content: data.text,
                 replyTo: comment._id,
                 postId: comment.post._id,
@@ -127,15 +123,13 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const handleLoveComment = async () => {
         setIsLoved((prev) => !prev);
 
-        await loveComment({
-            commentId: comment._id,
-        });
+        await CommentService.love(comment._id);
         await invalidateQueries();
     };
 
     const handleDeleteComment = async () => {
         try {
-            await deleteComment({ commentId: comment._id });
+            await CommentService.delete(comment._id);
             await invalidateQueries();
         } catch (error) {
             logger({

@@ -1,10 +1,10 @@
 'use client';
 import SidebarCollapse from '@/components/layout/SidebarCollapse';
 import { Items } from '@/components/shared';
-import { Icons, Loading } from '@/components/ui';
+import { Loading } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { getGroupsByUserId } from '@/lib/actions/group.action';
 import queryKey from '@/lib/queryKey';
+import GroupService from '@/lib/services/group.service';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React from 'react';
@@ -19,11 +19,12 @@ export const useGroups = (userId: string | undefined) =>
         queryFn: async ({ pageParam = 1 }) => {
             if (!userId) return [];
 
-            const groups = await getGroupsByUserId({
+            const groups = await GroupService.getByUserId({
                 userId,
                 page: pageParam,
                 pageSize: PAGE_SIZE,
             });
+
             return groups;
         },
         getNextPageParam: (lastPage, pages) => {

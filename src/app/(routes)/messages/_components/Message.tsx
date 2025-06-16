@@ -15,11 +15,8 @@ import {
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import {
-    addPinMessage,
-    removePinMessage,
-} from '@/lib/actions/conversation.action';
-import { deleteMessage } from '@/lib/actions/message.action';
+import ConversationService from '@/lib/services/conversation.service';
+import MessageService from '@/lib/services/message.service';
 import { cn } from '@/lib/utils';
 import { FormatDate } from '@/utils/formatDate';
 import { urlRegex } from '@/utils/regex';
@@ -125,7 +122,7 @@ const Message: React.FC<Props> = React.memo<Props>(
             try {
                 if (!socket || msg.isPin) return;
 
-                await addPinMessage({
+                await ConversationService.addPinMessage({
                     messageId: msg._id,
                     conversationId: msg.conversation._id,
                 });
@@ -160,7 +157,7 @@ const Message: React.FC<Props> = React.memo<Props>(
             try {
                 if (!socket || !msg.isPin) return;
 
-                await removePinMessage({
+                await ConversationService.removePinMessage({
                     messageId: msg._id,
                     conversationId: msg.conversation._id,
                 });
@@ -184,7 +181,7 @@ const Message: React.FC<Props> = React.memo<Props>(
             try {
                 if (!socket) return;
 
-                await deleteMessage({
+                await MessageService.delete({
                     messageId: msg._id,
                     conversationId: msg.conversation._id,
                     prevMessageId: messages[index - 1]
@@ -193,7 +190,7 @@ const Message: React.FC<Props> = React.memo<Props>(
                 });
 
                 if (msg.isPin) {
-                    await removePinMessage({
+                    await ConversationService.removePinMessage({
                         messageId: msg._id,
                         conversationId: msg.conversation._id,
                     });

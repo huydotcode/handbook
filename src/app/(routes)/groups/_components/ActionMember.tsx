@@ -1,13 +1,13 @@
 'use client';
 
+import { ConfirmModal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import { leaveGroup } from '@/lib/actions/group.action';
-import toast from 'react-hot-toast';
-import { ConfirmModal, Icons } from '@/components/ui';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { timeConvert4 } from '@/utils/timeConvert';
 import { GroupUserRole } from '@/enums/GroupRole';
+import GroupService from '@/lib/services/group.service';
+import { timeConvert4 } from '@/utils/timeConvert';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Props {
     member: IMemberGroup;
@@ -21,15 +21,13 @@ const ActionMember = ({ member, group }: Props) => {
 
     const handleRemoveMember = async () => {
         try {
-            const res = await leaveGroup({
+            const res = await GroupService.leave({
+                userId: member.user._id,
                 groupId: group._id,
-                userId: member._id,
-                path,
+                path: path,
             });
 
-            if (res) {
-                toast.success('Xóa thành viên thành công');
-            }
+            toast.success('Xóa thành viên thành công');
         } catch (error) {
             toast.error('Xóa thành viên thất bại');
         }

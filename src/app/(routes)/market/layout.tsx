@@ -1,4 +1,3 @@
-import { FullLayout } from '@/components/layout';
 import React from 'react';
 import Sidebar from './_components/Sidebar';
 
@@ -14,16 +13,22 @@ export async function generateMetadata() {
 
 const MarketLayout: React.FC<Props> = async ({ children }) => {
     return (
-        <FullLayout>
+        <>
             <Sidebar />
             <div
                 className={
                     'ml-[300px] mt-[56px] min-h-[calc(100vh-56px)] bg-primary-1 dark:bg-dark-primary-1 md:ml-0'
                 }
             >
-                {children}
+                <div
+                    className={
+                        'mx-auto mt-[64px] max-w-[1400px] px-4 2xl:px-12 xl:px-10 lg:px-8 md:px-6'
+                    }
+                >
+                    {children}
+                </div>
             </div>
-        </FullLayout>
+        </>
     );
 };
 export default MarketLayout;

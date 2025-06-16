@@ -9,7 +9,10 @@ export const getGroups = async () => {
     try {
         await connectToDB();
 
-        const groups = await Group.find();
+        const groups = await Group.find()
+            .populate('avatar')
+            .populate('creator')
+            .populate('members.user');
 
         return JSON.parse(JSON.stringify(groups));
     } catch (error) {

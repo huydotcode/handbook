@@ -1,14 +1,14 @@
 'use client';
 import { ConfirmModal } from '@/components/ui';
 import Icons from '@/components/ui/Icons';
-import { deleteGroup, joinGroup, leaveGroup } from '@/lib/actions/group.action';
 
 import { Button } from '@/components/ui/Button';
 import { useGroupsJoined } from '@/context/AppContext';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import GroupService from '@/lib/services/group.service';
 import logger from '@/utils/logger';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { FormEventHandler, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -24,6 +24,7 @@ const Action: React.FC<Props> = ({ group }) => {
     const [isPending, setIsPending] = useState(false);
     const { invalidateGroups, invalidateConversations } =
         useQueryInvalidation();
+    const path = usePathname();
 
     const isJoinGroup = groupJoined?.some((item) => item._id === groupId);
 
@@ -39,9 +40,9 @@ const Action: React.FC<Props> = ({ group }) => {
         setIsPending(true);
 
         try {
-            await joinGroup({
-                userId: session?.user?.id as string,
-                groupId: groupId,
+            await GroupService.join({
+                groupId,
+                userId: session?.user.id as string,
             });
 
             await invalidateGroups(session?.user.id as string);
@@ -62,9 +63,10 @@ const Action: React.FC<Props> = ({ group }) => {
         setIsPending(true);
 
         try {
-            await leaveGroup({
-                groupId: groupId,
-                userId: session?.user?.id as string,
+            await GroupService.leave({
+                groupId,
+                userId: session?.user.id as string,
+                path,
             });
 
             await invalidateGroups(session?.user.id as string);
@@ -84,7 +86,9 @@ const Action: React.FC<Props> = ({ group }) => {
 
     const handleDeleteGroup = async () => {
         try {
-            await deleteGroup({ groupId });
+            await GroupService.delete(groupId);
+
+            toast.success('Xóa nhóm thành công');
 
             await invalidateGroups(session?.user.id as string);
             await invalidateConversations();

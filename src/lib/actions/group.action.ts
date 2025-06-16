@@ -6,10 +6,8 @@ import { Types } from 'mongoose';
 import { Session } from 'next-auth';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
-import {
-    deleteConversation,
-    getConversationsByGroupId,
-} from './conversation.action';
+import ConversationService from '../services/conversation.service';
+import { getConversationsByGroupId } from './conversation.action';
 
 export const createGroup = async ({
     name,
@@ -52,6 +50,19 @@ export const createGroup = async ({
                 role: 'member',
             });
         }
+
+        await User.updateMany(
+            {
+                _id: {
+                    $in: [session.user.id, ...members],
+                },
+            },
+            {
+                $push: {
+                    groups: newGroup._id,
+                },
+            }
+        );
 
         await newGroup.save();
 
@@ -241,9 +252,7 @@ export const deleteGroup = async ({ groupId }: { groupId: string }) => {
         });
 
         for (const conversation of conversatios) {
-            await deleteConversation({
-                conversationId: conversation._id,
-            });
+            await ConversationService.delete(conversation._id.toString());
         }
 
         await Group.deleteOne({

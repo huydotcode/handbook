@@ -1,6 +1,6 @@
-import { getConversationsByGroupId } from '@/lib/actions/conversation.action';
-import { getGroupByGroupId } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
+import ConversationService from '@/lib/services/conversation.service';
+import GroupService from '@/lib/services/group.service';
 import logger from '@/utils/logger';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -15,7 +15,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
     try {
         const { groupId } = await params;
-        const group = await getGroupByGroupId({ groupId });
+        const group = await GroupService.getById(groupId);
 
         return {
             title: `${group.name} | Nhóm | Handbook`,
@@ -34,10 +34,8 @@ export async function generateMetadata({ params }: Props) {
 
 const GroupLayout: React.FC<Props> = async ({ params, children }) => {
     const { groupId } = await params;
-    const group = (await getGroupByGroupId({ groupId })) as IGroup;
-    const conversations = (await getConversationsByGroupId({
-        groupId: groupId,
-    })) as IConversation[];
+    const group = await GroupService.getById(groupId);
+    const conversations = await ConversationService.getByGroupId(groupId);
 
     if (!group) redirect('/groups');
 
@@ -55,14 +53,12 @@ const GroupLayout: React.FC<Props> = async ({ params, children }) => {
                 <Sidebar group={group} conversations={conversations} />
             )}
 
-            <div className="ml-[300px] px-4 md:ml-0">
-                <div className="mx-auto w-full max-w-[1000px]">
-                    <Header group={group} />
+            <div className="mx-auto w-full max-w-[1000px]">
+                <Header group={group} />
 
-                    {canAccess && (
-                        <main className="mt-4 min-h-[150vh]">{children}</main>
-                    )}
-                </div>
+                {canAccess && (
+                    <main className="mt-4 min-h-[150vh]">{children}</main>
+                )}
             </div>
         </div>
     );

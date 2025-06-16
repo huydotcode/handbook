@@ -9,9 +9,9 @@ import { useSocket } from '@/context';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useMessageHandling } from '@/hooks/useMessageHandling';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { sendMessage } from '@/lib/actions/message.action';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
+import MessageService from '@/lib/services/message.service';
 import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -178,14 +178,13 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                 files,
             });
 
-            await sendMessage({
+            await MessageService.send({
                 roomId: conversation._id,
                 text: '',
                 images: images.map((image) => image._id),
             });
 
             await invalidateAfterSendMessage(conversation._id);
-            toast;
         } catch (error) {
             toast.error('Đã có lỗi xảy ra');
         }
@@ -217,12 +216,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setOpenSearch(false);
         setOpenInfo((prev) => !prev);
     };
-
-    useEffect(() => {
-        console.log('form.formState.isSubmitting', {
-            submitting: form.formState.isSubmitting,
-        });
-    }, [form.formState.isSubmitting]);
 
     // Xử lý render tin nhắn
     const renderMessages = () => {
@@ -300,13 +293,11 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
         if (!lastMessage) return;
 
-        console.log({
-            lastMessage,
-            sessionUserId: session?.user.id,
-            conversationId: conversation._id,
-        });
-
-        if (lastMessage.sender._id !== session?.user?.id) {
+        if (
+            messages &&
+            messages.length > 0 &&
+            messages[0].sender._id !== session?.user.id
+        ) {
             queryClientReadMessage(conversation._id, session?.user.id);
 
             socketEmitor.readMessage({
@@ -315,11 +306,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             });
         }
     }, [
-        lastMessage,
         session?.user.id,
         socketEmitor,
         conversation._id,
         queryClientReadMessage,
+        lastMessage,
+        messages,
     ]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down

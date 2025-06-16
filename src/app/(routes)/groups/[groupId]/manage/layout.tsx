@@ -1,5 +1,5 @@
-import { getGroupByGroupId } from '@/lib/actions/group.action';
 import { getAuthSession } from '@/lib/auth';
+import GroupService from '@/lib/services/group.service';
 import { redirect } from 'next/navigation';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 const ManageLayout: React.FC<Props> = async ({ children, params }) => {
     const { groupId } = await params;
     const session = await getAuthSession();
-    const group: IGroup = await getGroupByGroupId({ groupId });
+    const group: IGroup = await GroupService.getById(groupId);
 
     if (!session?.user) redirect('/');
     if (!group) redirect('/groups');
