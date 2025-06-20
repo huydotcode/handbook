@@ -83,9 +83,11 @@ class PostController {
                 ],
                 status: 'active',
             })
-                .populate('author', POPULATE_USER)
-                .populate('group', POPULATE_GROUP)
                 .populate('media')
+                .populate('author', POPULATE_USER)
+                .populate(POPULATE_GROUP)
+                .populate('loves', POPULATE_USER)
+                .populate('shares', POPULATE_USER)
 
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
