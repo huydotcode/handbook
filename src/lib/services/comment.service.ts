@@ -14,11 +14,13 @@ class CommentServiceClass {
         replyTo: string | null;
         postId: string;
     }) {
-        await sendComment({
+        const newComment = await sendComment({
             content,
             replyTo,
             postId,
         });
+
+        return newComment;
     }
 
     public async love(commentId: string) {

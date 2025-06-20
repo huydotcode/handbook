@@ -11,7 +11,11 @@ import CommentService from '@/lib/services/comment.service';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
 import { timeConvert3 } from '@/utils/timeConvert';
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useRef, useState } from 'react';
@@ -21,6 +25,7 @@ import ReplyComments from './ReplyComments';
 
 interface Props {
     data: IComment;
+    setCommentCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 type FormData = {
@@ -39,7 +44,7 @@ export const useReplyComments = (commentId: string | undefined) =>
                 params: {
                     comment_id: commentId,
                     page: pageParam,
-                    page_size: pageParam,
+                    page_size: PAGE_SIZE,
                 },
             });
 
@@ -60,10 +65,11 @@ export const useReplyComments = (commentId: string | undefined) =>
         refetchInterval: false,
     });
 
-const CommentItem: React.FC<Props> = ({ data: comment }) => {
+const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
     const { data: session } = useSession();
     const { invalidateComments, invalidatePost, invalidateReplyComments } =
         useQueryInvalidation();
+    const queryClient = useQueryClient();
 
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
     const form = useForm<FormData>({
@@ -85,26 +91,41 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
         mutationFn: () => handleDeleteComment(),
     });
 
-    const invalidateQueries = () => {
-        invalidateComments(comment.post._id);
-        invalidatePost(comment.post._id);
-
-        if (comment.replyComment) {
-            invalidateReplyComments(comment.replyComment._id);
-        }
-    };
-
     const sendReplyComment: SubmitHandler<FormData> = async (data) => {
         if (formState.isSubmitting || formState.isLoading) return;
 
         try {
-            await CommentService.create({
+            setCommentCount((prev) => prev + 1);
+
+            const newComment = await CommentService.create({
                 content: data.text,
                 replyTo: comment._id,
                 postId: comment.post._id,
             });
 
-            await invalidateQueries();
+            await invalidatePost(comment.post._id);
+            await queryClient.setQueryData(
+                queryKey.posts.comments(comment.post._id),
+                (oldData: any) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page: any) => {
+                            return page.map((c: IComment) => {
+                                if (c._id === comment._id) {
+                                    return {
+                                        ...c,
+                                        hasReplies: true,
+                                    };
+                                }
+                                return c;
+                            });
+                        }),
+                    };
+                }
+            );
+            await invalidateReplyComments(comment._id);
         } catch (error) {
             logger({
                 message: 'Error send reply comments' + error,
@@ -123,14 +144,67 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
     const handleLoveComment = async () => {
         setIsLoved((prev) => !prev);
 
+        await queryClient.setQueryData(
+            queryKey.posts.comments(comment.post._id),
+            (oldData: any) => {
+                if (!oldData) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: any) => {
+                        return page.map((c: IComment) => {
+                            if (c._id === comment._id) {
+                                return {
+                                    ...c,
+                                    loves: isLoved
+                                        ? c.loves.filter(
+                                              (love: IUser) =>
+                                                  love._id !== session?.user.id
+                                          )
+                                        : [
+                                              ...c.loves,
+                                              { _id: session?.user.id },
+                                          ],
+                                };
+                            }
+                            return c;
+                        });
+                    }),
+                };
+            }
+        );
+
         await CommentService.love(comment._id);
-        await invalidateQueries();
+        await invalidateComments(comment.post._id);
+        await invalidateReplyComments(comment._id);
+        await invalidatePost(comment.post._id);
     };
 
     const handleDeleteComment = async () => {
         try {
+            setCommentCount((prev) => prev - 1);
+
+            await queryClient.setQueryData(
+                queryKey.posts.comments(comment.post._id),
+                (oldData: any) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page: any) => {
+                            return page.filter(
+                                (c: IComment) => c._id !== comment._id
+                            );
+                        }),
+                    };
+                }
+            );
+
             await CommentService.delete(comment._id);
-            await invalidateQueries();
+
+            await invalidateReplyComments(comment._id);
+            await invalidateComments(comment.post._id);
+            await invalidatePost(comment.post._id);
         } catch (error) {
             logger({
                 message: 'Error delete comment' + error,
@@ -234,7 +308,12 @@ const CommentItem: React.FC<Props> = ({ data: comment }) => {
                         )}
                     </div>
 
-                    {comment.hasReplies && <ReplyComments comment={comment} />}
+                    {comment.hasReplies && (
+                        <ReplyComments
+                            comment={comment}
+                            setCommentCount={setCommentCount}
+                        />
+                    )}
 
                     {session?.user && showReplyForm && (
                         <div className="relative mt-2 flex">

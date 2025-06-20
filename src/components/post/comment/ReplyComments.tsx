@@ -7,9 +7,10 @@ import SkeletonComment from './SkeletonComment';
 
 interface Props {
     comment: IComment;
+    setCommentCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const ReplyComments: React.FC<Props> = ({ comment }) => {
+const ReplyComments: React.FC<Props> = ({ comment, setCommentCount }) => {
     const {
         data: replyComments,
         hasNextPage,
@@ -43,13 +44,19 @@ const ReplyComments: React.FC<Props> = ({ comment }) => {
                     {showReplyComments && (
                         <div className="border-l-2 pl-3 dark:border-dark-secondary-2">
                             {replyComments.reverse().map((cmt) => {
-                                return <Comment key={cmt._id} data={cmt} />;
+                                return (
+                                    <Comment
+                                        key={cmt._id}
+                                        data={cmt}
+                                        setCommentCount={setCommentCount}
+                                    />
+                                );
                             })}
 
                             {hasNextPage && (
                                 <Button
                                     variant={'text'}
-                                    size={'sm'}
+                                    size={'xs'}
                                     onClick={() => fetchNextPage()}
                                 >
                                     Xem thêm bình luận
