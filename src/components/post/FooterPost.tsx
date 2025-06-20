@@ -255,11 +255,17 @@ const SavePost: React.FC<Props> = ({ post }) => {
 
 interface ReactionPostProps {
     post: IPost;
+    loves: string[];
+    setLoves: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const ReactionPost: React.FC<ReactionPostProps> = ({ post }) => {
+const ReactionPost: React.FC<ReactionPostProps> = ({
+    post,
+    loves,
+    setLoves,
+}) => {
     const { data: session } = useSession();
-    const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
+
     const { socketEmitor } = useSocket();
     const { invalidatePost } = useQueryInvalidation();
 
@@ -340,6 +346,7 @@ const ReactionPost: React.FC<ReactionPostProps> = ({ post }) => {
 
 const FooterPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
+    const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
 
     const { invalidatePost, invalidateComments } = useQueryInvalidation();
     const {
@@ -452,9 +459,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                 <div className="relative flex w-full justify-end gap-2 py-2">
                     <div className="flex items-center">
                         <Icons.Heart2 className="text-xl text-red-400" />
-                        <span className="text-md ml-1">
-                            {post.loves.length}
-                        </span>
+                        <span className="text-md ml-1">{loves.length}</span>
                     </div>
 
                     <div className="flex items-center">
@@ -466,7 +471,11 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                 </div>
 
                 <div className="mt-1 grid grid-cols-3 border-y py-1 dark:border-dark-secondary-2">
-                    <ReactionPost post={post} />
+                    <ReactionPost
+                        post={post}
+                        loves={loves}
+                        setLoves={setLoves}
+                    />
 
                     <ShareModal post={post} />
 
