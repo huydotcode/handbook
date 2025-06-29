@@ -92,6 +92,10 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
 
         const comment = await Comment.findById(commentId);
 
+        if (!comment) {
+            throw new Error('Bình luận không tồn tại');
+        }
+
         await Post.findByIdAndUpdate(comment.post, {
             $inc: { comments_count: -1 },
         });

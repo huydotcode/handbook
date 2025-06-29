@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table';
 import { fetchUsers } from '@/lib/actions/admin/user.action';
 import queryKey from '@/lib/queryKey';
+import { FormatDate } from '@/utils/formatDate';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -55,6 +56,8 @@ const AdminUsersPage = () => {
                             <TableHead>ID</TableHead>
                             <TableHead>Tên</TableHead>
                             <TableHead>Email</TableHead>
+                            <TableHead>Ngày tạo</TableHead>
+                            <TableHead>Lần truy cập gần nhất</TableHead>
                             <TableHead>Quyền</TableHead>
                             <TableHead className="text-right">
                                 Hành động
@@ -74,6 +77,18 @@ const AdminUsersPage = () => {
                                 <TableCell>{user._id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell>
+                                    {FormatDate.formatISODateToDate(
+                                        user.createdAt
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {user.lastAccessed
+                                        ? FormatDate.formatISODateToDateTime(
+                                              user.lastAccessed
+                                          )
+                                        : 'Chưa truy cập'}
+                                </TableCell>
                                 <TableCell>{user.role}</TableCell>
                             </TableRow>
                         ))}

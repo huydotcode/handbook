@@ -56,8 +56,8 @@ const SavePost: React.FC<Props> = ({ post }) => {
         mutationKey: ['savePost', post._id],
         onSuccess: async () => {
             if (!session?.user.id) return;
-            await invalidateSavedPosts(session?.user.id);
-            await invalidatePost(post._id);
+            // await invalidateSavedPosts(session?.user.id);
+            // await invalidatePost(post._id);
         },
     });
     const isLoadingSavePost = isLoading || isPending;
@@ -80,6 +80,19 @@ const SavePost: React.FC<Props> = ({ post }) => {
                     path: pathName,
                 });
             }
+
+            await queryClient.setQueryData(
+                queryKey.posts.saved(session.user.id),
+                (oldData: ISavedPost | undefined) => {
+                    if (!oldData) return;
+
+                    const updatedPosts = isSaved
+                        ? oldData.posts.filter((p) => p._id !== post._id)
+                        : [...oldData.posts, post];
+
+                    return { ...oldData, posts: updatedPosts };
+                }
+            );
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
                 position: 'bottom-left',
