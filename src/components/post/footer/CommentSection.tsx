@@ -107,6 +107,8 @@ const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
 
             await invalidatePost(post._id);
             await invalidateComments(post._id);
+
+            await fetchNextPage();
         } catch (error: any) {
             console.log('Error onSubmitComment: ', error);
             toast.error('Không thể gửi bình luận!', {

@@ -54,11 +54,6 @@ const SavePost: React.FC<Props> = ({ post }) => {
     const { mutate, isPending } = useMutation({
         mutationFn: handleSave,
         mutationKey: ['savePost', post._id],
-        onSuccess: async () => {
-            if (!session?.user.id) return;
-            // await invalidateSavedPosts(session?.user.id);
-            // await invalidatePost(post._id);
-        },
     });
     const isLoadingSavePost = isLoading || isPending;
 
