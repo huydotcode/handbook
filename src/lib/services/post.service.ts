@@ -88,6 +88,7 @@ class PostServiceClass implements IPostService {
         mediaIds,
         option,
         groupId = null,
+        tags = [],
         type = 'default',
     }: {
         content: string;
@@ -95,6 +96,7 @@ class PostServiceClass implements IPostService {
         option: string;
         groupId?: string | null;
         type?: string;
+        tags?: string[];
     }): Promise<IPost> {
         const newPost = await createPost({
             content,
@@ -102,6 +104,7 @@ class PostServiceClass implements IPostService {
             option,
             groupId,
             type,
+            tags,
         });
 
         return newPost;
@@ -112,17 +115,20 @@ class PostServiceClass implements IPostService {
         mediaIds,
         option,
         postId,
+        tags = [],
     }: {
         content: string;
         mediaIds: string[];
         option: string;
         postId: string;
+        tags?: string[];
     }): Promise<IPost> {
         const updatedPost = await editPost({
             content,
             mediaIds,
             option,
             postId,
+            tags,
         });
 
         return updatedPost;

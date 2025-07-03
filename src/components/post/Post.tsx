@@ -76,26 +76,27 @@ const PostHeader = ({ post }: { post: IPost }) => {
     )?.icon;
 
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center">
+        <div className="flex w-full items-start justify-between">
+            {/* Left section: Avatar + Info */}
+            <div className="flex items-start">
+                {/* Avatar */}
                 {isGroupPost && post.group ? (
                     <div className="relative">
                         <Avatar
                             imgSrc={post.group.avatar.url}
-                            href={`groups/${post.group._id}`}
+                            href={`/groups/${post.group._id}`}
                             alt={post.group.name}
                             width={40}
                             height={40}
                             rounded="md"
                         />
-
                         <Avatar
-                            className="absolute -bottom-1 -right-1 rounded-xl border border-white"
+                            className="absolute -bottom-1 -right-1 rounded-full border-2 border-white"
                             imgSrc={post.author.avatar}
                             userUrl={post.author._id}
                             alt={post.author.name}
-                            width={22}
-                            height={22}
+                            width={20}
+                            height={20}
                         />
                     </div>
                 ) : (
@@ -108,75 +109,70 @@ const PostHeader = ({ post }: { post: IPost }) => {
                     />
                 )}
 
-                <div className="ml-2 flex flex-col items-start">
-                    <div className="flex items-center justify-between">
+                {/* Info */}
+                <div className="ml-3 flex flex-col">
+                    {/* Name or Group Name */}
+                    <div className="flex items-center gap-1">
                         <Link
                             href={
                                 post.group
                                     ? `/groups/${post.group._id}`
                                     : `/profile/${post.author._id}`
                             }
-                            className="text-base hover:underline dark:text-dark-primary-1"
+                            className="text-sm font-semibold hover:underline dark:text-dark-primary-1"
                         >
                             {post.group ? post.group.name : post.author.name}
                         </Link>
 
                         {!post.group && post.author.isVerified && (
-                            <VerifiedUser className={'ml-1'} />
+                            <VerifiedUser className="text-blue-500" />
                         )}
                     </div>
 
-                    <div
-                        className={cn('', {
-                            'mt-1 flex items-center': post.type === 'group',
-                        })}
-                    >
-                        {post.group && (
+                    {/* Author name (if in group) */}
+                    {post.group && (
+                        <div className="flex items-center gap-1">
                             <Link
                                 href={`/profile/${post.author._id}`}
-                                className="mr-2 whitespace-nowrap text-xs text-secondary-1 hover:underline dark:text-dark-primary-1"
+                                className="text-xs text-secondary-1 hover:underline dark:text-dark-primary-1"
                             >
                                 {post.author.name}
                             </Link>
-                        )}
+                            {post.author.isVerified && (
+                                <VerifiedUser className="text-blue-500" />
+                            )}
+                        </div>
+                    )}
 
-                        {post.group && post.author.isVerified && (
-                            <VerifiedUser className={'ml-1'} />
-                        )}
+                    {/* Time + Privacy */}
+                    <div className="flex items-center gap-1 text-xs text-secondary-1">
+                        <span>{timeConvert3(post.createdAt.toString())}</span>
 
-                        <div className="flex items-center">
-                            <p className="w-full text-xs text-secondary-1">
-                                {timeConvert3(post.createdAt.toString())}{' '}
-                            </p>
-
+                        {IconType && (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger>
-                                        {IconType && (
-                                            <IconType className="ml-1 text-sm text-secondary-1" />
-                                        )}
+                                        <IconType className="ml-1" />
                                     </TooltipTrigger>
-
                                     <TooltipContent>
-                                        <div className="flex items-center">
-                                            <span className="text-xs">
-                                                {
-                                                    postAudience.find(
-                                                        (item) =>
-                                                            item.value ===
-                                                            post.option
-                                                    )?.label
-                                                }
-                                            </span>
-                                        </div>
+                                        <span className="text-xs">
+                                            {
+                                                postAudience.find(
+                                                    (item) =>
+                                                        item.value ===
+                                                        post.option
+                                                )?.label
+                                            }
+                                        </span>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
 
+            {/* Right section: Action buttons */}
             {!isManageGroupPostActive &&
                 session?.user &&
                 session.user.id === post.author._id && (
@@ -220,6 +216,18 @@ const PostContent = ({ post }: { post: IPost }) => {
                         'Xem thêm'}
                     {contentLength === post.text.length && 'Ẩn bớt'}
                 </Button>
+            )}
+
+            {post.tags && post.tags.length > 0 && (
+                <div className="mt-4 flex flex-wrap items-center gap-1">
+                    <span className="text-xs text-secondary-1">Tags:</span>
+
+                    {post.tags.map((tag) => (
+                        <span key={tag} className="text-sm text-primary-2">
+                            #{tag}
+                        </span>
+                    ))}
+                </div>
             )}
 
             {images.length > 0 && <PhotoGrid images={images} />}

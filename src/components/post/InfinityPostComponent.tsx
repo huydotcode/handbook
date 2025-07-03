@@ -207,8 +207,8 @@ const InfinityPostComponent: React.FC<Props> = ({
     const renderCreatePost = useCallback(() => {
         if (!shouldShowCreatePost) return null;
 
-        return type === 'group' ? (
-            <CreatePost groupId={groupId!} type="group" />
+        return type === 'group' && groupId ? (
+            <CreatePost groupId={groupId} type="group" />
         ) : (
             <CreatePost />
         );

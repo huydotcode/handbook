@@ -5,7 +5,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { Avatar, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import EditorV2 from '@/components/ui/EditorV2';
+import EditorV2, { EditorField } from '@/components/ui/EditorV2';
 import Icons from '@/components/ui/Icons';
 import postAudience from '@/constants/postAudience.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
@@ -19,6 +19,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AddToPost from '../AddToPost';
+import TagInput from '../TagInput';
 
 interface Props {
     post: IPost;
@@ -53,6 +54,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
             content: post.text,
             option: post.option as 'public' | 'private',
             files: [],
+            tags: post.tags || [],
         },
         resolver: zodResolver(editPostValidation),
     });
@@ -71,7 +73,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
         if (!session?.user) return;
 
         try {
-            const { content, option, files } = data;
+            const { content, option, files, tags } = data;
 
             if (!content && media.length === 0) {
                 toast.error('Nội dung bài viết không được để trống!');
@@ -94,6 +96,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
                 content: '',
                 option: 'public',
                 files: [],
+                tags: [],
             });
 
             // Reset media
@@ -106,6 +109,7 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
                 option: option,
                 postId: post._id,
                 mediaIds: updateImages.map((img) => img._id),
+                tags,
             });
 
             // Làm mới cache
@@ -274,15 +278,31 @@ const EditPostModal: FC<Props> = ({ post, setShow, show, handleClose }) => {
 
                 <div className="flex flex-1 flex-col justify-between pt-3">
                     <Controller
-                        render={({ field }) => (
-                            <EditorV2
-                                className={'max-h-[50vh] min-h-[300px]'}
-                                setContent={field.onChange}
-                                content={field.value}
-                            />
+                        render={({ field: { onChange, value } }) => (
+                            <>
+                                <EditorField
+                                    onChange={onChange}
+                                    value={value}
+                                    hasMenu={true}
+                                />
+                            </>
                         )}
                         name="content"
                         control={control}
+                    />
+
+                    <Controller
+                        name="tags"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <TagInput
+                                value={value}
+                                onChange={onChange}
+                                placeholder="Nhập tag và nhấn Enter"
+                                maxTags={10}
+                                className="mt-2"
+                            />
+                        )}
                     />
 
                     {/* Hiển thị tất cả media (ảnh và video) */}

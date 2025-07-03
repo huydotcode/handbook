@@ -102,12 +102,6 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         }
     };
 
-    useEffect(() => {
-        console.log({
-            lastMessage,
-        });
-    }, [lastMessage]);
-
     return (
         <div className="group relative w-full">
             <TooltipProvider>

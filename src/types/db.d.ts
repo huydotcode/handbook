@@ -110,6 +110,7 @@ interface IPost {
     comments_count: number;
     createdAt: Date;
     updatedAt: Date;
+    tags: string[];
     type: 'default' | 'group';
     status: 'active' | 'pending' | 'rejected';
 }

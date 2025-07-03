@@ -56,12 +56,14 @@ export const createPost = async ({
     option,
     groupId = null,
     type = 'default',
+    tags = [],
 }: {
     content: string;
     mediaIds: string[];
     option: string;
     groupId?: string | null;
     type?: string;
+    tags?: string[];
 }) => {
     const session = await getAuthSession();
     if (!session) return;
@@ -77,6 +79,7 @@ export const createPost = async ({
             group: groupId,
             status: groupId ? 'pending' : 'active',
             type,
+            tags: tags.map((tag) => tag.toLowerCase().replace(/^#/, '')),
         });
         await newPost.save();
 
@@ -93,11 +96,13 @@ export const editPost = async ({
     mediaIds,
     option,
     postId,
+    tags = [],
 }: {
     content: string;
     mediaIds: string[];
     option: string;
     postId: string;
+    tags?: string[];
 }) => {
     try {
         const session = await getAuthSession();
@@ -109,6 +114,7 @@ export const editPost = async ({
             text: content,
             media: mediaIds,
             option,
+            tags,
         });
 
         const post = await getPostByPostId({ postId });

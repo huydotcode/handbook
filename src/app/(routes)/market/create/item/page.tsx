@@ -55,8 +55,6 @@ const CreateItemPage = () => {
     const { data: locations } = useLocations();
 
     const onSubmit = async (data: CreateItemValidation) => {
-        console.log('Files to upload:', files);
-
         try {
             const images = await uploadImagesWithFiles({
                 files,

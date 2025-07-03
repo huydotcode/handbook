@@ -8,7 +8,6 @@ import React, {
     DragEventHandler,
     FormEventHandler,
     useCallback,
-    useEffect,
     useRef,
     useState,
 } from 'react';
@@ -77,16 +76,6 @@ export const FileUploaderWrapper = ({
             handleNewFiles(newFiles);
         },
         [handleNewFiles]
-    );
-
-    // Xóa file
-    const handleRemove = useCallback(
-        (index: number) => {
-            const newFiles = files.filter((_, i) => i !== index);
-            setFiles(newFiles);
-            handleChange?.(newFiles);
-        },
-        [files, handleChange]
     );
 
     return (

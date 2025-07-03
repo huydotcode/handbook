@@ -3,136 +3,22 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC, useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import PostService from '@/lib/services/post.service';
-import { uploadImagesWithFiles } from '@/lib/uploadImage';
-import { createPostValidation } from '@/lib/validation';
-import logger from '@/utils/logger';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { ModalCreatePost } from '.';
+import { Modal } from '../ui';
+import CreatePostV2 from './CreatePostV2';
 
 interface Props {
     groupId?: string;
     type?: 'default' | 'profile' | 'group';
 }
 
-const TOAST_POSITION = 'bottom-left';
-
-interface MediaItem {
-    url: string;
-    type: 'image' | 'video';
-    file?: File;
-}
-
 const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
     const { data: session } = useSession();
-    const { invalidatePosts } = useQueryInvalidation();
 
     const [show, setShow] = useState(false);
-    const [photos, setPhotos] = useState<MediaItem[]>([]);
 
     const handleClose = useCallback(() => setShow(false), []);
     const handleShow = useCallback(() => setShow(true), []);
-
-    const form = useForm<IPostFormData>({
-        defaultValues: {
-            content: '',
-            option: 'public',
-            files: [],
-        },
-        resolver: zodResolver(createPostValidation),
-    });
-
-    const { control, register, handleSubmit, formState, reset } = form;
-
-    const resetForm = useCallback(() => {
-        reset({
-            content: '',
-        });
-        setPhotos([]);
-    }, [reset]);
-
-    const sendPost = useCallback(
-        async (data: IPostFormData) => {
-            if (!session?.user) return;
-
-            try {
-                const { content, option, files } = data;
-
-                if (!content && photos.length === 0) {
-                    toast.error('Nội dung bài viết không được để trống!');
-                    return;
-                }
-
-                const results = await uploadImagesWithFiles({
-                    files: files,
-                });
-                const resultsId = results.map((result) => result._id);
-
-                await PostService.create({
-                    content,
-                    option,
-                    mediaIds: resultsId,
-                    groupId,
-                    type,
-                });
-
-                await invalidatePosts();
-                resetForm();
-            } catch (error: any) {
-                console.log('Error creating post:', error);
-                throw new Error(error);
-            }
-        },
-        [
-            session?.user,
-            photos.length,
-            groupId,
-            type,
-            invalidatePosts,
-            resetForm,
-        ]
-    );
-
-    const mutation = useMutation({
-        mutationFn: sendPost,
-    });
-
-    const onSubmit = useCallback(
-        async (data: IPostFormData) => {
-            if (formState.isSubmitting) return;
-
-            // Đóng form khi submit
-            setShow(false);
-
-            try {
-                await toast.promise(
-                    mutation.mutateAsync(data),
-                    {
-                        loading: 'Bài viết đang được đăng...!',
-                        success:
-                            type === 'default'
-                                ? 'Đăng bài thành công!'
-                                : 'Bài viết của bạn sẽ được duyệt trước khi hiển thị',
-                        error: 'Đã có lỗi xảy ra khi đăng bài!',
-                    },
-                    {
-                        position: TOAST_POSITION,
-                    }
-                );
-            } catch (error: any) {
-                logger({
-                    message: 'Error submitting post: ' + error.message,
-                    type: 'error',
-                });
-            }
-        },
-        [formState.isSubmitting, mutation, type]
-    );
 
     return (
         <>
@@ -166,19 +52,19 @@ const CreatePost: FC<Props> = ({ groupId, type = 'default' }) => {
             </div>
 
             {show && (
-                <ModalCreatePost
-                    show={show}
-                    setShow={setShow}
+                <Modal
                     handleClose={handleClose}
-                    photos={photos}
-                    setPhotos={setPhotos}
-                    register={register}
-                    submit={handleSubmit(onSubmit)}
-                    form={form}
-                    formState={formState}
-                    control={control}
-                    groupId={groupId}
-                />
+                    show={show}
+                    title="Đăng bài viết"
+                >
+                    <CreatePostV2
+                        className="w-[600px] max-w-full"
+                        variant="modal"
+                        onSubmitSuccess={handleClose}
+                        groupId={groupId}
+                        hasMenu={false}
+                    />
+                </Modal>
             )}
         </>
     );

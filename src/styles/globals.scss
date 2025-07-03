@@ -203,3 +203,14 @@ input::placeholder {
 .animate-float {
     animation: float 3s ease-in-out infinite;
 }
+
+// Tiptap styles
+.hashtag {
+    color: #3b82f6; /* tailwind text-blue-500 */
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.hashtag:hover {
+    text-decoration: underline;
+}

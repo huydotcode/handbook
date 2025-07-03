@@ -16,6 +16,7 @@ import {
     FaBirthdayCake,
     FaBold,
     FaCircle,
+    FaHashtag,
     FaHeart,
     FaImage,
     FaItalic,
@@ -255,6 +256,9 @@ const Icons = {
                 {...props}
             />
         );
+    },
+    Tag: (props: IconProps) => {
+        return <FaHashtag className={cn(props.className)} {...props} />;
     },
 };
 
