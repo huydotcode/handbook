@@ -56,7 +56,7 @@ export const sendComment = async ({
 
         // Cập nhật số lượng bình luận của bài viết
         await Post.findByIdAndUpdate(postId, {
-            $inc: { comments_count: 1 },
+            $inc: { commentsCount: 1 },
         });
 
         // Lấy thông tin bình luận mới
@@ -97,7 +97,7 @@ export const deleteComment = async ({ commentId }: { commentId: string }) => {
         }
 
         await Post.findByIdAndUpdate(comment.post, {
-            $inc: { comments_count: -1 },
+            $inc: { commentsCount: -1 },
         });
 
         if (comment) {
