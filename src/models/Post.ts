@@ -5,10 +5,12 @@ interface IPostModel {
     text: string;
     media: Types.ObjectId[];
     author: Types.ObjectId;
-    loves: Types.ObjectId[];
-    shares: Types.ObjectId[];
     group: Types.ObjectId;
-    comments_count: number;
+
+    commentsCount: number;
+    lovesCount: number;
+    sharesCount: number;
+
     tags: string[];
     type: string;
     status: string;
@@ -34,14 +36,21 @@ const PostSchema = new Schema<IPostModel>(
             ref: 'User',
             required: true,
         },
-        loves: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-        shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        lovesCount: {
+            type: Number,
+            default: 0,
+        },
+        sharesCount: {
+            type: Number,
+            default: 0,
+        },
+
         group: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Group',
             default: null,
         },
-        comments_count: {
+        commentsCount: {
             type: Number,
             default: 0,
         },

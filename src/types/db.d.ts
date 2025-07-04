@@ -104,15 +104,21 @@ interface IPost {
     text: string;
     media: IMedia[];
     author: IUser;
-    loves: IUser[];
-    shares: IUser[];
+
     group: IGroup | null;
-    comments_count: number;
+
+    commentsCount: number;
+    lovesCount: number;
+    sharesCount: number;
+
     createdAt: Date;
     updatedAt: Date;
     tags: string[];
     type: 'default' | 'group';
     status: 'active' | 'pending' | 'rejected';
+
+    userHasLoved: boolean;
+    userHasSaved: boolean;
 }
 
 interface IUser {
@@ -204,14 +210,6 @@ interface IItem {
         name: string;
         value: string;
     }[];
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-interface ISavedPost {
-    _id: string;
-    userId: IUser;
-    posts: IPost[];
     createdAt: Date;
     updatedAt: Date;
 }

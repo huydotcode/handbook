@@ -6,13 +6,14 @@ import {
     getSavedPosts,
     savePost,
     sendReaction,
+    sharePost,
     unsavePost,
     updateStatusPost,
 } from '../actions/post.action';
 
 interface IPostService {
     getById(id: string): Promise<IPost | null>;
-    getSavedByUserId?(userId: string): Promise<ISavedPost>;
+    getSavedByUserId?(userId: string): Promise<IPost[]>;
     create: ({
         content,
         mediaIds,
@@ -78,7 +79,7 @@ class PostServiceClass implements IPostService {
         return post;
     }
 
-    async getSavedByUserId(userId: string): Promise<ISavedPost> {
+    async getSavedByUserId(userId: string): Promise<IPost[]> {
         const posts = await getSavedPosts({ userId });
         return posts;
     }
@@ -141,6 +142,16 @@ class PostServiceClass implements IPostService {
         return result;
     }
 
+    async share(postId: string): Promise<boolean> {
+        const result = await sharePost({
+            postId,
+        });
+        if (!result) {
+            throw new Error(`Failed to share post with ID ${postId}`);
+        }
+        return result;
+    }
+
     async delete(postId: string): Promise<boolean> {
         const result = await deletePost({
             postId,
@@ -176,6 +187,11 @@ class PostServiceClass implements IPostService {
             postId,
             path,
         });
+
+        if (!result) {
+            throw new Error(`Failed to save post with ID ${postId}`);
+        }
+
         return result;
     }
 
@@ -190,6 +206,11 @@ class PostServiceClass implements IPostService {
             postId,
             path,
         });
+
+        if (!result) {
+            throw new Error(`Failed to unsave post with ID ${postId}`);
+        }
+
         return result;
     }
 }

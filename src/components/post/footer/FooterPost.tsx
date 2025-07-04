@@ -17,9 +17,8 @@ type FormData = {
 const PAGE_SIZE = 3;
 
 const FooterPost: React.FC<Props> = ({ post }) => {
-    const [loves, setLoves] = useState<string[]>(post.loves.map((l) => l._id));
     const [commentCount, setCommentCount] = useState<number>(
-        post.comments_count || 0
+        post.commentsCount || 0
     );
 
     return (
@@ -28,7 +27,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                 <div className="relative flex w-full justify-end gap-2 py-2">
                     <div className="flex items-center">
                         <Icons.Heart2 className="text-xl text-red-400" />
-                        <span className="text-md ml-1">{loves.length}</span>
+                        <span className="text-md ml-1">{post.lovesCount}</span>
                     </div>
 
                     <div className="flex items-center">
@@ -38,11 +37,7 @@ const FooterPost: React.FC<Props> = ({ post }) => {
                 </div>
 
                 <div className="mt-1 grid grid-cols-3 border-y py-1 dark:border-dark-secondary-2">
-                    <ReactionPost
-                        post={post}
-                        loves={loves}
-                        setLoves={setLoves}
-                    />
+                    <ReactionPost post={post} />
 
                     <SharePost post={post} />
 

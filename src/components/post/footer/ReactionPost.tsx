@@ -3,30 +3,27 @@ import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import queryKey from '@/lib/queryKey';
 import PostService from '@/lib/services/post.service';
 import { cn } from '@/lib/utils';
 import logger from '@/utils/logger';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
     post: IPost;
-    loves: string[];
-    setLoves: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const ReactionPost: React.FC<Props> = ({ post, loves, setLoves }) => {
+const ReactionPost: React.FC<Props> = ({ post }) => {
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
 
     const { socketEmitor } = useSocket();
     const { invalidatePost } = useQueryInvalidation();
 
-    const isReacted = React.useMemo(
-        () => loves.find((r) => r === session?.user.id),
-        [loves, session?.user.id]
-    );
+    const isReacted = post.userHasLoved;
 
     const mutation = useMutation({
         mutationFn: async () => {
@@ -36,15 +33,24 @@ const ReactionPost: React.FC<Props> = ({ post, loves, setLoves }) => {
             }
 
             try {
-                if (isReacted) {
-                    setLoves((prev) =>
-                        prev.filter((r) => r !== session?.user.id)
-                    );
-                } else {
-                    setLoves((prev) => {
-                        return [...prev, session?.user.id];
-                    });
-                }
+                await queryClient.setQueryData<IPost>(
+                    queryKey.posts.id(post._id),
+                    (oldPost) => {
+                        if (!oldPost) return oldPost;
+
+                        const updatedPost = {
+                            ...oldPost,
+                            lovesCount: isReacted
+                                ? oldPost.lovesCount - 1
+                                : oldPost.lovesCount + 1,
+                            userHasLoved: !isReacted,
+                        };
+
+                        console.log('SET DATA POST', updatedPost);
+
+                        return updatedPost;
+                    }
+                );
 
                 await PostService.sendReaction(post._id);
 
@@ -55,7 +61,7 @@ const ReactionPost: React.FC<Props> = ({ post, loves, setLoves }) => {
                     });
                 }
 
-                await invalidatePost(post._id);
+                // await invalidatePost(post._id);
             } catch (error: any) {
                 logger({
                     message: 'Error reaction post' + error,

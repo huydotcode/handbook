@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActionPost, FooterPost } from '.';
 import { Avatar } from '../ui';
 import {
@@ -51,6 +51,14 @@ const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
         post.option === 'private' &&
         pathname == `/profile/${post.author._id}` &&
         session?.user?.id == post.author._id;
+
+    useEffect(() => {
+        if (post) {
+            console.log({
+                post,
+            });
+        }
+    }, [post]);
 
     if (!post) return <SkeletonPost />;
     if (post.option == 'private' && !showInPrivate) return null;

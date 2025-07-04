@@ -414,13 +414,6 @@ export const useQueryInvalidation = () => {
         });
     };
 
-    const invalidateSavedPosts = async (userId: string) => {
-        console.log('[LIB-HOOKS] invalidateSavedPosts', userId);
-        await queryClient.invalidateQueries({
-            queryKey: queryKey.posts.saved(userId),
-        });
-    };
-
     const invalidateComments = async (postId: string) => {
         console.log('[LIB-HOOKS] invalidateComments', postId);
         await queryClient.invalidateQueries({
@@ -491,7 +484,6 @@ export const useQueryInvalidation = () => {
         invalidateNewFeedPosts,
         invalidatePosts,
         invalidatePost,
-        invalidateSavedPosts,
         invalidateComments,
         invalidateReplyComments,
         invalidateLocations,

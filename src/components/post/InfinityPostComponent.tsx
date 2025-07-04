@@ -5,11 +5,14 @@ import queryKey from '@/lib/queryKey';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
-import { CreatePost, Post, SkeletonPost } from '.';
-import { Icons } from '../ui';
+import { Post, SkeletonPost } from '.';
+import { Icons, Modal } from '../ui';
+import Image from '../ui/image';
+import CreatePostV2 from './CreatePostV2';
 
 export type PostType =
     | 'new-feed'
@@ -158,6 +161,11 @@ const InfinityPostComponent: React.FC<Props> = ({
         [currentUser?.id, currentUser?.username, userId, username]
     );
 
+    const [showModalCreatePost, setShowModalCreatePost] = useState(false);
+
+    const handleClose = useCallback(() => setShowModalCreatePost(false), []);
+    const handleShow = useCallback(() => setShowModalCreatePost(true), []);
+
     const shouldShowCreatePost = useMemo(
         () =>
             showCreatePost &&
@@ -205,14 +213,63 @@ const InfinityPostComponent: React.FC<Props> = ({
     }, [isLoading, isFetching, isFetchingNextPage]);
 
     const renderCreatePost = useCallback(() => {
-        if (!shouldShowCreatePost) return null;
+        if (!shouldShowCreatePost && !showModalCreatePost) return null;
 
-        return type === 'group' && groupId ? (
-            <CreatePost groupId={groupId} type="group" />
-        ) : (
-            <CreatePost />
+        const user = session?.user;
+        const isGroupPost = type === 'group' && groupId;
+
+        return (
+            <>
+                <div className="mb-4 rounded-xl bg-white px-4 py-2 shadow-md transition-all duration-300 ease-in-out dark:bg-dark-secondary-1">
+                    <div className="flex items-center">
+                        <Link
+                            href={`/profile/${user?.id}`}
+                            className="h-10 w-10"
+                        >
+                            {user && (
+                                <Image
+                                    src={user.image || ''}
+                                    alt={user.name || ''}
+                                    width={40}
+                                    height={40}
+                                    className="h-full w-full rounded-full object-cover"
+                                />
+                            )}
+                        </Link>
+                        <div
+                            className="ml-3 flex h-10 flex-1 cursor-text items-center rounded-xl bg-primary-1 px-3 dark:bg-dark-secondary-2"
+                            onClick={handleShow}
+                        >
+                            <h5 className="text-secondary-1">
+                                {type === 'group'
+                                    ? 'Đăng bài lên nhóm này...'
+                                    : 'Bạn đang nghĩ gì?'}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <Modal
+                    handleClose={handleClose}
+                    show={showModalCreatePost}
+                    title="Đăng bài viết"
+                >
+                    <CreatePostV2
+                        onSubmitSuccess={handleClose}
+                        {...(isGroupPost && { groupId, type: 'group' })}
+                    />
+                </Modal>
+            </>
         );
-    }, [shouldShowCreatePost, type, groupId]);
+    }, [
+        shouldShowCreatePost,
+        showModalCreatePost,
+        session?.user,
+        handleShow,
+        type,
+        groupId,
+        handleClose,
+    ]);
 
     return (
         <div className={cn(className, 'relative w-full')}>

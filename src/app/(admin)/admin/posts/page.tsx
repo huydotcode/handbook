@@ -80,14 +80,14 @@ const AdminPostsPage = () => {
                                 <TableCell>
                                     <div className="flex items-center gap-2">
                                         <span className="flex items-center gap-1 text-sm">
-                                            <Icons.Heart2 /> {post.loves.length}
+                                            <Icons.Heart2 /> {post.lovesCount}
                                         </span>
                                         <span className="flex items-center gap-1 text-sm">
-                                            <Icons.Share /> {post.shares.length}
+                                            <Icons.Share /> {post.sharesCount}
                                         </span>
                                         <span className="flex items-center gap-1 text-sm">
                                             <Icons.Comment />
-                                            {post.comments_count}
+                                            {post.commentsCount}
                                         </span>
                                     </div>
                                 </TableCell>

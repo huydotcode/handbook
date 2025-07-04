@@ -1,6 +1,6 @@
 'use server';
 import { Comment, Media, Post } from '@/models';
-import SavedPost from '@/models/SavedPost';
+import PostInteraction from '@/models/PostInteraction';
 import connectToDB from '@/services/mongoose';
 import { revalidatePath } from 'next/cache';
 import { getAuthSession } from '../auth';
@@ -22,9 +22,7 @@ export const getPostByPostId = async ({ postId }: { postId: string }) => {
         const post = await Post.findById(postId)
             .populate('author', POPULATE_USER)
             .populate(POPULATE_GROUP)
-            .populate('media')
-            .populate('loves', POPULATE_USER)
-            .populate('shares', POPULATE_USER);
+            .populate('media');
 
         return JSON.parse(JSON.stringify(post));
     } catch (error: any) {
@@ -36,15 +34,32 @@ export const getSavedPosts = async ({ userId }: { userId: string }) => {
     try {
         await connectToDB();
 
-        const savedPost = await SavedPost.findOne({ userId })
-            .populate('posts')
-            .populate('posts.author', POPULATE_USER)
-            .populate('posts.media')
-            .populate('posts.group', POPULATE_GROUP)
-            .populate('posts.loves', POPULATE_USER)
-            .populate('posts.shares', POPULATE_USER);
+        const savedInteractions = await PostInteraction.find({
+            user: userId,
+            type: 'save',
+        })
+            .populate('post')
+            .populate('user', POPULATE_USER)
+            .sort({ createdAt: -1 });
 
-        return JSON.parse(JSON.stringify(savedPost));
+        const savedPosts = await Promise.all(
+            savedInteractions.map(async (interaction) => {
+                const post = interaction.post;
+                if (!post) return null;
+
+                const populatedPost = await Post.populate(post, {
+                    path: 'media',
+                    populate: { path: 'author', select: POPULATE_USER },
+                });
+
+                return JSON.parse(JSON.stringify(populatedPost));
+            })
+        );
+        return JSON.parse(
+            JSON.stringify({
+                posts: savedPosts.filter((post) => post !== null),
+            })
+        );
     } catch (error: any) {
         throw new Error(error);
     }
@@ -142,14 +157,70 @@ export const sendReaction = async ({ postId }: { postId: string }) => {
             throw new Error(`Post or user not found`);
         }
 
-        const isReacted = post.loves.find((r: any) => r.toString() === userId);
+        const postInteractionExists = await PostInteraction.findOne({
+            user: userId,
+            post: postId,
+            type: 'love',
+        });
 
-        if (isReacted) {
-            post.loves = post.loves.filter((r: any) => r.toString() !== userId);
+        if (postInteractionExists) {
+            console.log('Post interaction exists, removing love reaction');
+            await PostInteraction.findByIdAndDelete(postInteractionExists._id);
+            await Post.updateOne({ _id: postId }, { $inc: { lovesCount: -1 } });
         } else {
-            post.loves.push(userId);
+            console.log('Creating new post interaction for love reaction');
+            const newPostInteraction = new PostInteraction({
+                user: userId,
+                post: postId,
+                type: 'love',
+            });
+            await newPostInteraction.save();
+            await Post.updateOne({ _id: postId }, { $inc: { lovesCount: 1 } });
         }
 
+        // Cập nhật lại post để phản ánh số lượng tương tác
+        await post.save();
+        console.log('Post interaction updated successfully');
+
+        return true;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+};
+
+export const sharePost = async ({ postId }: { postId: string }) => {
+    try {
+        await connectToDB();
+        const session = await getAuthSession();
+        if (!session) return;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            throw new Error('Post not found');
+        }
+
+        const userId = session.user.id;
+        const postInteractionExists = await PostInteraction.findOne({
+            user: userId,
+            post: postId,
+            type: 'share',
+        });
+
+        if (postInteractionExists) {
+            await PostInteraction.findByIdAndDelete(postInteractionExists._id);
+            await Post.updateOne(
+                { _id: postId },
+                { $inc: { sharesCount: -1 } }
+            );
+        } else {
+            const newPostInteraction = new PostInteraction({
+                user: userId,
+                post: postId,
+                type: 'share',
+            });
+            await newPostInteraction.save();
+            await Post.updateOne({ _id: postId }, { $inc: { sharesCount: 1 } });
+        }
         await post.save();
 
         return true;
@@ -229,25 +300,14 @@ export const savePost = async ({
 
         await connectToDB();
 
-        const savedPost = await SavedPost.findOne({
-            userId: session.user.id,
+        await PostInteraction.create({
+            user: session.user.id,
+            post: postId,
+            type: 'save',
         });
 
-        if (!savedPost) {
-            const newSavedPost = new SavedPost({
-                userId: session.user.id,
-                posts: [postId],
-            });
-            await newSavedPost.save();
-        }
-
-        if (savedPost) {
-            savedPost.posts.push(postId);
-            await savedPost.save();
-        }
-
         if (path) revalidatePath(path);
-        return JSON.parse(JSON.stringify(savedPost));
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -266,20 +326,14 @@ export const unsavePost = async ({
 
         await connectToDB();
 
-        const savedPost = await SavedPost.findOne({
-            userId: session.user.id,
+        await PostInteraction.findOneAndDelete({
+            user: session.user.id,
+            post: postId,
+            type: 'save',
         });
 
-        if (savedPost) {
-            savedPost.posts = savedPost.posts.filter(
-                (p: any) => p.toString() !== postId
-            );
-            await savedPost.save();
-        }
-
         if (path) revalidatePath(path);
-
-        return JSON.parse(JSON.stringify(savedPost));
+        return true;
     } catch (error: any) {
         throw new Error(error);
     }

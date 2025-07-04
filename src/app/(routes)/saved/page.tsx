@@ -18,11 +18,11 @@ export default async function SavedPage() {
                 <h1 className="text-2xl font-bold">Đã lưu</h1>
 
                 <div className="mt-4">
-                    {postsSaved.posts.reverse().map((post) => (
+                    {postsSaved.reverse().map((post) => (
                         <Post key={post._id} data={post} />
                     ))}
 
-                    {postsSaved.posts.length === 0 && (
+                    {postsSaved.length === 0 && (
                         <p className="text-center">Không có bài viết nào</p>
                     )}
                 </div>

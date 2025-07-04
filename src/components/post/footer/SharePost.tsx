@@ -5,6 +5,7 @@ import { useSocket } from '@/context';
 import { useFriends } from '@/context/SocialContext';
 import ConversationService from '@/lib/services/conversation.service';
 import MessageService from '@/lib/services/message.service';
+import PostService from '@/lib/services/post.service';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -33,6 +34,8 @@ const SharePost: React.FC<Props> = ({ post }) => {
         if (!session?.user) return;
 
         try {
+            await PostService.share(post._id);
+
             const { isNew, conversation } =
                 await ConversationService.getPrivateConversation({
                     userId: session.user.id,
