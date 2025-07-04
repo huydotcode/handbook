@@ -10,6 +10,14 @@ export default async function SavedPage() {
 
     const postsSaved = await PostService.getSavedByUserId(session.user.id);
 
+    if (!postsSaved || postsSaved.length === 0) {
+        return (
+            <div className="text-center">
+                <p className="text-lg">Không có bài viết nào được lưu.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="relative top-[56px] mx-auto min-h-[calc(100vh-56px)] w-[1200px] max-w-screen md:w-screen">
             <Sidebar />
