@@ -339,6 +339,37 @@ class PostController {
             next(e);
         }
     }
+
+    // ROUTE: GET /api/v1/posts/saved
+    public async getSavedPosts(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const token = await getDecodedTokenFromHeaders(req.headers);
+            if (!token) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+            const user_id = token.id;
+            const page = parseInt(req.query.page as string) || 1;
+            const page_size = parseInt(req.query.page_size as string) || 3;
+
+            const posts = await PostInteraction.find({
+                user: user_id,
+                type: 'save',
+            })
+                .populate('post')
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * page_size)
+                .limit(page_size);
+
+            res.status(200).json(posts.map((interaction) => interaction.post));
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new PostController();

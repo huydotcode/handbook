@@ -8,6 +8,7 @@ postRouter.post('/', postController.createPost);
 postRouter.get('/new-feed', postController.getNewFeedPosts);
 postRouter.get('/new-feed-group', postController.getNewFeedGroupPosts);
 postRouter.get('/new-feed-friend', postController.getNewFeedFriendPosts);
+postRouter.get('/saved', postController.getSavedPosts);
 postRouter.get('/profile/:user_id', postController.getProfilePosts);
 postRouter.get('/group/member', postController.getPostByMember);
 postRouter.get('/group/manage/:group_id', postController.getManageGroupPosts);
