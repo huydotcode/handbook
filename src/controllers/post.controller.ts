@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+import { Types } from 'mongoose';
 import Post from '../models/post.model';
+import PostInteraction from '../models/post_interaction.model';
 import User from '../models/user.model';
+import { IPost } from '../types';
+import { getDecodedTokenFromHeaders } from '../utils/jwt';
 import { POPULATE_GROUP, POPULATE_USER } from '../utils/populate';
 
 class PostController {
@@ -11,7 +15,6 @@ class PostController {
         next: NextFunction
     ): Promise<void> {
         try {
-            console.log('createPost called with body:', req.body);
             const postData = req.body;
             const newPost = new Post(postData);
             await newPost.save();
@@ -42,13 +45,38 @@ class PostController {
         next: NextFunction
     ): Promise<void> {
         try {
-            console.log('getPostById called with id:', req.params.id);
-            const post = await Post.findById(req.params.id)
+            const token = await getDecodedTokenFromHeaders(req.headers);
+            if (!token) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const post = await Post.findOne({
+                _id: new Types.ObjectId(req.params.id),
+            })
                 .populate('media')
                 .populate('author', POPULATE_USER)
                 .populate(POPULATE_GROUP)
-                .populate('loves', POPULATE_USER)
-                .populate('shares', POPULATE_USER);
+                .lean<IPost>();
+
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
+                return;
+            }
+
+            const interactions = await PostInteraction.find({
+                post: post._id,
+                user: token.id,
+                type: { $in: ['love', 'share', 'save'] },
+            }).lean();
+
+            const isLoved = interactions.some((i) => i.type === 'love');
+            const isShared = interactions.some((i) => i.type === 'share');
+            const isSaved = interactions.some((i) => i.type === 'save');
+
+            post.userHasLoved = isLoved;
+            post.userHasShared = isShared;
+            post.userHasSaved = isSaved;
 
             res.status(200).json(post);
         } catch (error) {
@@ -68,9 +96,7 @@ class PostController {
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            console.log('User:', user);
-
-            const posts = await Post.find({
+            let posts = await Post.find({
                 $or: [
                     {
                         user: {
@@ -86,14 +112,40 @@ class PostController {
                 .populate('media')
                 .populate('author', POPULATE_USER)
                 .populate(POPULATE_GROUP)
-                .populate('loves', POPULATE_USER)
-                .populate('shares', POPULATE_USER)
 
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
-                .limit(page_size);
+                .limit(page_size)
+                .lean();
 
-            res.status(200).json(posts);
+            const postIds = posts.map((p) => p._id);
+            const interactions = await PostInteraction.find({
+                user: user_id,
+                post: { $in: postIds },
+                type: { $in: ['love', 'share'] },
+            }).lean();
+
+            // Tạo map {postId -> {love: true, share: true}}
+            const interactionMap = new Map();
+            interactions.forEach((inter) => {
+                const key = inter.post.toString();
+                if (!interactionMap.has(key)) {
+                    interactionMap.set(key, {});
+                }
+                interactionMap.get(key)[inter.type] = true;
+            });
+
+            // Gắn vào từng post
+            const enrichedPosts = posts.map((post) => {
+                const map = interactionMap.get(post._id) || {};
+                return {
+                    ...post,
+                    userHasLoved: !!map.love,
+                    userHasShared: !!map.share,
+                };
+            });
+
+            res.json(enrichedPosts);
         } catch (error) {
             next(error);
         }
@@ -256,13 +308,6 @@ class PostController {
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
                 .limit(page_size);
-
-            console.log({
-                group_id,
-                page,
-                page_size,
-                posts,
-            });
 
             res.status(200).json(posts);
         } catch (error) {

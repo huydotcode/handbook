@@ -1,19 +1,18 @@
 import mongoose from 'mongoose';
-import { config } from '../utils/config';
+import Category from '../models/category.model';
 import Conversation from '../models/conversation.model';
 import ConversationRole from '../models/conversationrole.model';
 import Follows from '../models/follow.model';
 import Group from '../models/group.model';
-import Media from '../models/media.model';
 import Item from '../models/item.model';
 import Location from '../models/location.model';
+import Media from '../models/media.model';
 import Message from '../models/message.model';
 import Notification from '../models/notification.model';
 import Post from '../models/post.model';
 import Profile from '../models/profile.model';
-import SavedPost from '../models/savedpost.model';
 import User from '../models/user.model';
-import Category from '../models/category.model';
+import { config } from '../utils/config';
 
 let isConnected = false;
 
@@ -42,7 +41,6 @@ export const connectToMongo = async () => {
         await Notification.createCollection();
         await Post.createCollection();
         await Profile.createCollection();
-        await SavedPost.createCollection();
         await User.createCollection();
         await Category.createCollection();
 

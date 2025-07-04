@@ -3,7 +3,11 @@ import Notification from '../models/notification.model';
 import { POPULATE_USER } from '../utils/populate';
 
 class NotificationController {
-    public async getNotifications(req: Request, res: Response, next: NextFunction) {
+    public async getNotifications(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
         try {
             const userId = req.query.user_id as string;
             const page = parseInt(req.query.page as string);
@@ -20,7 +24,7 @@ class NotificationController {
 
             res.status(200).json(notifications);
         } catch (error) {
-            res.status(500).json({ message: "Error fetching notifications" });
+            res.status(500).json({ message: 'Error fetching notifications' });
         }
     }
 }

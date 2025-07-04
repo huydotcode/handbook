@@ -1,19 +1,18 @@
 import { Router } from 'express';
-import postRouter from './post.route';
+import categoryRouter from './category.route';
 import commentRouter from './comment.route';
 import conversationRouter from './conversation.route';
-import searchRouter from './search.route';
-import itemRouter from './item.route';
-import messageRouter from './message.route';
-import savedPostRouter from './saved-post.route';
-import userRouter from './user.route';
-import locationRouter from './location.route';
-import notificationRouter from './notification.route';
-import requestRouter from './request.route';
-import groupRouter from './group.route';
-import uploadRouter from './upload.route';
 import followRouter from './follow.route';
-import categoryRouter from './category.route';
+import groupRouter from './group.route';
+import itemRouter from './item.route';
+import locationRouter from './location.route';
+import messageRouter from './message.route';
+import notificationRouter from './notification.route';
+import postRouter from './post.route';
+import requestRouter from './request.route';
+import searchRouter from './search.route';
+import uploadRouter from './upload.route';
+import userRouter from './user.route';
 
 const apiRouter = Router();
 
@@ -23,7 +22,6 @@ apiRouter.use('/conversations', conversationRouter);
 apiRouter.use('/search', searchRouter);
 apiRouter.use('/items', itemRouter);
 apiRouter.use('/message', messageRouter);
-apiRouter.use('/saved-posts', savedPostRouter);
 apiRouter.use('/user/follow', followRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/locations', locationRouter);

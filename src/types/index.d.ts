@@ -109,6 +109,10 @@ export type IPost = {
     updatedAt: Date;
     type: 'default' | 'group';
     status: 'active' | 'pending' | 'rejected';
+    tags: string[];
+    userHasLoved?: boolean;
+    userHasShared?: boolean;
+    userHasSaved?: boolean;
 };
 
 export type IUser = {
@@ -200,14 +204,6 @@ export type IItem = {
         name: string;
         value: string;
     }[];
-    createdAt: Date;
-    updatedAt: Date;
-};
-
-export type ISavedPost = {
-    _id: string;
-    userId: IUser;
-    posts: IPost[];
     createdAt: Date;
     updatedAt: Date;
 };
