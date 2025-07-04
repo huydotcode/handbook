@@ -22,7 +22,8 @@ export type PostType =
     | 'new-feed-friend'
     | 'manage-group-posts'
     | 'manage-group-posts-pending'
-    | 'post-by-member';
+    | 'post-by-member'
+    | 'saved';
 
 export const PostTypes = {
     NEW_FEED: 'new-feed' as PostType,
@@ -57,6 +58,7 @@ const ENDPOINTS: Record<PostType, string> = {
     'manage-group-posts': '/posts/group/manage',
     'post-by-member': '/posts/group/member',
     'manage-group-posts-pending': '/posts/group/manage/pending',
+    saved: '/posts/saved',
 };
 
 const usePosts = ({

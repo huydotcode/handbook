@@ -61,6 +61,15 @@ const SavePost: React.FC<Props> = ({ post }) => {
                     };
                 }
             );
+
+            await queryClient.invalidateQueries({
+                queryKey: queryKey.posts.newFeed({
+                    type: 'saved',
+                    groupId: undefined,
+                    userId: undefined,
+                    username: undefined,
+                }),
+            });
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
                 position: 'bottom-left',
