@@ -6,6 +6,7 @@ import User from '../models/user.model';
 import { IPost } from '../types';
 import { getDecodedTokenFromHeaders } from '../utils/jwt';
 import { POPULATE_GROUP, POPULATE_USER } from '../utils/populate';
+import Follows from '../models/follow.model';
 
 class PostController {
     // ROUTE: POST /api/posts
@@ -96,15 +97,27 @@ class PostController {
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            let posts = await Post.find({
+            const followings = await Follows.find({
+                follower: user_id,
+            })
+                .select('following')
+                .lean();
+
+            const posts = await Post.find({
                 $or: [
                     {
-                        user: {
-                            $in: user?.friends,
+                        author: {
+                            $in: followings.map((f) => f.following),
                         },
+                        option: 'public',
                     },
                     {
-                        option: 'public',
+                        author: {
+                            $in: user?.friends,
+                        },
+                        option: {
+                            $in: ['friends', 'public'],
+                        },
                     },
                 ],
                 status: 'active',
@@ -113,7 +126,7 @@ class PostController {
                 .populate('author', POPULATE_USER)
                 .populate(POPULATE_GROUP)
 
-                .sort({ createdAt: -1, loves: -1 })
+                .sort({ createdAt: -1, lovesCount: -1 })
                 .skip((page - 1) * page_size)
                 .limit(page_size)
                 .lean();
