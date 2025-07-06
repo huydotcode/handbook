@@ -1,12 +1,13 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import apiRouter from './routes/api.route';
 import { connectToMongo } from './services/mongodb';
-import dotenv from 'dotenv';
 
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authMiddleware from './middlewares/auth.middleware';
-import cookieParser from 'cookie-parser';
+import authRouter from './routes/auth.route';
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ app.use(
     })
 );
 
-// app.use('/api/v1', limiteMiddlware, authMiddleware, apiRouter);
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1', authMiddleware, apiRouter);
 
 app.get('/', (req, res) => {
