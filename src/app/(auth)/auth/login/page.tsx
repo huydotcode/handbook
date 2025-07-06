@@ -184,6 +184,17 @@ const LoginPage = () => {
                                         </div>
                                     )}
 
+                                    <div className="mt-4 flex justify-end">
+                                        <Button
+                                            className="p-0"
+                                            variant={'text'}
+                                            href="/auth/forgot-password"
+                                            size={'sm'}
+                                        >
+                                            Quên mật khẩu?
+                                        </Button>
+                                    </div>
+
                                     <Button
                                         variant={'primary'}
                                         type="submit"

@@ -1,6 +1,9 @@
 export const API_ROUTES = {
     AUTH: {
         SIGN_UP: '/api/auth/signup',
+        SEND_OTP: '/auth/send-otp',
+        VERIFY_OTP: '/auth/verify-otp',
+        RESET_PASSWORD: '/auth/reset-password',
     },
     USER: {
         INDEX: '/api/user',

@@ -61,6 +61,20 @@ export const loginValidation = z.object({
 
 export type LoginValidation = z.infer<typeof loginValidation>;
 
+export const resetPasswordValidation = z
+    .object({
+        email: z.string().email('Email không hợp lệ'),
+        password: z.string().min(6, 'Mật khẩu từ 6-50 kí tự'),
+        repassword: z.string().min(6, 'Mật khẩu từ 6-50 kí tự'),
+        otp: z.string().min(6, 'OTP phải có 6 chữ số'),
+    })
+    .refine((data) => data.password === data.repassword, {
+        message: 'Mật khẩu và xác nhận mật khẩu không khớp',
+        path: ['repassword'],
+    });
+
+export type ResetPasswordValidation = z.infer<typeof resetPasswordValidation>;
+
 // Create post validation
 export const createPostValidation = z.object({
     content: z.string().min(1, 'Nội dung không được để trống'),
