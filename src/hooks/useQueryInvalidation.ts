@@ -273,10 +273,12 @@ export const useQueryInvalidation = () => {
                             return {
                                 ...conversation,
                                 lastAccessed: new Date(),
-                                readBy: conversation.lastMessage.readBy.push({
-                                    user: user,
-                                    readAt: new Date(),
-                                }),
+                                readBy: conversation?.lastMessage
+                                    ? conversation?.lastMessage?.readBy.push({
+                                          user: user,
+                                          readAt: new Date(),
+                                      })
+                                    : [],
                             };
                         }
                     }
