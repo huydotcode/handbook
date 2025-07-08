@@ -4,11 +4,14 @@ import SkeletonComment from '@/components/post/comment/SkeletonComment';
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { API_ROUTES } from '@/config/api';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
 import CommentService from '@/lib/services/comment.service';
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -29,8 +32,8 @@ const PAGE_SIZE = 3;
 
 const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
     const { data: session } = useSession();
+    const queryClient = useQueryClient();
 
-    const { invalidatePost, invalidateComments } = useQueryInvalidation();
     const {
         data: comments,
         isLoading: isLoadingComments,
@@ -71,7 +74,11 @@ const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
         },
     });
 
-    const form = useForm<FormData>();
+    const form = useForm<FormData>({
+        defaultValues: {
+            text: '',
+        },
+    });
     const {
         handleSubmit,
         reset,
@@ -99,16 +106,33 @@ const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
         setValue('text', '');
 
         try {
-            await CommentService.create({
+            const newComment = await CommentService.create({
                 content: text,
                 replyTo: null,
                 postId: post._id,
             });
 
-            await invalidatePost(post._id);
-            await invalidateComments(post._id);
+            await queryClient.setQueryData(
+                queryKey.posts.id(post._id),
+                (oldData: IPost | undefined) => {
+                    if (!oldData) return oldData;
+                    return {
+                        ...oldData,
+                        commentsCount: oldData.commentsCount + 1,
+                    };
+                }
+            );
 
-            await fetchNextPage();
+            await queryClient.setQueryData(
+                queryKey.posts.comments(post._id),
+                (oldData: { pages: IComment[][]; pageParams: number[] }) => {
+                    if (!oldData) return oldData;
+                    return {
+                        pages: [[newComment], ...oldData.pages],
+                        pageParams: [1, ...oldData.pageParams],
+                    };
+                }
+            );
         } catch (error: any) {
             console.log('Error onSubmitComment: ', error);
             toast.error('Không thể gửi bình luận!', {
@@ -188,12 +212,6 @@ const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
             </div>
 
             {isPending && <SkeletonComment />}
-
-            {!isLoadingComments && comments.length === 0 && (
-                <div className="text-center text-xs text-secondary-1">
-                    Chưa có bình luận nào
-                </div>
-            )}
 
             {!isLoadingComments &&
                 comments &&

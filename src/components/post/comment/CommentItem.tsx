@@ -18,7 +18,7 @@ import {
 } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
@@ -34,7 +34,13 @@ type FormData = {
 
 const PAGE_SIZE = 5;
 
-export const useReplyComments = (commentId: string | undefined) =>
+export const useReplyComments = ({
+    commentId,
+    enabled = true,
+}: {
+    commentId: string | undefined;
+    enabled?: boolean;
+}) =>
     useInfiniteQuery({
         queryKey: queryKey.posts.replyComments(commentId),
         queryFn: async ({ pageParam = 1 }) => {
@@ -60,7 +66,7 @@ export const useReplyComments = (commentId: string | undefined) =>
             return firstPage.length === PAGE_SIZE ? 1 : undefined;
         },
         select: (data) => data.pages.flatMap((page) => page),
-        enabled: !!commentId,
+        enabled: !!commentId && enabled,
         refetchOnWindowFocus: false,
         refetchInterval: false,
     });
@@ -69,6 +75,11 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
     const { data: session } = useSession();
     const { invalidateComments, invalidatePost, invalidateReplyComments } =
         useQueryInvalidation();
+    const { data: replyComments } = useReplyComments({
+        commentId: comment._id,
+        enabled: comment.hasReplies,
+    });
+    const [showReplyComments, setShowReplyComments] = useState<boolean>(false);
     const queryClient = useQueryClient();
 
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
@@ -103,29 +114,78 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                 postId: comment.post._id,
             });
 
-            await invalidatePost(comment.post._id);
+            // Cập nhật hasReplies cho comment gốc
+            if (!comment.hasReplies) {
+                if (comment.replyComment) {
+                    await queryClient.setQueryData(
+                        queryKey.posts.replyComments(comment.replyComment._id),
+                        (oldData: {
+                            pages: IComment[][];
+                            pageParams: number[];
+                        }) => {
+                            if (!oldData) return oldData;
+
+                            return {
+                                ...oldData,
+                                pages: oldData.pages.map((page) => {
+                                    return page.map((c: IComment) => {
+                                        if (c._id === comment._id) {
+                                            return {
+                                                ...c,
+                                                hasReplies: true,
+                                            };
+                                        }
+                                        return c;
+                                    });
+                                }),
+                            };
+                        }
+                    );
+                } else {
+                    await queryClient.setQueryData(
+                        queryKey.posts.comments(comment.post._id),
+                        (oldData: {
+                            pages: IComment[][];
+                            pageParams: number[];
+                        }) => {
+                            if (!oldData) return oldData;
+
+                            return {
+                                ...oldData,
+                                pages: oldData.pages.map((page) => {
+                                    return page.map((c: IComment) => {
+                                        if (c._id === comment._id) {
+                                            return {
+                                                ...c,
+                                                hasReplies: true,
+                                            };
+                                        }
+                                        return c;
+                                    });
+                                }),
+                            };
+                        }
+                    );
+                }
+            }
+
+            // Cập nhật dữ liệu reply comments
             await queryClient.setQueryData(
-                queryKey.posts.comments(comment.post._id),
-                (oldData: any) => {
+                queryKey.posts.replyComments(comment._id),
+                (oldData: { pages: IComment[][]; pageParams: number[] }) => {
                     if (!oldData) return oldData;
 
                     return {
-                        ...oldData,
-                        pages: oldData.pages.map((page: any) => {
-                            return page.map((c: IComment) => {
-                                if (c._id === comment._id) {
-                                    return {
-                                        ...c,
-                                        hasReplies: true,
-                                    };
-                                }
-                                return c;
-                            });
-                        }),
+                        pages: [[newComment], ...oldData.pages],
+                        pageParams: [1, ...oldData.pageParams],
                     };
                 }
             );
-            await invalidateReplyComments(comment._id);
+
+            setShowReplyComments(true);
+
+            console.log('Comment', comment);
+            console.log('New comment created: ', newComment);
         } catch (error) {
             logger({
                 message: 'Error send reply comments' + error,
@@ -184,27 +244,47 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
         try {
             setCommentCount((prev) => prev - 1);
 
-            await queryClient.setQueryData(
-                queryKey.posts.comments(comment.post._id),
-                (oldData: any) => {
-                    if (!oldData) return oldData;
-
-                    return {
-                        ...oldData,
-                        pages: oldData.pages.map((page: any) => {
-                            return page.filter(
-                                (c: IComment) => c._id !== comment._id
-                            );
-                        }),
-                    };
-                }
-            );
-
             await CommentService.delete(comment._id);
 
-            await invalidateReplyComments(comment._id);
-            await invalidateComments(comment.post._id);
-            await invalidatePost(comment.post._id);
+            if (comment.replyComment) {
+                await queryClient.setQueryData(
+                    queryKey.posts.replyComments(comment.replyComment._id),
+                    (oldData: {
+                        pages: IComment[][];
+                        pageParams: number[];
+                    }) => {
+                        if (!oldData) return oldData;
+
+                        return {
+                            ...oldData,
+                            pages: oldData.pages.map((page) => {
+                                return page.filter(
+                                    (c: IComment) => c._id !== comment._id
+                                );
+                            }),
+                        };
+                    }
+                );
+            } else {
+                await queryClient.setQueryData(
+                    queryKey.posts.comments(comment.post._id),
+                    (oldData: {
+                        pages: IComment[][];
+                        pageParams: number[];
+                    }) => {
+                        if (!oldData) return oldData;
+
+                        return {
+                            ...oldData,
+                            pages: oldData.pages.map((page) => {
+                                return page.filter(
+                                    (c: IComment) => c._id !== comment._id
+                                );
+                            }),
+                        };
+                    }
+                );
+            }
         } catch (error) {
             logger({
                 message: 'Error delete comment' + error,
@@ -227,6 +307,12 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
             );
         }
     };
+
+    useEffect(() => {
+        if (comment.replyComment) {
+            console.log('CommentItem: comment', comment);
+        }
+    }, [comment]);
 
     return (
         <div key={comment._id} className="mt-2">
@@ -308,13 +394,6 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                         )}
                     </div>
 
-                    {comment.hasReplies && (
-                        <ReplyComments
-                            comment={comment}
-                            setCommentCount={setCommentCount}
-                        />
-                    )}
-
                     {session?.user && showReplyForm && (
                         <div className="relative mt-2 flex">
                             <Avatar session={session} />
@@ -372,6 +451,14 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                             </div>
                         </div>
                     )}
+
+                    {/* {comment.hasReplies && ( */}
+                    <ReplyComments
+                        setShowReplyComments={setShowReplyComments}
+                        showReplyComments={showReplyComments}
+                        comment={comment}
+                        setCommentCount={setCommentCount}
+                    />
                 </div>
             </div>
         </div>
