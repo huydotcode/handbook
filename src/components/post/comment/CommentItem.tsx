@@ -234,10 +234,40 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
             }
         );
 
+        if (comment.replyComment) {
+            await queryClient.setQueryData(
+                queryKey.posts.replyComments(comment.replyComment._id),
+                (oldData: any) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page: any) => {
+                            return page.map((c: IComment) => {
+                                if (c._id === comment._id) {
+                                    return {
+                                        ...c,
+                                        loves: isLoved
+                                            ? c.loves.filter(
+                                                  (love: IUser) =>
+                                                      love._id !==
+                                                      session?.user.id
+                                              )
+                                            : [
+                                                  ...c.loves,
+                                                  { _id: session?.user.id },
+                                              ],
+                                    };
+                                }
+                                return c;
+                            });
+                        }),
+                    };
+                }
+            );
+        }
+
         await CommentService.love(comment._id);
-        await invalidateComments(comment.post._id);
-        await invalidateReplyComments(comment._id);
-        await invalidatePost(comment.post._id);
     };
 
     const handleDeleteComment = async () => {
