@@ -132,12 +132,6 @@ const ForgotPassword = () => {
         }
     };
 
-    useEffect(() => {
-        console.log({
-            errors: form.formState.errors,
-        });
-    }, [form.formState.errors]);
-
     return (
         <>
             <div className="relative mx-auto w-full max-w-md">

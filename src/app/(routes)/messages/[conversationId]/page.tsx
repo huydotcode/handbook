@@ -117,12 +117,6 @@ const ConversationPage: React.FC<Props> = ({}) => {
     }, [conversation, isLoadingConversation, session?.user.id]);
 
     useEffect(() => {
-        console.log({
-            conversation,
-        });
-    }, [conversation]);
-
-    useEffect(() => {
         if (!socketEmitor) return;
         if (!session) return;
         if (!conversation) return;

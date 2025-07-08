@@ -140,7 +140,6 @@ const CreatePostV2: FC<Props> = ({
     // Xử lý thay đổi ảnh
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
-        console.log('handleChangeImage', fileList);
         if (fileList) {
             const newFiles: File[] = Array.from(fileList || []);
 

@@ -52,14 +52,6 @@ const Post: React.FC<Props> = React.memo(({ data, isManage = false }) => {
         pathname == `/profile/${post.author._id}` &&
         session?.user?.id == post.author._id;
 
-    useEffect(() => {
-        if (post) {
-            console.log({
-                post,
-            });
-        }
-    }, [post]);
-
     if (!post) return <SkeletonPost />;
     if (post.option == 'private' && !showInPrivate) return null;
 

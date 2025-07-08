@@ -46,8 +46,6 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                             userHasLoved: !isReacted,
                         };
 
-                        console.log('SET DATA POST', updatedPost);
-
                         return updatedPost;
                     }
                 );
