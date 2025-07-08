@@ -22,6 +22,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import ReplyComments from './ReplyComments';
+import SkeletonComment from './SkeletonComment';
 
 interface Props {
     data: IComment;
@@ -94,6 +95,12 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
         comment.loves.some((love) => love._id === session?.user.id)
     );
 
+    const mutationSendReplyComment = useMutation({
+        mutationFn: async (data: FormData) => {
+            await sendReplyComment(data);
+        },
+    });
+
     const mutationLoveComment = useMutation({
         mutationFn: () => handleLoveComment(),
     });
@@ -106,6 +113,7 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
         if (formState.isSubmitting || formState.isLoading) return;
 
         try {
+            reset();
             setCommentCount((prev) => prev + 1);
 
             const newComment = await CommentService.create({
@@ -192,8 +200,6 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                 type: 'error',
             });
             toast.error('Có lỗi xảy ra khi gửi bình luận');
-        } finally {
-            reset();
         }
     };
 
@@ -432,8 +438,10 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                                 <Form {...form}>
                                     <form
                                         className="flex h-fit w-full overflow-hidden rounded-xl bg-primary-1 dark:bg-dark-secondary-2"
-                                        onSubmit={handleSubmit(
-                                            sendReplyComment
+                                        onSubmit={handleSubmit((data) =>
+                                            mutationSendReplyComment.mutate(
+                                                data
+                                            )
                                         )}
                                         ref={formRef}
                                     >
@@ -481,6 +489,8 @@ const CommentItem: React.FC<Props> = ({ data: comment, setCommentCount }) => {
                             </div>
                         </div>
                     )}
+
+                    {mutationSendReplyComment.isPending && <SkeletonComment />}
 
                     {/* {comment.hasReplies && ( */}
                     <ReplyComments
