@@ -4,6 +4,7 @@ const socketEvent = {
     ACCEPT_FRIEND: 'accept-friend',
 
     // NOTIFICATION
+    SEND_NOTIFICATION: 'send-notification',
     RECEIVE_NOTIFICATION: 'receive-notification',
 
     // Message

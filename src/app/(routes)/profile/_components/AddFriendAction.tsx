@@ -4,6 +4,7 @@ import Icons from '@/components/ui/Icons';
 import { useSocket } from '@/context';
 import { useRequests } from '@/context/AppContext';
 import { useFriends } from '@/context/SocialContext';
+import { NotificationType } from '@/enums/EnumNotification';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import NotificationService from '@/lib/services/notification.service';
 import UserService from '@/lib/services/user.service';
@@ -116,7 +117,7 @@ const AddFriendAction: React.FC<Props> = ({ className = '', userId }) => {
             await NotificationService.deleteNotificationByUsers({
                 senderId: session.user.id,
                 receiverId: userId,
-                type: 'request-add-friend',
+                type: NotificationType.REQUEST_ADD_FRIEND,
             });
 
             await invalidateRequests(session?.user.id as string);

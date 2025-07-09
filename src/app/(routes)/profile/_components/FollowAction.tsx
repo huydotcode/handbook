@@ -1,7 +1,9 @@
 'use client';
 import { Button } from '@/components/ui/Button';
+import { useSocket } from '@/context';
 import { useFollowing } from '@/context/SocialContext';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
+import NotificationService from '@/lib/services/notification.service';
 import UserService from '@/lib/services/user.service';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,8 +19,8 @@ interface Props {
 const FollowAction: React.FC<Props> = ({ className = '', userId }) => {
     const { data: session } = useSession();
     const { invalidateRequests, invalidateFollowings } = useQueryInvalidation();
+    const { socket, socketEmitor } = useSocket();
 
-    const queryClient = useQueryClient();
     const { data: followings } = useFollowing(session?.user.id as string);
 
     const [countClick, setCountClick] = useState<number>(0);
@@ -35,8 +37,21 @@ const FollowAction: React.FC<Props> = ({ className = '', userId }) => {
             await invalidateRequests(session?.user.id as string);
             await invalidateFollowings(session?.user.id as string);
 
+            const newNotification =
+                await NotificationService.createNotificationFollowUser({
+                    senderId: session?.user.id as string,
+                    receiverId: userId,
+                });
+
+            if (socket && newNotification) {
+                socketEmitor.sendNotification({
+                    notification: newNotification,
+                });
+            }
+
             toast.success('Đã theo dõi');
         } catch (error) {
+            console.log('[FollowAction] followUser error', error);
             toast.error('Đã có lỗi xảy ra khi theo dõi!');
         }
     };

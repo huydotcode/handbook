@@ -3,7 +3,6 @@
 import { Icons } from '@/components/ui';
 import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
-import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -22,6 +21,7 @@ type SocketContextType = {
         pinMessage: (args: { message: IMessage }) => void;
         unpinMessage: (args: { message: IMessage }) => void;
         sendRequestAddFriend: (args: { request: INotification }) => void;
+        sendNotification: (args: { notification: INotification }) => void;
         readMessage: (args: { roomId: string; userId: string }) => void;
         likePost: (args: { postId: string; authorId: string }) => void;
         leaveRoom: (args: { roomId: string; userId: string }) => void;
@@ -38,6 +38,7 @@ export const SocketContext = createContext<SocketContextType>({
         receiveNotification: () => {},
         deleteMessage: () => {},
         sendRequestAddFriend: () => {},
+        sendNotification: () => {},
         readMessage: () => {},
         pinMessage: () => {},
         unpinMessage: () => {},
@@ -64,7 +65,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         queryClientReadMessage,
         queryClientRemovePinnedMessage,
     } = useQueryInvalidation();
-    const queryClient = useQueryClient();
 
     const pathname = usePathname();
 
@@ -141,6 +141,13 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 userId: string;
             }) => {
                 socket?.emit(socketEvent.LEAVE_ROOM, { roomId, userId });
+            },
+            sendNotification: ({
+                notification,
+            }: {
+                notification: INotification;
+            }) => {
+                socket?.emit(socketEvent.SEND_NOTIFICATION, { notification });
             },
         }),
         [socket]

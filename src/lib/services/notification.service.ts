@@ -1,6 +1,7 @@
 import {
     acceptFriend,
     createNotificationAcceptFriend,
+    createNotificationFollowUser,
     declineFriend,
     deleteNotification,
     deleteNotificationByUsers,
@@ -49,6 +50,14 @@ interface INotificationService {
         receiverId: string;
         message: string;
         type: string;
+    }) => Promise<INotification | null>;
+
+    createNotificationFollowUser: ({
+        senderId,
+        receiverId,
+    }: {
+        senderId: string;
+        receiverId: string;
     }) => Promise<INotification | null>;
 
     markAllAsRead: (userId: string) => Promise<boolean>;
@@ -112,19 +121,26 @@ class NotificationServiceClass implements INotificationService {
     async createNotificationAcceptFriend({
         senderId,
         receiverId,
-        message,
-        type,
     }: {
         senderId: string;
         receiverId: string;
-        message: string;
-        type: string;
     }): Promise<INotification | null> {
         return await createNotificationAcceptFriend({
             senderId,
             receiverId,
-            message,
-            type,
+        });
+    }
+
+    async createNotificationFollowUser({
+        senderId,
+        receiverId,
+    }: {
+        senderId: string;
+        receiverId: string;
+    }): Promise<INotification | null> {
+        return await createNotificationFollowUser({
+            senderId,
+            receiverId,
         });
     }
 

@@ -94,6 +94,19 @@ interface INotification {
     isRead: boolean;
     type: string;
 
+    extra?: {
+        postId?: string;
+        commentId?: string;
+        groupId?: string;
+        messageId?: string;
+        notificationId?: string;
+
+        [key: string]: any;
+    };
+
+    isDeleted: boolean;
+    deletedAt?: Date | null;
+
     createdAt: Date;
     updatedAt: Date;
 }

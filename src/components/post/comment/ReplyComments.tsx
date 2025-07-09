@@ -28,42 +28,48 @@ const ReplyComments: React.FC<Props> = ({
 
     return (
         <>
-            {isLoadingReplyComments || !replyComments ? (
+            {(isLoadingReplyComments || !replyComments) &&
+            comment.hasReplies ? (
                 <div className={'mt-2'}>
                     <SkeletonComment />
                 </div>
             ) : (
                 <>
-                    {replyComments.length > 0 && !showReplyComments && (
-                        <Button
-                            className="w-fit"
-                            variant={'text'}
-                            size={'xs'}
-                            onClick={() =>
-                                setShowReplyComments((prev) => !prev)
-                            }
-                        >
-                            Xem {replyComments.length} bình luận
-                        </Button>
-                    )}
+                    {replyComments &&
+                        replyComments.length > 0 &&
+                        !showReplyComments && (
+                            <Button
+                                className="w-fit"
+                                variant={'text'}
+                                size={'xs'}
+                                onClick={() =>
+                                    setShowReplyComments((prev) => !prev)
+                                }
+                            >
+                                Xem {replyComments.length} bình luận
+                            </Button>
+                        )}
 
                     {showReplyComments && (
                         <div className="border-l-2 pl-3 dark:border-dark-secondary-2">
-                            {replyComments
-                                .sort(
-                                    (a, b) =>
-                                        new Date(b.createdAt).getTime() -
-                                        new Date(a.createdAt).getTime()
-                                )
-                                .map((cmt) => {
-                                    return (
-                                        <Comment
-                                            key={cmt._id}
-                                            data={cmt}
-                                            setCommentCount={setCommentCount}
-                                        />
-                                    );
-                                })}
+                            {replyComments &&
+                                replyComments
+                                    .sort(
+                                        (a, b) =>
+                                            new Date(b.createdAt).getTime() -
+                                            new Date(a.createdAt).getTime()
+                                    )
+                                    .map((cmt) => {
+                                        return (
+                                            <Comment
+                                                key={cmt._id}
+                                                data={cmt}
+                                                setCommentCount={
+                                                    setCommentCount
+                                                }
+                                            />
+                                        );
+                                    })}
 
                             {hasNextPage && (
                                 <Button

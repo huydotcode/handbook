@@ -1,16 +1,25 @@
 'use server';
+import { NotificationType } from '@/enums/EnumNotification';
 import { Notification, User } from '@/models';
 import connectToDB from '@/services/mongoose';
-import mongoose from 'mongoose';
 import { getAuthSession } from '../auth';
 
 /*
-    * Notification Model: 
     sender: Types.ObjectId;
     receiver: Types.ObjectId;
-    message: string;
+    extra?: {
+        postId?: Types.ObjectId;
+        commentId?: Types.ObjectId;
+        groupId?: Types.ObjectId;
+        messageId?: Types.ObjectId;
+        notificationId?: Types.ObjectId;
+
+        [key: string]: any;
+    };
     isRead: boolean;
-    type: string;
+    isDeleted: boolean;
+    type: NotificationType;
+    deletedAt?: Date | null;
 */
 
 const POPULATE_SENDER = 'name avatar username isOnline';
@@ -46,11 +55,11 @@ export async function getNotificationAddFriendByUserId({
 
         const notifications = await Notification.findOne({
             receiver: receiverId,
-            type: 'request-add-friend',
+            type: NotificationType.REQUEST_ADD_FRIEND,
         })
             .populate('sender', POPULATE_SENDER)
             .populate('receiver', POPULATE_SENDER)
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1, isRead: 1 });
 
         return JSON.parse(JSON.stringify(notifications));
     } catch (error: any) {
@@ -102,8 +111,7 @@ export async function sendRequestAddFriend({
         const newNotification = new Notification({
             sender: senderId,
             receiver: receiverId,
-            message: 'Đã gửi lời mời kết bạn',
-            type: 'request-add-friend',
+            type: NotificationType.REQUEST_ADD_FRIEND,
         });
 
         await newNotification.save();
@@ -159,8 +167,8 @@ export async function acceptFriend({
         user.friends.push(friend._id);
         friend.friends.push(user._id);
 
-        // Lưu cả hai người dùng đồng thời
         await Promise.all([user.save(), friend.save()]);
+
         return true;
     } catch (error: any) {
         throw new Error(error.message || ERROR_MESSAGE);
@@ -171,27 +179,49 @@ export async function acceptFriend({
 export async function createNotificationAcceptFriend({
     senderId,
     receiverId,
-    message,
-    type,
 }: {
     senderId: string;
     receiverId: string;
-    message: string;
-    type: string;
 }) {
     console.log('[LIB-ACTIONS] createNotificationAcceptFriend');
     try {
         const notificationAcceptFriend = new Notification({
             sender: senderId,
             receiver: receiverId,
-            message,
-            type,
+            type: NotificationType.ACCEPT_FRIEND_REQUEST,
         });
 
         await notificationAcceptFriend.save();
 
         const notification = await getNotificationByNotiId({
             notificationId: notificationAcceptFriend._id,
+        });
+
+        return JSON.parse(JSON.stringify(notification));
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+export async function createNotificationFollowUser({
+    senderId,
+    receiverId,
+}: {
+    senderId: string;
+    receiverId: string;
+}) {
+    console.log('[LIB-ACTIONS] createNotificationFollowUser');
+    try {
+        const notificationFollowUser = new Notification({
+            sender: senderId,
+            receiver: receiverId,
+            type: NotificationType.FOLLOW_USER,
+        });
+
+        await notificationFollowUser.save();
+
+        const notification = await getNotificationByNotiId({
+            notificationId: notificationFollowUser._id,
         });
 
         return JSON.parse(JSON.stringify(notification));
@@ -239,7 +269,15 @@ export async function deleteNotification({
     console.log('[LIB-ACTIONS] deleteNotification');
     try {
         await connectToDB();
-        await Notification.deleteOne({ _id: notificationId });
+        await Notification.updateOne(
+            {
+                _id: notificationId,
+            },
+            {
+                isDeleted: true,
+                deletedAt: new Date(),
+            }
+        );
         return true;
     } catch (error: any) {
         throw new Error(error);
@@ -262,10 +300,17 @@ export async function deleteNotificationByUsers({
         const session = await getAuthSession();
         if (!session?.user) throw new Error('Đã có lỗi xảy ra');
 
-        await Notification.deleteMany({
-            sender: senderId,
-            receiver: receiverId,
-        });
+        await Notification.updateMany(
+            {
+                sender: senderId,
+                receiver: receiverId,
+                type,
+            },
+            {
+                isDeleted: true,
+                deletedAt: new Date(),
+            }
+        );
 
         return true;
     } catch (error: any) {
