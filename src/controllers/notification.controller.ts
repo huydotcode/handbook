@@ -15,8 +15,9 @@ class NotificationController {
 
             const notifications = await Notification.find({
                 receiver: userId,
+                isDeleted: false,
             })
-                .sort({ createdAt: -1 })
+                .sort({ createdAt: -1, isRead: 1 })
                 .skip((+page - 1) * +pageSize)
                 .limit(+pageSize)
                 .populate('sender', POPULATE_USER)
