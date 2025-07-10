@@ -66,7 +66,9 @@ export function EditorField({
         },
         editorProps: {
             attributes: {
-                class: 'prose max-w-none p-4 min-h-[200px] rounded-md border border-secondary-2 dark:border-dark-secondary-2 bg-white dark:bg-dark-secondary-1',
+                class:
+                    'prose max-w-none p-4 min-h-[200px] rounded-md border border-secondary-2 dark:border-dark-secondary-2 bg-white dark:bg-dark-secondary-1 ' +
+                    className,
             },
         },
     });

@@ -242,6 +242,7 @@ const CreatePostV2: FC<Props> = ({
                                 render={({ field: { onChange, value } }) => (
                                     <>
                                         <EditorField
+                                            className="max-h-[30vh] overflow-scroll"
                                             onChange={onChange}
                                             value={value}
                                             hasMenu={hasMenu}
