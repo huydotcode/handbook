@@ -135,7 +135,10 @@ const ChatWithGemini = () => {
                                     </div>
                                 </div>
 
-                                <Button onClick={() => setOpenChat(false)}>
+                                <Button
+                                    variant={'secondary'}
+                                    onClick={() => setOpenChat(false)}
+                                >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-6 w-6"
@@ -173,7 +176,7 @@ const ChatWithGemini = () => {
                                     >
                                         <div
                                             className={cn(
-                                                'flex max-w-[70%] items-center rounded-xl px-2 py-1',
+                                                'flex max-w-[70%] items-center rounded-lg px-2 py-1',
                                                 {
                                                     'bg-primary-1 dark:bg-dark-secondary-2':
                                                         msg.isGemini,
@@ -188,6 +191,11 @@ const ChatWithGemini = () => {
                                         </div>
                                     </div>
                                 ))}
+
+                                <p className="mx-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                                    Dữ liệu đoạn chat này không được lưu trữ và
+                                    sẽ biến mất khi bạn rời khỏi trang.
+                                </p>
                             </div>
 
                             <form

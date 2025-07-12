@@ -11,6 +11,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import toast from 'react-hot-toast';
+import { usePostContext } from '../Post';
+import { InfinityPostData } from '../InfinityPostComponent';
 
 interface Props {
     post: IPost;
@@ -21,7 +23,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
     const queryClient = useQueryClient();
 
     const { socketEmitor } = useSocket();
-    const { invalidatePost } = useQueryInvalidation();
+    const { postParams } = usePostContext();
 
     const isReacted = post.userHasLoved;
 
@@ -33,20 +35,31 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
             }
 
             try {
-                await queryClient.setQueryData<IPost>(
-                    queryKey.posts.id(post._id),
-                    (oldPost) => {
-                        if (!oldPost) return oldPost;
-
-                        const updatedPost = {
-                            ...oldPost,
-                            lovesCount: isReacted
-                                ? oldPost.lovesCount - 1
-                                : oldPost.lovesCount + 1,
-                            userHasLoved: !isReacted,
+                await queryClient.setQueryData<InfinityPostData>(
+                    queryKey.posts.newFeed({
+                        groupId: postParams.groupId,
+                        type: postParams.type,
+                        userId: postParams.userId,
+                        username: postParams.username,
+                    }),
+                    (oldData) => {
+                        if (!oldData) return oldData;
+                        const updatedPages = oldData.pages.map((page) =>
+                            page.map((oldPost) => {
+                                if (oldPost._id !== post._id) return oldPost;
+                                return {
+                                    ...oldPost,
+                                    lovesCount: isReacted
+                                        ? oldPost.lovesCount - 1
+                                        : oldPost.lovesCount + 1,
+                                    userHasLoved: !isReacted,
+                                };
+                            })
+                        );
+                        return {
+                            ...oldData,
+                            pages: updatedPages,
                         };
-
-                        return updatedPost;
                     }
                 );
 
@@ -58,8 +71,6 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                         authorId: post.author._id,
                     });
                 }
-
-                // await invalidatePost(post._id);
             } catch (error: any) {
                 logger({
                     message: 'Error reaction post' + error,

@@ -25,6 +25,18 @@ export type PostType =
     | 'post-by-member'
     | 'saved';
 
+export type PostParams = {
+    userId?: string;
+    groupId?: string;
+    username?: string;
+    type?: PostType;
+};
+
+export type InfinityPostData = {
+    pages: IPost[][];
+    pageParams: number[];
+};
+
 export const PostTypes = {
     NEW_FEED: 'new-feed' as PostType,
     PROFILE: 'profile' as PostType,
@@ -153,6 +165,12 @@ const InfinityPostComponent: React.FC<Props> = ({
         fetchNextPage,
         refetch,
     } = usePosts({ userId, groupId, username, type });
+    const params = {
+        userId,
+        groupId,
+        username,
+        type,
+    };
 
     const { ref: bottomRef, inView } = useInView({ threshold: 0 });
     const currentUser = session?.user;
@@ -297,7 +315,14 @@ const InfinityPostComponent: React.FC<Props> = ({
 
             {/* Posts list */}
             {data?.map((post) => {
-                return <Post data={post} key={post._id} isManage={isManage} />;
+                return (
+                    <Post
+                        data={post}
+                        key={post._id}
+                        isManage={isManage}
+                        params={params}
+                    />
+                );
             })}
 
             {/* Infinite scroll trigger */}

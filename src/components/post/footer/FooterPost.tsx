@@ -5,18 +5,14 @@ import CommentSection from './CommentSection';
 import ReactionPost from './ReactionPost';
 import SavePost from './SavePost';
 import SharePost from './SharePost';
+import { PostParams } from '../InfinityPostComponent';
 
 interface Props {
     post: IPost;
+    params: PostParams;
 }
 
-type FormData = {
-    text: string;
-};
-
-const PAGE_SIZE = 3;
-
-const FooterPost: React.FC<Props> = ({ post }) => {
+const FooterPost: React.FC<Props> = ({ post, params }) => {
     const [commentCount, setCommentCount] = useState<number>(
         post.commentsCount || 0
     );

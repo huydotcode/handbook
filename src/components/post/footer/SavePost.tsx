@@ -10,6 +10,8 @@ import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import toast from 'react-hot-toast';
+import { usePostContext } from '../Post';
+import { InfinityPostData } from '../InfinityPostComponent';
 
 interface Props {
     post: IPost;
@@ -22,6 +24,8 @@ const SavePost: React.FC<Props> = ({ post }) => {
     });
     const queryClient = useQueryClient();
     const { data: session } = useSession();
+
+    const { postParams } = usePostContext();
 
     const pathName = usePathname();
     const isSaved = post.userHasSaved;
@@ -50,26 +54,31 @@ const SavePost: React.FC<Props> = ({ post }) => {
                 });
             }
 
-            await queryClient.setQueryData(
-                queryKey.posts.id(post._id),
-                (oldPost: IPost | undefined) => {
-                    if (!oldPost) return;
+            await queryClient.setQueryData<InfinityPostData>(
+                queryKey.posts.newFeed({
+                    groupId: postParams.groupId,
+                    type: postParams.type,
+                    userId: postParams.userId,
+                    username: postParams.username,
+                }),
+                (oldData) => {
+                    if (!oldData) return;
 
+                    const updatedPages = oldData.pages.map((page) =>
+                        page.map((oldPost) => {
+                            if (oldPost._id !== post._id) return oldPost;
+                            return {
+                                ...oldPost,
+                                userHasSaved: !isSaved,
+                            };
+                        })
+                    );
                     return {
-                        ...oldPost,
-                        userHasSaved: !isSaved,
+                        ...oldData,
+                        pages: updatedPages,
                     };
                 }
             );
-
-            await queryClient.invalidateQueries({
-                queryKey: queryKey.posts.newFeed({
-                    type: 'saved',
-                    groupId: undefined,
-                    userId: undefined,
-                    username: undefined,
-                }),
-            });
         } catch (error) {
             toast.error('Không thể lưu bài viết!', {
                 position: 'bottom-left',
