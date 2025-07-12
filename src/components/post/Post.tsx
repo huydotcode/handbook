@@ -18,7 +18,7 @@ import { PostParams, PostType } from './InfinityPostComponent';
 interface Props {
     data: IPost;
     isManage?: boolean;
-    params: PostParams;
+    params?: PostParams;
 }
 
 const PostContext = createContext<{
@@ -61,11 +61,13 @@ const Post: React.FC<Props> = React.memo(
         if (post.option == 'private' && !showInPrivate) return null;
 
         return (
-            <PostContext.Provider value={{ postParams: params }}>
+            <PostContext.Provider value={{ postParams: params || {} }}>
                 <div className="relative mb-4 rounded-xl bg-white px-4 py-2 shadow-md dark:bg-dark-secondary-1">
                     <PostHeader post={post} />
                     <PostContent post={post} />
-                    {!isManage && <FooterPost post={post} params={params} />}
+                    {!isManage && (
+                        <FooterPost post={post} params={params || {}} />
+                    )}
                     {isManage && <ReviewPost post={post} />}
                 </div>
             </PostContext.Provider>
