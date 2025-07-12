@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { Types } from 'mongoose';
+import Follows from '../models/follow.model';
 import Post from '../models/post.model';
 import PostInteraction from '../models/post_interaction.model';
 import User from '../models/user.model';
+import { getPostsWithInteraction } from '../services/post.service';
 import { IPost } from '../types';
 import { getDecodedTokenFromHeaders } from '../utils/jwt';
 import { POPULATE_GROUP, POPULATE_USER } from '../utils/populate';
-import Follows from '../models/follow.model';
 
 class PostController {
     // ROUTE: POST /api/posts
@@ -103,62 +104,31 @@ class PostController {
                 .select('following')
                 .lean();
 
-            const posts = await Post.find({
-                $or: [
-                    {
-                        author: {
-                            $in: followings.map((f) => f.following),
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    $or: [
+                        {
+                            author: {
+                                $in: followings.map((f) => f.following),
+                            },
+                            option: 'public',
                         },
-                        option: 'public',
-                    },
-                    {
-                        author: {
-                            $in: user?.friends,
+                        {
+                            author: {
+                                $in: user?.friends,
+                            },
+                            option: {
+                                $in: ['friends', 'public'],
+                            },
                         },
-                        option: {
-                            $in: ['friends', 'public'],
-                        },
-                    },
-                ],
-                status: 'active',
-            })
-                .populate('media')
-                .populate('author', POPULATE_USER)
-                .populate(POPULATE_GROUP)
-
-                .sort({ createdAt: -1, lovesCount: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size)
-                .lean();
-
-            const postIds = posts.map((p) => p._id);
-            const interactions = await PostInteraction.find({
-                user: user_id,
-                post: { $in: postIds },
-                type: { $in: ['love', 'share'] },
-            }).lean();
-
-            // Tạo map {postId -> {love: true, share: true}}
-            const interactionMap = new Map();
-            interactions.forEach((inter) => {
-                const key = inter.post.toString();
-                if (!interactionMap.has(key)) {
-                    interactionMap.set(key, {});
-                }
-                interactionMap.get(key)[inter.type] = true;
+                    ],
+                },
+                userId: user_id,
+                page,
+                pageSize: page_size,
             });
 
-            // Gắn vào từng post
-            const enrichedPosts = posts.map((post) => {
-                const map = interactionMap.get(post._id) || {};
-                return {
-                    ...post,
-                    userHasLoved: !!map.love,
-                    userHasShared: !!map.share,
-                };
-            });
-
-            res.json(enrichedPosts);
+            res.status(200).json(posts);
         } catch (error) {
             next(error);
         }
@@ -176,15 +146,16 @@ class PostController {
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            const posts = await Post.find({
-                author: {
-                    $in: user?.friends,
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    author: {
+                        $in: user?.friends,
+                    },
                 },
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
+                userId: user_id,
+                page,
+                pageSize: page_size,
+            });
 
             res.status(200).json(posts);
         } catch (error) {
@@ -204,15 +175,17 @@ class PostController {
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            const posts = await Post.find({
-                group: {
-                    $in: user?.groups,
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    group: {
+                        $in: user?.groups,
+                    },
+                    status: 'active',
                 },
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
+                userId: user_id,
+                page,
+                pageSize: page_size,
+            });
 
             res.status(200).json(posts);
         } catch (error) {
@@ -231,14 +204,16 @@ class PostController {
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            const posts = await Post.find({
-                author: user_id,
-                group: null,
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    author: user_id,
+                    group: null,
+                    status: 'active',
+                },
+                userId: user_id,
+                page,
+                pageSize: page_size,
+            });
 
             res.status(200).json(posts);
         } catch (error) {
@@ -256,14 +231,22 @@ class PostController {
             const group_id = req.params.group_id;
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
+            const token = await getDecodedTokenFromHeaders(req.headers);
 
-            const posts = await Post.find({
-                group: group_id,
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
+            if (!token) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    group: group_id,
+                    status: 'active',
+                },
+                userId: token.id,
+                page,
+                pageSize: page_size,
+            });
 
             res.status(200).json(posts);
         } catch (error) {
@@ -278,23 +261,25 @@ class PostController {
         next: NextFunction
     ): Promise<void> {
         try {
+            const token = await getDecodedTokenFromHeaders(req.headers);
+
+            if (!token) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
             const group_id = req.params.group_id;
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
 
-            const posts = await Post.find({
-                group: group_id,
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
-
-            console.log({
-                group_id,
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    group: group_id,
+                    status: 'active',
+                },
+                userId: token.id,
                 page,
-                page_size,
-                posts,
+                pageSize: page_size,
             });
 
             res.status(200).json(posts);
@@ -313,11 +298,20 @@ class PostController {
             const group_id = req.params.group_id;
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
+            const token = await getDecodedTokenFromHeaders(req.headers);
+
+            if (!token) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
 
             const posts = await Post.find({
                 group: group_id,
                 status: 'pending',
             })
+                .populate('media')
+                .populate('author', POPULATE_USER)
+                .populate(POPULATE_GROUP)
                 .sort({ createdAt: -1, loves: -1 })
                 .skip((page - 1) * page_size)
                 .limit(page_size);
@@ -337,15 +331,18 @@ class PostController {
             const { user_id, group_id } = req.query;
             const page = parseInt(req.query.page as string) || 1;
             const page_size = parseInt(req.query.page_size as string) || 3;
+            const userId = user_id as string;
 
-            const posts = await Post.find({
-                author: user_id,
-                group: group_id,
-                status: 'active',
-            })
-                .sort({ createdAt: -1, loves: -1 })
-                .skip((page - 1) * page_size)
-                .limit(page_size);
+            const posts = await getPostsWithInteraction({
+                filter: {
+                    author: user_id,
+                    group: group_id,
+                    status: 'active',
+                },
+                userId,
+                page,
+                pageSize: page_size,
+            });
 
             res.status(200).json(posts);
         } catch (e) {
@@ -378,7 +375,43 @@ class PostController {
                 .skip((page - 1) * page_size)
                 .limit(page_size);
 
-            res.status(200).json(posts.map((interaction) => interaction.post));
+            // populate posts
+            const postIds = posts.map((interaction) => interaction.post._id);
+            const populatedPosts = await Post.find({
+                _id: { $in: postIds },
+            })
+                .populate('media')
+                .populate('author', POPULATE_USER)
+                .populate(POPULATE_GROUP)
+                .lean<IPost[]>();
+
+            // Gắn thông tin tương tác vào từng post
+            const interactionMap = new Map();
+            posts.forEach((interaction) => {
+                const postId = interaction.post._id.toString();
+                interactionMap.set(postId, {
+                    love: false,
+                    share: false,
+                    save: true,
+                });
+                console.log('interactionMap', interactionMap);
+                console.log('postId', postId);
+            });
+            populatedPosts.forEach((post) => {
+                const postId = post._id.toString();
+                if (interactionMap.has(postId)) {
+                    const interaction = interactionMap.get(postId);
+                    post.userHasLoved = interaction.love;
+                    post.userHasShared = interaction.share;
+                    post.userHasSaved = interaction.save;
+                } else {
+                    post.userHasLoved = false;
+                    post.userHasShared = false;
+                    post.userHasSaved = false;
+                }
+            });
+
+            res.status(200).json(populatedPosts);
         } catch (error) {
             next(error);
         }
