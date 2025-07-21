@@ -23,6 +23,7 @@ export type PostType =
     | 'manage-group-posts'
     | 'manage-group-posts-pending'
     | 'post-by-member'
+    | 'search-posts'
     | 'saved';
 
 export type PostParams = {
@@ -46,6 +47,7 @@ export const PostTypes = {
     MANAGE_GROUP_POSTS: 'manage-group-posts' as PostType,
     MANAGE_GROUP_POSTS_PENDING: 'manage-group-posts-pending' as PostType,
     POST_BY_MEMBER: 'post-by-member' as PostType,
+    SEARCH_POSTS: 'search-posts' as PostType,
 };
 
 interface Props {
@@ -56,6 +58,8 @@ interface Props {
     type?: PostType;
     title?: string;
     showCreatePost?: boolean;
+    enabled?: boolean;
+    search?: string;
 }
 
 const PAGE_SIZE = 3;
@@ -71,14 +75,20 @@ const ENDPOINTS: Record<PostType, string> = {
     'post-by-member': '/posts/group/member',
     'manage-group-posts-pending': '/posts/group/manage/pending',
     saved: '/posts/saved',
+    'search-posts': '/search/posts',
 };
 
-const usePosts = ({
+export const usePosts = ({
     userId,
     groupId,
     username,
     type = 'new-feed',
-}: Pick<Props, 'userId' | 'groupId' | 'username' | 'type'>) => {
+    search = '',
+    enabled = true,
+}: Pick<
+    Props,
+    'userId' | 'groupId' | 'username' | 'type' | 'enabled' | 'search'
+>) => {
     const { data: session } = useSession();
 
     const isFeedType = useMemo(
@@ -114,6 +124,7 @@ const usePosts = ({
                     user_id: userId,
                     group_id: groupId,
                 }),
+                ...(type === 'search-posts' && { q: search }),
             };
 
             const { data } = await axiosInstance.get<IPost[]>(endpoint, {
@@ -121,7 +132,15 @@ const usePosts = ({
             });
             return data;
         },
-        [session?.user.id, getEndpoint, type, isFeedType, userId, groupId]
+        [
+            session?.user.id,
+            getEndpoint,
+            type,
+            isFeedType,
+            userId,
+            groupId,
+            search,
+        ]
     );
 
     return useInfiniteQuery({
@@ -142,7 +161,7 @@ const usePosts = ({
         refetchInterval: REFETCH_INTERVAL,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
-        enabled: !!session,
+        enabled: !!session && !!session.user.id && enabled,
     });
 };
 

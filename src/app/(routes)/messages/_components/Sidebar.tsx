@@ -3,12 +3,13 @@ import { Icons, Loading } from '@/components/ui';
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
+    SelectLabel,
     SelectTrigger,
 } from '@/components/ui/select';
 import { useConversations } from '@/context/SocialContext';
 import { cn } from '@/lib/utils';
-import { SelectValue } from '@radix-ui/react-select';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -21,6 +22,7 @@ export type IFilterConversation = {
     query: string;
     sortBy: string;
     sortOrder: 'asc' | 'desc';
+    type: 'all' | 'unread' | 'read' | 'archived' | 'deleted';
 };
 
 const Sidebar: React.FC<Props> = ({}) => {
@@ -30,6 +32,7 @@ const Sidebar: React.FC<Props> = ({}) => {
     );
     const [filter, setFilter] = useState<IFilterConversation>({
         query: '',
+        type: 'all',
         sortBy: 'createdAt',
         sortOrder: 'desc',
     });
@@ -54,6 +57,10 @@ const Sidebar: React.FC<Props> = ({}) => {
         );
     });
 
+    useEffect(() => {
+        console.log('Conversations:', conversations);
+    }, [conversations]);
+
     return (
         <>
             <aside
@@ -74,26 +81,59 @@ const Sidebar: React.FC<Props> = ({}) => {
                             onValueChange={(value) => {
                                 setFilter((prev) => ({
                                     ...prev,
-                                    sortBy: value,
-                                    sortOrder:
-                                        value === prev.sortBy
-                                            ? prev.sortOrder === 'asc'
-                                                ? 'desc'
-                                                : 'asc'
-                                            : 'desc',
+                                    type: value.split('-')[1] as
+                                        | 'all'
+                                        | 'unread'
+                                        | 'read'
+                                        | 'archived'
+                                        | 'deleted',
+                                    sortBy: value
+                                        .split('-')[0]
+                                        .replace('sort-', ''),
+                                    sortOrder: value.includes('desc')
+                                        ? 'desc'
+                                        : 'asc',
                                 }));
                             }}
                         >
                             <SelectTrigger className="mt-2 h-8 w-fit max-w-[150px] bg-secondary-2 text-xs dark:bg-dark-secondary-2">
                                 <div className="flex items-center pr-2">
-                                    <Icons.Sort className="h-4 w-4" />
+                                    <Icons.Filter className="h-4 w-4" />
                                 </div>
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="createdAt">
-                                    Ngày tạo
-                                </SelectItem>
-                                <SelectItem value="title">Tên</SelectItem>
+                                <SelectGroup>
+                                    <SelectLabel className="text-xs">
+                                        Lọc theo
+                                    </SelectLabel>
+                                    <SelectItem value="filter-all">
+                                        Tất cả
+                                    </SelectItem>
+                                    <SelectItem value="filter-unread">
+                                        Chưa đọc
+                                    </SelectItem>
+                                    <SelectItem value="filter-read">
+                                        Đã đọc
+                                    </SelectItem>
+                                    <SelectItem value="filter-archived">
+                                        Đã lưu trữ
+                                    </SelectItem>
+                                    <SelectItem value="filter-deleted">
+                                        Đã xóa
+                                    </SelectItem>
+                                </SelectGroup>
+
+                                <SelectGroup>
+                                    <SelectLabel className="text-xs">
+                                        Sắp xếp theo
+                                    </SelectLabel>
+                                    <SelectItem value="sort-createdAt">
+                                        Ngày tạo
+                                    </SelectItem>
+                                    <SelectItem value="sort-title">
+                                        Tên
+                                    </SelectItem>
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
                     </div>
@@ -105,6 +145,31 @@ const Sidebar: React.FC<Props> = ({}) => {
                     {!isLoading &&
                         conversations &&
                         conversations
+                            .filter((conversation) => {
+                                if (filter.type === 'all') return true;
+                                if (filter.type === 'unread') {
+                                    return conversation.lastMessage?.readBy
+                                        ? !conversation.lastMessage.readBy.some(
+                                              (read) =>
+                                                  read.user._id ===
+                                                  session?.user.id
+                                          )
+                                        : false;
+                                }
+                                if (filter.type === 'read') {
+                                    return false;
+                                }
+                                if (filter.type === 'archived') {
+                                    // return conversation.isArchived;
+                                    return false;
+                                }
+                                if (filter.type === 'deleted') {
+                                    return conversation.isDeletedBy.some(
+                                        (userId) => userId === session?.user.id
+                                    );
+                                }
+                                return true;
+                            })
                             .sort((a, b) => {
                                 if (filter.sortBy === 'createdAt') {
                                     return filter.sortOrder === 'desc'

@@ -203,7 +203,12 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                     >
                         <Icons.Message className="text-3xl" />
                         <p className="ml-2 text-sm text-primary-1">
-                            Bạn có tin nhắn mới
+                            Tin nhắn mới từ{' '}
+                            <span className="font-semibold">
+                                {message.conversation.group
+                                    ? message.conversation.title
+                                    : message.sender.name}
+                            </span>
                         </p>
                     </Link>,
                     {

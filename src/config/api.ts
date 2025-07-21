@@ -11,6 +11,24 @@ export const API_ROUTES = {
         FOLLOWINGS: (userId: string) =>
             `/user/follow/followings?user_id=${userId}`,
     },
+    SEARCH: {
+        INDEX: '/search',
+        QUERY: ({
+            type,
+            q,
+            page,
+            pageSize,
+        }: {
+            type: string;
+            q: string;
+            page: number;
+            pageSize: number;
+        }) =>
+            `/search${type ? `/${type}` : ''}?q=${encodeURIComponent(q)}&page=${page}&page_size=${pageSize}`,
+        USERS: '/search/users',
+        POSTS: '/search/posts',
+        GROUPS: '/search/groups',
+    },
     GEMINI: {
         CHAT: '/api/gemini',
     },
@@ -46,18 +64,6 @@ export const API_ROUTES = {
         INDEX: '/message',
         PINNED: '/message/pinned',
         SEARCH: `/message/search`,
-        SEARCH_QUERY: ({
-            type,
-            q,
-            page,
-            pageSize,
-        }: {
-            type: string;
-            q: string;
-            page: number;
-            pageSize: number;
-        }) =>
-            `/search${type ? `/${type}` : ''}?q=${encodeURIComponent(q)}&page=${page}&page_size=${pageSize}`,
     },
     REQUESTS: {
         INDEX: '/requests',

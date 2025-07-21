@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
-import { timeConvert } from '@/utils/timeConvert';
+import { timeConvert, timeConvert3 } from '@/utils/timeConvert';
 import { Avatar } from '@/components/ui';
 import {
     Tooltip,
@@ -80,13 +80,15 @@ const Items = {
                             />
 
                             <div className="ml-2 flex flex-1 flex-col">
-                                <p className="max-w-[calc(100%-40px)] truncate text-sm dark:text-dark-primary-1">
+                                <p className="max-w-[calc(100%-60px)] truncate text-sm dark:text-dark-primary-1">
                                     {group.name}
                                 </p>
 
                                 <p className="text-xs text-secondary-1">
                                     Hoạt động gần nhất:{' '}
-                                    {timeConvert(group.lastActivity.toString())}
+                                    {timeConvert3(
+                                        group.lastActivity.toString()
+                                    )}
                                 </p>
                             </div>
                         </Button>
@@ -94,7 +96,7 @@ const Items = {
 
                     <TooltipContent>
                         <div className="flex flex-1 flex-col">
-                            <p className="max-w-full truncate text-sm dark:text-dark-primary-1">
+                            <p className="w-full truncate text-sm dark:text-dark-primary-1">
                                 {group.name}
                             </p>
 

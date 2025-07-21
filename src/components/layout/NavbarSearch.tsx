@@ -104,7 +104,7 @@ const NavbarSearch = () => {
                 </label>
 
                 <input
-                    className="h-10 min-w-[170px] bg-transparent px-2 text-sm lg:hidden"
+                    className="h-10 w-full min-w-[170px] bg-transparent px-2 text-sm lg:hidden"
                     placeholder={'Tìm kiếm trên Handbook'}
                     value={searchValue}
                     onChange={handleChangeInput}
@@ -118,7 +118,7 @@ const NavbarSearch = () => {
             <Collapse in={showModal}>
                 <div
                     className={
-                        'fixed left-0 top-0 z-10 min-h-[200px] max-w-[30vw] rounded-b-xl bg-secondary-1 p-1 pl-5 shadow-md dark:bg-dark-secondary-1 md:max-w-screen'
+                        'fixed left-0 top-0 z-10 w-[400px] max-w-screen rounded-b-xl bg-secondary-1 p-1 pl-5 shadow-md dark:bg-dark-secondary-1'
                     }
                 >
                     <div
@@ -135,7 +135,7 @@ const NavbarSearch = () => {
                         </Button>
 
                         <div
-                            className="ml-3 flex h-10 items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2"
+                            className="ml-3 mr-2 flex h-10 w-full items-center justify-center rounded-full bg-primary-1 px-3 dark:bg-dark-secondary-2"
                             onClick={() => {
                                 setShowModal(true);
                             }}
@@ -145,7 +145,7 @@ const NavbarSearch = () => {
                             </div>
 
                             <input
-                                className="h-10 min-w-[170px] bg-transparent px-2 text-sm"
+                                className="h-10 w-full min-w-[170px] bg-transparent px-2 text-sm"
                                 placeholder={'Tìm kiếm trên Handbook'}
                                 ref={inputRef}
                                 value={searchValue}
@@ -158,11 +158,11 @@ const NavbarSearch = () => {
                         </div>
                     </div>
 
-                    <h5 className={'mt-2 text-sm'}>Kết quả</h5>
-
                     {searchResult.length > 0 &&
                         debounceValue.trim().length > 0 && (
                             <>
+                                <h5 className={'mt-2 text-sm'}>Kết quả</h5>
+
                                 <div className="dark:no-scrollbar mt-2 w-full overflow-scroll">
                                     {searchResult.map((user: IUser) => {
                                         return (
@@ -182,32 +182,57 @@ const NavbarSearch = () => {
                             </>
                         )}
 
-                    {!isSearching &&
-                        searchResult.length === 0 &&
-                        debounceValue.trim().length > 0 && (
-                            <div className="mt-2 text-center text-sm">
-                                Không có kết quả
-                            </div>
-                        )}
-
                     {isSearching && searchResult.length === 0 && (
                         <div className="mt-4 flex justify-center">
                             <Icons.Loading className="animate-spin text-2xl" />
                         </div>
                     )}
 
-                    {!isSearching &&
-                        searchResult.length == 0 &&
-                        debounceValue.trim().length !== 0 && (
-                            <div className={'flex justify-center'}>
-                                <Button
-                                    href={`/search?q=${debounceValue}`}
-                                    variant={'text'}
-                                >
-                                    Xem tất cả kết quả: {debounceValue}
-                                </Button>
-                            </div>
-                        )}
+                    {!isSearching && debounceValue.trim().length > 0 && (
+                        <div>
+                            <Button
+                                className="text-truncate mt-2 w-full justify-start overflow-hidden"
+                                variant={'text'}
+                                size={'sm'}
+                                href={`/search?type=users&q=${debounceValue}`}
+                                onClick={handleClose}
+                            >
+                                <Icons.Search /> Tìm kiếm người dùng:{' '}
+                                {debounceValue}
+                            </Button>
+
+                            <Button
+                                className="text-truncate mt-2 w-full justify-start overflow-hidden"
+                                variant={'text'}
+                                size={'sm'}
+                                href={`/search?type=posts&q=${debounceValue}`}
+                                onClick={handleClose}
+                            >
+                                <Icons.Search /> Tìm kiếm bài viết:{' '}
+                                {debounceValue}
+                            </Button>
+
+                            <Button
+                                className="text-truncate mt-2 w-full justify-start overflow-hidden"
+                                variant={'text'}
+                                size={'sm'}
+                                href={`/search?type=posts&q=${debounceValue}`}
+                                onClick={handleClose}
+                            >
+                                <Icons.Search /> Tìm kiếm nhóm: {debounceValue}
+                            </Button>
+
+                            <Button
+                                className="text-truncate mt-2 w-full justify-start overflow-hidden"
+                                href={`/search?q=${debounceValue}`}
+                                variant={'text'}
+                                size={'sm'}
+                            >
+                                <Icons.Search />
+                                Xem tất cả kết quả: {debounceValue}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </Collapse>
         </>

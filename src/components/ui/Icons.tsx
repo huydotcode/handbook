@@ -35,6 +35,7 @@ import {
     FaCode,
     FaDownload,
     FaEye,
+    FaFilter,
     FaLink,
     FaLocationDot,
     FaShirt,
@@ -259,6 +260,14 @@ const Icons = {
     },
     Tag: (props: IconProps) => {
         return <FaHashtag className={cn(props.className)} {...props} />;
+    },
+    Filter: (props: IconProps) => {
+        return (
+            <FaFilter
+                className={cn('text-secondary-1', props.className)}
+                {...props}
+            />
+        );
     },
 };
 

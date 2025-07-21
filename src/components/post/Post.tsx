@@ -38,19 +38,7 @@ const Post: React.FC<Props> = React.memo(
     ({ data: post, isManage = false, params }) => {
         const pathname = usePathname();
         const { data: session } = useSession();
-        // const { data: post } = useQuery<IPost>({
-        //     queryKey: queryKey.posts.id(data._id),
-        //     queryFn: async () => {
-        //         const post = await axiosInstance.get<IPost>(
-        //             API_ROUTES.POSTS.ID(data._id)
-        //         );
-        //         return post.data;
-        //     },
-        //     refetchInterval: false,
-        //     refetchOnWindowFocus: false,
-        //     refetchOnMount: false,
-        //     refetchIntervalInBackground: false,
-        // });
+
         const showInPrivate =
             post &&
             post.option === 'private' &&

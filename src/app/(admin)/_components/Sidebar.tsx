@@ -1,11 +1,5 @@
 'use client';
 import { Button } from '@/components/ui/Button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { navAdmin } from '@/constants/navLink';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
@@ -22,11 +16,11 @@ const Sidebar: React.FC = () => {
     return (
         <>
             <aside className="fixed left-0 top-[56px] z-50 flex h-screen w-[300px] flex-col border-r bg-secondary-1 p-2 dark:bg-dark-secondary-1 xl:w-[80px]">
-                <div className="flex w-full items-center justify-center border-b p-4">
+                <div className="flex w-full items-center justify-center border-b p-4 xl:hidden">
                     <h1>Xin chào, {session?.user.name || 'Admin'}</h1>
                 </div>
 
-                <div className="mt-2 flex flex-col gap-2">
+                <div className="mt-2 flex flex-col">
                     {navAdmin.map((item, index) => {
                         const isActived =
                             path === item.path ||
@@ -38,16 +32,14 @@ const Sidebar: React.FC = () => {
 
                         return (
                             <div
-                                className={cn(
-                                    'flex w-full flex-col rounded-xl'
-                                )}
+                                className={cn('flex w-full flex-col')}
                                 key={item.name}
                             >
                                 <Button
                                     key={index}
                                     variant="ghost"
                                     className={cn(
-                                        'justify-start px-4 py-4',
+                                        'justify-start rounded-md px-4 py-6',
                                         isActived &&
                                             'dark:text-dark-primary-2 bg-primary-1 text-primary-2 hover:bg-secondary-2 hover:text-primary-2 dark:bg-dark-primary-1'
                                     )}
