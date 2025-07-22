@@ -258,34 +258,9 @@ export const useQueryInvalidation = () => {
             queryKey: queryKey.messages.conversationId(conversationId),
         });
 
-        queryClient.setQueryData(
-            queryKey.conversations.userId(session?.user.id as string),
-            (oldConversations: IConversation[] | undefined | null) => {
-                if (!oldConversations) return oldConversations;
-
-                return oldConversations.map((conversation) => {
-                    if (conversation._id === conversationId) {
-                        const user = conversation.participants.find(
-                            (user) => user._id === userId
-                        );
-
-                        if (user) {
-                            return {
-                                ...conversation,
-                                lastAccessed: new Date(),
-                                readBy: conversation?.lastMessage
-                                    ? conversation?.lastMessage?.readBy.push({
-                                          user: user,
-                                          readAt: new Date(),
-                                      })
-                                    : [],
-                            };
-                        }
-                    }
-                    return conversation;
-                });
-            }
-        );
+        queryClient.invalidateQueries({
+            queryKey: queryKey.conversations.userId(session?.user.id as string),
+        });
     };
 
     const invalidatePinnedMessages = async (conversationId: string) => {
