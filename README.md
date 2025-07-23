@@ -1,6 +1,6 @@
-# 🌐 SocialHub - Mạng Xã Hội Thế Hệ Mới
+# 🌐 Handbook - Mạng Xã Hội Thế Hệ Mới
 
-SocialHub là một nền tảng mạng xã hội hiện đại được xây dựng bằng **Next.js**, cung cấp trải nghiệm người dùng mượt mà và đầy đủ tính năng như đăng bài, kết bạn, trò chuyện, nhóm, và marketplace buôn bán.
+Handbook là một nền tảng mạng xã hội hiện đại được xây dựng bằng **Next.js**, cung cấp trải nghiệm người dùng mượt mà và đầy đủ tính năng như đăng bài, kết bạn, trò chuyện, nhóm, và marketplace buôn bán.
 
 ## 🚀 Demo
 
