@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌐 SocialHub - Mạng Xã Hội Thế Hệ Mới
 
-## Getting Started
+SocialHub là một nền tảng mạng xã hội hiện đại được xây dựng bằng **Next.js**, cung cấp trải nghiệm người dùng mượt mà và đầy đủ tính năng như đăng bài, kết bạn, trò chuyện, nhóm, và marketplace buôn bán.
 
-First, run the development server:
+## 🚀 Demo
+
+👉 [Link Demo](https://handbookk.vercel.app/)
+
+---
+
+## 🎯 Tính năng chính
+
+### 📝 Đăng bài, cảm xúc & bình luận
+
+- Người dùng có thể tạo bài viết (văn bản, hình ảnh, video)
+- Thả cảm xúc: ❤️ 😆 😮 😢 😡
+- Bình luận bài viết & phản hồi bình luận
+
+### 💬 Nhắn tin & Kết bạn
+
+- Gửi lời mời kết bạn, xác nhận hoặc từ chối
+- Gửi tin nhắn riêng tư 1:1
+- Hệ thống chat thời gian thực (WebSocket/Socket.IO)
+
+### 👤 Trang cá nhân (Profile)
+
+- Hiển thị thông tin cá nhân, ảnh đại diện, ảnh bìa
+- Danh sách bạn bè, bài viết, followers/followings
+- Chỉnh sửa thông tin cá nhân
+
+### 🛒 Chợ Mạng Xã Hội (Marketplace)
+
+- Mỗi người dùng có thể đăng bài rao bán sản phẩm
+- Danh mục sản phẩm, tìm kiếm và lọc theo loại, giá
+- Tính năng "Chat để thương lượng"
+
+### 👥 Nhóm (Groups)
+
+- Tạo nhóm riêng tư hoặc công khai
+- Đăng bài trong nhóm
+- Chat nhóm giữa các thành viên
+
+### 🌙 Dark Mode
+
+- Hỗ trợ chuyển đổi giữa Light / Dark Mode
+- Giao diện thân thiện với mắt người dùng
+
+### 🔍 Tìm kiếm
+
+- Tìm kiếm bài viết, người dùng, nhóm
+- Tìm kiếm nâng cao với bộ lọc theo loại nội dung, thời gian
+
+### 🔔 Notification
+
+- Thông báo thời gian thực cho:
+    - Lượt thích, bình luận, yêu cầu kết bạn, tin nhắn mới
+- Hệ thống popup + trung tâm thông báo
+
+### 📱 Responsive
+
+- Hỗ trợ hiển thị trên nhiều thiết bị (mobile, tablet, desktop)
+- Thiết kế linh hoạt, dễ dàng tùy chỉnh
+
+### 🔒 Bảo mật
+
+- Xác thực người dùng qua OAuth (Google, Credential)
+- Mã hóa dữ liệu nhạy cảm
+
+### 🌐 SEO Tối ưu
+
+- Tối ưu hóa SEO cho các trang bài viết, nhóm, người dùng
+- Sử dụng metadata, Open Graph tags
+- Tốc độ tải trang nhanh với Next.js
+- Tối ưu hóa hình ảnh với Cloudinary
+
+## 🧑‍💻 Công nghệ sử dụng
+
+| Tech                                            | Mô tả                                   |
+| ----------------------------------------------- | --------------------------------------- |
+| [Next.js](https://nextjs.org)                   | Framework React tối ưu SEO và hiệu suất |
+| [Tailwind CSS](https://tailwindcss.com)         | Styling nhanh và responsive             |
+| [ShadCN/UI](https://ui.shadcn.dev/)             | Giao diện hiện đại, dễ tuỳ biến         |
+| [Socket.IO](https://socket.io/)                 | Giao tiếp thời gian thực (chat, notif)  |
+| [React Query](https://tanstack.com/query)       | Quản lý data và cache hiệu quả          |
+| [Axios](https://axios-http.com/)                | Gọi API REST dễ dàng và linh hoạt       |
+| [React Hook Form](https://react-hook-form.com/) | Xử lý form hiệu quả và nhanh gọn        |
+| [Cloudinary]                                    | Lưu trữ hình ảnh và media (tuỳ chọn)    |
+
+---
+
+## 📦 Cài đặt
 
 ```bash
+# Clone dự án
+git clone https://github.com/huydotcode/handbook
+cd handbook
+
+# Cài đặt dependencies
+npm install
+
+# Tạo file môi trường
+cp .env
+
+SERVER_API=https://handbook-api.vercel.app/api/v1
+NEXTAUTH_URL_INTERNAL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=516778617550-2lurv1cd73683283udi6douuadiq0o99.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+NEXTAUTH_SECRET=0xLCQbkPJPNXlG0K5E4Q2sXFD+fhsQR+cV5UCzdkps=
+CLOUDINARY_NAME=da4pyhfyy
+CLOUDINARY_KEY=533638155798775
+CLOUDINARY_SECRET=S_sFbdGdPGjoy1yatFPmBint2lM
+JWT_SECRET=0xLCQbkPJPNXlG0K5E4Q2sXFD+fhsQR+cV5UCzdkps=
+
+# Sau đó điền các biến môi trường cần thiết (API_URL, NEXTAUTH_SECRET,...)
+GOOGLE_API_KEY=
+MONGODB_URI=
+SERVER_API=
+NEXTAUTH_URL_INTERNAL=
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+CLOUDINARY_NAME=
+CLOUDINARY_KEY=
+CLOUDINARY_SECRET=
+JWT_SECRET=
+
+# Chạy dự án
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
