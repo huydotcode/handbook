@@ -101,17 +101,6 @@ npm install
 # Tạo file môi trường
 cp .env
 
-SERVER_API=https://handbook-api.vercel.app/api/v1
-NEXTAUTH_URL_INTERNAL=http://localhost:3000
-NEXTAUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=516778617550-2lurv1cd73683283udi6douuadiq0o99.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-NEXTAUTH_SECRET=0xLCQbkPJPNXlG0K5E4Q2sXFD+fhsQR+cV5UCzdkps=
-CLOUDINARY_NAME=da4pyhfyy
-CLOUDINARY_KEY=533638155798775
-CLOUDINARY_SECRET=S_sFbdGdPGjoy1yatFPmBint2lM
-JWT_SECRET=0xLCQbkPJPNXlG0K5E4Q2sXFD+fhsQR+cV5UCzdkps=
-
 # Sau đó điền các biến môi trường cần thiết (API_URL, NEXTAUTH_SECRET,...)
 GOOGLE_API_KEY=
 MONGODB_URI=
