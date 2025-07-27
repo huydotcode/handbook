@@ -50,14 +50,16 @@ const Modal: React.FC<Props> = ({
             <Fade in={show}>
                 <div
                     className={cn(
-                        'fixed left-1/2 top-1/2 flex max-w-screen translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:translate-y-0 md:rounded-none',
+                        'fixed left-1/2 top-1/2 flex max-h-[90vh] max-w-screen translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl border-t-2 bg-secondary-1 p-6 shadow-md dark:border-none dark:bg-dark-primary-1 dark:shadow-none md:top-0 md:h-screen md:max-h-none md:w-screen md:max-w-none md:translate-y-0 md:rounded-none',
                         `w-[${width}]`,
                         className
                     )}
                 >
                     {title && renderHeader()}
 
-                    <div className="mt-3 flex flex-col">{children}</div>
+                    <div className="mt-3 flex flex-col overflow-auto">
+                        {children}
+                    </div>
                 </div>
             </Fade>
         </ModalMui>
