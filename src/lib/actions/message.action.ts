@@ -82,7 +82,7 @@ export const deleteMessage = async ({
             {
                 _id: conversationId,
             },
-            { lastMessage: messageId }
+            { lastMessage: prevMessageId }
         );
 
         return true;

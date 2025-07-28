@@ -292,13 +292,16 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     // Xử lý đọc tin nhắn
     useEffect(() => {
         if (!session?.user?.id) return;
-
         if (!lastMessage) return;
 
         if (
             messages &&
             messages.length > 0 &&
-            messages[0].sender._id !== session?.user.id
+            messages[0].sender._id &&
+            messages[0]?.readBy &&
+            !messages[0].readBy.some(
+                (read) => read.user._id === session.user.id
+            )
         ) {
             queryClientReadMessage(conversation._id, session?.user.id);
 
@@ -315,6 +318,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         lastMessage,
         messages,
     ]);
+
+    useEffect(() => {
+        console.log({
+            messages,
+        });
+    }, [messages]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     useEffect(() => {
@@ -365,14 +374,14 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
 
     // Scroll tới tin nhắn cuối cùng
     useEffect(() => {
-        if (!lastMessage) return;
+        if (lastMessage?.sender._id !== session?.user.id) return;
 
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({
                 behavior: 'smooth',
             });
         }
-    }, [lastMessage]);
+    }, [lastMessage?.sender._id, session?.user.id]);
 
     return (
         <>

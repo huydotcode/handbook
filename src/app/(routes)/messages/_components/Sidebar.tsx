@@ -18,6 +18,14 @@ import SearchConversation from './SearchConversation';
 
 interface Props {}
 
+export enum ConversationType {
+    ALL = 'all',
+    UNREAD = 'unread',
+    READ = 'read',
+    ARCHIVED = 'archived',
+    DELETED = 'deleted',
+}
+
 export type IFilterConversation = {
     query: string;
     sortBy: string;
@@ -33,33 +41,47 @@ const Sidebar: React.FC<Props> = ({}) => {
     const [filter, setFilter] = useState<IFilterConversation>({
         query: '',
         type: 'all',
-        sortBy: 'createdAt',
+        sortBy: 'mostRecent',
         sortOrder: 'desc',
     });
 
     const pathName = usePathname();
     const isMessagesPage = pathName === '/messages';
 
-    const conversations = initConversations?.filter((conversation) => {
-        const isParticipant = conversation.participants.some(
-            (user) => user._id === session?.user.id
-        );
-
-        const isDeletedByUser =
-            conversation.isDeletedBy.some(
+    const filteredConversations = initConversations?.filter((conversation) => {
+        if (filter.query) {
+            return conversation.title
+                .toLowerCase()
+                .includes(filter.query.toLowerCase());
+        }
+        if (filter.type === 'all') return true;
+        if (filter.type === 'unread') {
+            return (
+                conversation.lastMessage?.readBy &&
+                !conversation.lastMessage.readBy.some(
+                    (read) => read.user._id === session?.user.id
+                ) &&
+                conversation.lastMessage.sender._id !== session?.user.id
+            );
+        }
+        if (filter.type === 'read') {
+            return (
+                conversation.lastMessage?.sender?._id === session?.user.id ||
+                conversation.lastMessage?.readBy?.some(
+                    (read) => read.user._id === session?.user.id
+                )
+            );
+        }
+        if (filter.type === 'archived') {
+            return false;
+        }
+        if (filter.type === 'deleted') {
+            return conversation.isDeletedBy.some(
                 (userId) => userId === session?.user.id
-            ) || false;
-
-        return (
-            isParticipant &&
-            !isDeletedByUser &&
-            conversation.participants.length > 0
-        );
+            );
+        }
+        return true;
     });
-
-    useEffect(() => {
-        console.log('Conversations:', conversations);
-    }, [conversations]);
 
     return (
         <>
@@ -127,6 +149,9 @@ const Sidebar: React.FC<Props> = ({}) => {
                                     <SelectLabel className="text-xs">
                                         Sắp xếp theo
                                     </SelectLabel>
+                                    <SelectItem value="sort-mostRecent">
+                                        Tin nhắn mới nhất
+                                    </SelectItem>
                                     <SelectItem value="sort-createdAt">
                                         Ngày tạo
                                     </SelectItem>
@@ -143,33 +168,8 @@ const Sidebar: React.FC<Props> = ({}) => {
 
                 <div className="flex flex-col gap-1 overflow-y-auto pb-10">
                     {!isLoading &&
-                        conversations &&
-                        conversations
-                            .filter((conversation) => {
-                                if (filter.type === 'all') return true;
-                                if (filter.type === 'unread') {
-                                    return conversation.lastMessage?.readBy
-                                        ? !conversation.lastMessage.readBy.some(
-                                              (read) =>
-                                                  read.user._id ===
-                                                  session?.user.id
-                                          )
-                                        : false;
-                                }
-                                if (filter.type === 'read') {
-                                    return false;
-                                }
-                                if (filter.type === 'archived') {
-                                    // return conversation.isArchived;
-                                    return false;
-                                }
-                                if (filter.type === 'deleted') {
-                                    return conversation.isDeletedBy.some(
-                                        (userId) => userId === session?.user.id
-                                    );
-                                }
-                                return true;
-                            })
+                        filteredConversations &&
+                        filteredConversations
                             .sort((a, b) => {
                                 if (filter.sortBy === 'createdAt') {
                                     return filter.sortOrder === 'desc'
@@ -178,9 +178,27 @@ const Sidebar: React.FC<Props> = ({}) => {
                                         : new Date(a.createdAt).getTime() -
                                               new Date(b.createdAt).getTime();
                                 } else if (filter.sortBy === 'title') {
-                                    return filter.sortOrder === 'asc'
-                                        ? a.title.localeCompare(b.title)
-                                        : b.title.localeCompare(a.title);
+                                    return filter.sortOrder === 'desc'
+                                        ? b.title.localeCompare(a.title)
+                                        : a.title.localeCompare(b.title);
+                                } else if (filter.sortBy === 'mostRecent') {
+                                    return filter.sortOrder === 'desc'
+                                        ? new Date(
+                                              b.lastMessage?.createdAt ||
+                                                  b.createdAt
+                                          ).getTime() -
+                                              new Date(
+                                                  a.lastMessage?.createdAt ||
+                                                      a.createdAt
+                                              ).getTime()
+                                        : new Date(
+                                              a.lastMessage?.createdAt ||
+                                                  a.createdAt
+                                          ).getTime() -
+                                              new Date(
+                                                  b.lastMessage?.createdAt ||
+                                                      b.createdAt
+                                              ).getTime();
                                 }
                                 return 0;
                             })
@@ -194,11 +212,13 @@ const Sidebar: React.FC<Props> = ({}) => {
                             })}
                 </div>
 
-                {!isLoading && conversations && conversations.length === 0 && (
-                    <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                        Không có cuộc trò chuyện nào
-                    </p>
-                )}
+                {!isLoading &&
+                    filteredConversations &&
+                    filteredConversations.length === 0 && (
+                        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+                            Không có cuộc trò chuyện nào
+                        </p>
+                    )}
             </aside>
         </>
     );

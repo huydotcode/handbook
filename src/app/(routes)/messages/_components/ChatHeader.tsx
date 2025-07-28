@@ -3,12 +3,10 @@ import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { cn } from '@/lib/utils';
-import { splitName } from '@/utils/splitName';
 import { timeConvert3 } from '@/utils/timeConvert';
-import { useEditor } from '@tiptap/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
     openInfo: boolean;
@@ -30,9 +28,10 @@ const ChatHeader: React.FC<Props> = ({
     const { breakpoint } = useBreakpoint();
 
     const roomType = currentRoom.type;
+    const isGroup = roomType === 'group';
 
     const partner = useMemo(() => {
-        if (roomType == 'group') {
+        if (isGroup) {
             return null;
         } else {
             if (currentRoom.participants[0]._id === session?.user?.id) {
@@ -41,7 +40,7 @@ const ChatHeader: React.FC<Props> = ({
                 return currentRoom.participants[0];
             }
         }
-    }, [currentRoom, session?.user.id, roomType]);
+    }, [isGroup, currentRoom.participants, session?.user?.id]);
 
     const title = useMemo(() => {
         if (roomType == 'group') {
@@ -64,7 +63,7 @@ const ChatHeader: React.FC<Props> = ({
     return (
         <>
             <div className="flex h-16 items-center justify-between border-b p-4 dark:border-dark-secondary-2">
-                <div className="flex items-center">
+                <div className="flex w-full items-center">
                     {breakpoint == 'sm' && (
                         <Button
                             className="mr-2 rounded-xl p-2 text-2xl hover:bg-primary-1 dark:hover:bg-dark-primary-1"
@@ -75,57 +74,57 @@ const ChatHeader: React.FC<Props> = ({
                         </Button>
                     )}
 
-                    {roomType == 'group' ? (
+                    {isGroup ? (
                         <Avatar
                             imgSrc={avatar}
                             alt={title}
-                            className="h-10 w-10"
+                            width={40}
+                            height={40}
                         />
                     ) : (
                         <Avatar
                             imgSrc={avatar}
                             alt={title}
-                            className="h-10 w-10"
+                            width={40}
+                            height={40}
                             userUrl={partner?._id}
                         />
                     )}
 
-                    <div className="flex flex-col">
-                        <h3 className="text-md ml-2 font-bold">
-                            {roomType == 'group'
-                                ? title
-                                : breakpoint == 'sm' && title
-                                  ? splitName(title).lastName
-                                  : title}
-                        </h3>
+                    <div className="ml-2 flex flex-col">
+                        <h3 className="text-mdfont-bold">{title}</h3>
 
                         {partner && (
                             <>
-                                <span className="ml-2 text-xs ">
+                                <span className="text-xs">
                                     {partner.isOnline ? (
                                         'Đang hoạt động'
                                     ) : (
                                         <>
                                             Hoạt động{' '}
-                                            {timeConvert3(
-                                                partner.lastAccessed.toString(),
-                                                'trước'
-                                            )}
+                                            {partner?.lastAccessed
+                                                ? timeConvert3(
+                                                      partner.lastAccessed.toString(),
+                                                      'trước'
+                                                  )
+                                                : 'vừa xong'}
                                         </>
                                     )}
                                 </span>
                             </>
                         )}
 
-                        {roomType == 'group' && (
-                            <span className="ml-2 text-xs">
-                                {currentRoom.group?.name}
-                            </span>
+                        {isGroup && (
+                            <div className="md:max-w-[300px] sm:max-w-[150px]">
+                                <span className="block truncate text-xs">
+                                    {currentRoom.group?.name}
+                                </span>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex w-full items-center justify-end">
                     <Button
                         className={cn(
                             'rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1',

@@ -14,13 +14,13 @@ import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { leaveConversation } from '@/lib/actions/conversation.action';
 import ConversationService from '@/lib/services/conversation.service';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { usePinnedMessages } from './ChatBox';
 import Message from './Message';
 import SideHeader from './SideHeader';
+import Image from '@/components/ui/image';
 
 interface Props {
     conversation: IConversation;

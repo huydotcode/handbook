@@ -19,7 +19,7 @@ const ManageItemPage = () => {
 
                 return res.data;
             } catch (error) {
-                console.log('[ERROR] Failed to fetch items by seller:', error);
+                console.log(error);
             }
         },
         enabled: !!session?.user.id,

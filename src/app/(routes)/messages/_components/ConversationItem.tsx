@@ -48,6 +48,12 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         return path.includes(conversation._id);
     }, [path, conversation._id]);
 
+    const isDeleted = useMemo(() => {
+        if (!session) return false;
+
+        return conversation.isDeletedBy?.includes(session?.user.id);
+    }, [conversation.isDeletedBy, session]);
+
     const title = useMemo(() => {
         if (partner) return partner.name;
         if (conversation.title) return conversation.title;
@@ -80,6 +86,17 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
         }
 
         try {
+            if (isDeleted) {
+                await ConversationService.undeleteConversationByUserId({
+                    conversationId: conversation._id,
+                    userId: session.user.id,
+                });
+                toast.success('Khôi phục cuộc trò chuyện thành công');
+                setOpenModalDelete(false);
+                await invalidateConversations();
+                return;
+            }
+
             await ConversationService.deleteByUser({
                 conversationId: conversation._id,
                 userId: session.user.id,
@@ -177,7 +194,13 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                                             ._id ==
                                                         session?.user.id
                                                             ? 'Bạn: '
-                                                            : `${splitName(lastMessage?.sender.name).lastName}: `}
+                                                            : lastMessage
+                                                                    ?.sender
+                                                                    .givenName
+                                                              ? lastMessage
+                                                                    ?.sender
+                                                                    .givenName
+                                                              : `${splitName(lastMessage?.sender.name).lastName}: `}
                                                     </span>
 
                                                     <span
@@ -254,7 +277,9 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
                                 size={'sm'}
                                 onClick={() => setOpenModalDelete(true)}
                             >
-                                Xoá cuộc trò chuyện
+                                {isDeleted
+                                    ? 'Khôi phục cuộc trò chuyện'
+                                    : 'Xoá cuộc trò chuyện'}
                             </Button>
                         </div>
                     </PopoverContent>
@@ -262,11 +287,15 @@ const ConversationItem: React.FC<Props> = ({ data: conversation }) => {
             </div>
 
             <ConfirmModal
-                title="Xoá cuộc trò chuyện"
+                title={
+                    isDeleted
+                        ? 'Khôi phục cuộc trò chuyện'
+                        : 'Xoá cuộc trò chuyện'
+                }
                 cancelText="Huỷ"
-                confirmText="Xoá"
+                confirmText={isDeleted ? 'Khôi phục' : 'Xoá'}
                 open={openModalDelete}
-                message="Bạn có chắc muốn xoá cuộc trò chuyện này?"
+                message="Bạn có chắc chắn muốn thực hiện hành động này?"
                 onClose={() => setOpenModalDelete(false)}
                 setShow={setOpenModalDelete}
                 onConfirm={handleDeleteConversation}

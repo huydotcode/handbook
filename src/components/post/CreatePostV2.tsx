@@ -188,7 +188,10 @@ const CreatePostV2: FC<Props> = ({
         <>
             <FileUploaderWrapper
                 handleChange={(newFiles: File[]) => {
-                    form.setValue('files', newFiles);
+                    form.setValue('files', [
+                        ...(form.getValues('files') || []),
+                        ...newFiles,
+                    ]);
                 }}
             >
                 <div className={cn('relative mx-auto', className)}>

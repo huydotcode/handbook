@@ -115,6 +115,7 @@ const Avatar: React.FC<Props> = ({ user }) => {
                             single
                             onlyImage
                             handleChange={(files) => {
+                                console.log('Handle file change:', files);
                                 if (files.length > 0) {
                                     setFile(files[0]);
                                 } else {
