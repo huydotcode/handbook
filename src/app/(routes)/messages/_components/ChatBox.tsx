@@ -213,58 +213,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setOpenInfo((prev) => !prev);
     };
 
-    // Xử lý render tin nhắn
-    const renderMessages = () => {
-        return (
-            <>
-                {groupedMessages &&
-                    messages &&
-                    Object.keys(groupedMessages).map((date) => (
-                        <div key={date} className="relative mb-2">
-                            <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
-                                {date}
-                            </div>
-                            <div className={'flex flex-col-reverse'}>
-                                {isSendMessage && (
-                                    <div className="flex w-full flex-col items-end justify-end">
-                                        <div className="w-[200px] max-w-full">
-                                            <MessageSkeleton />
-                                        </div>
-
-                                        <span className="mr-2 text-xs text-secondary-1">
-                                            Đang gửi...
-                                        </span>
-                                    </div>
-                                )}
-
-                                {groupedMessages[date].map((message) => (
-                                    <Message
-                                        key={message._id}
-                                        messages={messages}
-                                        data={message}
-                                        searchMessage={findMessage}
-                                        isLastMessage={
-                                            lastMessage?._id === message._id
-                                        }
-                                        isSearchMessage={
-                                            findMessage === message._id
-                                        }
-                                        handleClick={
-                                            findMessage
-                                                ? handleOpenSearch
-                                                : undefined
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-
-                <div ref={topRef} className={'p-2'} />
-            </>
-        );
-    };
-
     useEffect(() => {
         if (inView) {
             fetchNextPage();
@@ -286,42 +234,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
             });
         };
     }, [conversation._id, session?.user.id, socketEmitor]);
-
-    // Xử lý đọc tin nhắn
-    useEffect(() => {
-        if (!session?.user?.id) return;
-        if (!lastMessage) return;
-
-        if (
-            messages &&
-            messages.length > 0 &&
-            messages[0].sender._id &&
-            messages[0]?.readBy &&
-            !messages[0].readBy.some(
-                (read) => read.user._id === session.user.id
-            )
-        ) {
-            queryClientReadMessage(conversation._id, session?.user.id);
-
-            socketEmitor.readMessage({
-                roomId: conversation._id,
-                userId: session?.user.id,
-            });
-        }
-    }, [
-        session?.user.id,
-        socketEmitor,
-        conversation._id,
-        queryClientReadMessage,
-        lastMessage,
-        messages,
-    ]);
-
-    useEffect(() => {
-        console.log({
-            messages,
-        });
-    }, [messages]);
 
     // Kiểm tra nếu đang ở bottomRef thì không hiển thị nút scroll down
     useEffect(() => {
@@ -370,16 +282,12 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         handleFindMessage,
     ]);
 
-    // Scroll tới tin nhắn cuối cùng
+    // Cuộn xuống dưới cùng khi gửi tin nhắn
     useEffect(() => {
-        if (lastMessage?.sender._id !== session?.user.id) return;
-
-        if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({
-                behavior: 'smooth',
-            });
+        if (isSendMessage) {
+            handleScrollDown();
         }
-    }, [lastMessage?.sender._id, session?.user.id]);
+    }, [isSendMessage]);
 
     return (
         <>
@@ -420,7 +328,58 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden px-1 pb-2 md:max-h-[calc(100%-16px)]">
                             <div ref={bottomRef} />
 
-                            {renderMessages()}
+                            {isSendMessage && (
+                                <div className="flex w-full flex-col items-end justify-end">
+                                    <div className="w-[200px] max-w-full">
+                                        <MessageSkeleton />
+                                    </div>
+
+                                    <span className="mt-1 text-xs text-secondary-1">
+                                        Đang gửi...
+                                    </span>
+                                </div>
+                            )}
+
+                            {groupedMessages &&
+                                messages &&
+                                Object.keys(groupedMessages).map((date) => (
+                                    <div key={date} className="relative mb-2">
+                                        <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
+                                            {date}
+                                        </div>
+                                        <div
+                                            className={'flex flex-col-reverse'}
+                                        >
+                                            {groupedMessages[date].map(
+                                                (message) => (
+                                                    <Message
+                                                        key={message._id}
+                                                        messages={messages}
+                                                        data={message}
+                                                        searchMessage={
+                                                            findMessage
+                                                        }
+                                                        isLastMessage={
+                                                            lastMessage?._id ===
+                                                            message._id
+                                                        }
+                                                        isSearchMessage={
+                                                            findMessage ===
+                                                            message._id
+                                                        }
+                                                        handleClick={
+                                                            findMessage
+                                                                ? handleOpenSearch
+                                                                : undefined
+                                                        }
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                            <div ref={topRef} className={'p-2'} />
                         </div>
 
                         {findMessage && (

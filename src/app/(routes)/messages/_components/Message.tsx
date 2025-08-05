@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react';
 import React, { useEffect, useRef } from 'react';
 import MessageContent from './MessageContent';
 import ReadMessage from './ReadMessage';
+import { useInView } from 'react-intersection-observer';
+import { useSocket } from '@/context';
+import { useQueryClient } from '@tanstack/react-query';
+import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 
 interface Props {
     data: IMessage;
@@ -28,7 +32,12 @@ const Message: React.FC<Props> = React.memo<Props>(
         isPin = false,
     }) => {
         const { data: session } = useSession();
-        const messageRef = useRef<HTMLDivElement>(null);
+        const { ref: messageRef, inView } = useInView({
+            threshold: 0.1,
+            triggerOnce: true,
+        });
+        const { socketEmitor } = useSocket();
+        const { queryClientReadMessage } = useQueryInvalidation();
 
         const isFindMessage =
             searchMessage && searchMessage === msg._id && isSearchMessage
@@ -38,11 +47,29 @@ const Message: React.FC<Props> = React.memo<Props>(
         const isOwnMsg = msg.sender._id === session?.user.id;
         const isGroupMsg = msg.conversation.group ? true : false;
 
+        // Nếu đang inview và là tin nhắn cuối sẽ xử lý readmessage
         useEffect(() => {
-            if (isLastMessage) {
-                messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+            if (
+                inView &&
+                isLastMessage &&
+                session?.user?.id &&
+                msg.sender._id !== session.user.id
+            ) {
+                queryClientReadMessage(msg.conversation._id, session.user.id);
+                socketEmitor.readMessage({
+                    roomId: msg.conversation._id,
+                    userId: session.user.id,
+                });
             }
-        }, [isLastMessage]);
+        }, [
+            inView,
+            isLastMessage,
+            session?.user?.id,
+            msg.conversation._id,
+            msg.sender._id,
+            socketEmitor,
+            queryClientReadMessage,
+        ]);
 
         return (
             <div
