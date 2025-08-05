@@ -108,6 +108,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setIsSendMessage }) => {
     };
 
     const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         const fileList = e.target.files;
         if (fileList) {
             const newFiles: File[] = Array.from(fileList || []);
@@ -149,7 +150,10 @@ const InputMessage: React.FC<Props> = ({ currentRoom, setIsSendMessage }) => {
     return (
         <form
             className="max-[calc(100vw-100px)] flex min-w-[500px] overflow-hidden rounded-xl border bg-secondary-1 dark:border-none dark:bg-dark-secondary-2 md:min-w-0"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(onSubmit)();
+            }}
             autoComplete="off"
             ref={formRef}
         >
