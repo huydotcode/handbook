@@ -386,7 +386,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
     return (
         <>
             <div
-                className={cn('relative flex w-full', className)}
+                className={cn('relative flex h-full w-full', className)}
                 onKeyDown={handleKeyDownEsc}
             >
                 <FileUploaderWrapper
