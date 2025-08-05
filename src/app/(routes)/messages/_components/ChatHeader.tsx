@@ -1,6 +1,7 @@
 'use client';
 import { Avatar, Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { VideoCallButton } from '@/components/video-call/VideoCallButton';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { cn } from '@/lib/utils';
 import { timeConvert3 } from '@/utils/timeConvert';
@@ -126,6 +127,16 @@ const ChatHeader: React.FC<Props> = ({
                 </div>
 
                 <div className="flex items-center justify-end">
+                    {/* Video Call Button - Only show for private conversations */}
+                    {!isGroup && partner && (
+                        <VideoCallButton
+                            targetUserId={partner._id}
+                            className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                            size="md"
+                            variant="ghost"
+                        />
+                    )}
+
                     <Button
                         className={cn(
                             'rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1',

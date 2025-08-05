@@ -2,7 +2,7 @@ import { Loading } from '@/components/ui';
 
 const LoadingPage = () => {
     return (
-        <div className="h-full w-full bg-secondary-1 dark:bg-dark-secondary-1">
+        <div className="bg-blue-500 h-full w-full dark:bg-dark-secondary-1">
             <Loading
                 fullScreen={false}
                 overlay={false}

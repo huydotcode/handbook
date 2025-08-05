@@ -1,5 +1,6 @@
 'use client';
 import { AppProvider, SocialProvider, SocketProvider } from '@/context';
+import { VideoCallProvider } from '@/components/video-call/VideoCallProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
@@ -17,21 +18,23 @@ const Providers: FunctionComponent<ProvidersProps> = ({ children }) => {
         <SessionProvider>
             <QueryClientProvider client={queryClient}>
                 <SocketProvider>
-                    <SocialProvider>
-                        <AppProvider>
-                            <ThemeProvider
-                                attribute="class"
-                                defaultTheme="system"
-                                enableSystem
-                            >
-                                <Toaster
-                                    position="bottom-left"
-                                    reverseOrder={false}
-                                />
-                                {children}
-                            </ThemeProvider>
-                        </AppProvider>
-                    </SocialProvider>
+                    <VideoCallProvider>
+                        <SocialProvider>
+                            <AppProvider>
+                                <ThemeProvider
+                                    attribute="class"
+                                    defaultTheme="system"
+                                    enableSystem
+                                >
+                                    <Toaster
+                                        position="bottom-left"
+                                        reverseOrder={false}
+                                    />
+                                    {children}
+                                </ThemeProvider>
+                            </AppProvider>
+                        </SocialProvider>
+                    </VideoCallProvider>
                 </SocketProvider>
             </QueryClientProvider>
         </SessionProvider>

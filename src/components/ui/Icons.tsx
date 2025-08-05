@@ -21,12 +21,17 @@ import {
     FaImage,
     FaItalic,
     FaListUl,
+    FaMicrophone,
+    FaMicrophoneSlash,
+    FaPhone,
     FaPlus,
     FaRegComment,
     FaRegFileCode,
     FaReply,
     FaShare,
     FaUsers,
+    FaVideo,
+    FaVideoSlash,
 } from 'react-icons/fa';
 import {
     FaBookmark,
@@ -63,6 +68,7 @@ import {
     MdNotifications,
     MdNotificationsActive,
     MdOutlineKeyboardArrowRight,
+    MdOutlineMonitor,
     MdPublic,
     MdSort,
     MdWork,
@@ -76,6 +82,8 @@ import {
 import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
 import { TiTick } from 'react-icons/ti';
 import { VscClearAll } from 'react-icons/vsc';
+import { FiPhoneOff } from 'react-icons/fi';
+import { MicOff, VideoOff } from 'lucide-react';
 
 interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
@@ -268,6 +276,27 @@ const Icons = {
                 {...props}
             />
         );
+    },
+    Phone: (props: IconProps) => {
+        return <FaPhone className={cn(props.className)} {...props} />;
+    },
+    PhoneOff: (props: IconProps) => {
+        return <FiPhoneOff className={cn(props.className)} {...props} />;
+    },
+    Video: (props: IconProps) => {
+        return <FaVideo className={cn(props.className)} {...props} />;
+    },
+    VideoOff: (props: IconProps) => {
+        return <FaVideoSlash className={cn(props.className)} {...props} />;
+    },
+    Mic: (props: IconProps) => {
+        return <FaMicrophone className={cn(props.className)} {...props} />;
+    },
+    MicOff: (props: IconProps) => {
+        return <FaMicrophoneSlash className={cn(props.className)} {...props} />;
+    },
+    Monitor: (props: IconProps) => {
+        return <MdOutlineMonitor className={cn(props.className)} {...props} />;
     },
 };
 
