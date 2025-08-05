@@ -312,7 +312,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         handleOpenSearch={handleOpenSearch}
                     />
 
-                    <div className="relative max-h-[calc(100vh-194px)] w-full flex-1 overflow-y-auto overflow-x-hidden">
+                    <div className="relative max-h-[calc(100vh-194px)] w-full flex-1 overflow-y-auto overflow-x-hidden py-2">
                         {isFetchingNextPage && (
                             <div className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl">
                                 <Icons.Loading />
@@ -325,7 +325,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </div>
                         )}
 
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden pl-2">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden p-2">
                             <div ref={bottomRef} />
 
                             {isSendMessage && (
