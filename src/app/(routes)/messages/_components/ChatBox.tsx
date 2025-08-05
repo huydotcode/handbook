@@ -111,6 +111,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         useQueryInvalidation();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
+    const [isSendMessage, setIsSendMessage] = useState<boolean>(false);
 
     const {
         messages,
@@ -122,13 +123,6 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
         setIsFind,
         fetchNextPage,
     } = useMessageHandling(conversation._id);
-
-    const form = useForm<IFormData>({
-        defaultValues: {
-            text: '',
-            files: [],
-        },
-    });
 
     const lastMessage = useMemo(() => {
         return messages && messages.length > 0 ? messages[0] : null;
@@ -231,11 +225,15 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                                 {date}
                             </div>
                             <div className={'flex flex-col-reverse'}>
-                                {form.formState.isSubmitting && (
-                                    <div className="flex w-full justify-end">
-                                        <div className="maxw-full w-[200px]">
+                                {isSendMessage && (
+                                    <div className="flex w-full flex-col items-end justify-end">
+                                        <div className="w-[200px] max-w-full">
                                             <MessageSkeleton />
                                         </div>
+
+                                        <span className="mr-2 text-xs text-secondary-1">
+                                            Đang gửi...
+                                        </span>
                                     </div>
                                 )}
 
@@ -455,7 +453,10 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </Button>
                         )}
 
-                        <InputMessage currentRoom={conversation} form={form} />
+                        <InputMessage
+                            currentRoom={conversation}
+                            setIsSendMessage={setIsSendMessage}
+                        />
                     </div>
                 </FileUploaderWrapper>
 

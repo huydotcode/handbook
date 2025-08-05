@@ -8,13 +8,13 @@ import { uploadImagesWithFiles } from '@/lib/uploadImage';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import { Controller, UseFormReturn } from 'react-hook-form';
+import React, { ChangeEvent, useEffect, useMemo } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 interface Props {
     currentRoom: IConversation;
-    form: UseFormReturn<IFormData>;
+    setIsSendMessage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface IFormData {
@@ -22,13 +22,18 @@ interface IFormData {
     files: File[];
 }
 
-const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
+const InputMessage: React.FC<Props> = ({ currentRoom, setIsSendMessage }) => {
     const { socketEmitor } = useSocket();
     const { data: session } = useSession();
     const formRef = React.useRef<HTMLFormElement>(null);
     const { queryClientAddMessage, invalidateConversation } =
         useQueryInvalidation();
-
+    const form = useForm<IFormData>({
+        defaultValues: {
+            text: '',
+            files: [],
+        },
+    });
     const {
         control,
         handleSubmit,
@@ -40,7 +45,8 @@ const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
         formState: { isLoading, isSubmitting },
         setFocus,
     } = form;
-    const files = getValues('files');
+
+    const files = form.watch('files');
 
     const handleRemoveFile = (index: number) => {
         setValue(
@@ -51,6 +57,7 @@ const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
     };
 
     const onSubmit = async (data: IFormData) => {
+        setIsSendMessage(true);
         reset();
         setFocus('text');
 
@@ -96,10 +103,48 @@ const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
             toast.error('Không thể gửi tin nhắn!');
         } finally {
             setFocus('text');
+            setIsSendMessage(false);
         }
     };
 
-    watch('files');
+    const handleChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
+        const fileList = e.target.files;
+        if (fileList) {
+            const newFiles: File[] = Array.from(fileList || []);
+
+            try {
+                // Kiểm tra kích thước video
+                const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+
+                for (const file of newFiles) {
+                    if (
+                        file.type.startsWith('video/') &&
+                        file.size > MAX_VIDEO_SIZE
+                    ) {
+                        toast.error(
+                            `Video "${file.name}" quá lớn. Vui lòng chọn video nhỏ hơn 50MB.`
+                        );
+                        return;
+                    }
+                }
+
+                // LẤY TẤT CẢ FILES HIỆN TẠI từ form
+                const currentFiles = form.getValues('files') || [];
+
+                // Thêm files mới vào danh sách files hiện tại
+                const allFiles = [...currentFiles, ...newFiles];
+
+                // Cập nhật form với TẤT CẢ files
+                form.setValue('files', allFiles);
+            } catch (error: any) {
+                toast.error(error.message || 'Có lỗi xảy ra khi tải file');
+            }
+        }
+    };
+
+    useEffect(() => {
+        console.log('Files in InputMessage:', files);
+    }, [files]);
 
     return (
         <form
@@ -108,54 +153,98 @@ const InputMessage: React.FC<Props> = ({ currentRoom, form }) => {
             autoComplete="off"
             ref={formRef}
         >
-            <Controller
+            {/* <Controller
                 control={control}
                 name={'files'}
                 render={({ field: { value, onChange, ...field } }) => {
                     return (
                         <input
-                            {...field}
                             className="hidden"
+                            accept="image/*, video/*"
                             multiple={true}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
                                 }
                             }}
-                            onChange={(event) => {
-                                // Kiểm tra nếu có file được chọn
-                                if (!event.target.files) return;
+                            onChange={handleChangeImage}
+                            // onChange={(event) => {
+                            //     // Kiểm tra nếu có file được chọn
+                            //     if (!event.target.files) return;
 
-                                if (files && event.target.files) {
-                                    if (
-                                        files.length +
-                                            event.target.files.length >=
-                                        11
-                                    ) {
-                                        toast.error(
-                                            'Bạn chỉ có thể gửi tối đa 5 tệp tin!'
-                                        );
-                                        return;
-                                    }
+                            //     if (files && event.target.files) {
+                            //         if (
+                            //             files.length +
+                            //                 event.target.files.length >=
+                            //             11
+                            //         ) {
+                            //             toast.error(
+                            //                 'Bạn chỉ có thể gửi tối đa 5 tệp tin!'
+                            //             );
+                            //             return;
+                            //         }
 
-                                    onChange(
-                                        Array.from(
-                                            files.concat(
-                                                Array.from(
-                                                    event.target.files || []
-                                                )
-                                            )
-                                        )
-                                    );
-                                }
+                            //         onChange(
+                            //             Array.from(
+                            //                 files.concat(
+                            //                     Array.from(
+                            //                         event.target.files || []
+                            //                     )
+                            //                 )
+                            //             )
+                            //         );
+                            //     }
 
-                                setFocus('text');
-                            }}
+                            //     setFocus('text');
+                            // }}
                             type="file"
                             id="files"
                         />
                     );
                 }}
+            /> */}
+
+            <input
+                className="hidden"
+                accept="image/*, video/*"
+                multiple={true}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                }}
+                onChange={handleChangeImage}
+                // onChange={(event) => {
+                //     // Kiểm tra nếu có file được chọn
+                //     if (!event.target.files) return;
+
+                //     if (files && event.target.files) {
+                //         if (
+                //             files.length +
+                //                 event.target.files.length >=
+                //             11
+                //         ) {
+                //             toast.error(
+                //                 'Bạn chỉ có thể gửi tối đa 5 tệp tin!'
+                //             );
+                //             return;
+                //         }
+
+                //         onChange(
+                //             Array.from(
+                //                 files.concat(
+                //                     Array.from(
+                //                         event.target.files || []
+                //                     )
+                //                 )
+                //             )
+                //         );
+                //     }
+
+                //     setFocus('text');
+                // }}
+                type="file"
+                id="files"
             />
 
             <label
