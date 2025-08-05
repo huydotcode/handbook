@@ -128,14 +128,14 @@ const ChatHeader: React.FC<Props> = ({
 
                 <div className="flex items-center justify-end">
                     {/* Video Call Button - Only show for private conversations */}
-                    {!isGroup && partner && (
+                    {/* {!isGroup && partner && (
                         <VideoCallButton
                             targetUserId={partner._id}
                             className="rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
                             size="md"
                             variant="ghost"
                         />
-                    )}
+                    )} */}
 
                     <Button
                         className={cn(

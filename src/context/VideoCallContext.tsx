@@ -9,12 +9,12 @@ import React, {
 } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSocket } from './SocketContext';
-import { VIDEO_CALL_EVENTS } from '../constants/socketEvent.constant';
+import { VIDEO_CALL_EVENTS } from '@/constants/socketEvent.constant';
 import {
     VideoCallState,
     VideoCallSignal,
     IncomingCallData,
-} from '../types/videoCall';
+} from '@/types/videoCall.d';
 import Peer from 'simple-peer';
 
 interface VideoCallContextType {
@@ -299,55 +299,23 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
             'Current user ID:',
             session?.user?.id
         );
+
+        // Check if the signal is intended for the current user
+        if (signal.to !== session?.user?.id) {
+            console.log('Signal not intended for current user, ignoring');
+            return;
+        }
+
         const peer = peersRef.current.get(signal.from);
         if (peer) {
-            console.log('Found existing peer, signaling with data');
-            peer.signal(signal.data);
+            try {
+                console.log('Sending signal to peer:', signal.from);
+                peer.signal(signal.data);
+            } catch (error) {
+                console.error('Error sending signal to peer:', error);
+            }
         } else {
-            // If peer doesn't exist, create one for incoming signals
-            console.log(
-                'Creating new peer for incoming signal from:',
-                signal.from
-            );
-            const localStream = await getLocalStream();
-            const newPeer = new Peer({
-                initiator: false,
-                trickle: false,
-                stream: localStream,
-            });
-            console.log('New peer created for signal from:', signal.from);
-
-            newPeer.on('signal', (data) => {
-                console.log(
-                    'New peer signal event triggered, sending response'
-                );
-                const responseType =
-                    signal.type === 'offer' ? 'answer' : 'offer';
-                console.log(
-                    'Signal type:',
-                    signal.type,
-                    'Response type:',
-                    responseType
-                );
-                sendSignal({
-                    type: responseType,
-                    to: signal.from,
-                    from: session?.user?.id || '',
-                    data,
-                });
-            });
-
-            newPeer.on('stream', (remoteStream) => {
-                console.log('Received remote stream from signal:', signal.from);
-                dispatch({
-                    type: 'ADD_REMOTE_STREAM',
-                    payload: { userId: signal.from, stream: remoteStream },
-                });
-            });
-
-            peersRef.current.set(signal.from, newPeer);
-            console.log('Signaling peer with data:', signal.data);
-            newPeer.signal(signal.data);
+            console.log('Peer not found for user:', signal.from);
         }
     };
 
@@ -370,6 +338,66 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
+    const validateTurnServers = (turnServers: any[]) => {
+        const errors: string[] = [];
+
+        turnServers.forEach((server, index) => {
+            if (!server.urls) {
+                errors.push(`TURN server ${index}: missing urls`);
+            }
+            if (!server.username) {
+                errors.push(`TURN server ${index}: missing username`);
+            }
+            if (!server.credential) {
+                errors.push(`TURN server ${index}: missing credential`);
+            }
+        });
+
+        return errors;
+    };
+
+    const getTurnServers = () => {
+        if (process.env.NODE_ENV === 'production') {
+            try {
+                const turnServers = JSON.parse(
+                    process.env.NEXT_PUBLIC_TURN_SERVERS || '[]'
+                );
+                const errors = validateTurnServers(turnServers);
+                if (errors.length > 0) {
+                    console.error('TURN server configuration errors:', errors);
+                    return [];
+                }
+                return turnServers;
+            } catch (error) {
+                console.error('Error parsing TURN servers:', error);
+                return [];
+            }
+        }
+        return [];
+    };
+
+    const createPeerConfig = (initiator: boolean, stream?: MediaStream) => {
+        const iceServers = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            ...getTurnServers(),
+        ];
+
+        return {
+            initiator,
+            trickle: false,
+            stream,
+            config: {
+                iceServers,
+                iceCandidatePoolSize: 10,
+                iceTransportPolicy: 'all' as RTCIceTransportPolicy,
+                bundlePolicy: 'max-bundle' as RTCBundlePolicy,
+                rtcpMuxPolicy: 'require' as RTCRtcpMuxPolicy,
+            },
+        };
+    };
+
     const initiateCall = async (targetUserId: string) => {
         try {
             const localStream = await getLocalStream();
@@ -379,10 +407,24 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
 
             // Create peer connection for the target user
             if (!peersRef.current.has(targetUserId)) {
-                const peer = new Peer({
-                    initiator: true,
-                    trickle: false,
-                    stream: localStream,
+                const peerConfig = createPeerConfig(true, localStream);
+                const peer = new Peer(peerConfig);
+
+                peer.on('connect', () => {
+                    console.log(
+                        'Peer connection established with:',
+                        targetUserId
+                    );
+                });
+
+                peer.on('error', (err) => {
+                    console.error('Peer connection error:', err);
+                    // Handle connection error
+                    dispatch({ type: 'SET_CALL_STATUS', payload: 'ended' });
+                });
+
+                peer.on('close', () => {
+                    console.log('Peer connection closed with:', targetUserId);
                 });
 
                 peer.on('signal', (data) => {
@@ -406,6 +448,7 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
             }
         } catch (error) {
             console.error('Error initiating call:', error);
+            dispatch({ type: 'SET_CALL_STATUS', payload: 'ended' });
         }
     };
 
@@ -431,11 +474,8 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
             const callerId = state.participants[0];
             console.log('Creating peer connection for caller:', callerId);
             if (callerId && !peersRef.current.has(callerId)) {
-                const peer = new Peer({
-                    initiator: false,
-                    trickle: false,
-                    stream: localStream,
-                });
+                const peerConfig = createPeerConfig(false, localStream);
+                const peer = new Peer(peerConfig);
 
                 peer.on('connect', () => {
                     console.log(
@@ -446,6 +486,14 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
 
                 peer.on('error', (err) => {
                     console.error('Peer connection error:', err);
+                    dispatch({ type: 'SET_CALL_STATUS', payload: 'ended' });
+                });
+
+                peer.on('close', () => {
+                    console.log(
+                        'Peer connection closed with caller:',
+                        callerId
+                    );
                 });
 
                 peer.on('signal', (data) => {
@@ -470,7 +518,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
                         'Stream tracks:',
                         remoteStream.getTracks().map((t) => t.kind)
                     );
-                    console.log('Remote stream active:', remoteStream.active);
                     dispatch({
                         type: 'ADD_REMOTE_STREAM',
                         payload: { userId: callerId, stream: remoteStream },
@@ -478,13 +525,10 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
                 });
 
                 peersRef.current.set(callerId, peer);
-                console.log(
-                    'Peer connection created and stored for caller:',
-                    callerId
-                );
             }
         } catch (error) {
             console.error('Error accepting call:', error);
+            dispatch({ type: 'SET_CALL_STATUS', payload: 'ended' });
         }
     };
 

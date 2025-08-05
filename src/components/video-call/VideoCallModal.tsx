@@ -32,42 +32,168 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
     } = useVideoCall();
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
+    const localVideoPlayingRef = useRef(false);
+    const remoteVideoPlayingRef = useRef(false);
+    const localVideoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const remoteVideoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const setLocalVideo = useCallback(() => {
-        if (state.localStream && localVideoRef.current) {
-            console.log('VideoCallModal: Setting srcObject for local video');
-            console.log('VideoCallModal: Local stream tracks:', state.localStream.getTracks().map(t => t.kind));
-            localVideoRef.current.srcObject = state.localStream;
-            localVideoRef.current.play().catch((error) => {
-                console.error('Error playing local video:', error);
-            });
+    // Utility function to safely play video with debounce
+    const safePlayVideo = async (
+        videoElement: HTMLVideoElement,
+        playingRef: React.MutableRefObject<boolean>,
+        timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>
+    ) => {
+        if (playingRef.current) {
+            console.log('Video already playing, skipping...');
+            return;
+        }
+
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the play call
+        timeoutRef.current = setTimeout(async () => {
+            try {
+                playingRef.current = true;
+                await videoElement.play();
+                console.log('Video playing successfully');
+            } catch (error) {
+                console.error('Error playing video:', error);
+                playingRef.current = false;
+
+                // Handle specific errors
+                if (error instanceof Error) {
+                    if (error.name === 'AbortError') {
+                        console.log(
+                            'Video play was aborted, this is normal during rapid changes'
+                        );
+                    } else if (error.name === 'NotAllowedError') {
+                        console.error(
+                            'Video play not allowed - user interaction required'
+                        );
+                    }
+                }
+            }
+        }, 100); // 100ms debounce
+    };
+
+    const setLocalVideo = useCallback(async () => {
+        if (
+            state.localStream &&
+            localVideoRef.current &&
+            !localVideoPlayingRef.current
+        ) {
+            try {
+                console.log(
+                    'VideoCallModal: Setting srcObject for local video'
+                );
+                console.log(
+                    'VideoCallModal: Local stream tracks:',
+                    state.localStream.getTracks().map((t) => t.kind)
+                );
+
+                localVideoRef.current.srcObject = state.localStream;
+
+                // Use safe play utility
+                await safePlayVideo(
+                    localVideoRef.current,
+                    localVideoPlayingRef,
+                    localVideoTimeoutRef
+                );
+            } catch (error) {
+                console.error('Error setting local video:', error);
+                localVideoPlayingRef.current = false;
+            }
         } else {
-            console.log('VideoCallModal: Cannot set local video - stream:', !!state.localStream, 'ref:', !!localVideoRef.current);
+            console.log(
+                'VideoCallModal: Cannot set local video - stream:',
+                !!state.localStream,
+                'ref:',
+                !!localVideoRef.current,
+                'already playing:',
+                localVideoPlayingRef.current
+            );
         }
     }, [state.localStream]);
 
-    useLayoutEffect(() => {
-        console.log('VideoCallModal: Setting local stream:', state.localStream);
-        setLocalVideo();
-    }, [state.localStream, setLocalVideo]);
+    const setRemoteVideo = useCallback(async () => {
+        if (
+            state.remoteStreams.size > 0 &&
+            remoteVideoRef.current &&
+            !remoteVideoPlayingRef.current
+        ) {
+            try {
+                const firstRemoteStream = Array.from(
+                    state.remoteStreams.values()
+                )[0];
+                console.log(
+                    'VideoCallModal: Setting srcObject for remote video'
+                );
 
-    useEffect(() => {
-        console.log(
-            'VideoCallModal: Remote streams:',
-            state.remoteStreams.size
-        );
-        if (state.remoteStreams.size > 0 && remoteVideoRef.current) {
-            const firstRemoteStream = Array.from(
-                state.remoteStreams.values()
-            )[0];
-            console.log('VideoCallModal: Setting srcObject for remote video');
-            remoteVideoRef.current.srcObject = firstRemoteStream;
-            // Ensure video plays
-            remoteVideoRef.current.play().catch((error) => {
-                console.error('Error playing remote video:', error);
-            });
+                remoteVideoRef.current.srcObject = firstRemoteStream;
+
+                // Use safe play utility
+                await safePlayVideo(
+                    remoteVideoRef.current,
+                    remoteVideoPlayingRef,
+                    remoteVideoTimeoutRef
+                );
+            } catch (error) {
+                console.error('Error setting remote video:', error);
+                remoteVideoPlayingRef.current = false;
+            }
         }
     }, [state.remoteStreams]);
+
+    // Handle local video
+    useLayoutEffect(() => {
+        if (state.localStream) {
+            console.log(
+                'VideoCallModal: Setting local stream:',
+                state.localStream
+            );
+            setLocalVideo();
+        }
+    }, [state.localStream, setLocalVideo]);
+
+    // Handle remote video
+    useLayoutEffect(() => {
+        if (state.remoteStreams.size > 0) {
+            console.log(
+                'VideoCallModal: Setting remote streams:',
+                state.remoteStreams.size
+            );
+            setRemoteVideo();
+        }
+    }, [state.remoteStreams, setRemoteVideo]);
+
+    // Reset playing flags when streams change
+    useEffect(() => {
+        if (!state.localStream) {
+            localVideoPlayingRef.current = false;
+        }
+        if (state.remoteStreams.size === 0) {
+            remoteVideoPlayingRef.current = false;
+        }
+    }, [state.localStream, state.remoteStreams]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            localVideoPlayingRef.current = false;
+            remoteVideoPlayingRef.current = false;
+
+            // Clear timeouts
+            if (localVideoTimeoutRef.current) {
+                clearTimeout(localVideoTimeoutRef.current);
+            }
+            if (remoteVideoTimeoutRef.current) {
+                clearTimeout(remoteVideoTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (state.callStatus === 'connected') {
@@ -119,10 +245,20 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
                         autoPlay
                         playsInline
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                            console.error('Remote video error:', e);
+                            remoteVideoPlayingRef.current = false;
+                        }}
+                        onLoadStart={() => {
+                            console.log('Remote video loading started');
+                        }}
+                        onCanPlay={() => {
+                            console.log('Remote video can play');
+                        }}
                     />
 
                     {/* Local Video */}
-                    <div className="absolute right-4 top-4 h-36 w-48 overflow-hidden rounded-lg bg-gray-800 z-10">
+                    <div className="absolute right-4 top-4 z-10 h-36 w-48 overflow-hidden rounded-lg bg-gray-800">
                         <video
                             ref={localVideoRef}
                             autoPlay
@@ -130,6 +266,16 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
                             muted
                             className="h-full w-full object-cover"
                             style={{ transform: 'scaleX(-1)' }} // Mirror the video
+                            onError={(e) => {
+                                console.error('Local video error:', e);
+                                localVideoPlayingRef.current = false;
+                            }}
+                            onLoadStart={() => {
+                                console.log('Local video loading started');
+                            }}
+                            onCanPlay={() => {
+                                console.log('Local video can play');
+                            }}
                         />
                         {!state.localStream && (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
@@ -138,6 +284,12 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
                                 </span>
                             </div>
                         )}
+                        {/* Debug info */}
+                        <div className="absolute bottom-0 left-0 bg-black/50 p-1 text-xs text-white">
+                            Stream: {state.localStream ? 'Yes' : 'No'} | Ref:{' '}
+                            {localVideoRef.current ? 'Yes' : 'No'} | Playing:{' '}
+                            {localVideoPlayingRef.current ? 'Yes' : 'No'}
+                        </div>
                     </div>
 
                     {/* Call Status Overlay */}
