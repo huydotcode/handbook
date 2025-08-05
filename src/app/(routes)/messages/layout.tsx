@@ -1,6 +1,7 @@
 import FixedLayout from '@/components/layout/FixedLayout';
 import React from 'react';
 import { Sidebar } from './_components';
+import { Navbar } from '@/components/layout';
 interface Props {
     children: React.ReactNode;
 }
@@ -13,16 +14,18 @@ export async function generateMetadata() {
 
 const MessageLayout: React.FC<Props> = async ({ children }) => {
     return (
-        <FixedLayout fullScreen>
-            <Sidebar />
-            <div
-                className={
-                    'fixed bottom-0 left-[310px] top-2 flex h-[calc(100vh-72px)] w-[calc(100vw-320px)] max-w-screen rounded-xl dark:shadow-none lg:left-[90px] lg:w-[calc(100vw-98px)] sm:left-0 sm:w-screen'
-                }
-            >
-                {children}
+        <div className="relative h-screen w-full overflow-hidden">
+            <div className="relative top-[60px]">
+                <Sidebar />
+
+                <div className="relative my-1 ml-[310px] h-[calc(100vh-72px)] overflow-hidden rounded-xl lg:ml-[90px] sm:ml-0">
+                    {children}
+                </div>
             </div>
-        </FixedLayout>
+            {/* <div className="fixed left-1/2 top-[64px] h-[calc(100vh-300px)] w-full min-w-[80%] max-w-[1876px] -translate-x-1/2 rounded-xl bg-transparent p-2 md:min-w-full"> */}
+
+            {/* </div> */}
+        </div>
     );
 };
 export default MessageLayout;

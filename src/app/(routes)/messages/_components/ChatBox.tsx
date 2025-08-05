@@ -406,9 +406,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         handleOpenSearch={handleOpenSearch}
                     />
 
-                    <div className="relative h-[calc(100vh-112px)] w-full overflow-y-auto overflow-x-hidden p-2">
-                        {/* {renderPinnedMessasges()} */}
-
+                    <div className="relative max-h-[calc(100vh-194px)] w-full flex-1 overflow-y-auto overflow-x-hidden p-2">
                         {isFetchingNextPage && (
                             <div className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl">
                                 <Icons.Loading />
@@ -421,7 +419,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </div>
                         )}
 
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden border-b px-1 pb-2 md:max-h-[calc(100%-16px)]">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden px-1 pb-2 md:max-h-[calc(100%-16px)]">
                             <div ref={bottomRef} />
 
                             {renderMessages()}
@@ -445,11 +443,11 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         )}
                     </div>
 
-                    <div className="relative flex justify-center">
+                    <div className="relative flex justify-center border-t py-2 dark:border-t-dark-secondary-2">
                         {showScrollDown && (
                             <Button
                                 className={cn(
-                                    'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100 md:-top-[7rem]'
+                                    'absolute -top-12 left-1/2 z-50 w-fit -translate-x-1/2 opacity-30 transition-all duration-300 hover:opacity-100'
                                 )}
                                 onClick={handleScrollDown}
                             >

@@ -96,7 +96,7 @@ const SavePost: React.FC<Props> = ({ post }) => {
             variant={'ghost'}
         >
             <Icons.Bookmark />
-            <span className="text-sm">
+            <span className="text-sm sm:hidden">
                 {isPending && isSaved
                     ? 'Đang hủy lưu...'
                     : isPending && !isSaved

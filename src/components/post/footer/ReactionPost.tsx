@@ -66,6 +66,7 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
                 await PostService.sendReaction(post._id);
 
                 if (!isReacted) {
+                    toast.success('Đã yêu thích bài viết!');
                     socketEmitor.likePost({
                         postId: post._id,
                         authorId: post.author._id,
