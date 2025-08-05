@@ -312,7 +312,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                         handleOpenSearch={handleOpenSearch}
                     />
 
-                    <div className="relative max-h-[calc(100vh-194px)] w-full flex-1 overflow-y-auto overflow-x-hidden p-2">
+                    <div className="relative max-h-[calc(100vh-194px)] w-full flex-1 overflow-y-auto overflow-x-hidden">
                         {isFetchingNextPage && (
                             <div className="absolute left-1/2 top-4 -translate-x-1/2 text-3xl">
                                 <Icons.Loading />
@@ -325,7 +325,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             </div>
                         )}
 
-                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden px-1 pb-2 md:max-h-[calc(100%-16px)]">
+                        <div className="relative flex h-full flex-col-reverse overflow-y-auto overflow-x-hidden md:max-h-[calc(100%-16px)]">
                             <div ref={bottomRef} />
 
                             {isSendMessage && (
@@ -343,7 +343,7 @@ const ChatBox: React.FC<Props> = ({ className, conversation, findMessage }) => {
                             {groupedMessages &&
                                 messages &&
                                 Object.keys(groupedMessages).map((date) => (
-                                    <div key={date} className="relative mb-2">
+                                    <div key={date} className="relative">
                                         <div className="mt-2 pb-1 text-center text-xs text-secondary-1">
                                             {date}
                                         </div>
