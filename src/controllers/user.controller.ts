@@ -23,13 +23,10 @@ class UserController {
         const userId = req.query.user_id;
 
         try {
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.page_size as string) || 10;
-
-            const user = await User.findById(userId)
-                .populate('friends', POPULATE_USER)
-                .skip((+page - 1) * +pageSize)
-                .limit(+pageSize);
+            const user = await User.findById(userId).populate(
+                'friends',
+                POPULATE_USER
+            );
             const friends = (user && user.friends) || [];
 
             res.status(200).json(friends);
