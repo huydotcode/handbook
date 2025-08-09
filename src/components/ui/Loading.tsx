@@ -36,7 +36,12 @@ const Loading: FC<Props> = ({
 
     if (initText && initText.length > 0) {
         return (
-            <div className="flex justify-center text-xs text-secondary-1 ">
+            <div
+                className={cn(
+                    'flex justify-center text-xs text-secondary-1',
+                    className
+                )}
+            >
                 {text}
             </div>
         );

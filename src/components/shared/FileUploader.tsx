@@ -195,7 +195,7 @@ const FileUploader: React.FC<Props> = ({
     return (
         <div
             className={cn(
-                'flex h-fit w-full items-center justify-center',
+                'flex h-fit w-full flex-wrap items-center justify-center gap-1',
                 className
             )}
             onDrop={handleDrop}
@@ -203,6 +203,15 @@ const FileUploader: React.FC<Props> = ({
             onDragEnter={preventDefault}
             onDragLeave={preventDefault}
         >
+            <input
+                id="file"
+                type="file"
+                className="hidden"
+                onChange={handleFileSelect}
+                multiple={!single}
+                accept={acceptType}
+            />
+
             {files.length == 0 ? (
                 <>
                     <label
@@ -222,14 +231,6 @@ const FileUploader: React.FC<Props> = ({
                                 Tải lên
                             </span>
                         </div>
-                        <input
-                            id="file"
-                            type="file"
-                            className="hidden"
-                            onChange={handleFileSelect}
-                            multiple={!single}
-                            accept={acceptType}
-                        />
                     </label>
                 </>
             ) : (
@@ -237,9 +238,10 @@ const FileUploader: React.FC<Props> = ({
                     {files.slice(0, 3).map((file: any, index: number) => (
                         <div
                             key={index}
-                            className="relative mt-5 flex items-center gap-2"
+                            className="relative mt-5 flex h-[200px] w-[200px] items-center gap-2 overflow-hidden rounded-xl"
                         >
                             <Image
+                                className="h-full w-full object-cover"
                                 alt={''}
                                 src={URL.createObjectURL(file)}
                                 width={200}
@@ -249,6 +251,8 @@ const FileUploader: React.FC<Props> = ({
                             <Button
                                 onClick={() => handleRemove(index)}
                                 className="absolute right-0 top-0"
+                                size={'sm'}
+                                variant={'secondary'}
                             >
                                 <Icons.Close />
                             </Button>
@@ -264,8 +268,27 @@ const FileUploader: React.FC<Props> = ({
                                 width={200}
                                 height={200}
                             />
+
+                            <p className="absolute inset-0 flex items-center justify-center text-lg font-medium text-primary-1 dark:text-dark-primary-1">
+                                +{files.length - 3}
+                            </p>
                         </div>
                     )}
+
+                    <div className="rounded-3xl border-2 border-dashed border-secondary-2 bg-secondary-1 px-8 py-4 dark:border-dark-secondary-2 dark:bg-dark-secondary-1">
+                        <label
+                            htmlFor="file"
+                            className="cursor-pointer rounded-3xl"
+                        >
+                            <div className="flex flex-col items-center justify-center gap-1 text-sm">
+                                <p>Kéo & thả</p>
+                                <p>hoặc</p>
+                                <span className="rounded-lg bg-secondary-2 px-4 py-1 text-sm transition duration-300 hover:bg-primary-1 dark:bg-dark-secondary-2 dark:hover:bg-dark-primary-1">
+                                    Tải lên
+                                </span>
+                            </div>
+                        </label>
+                    </div>
                 </>
             )}
         </div>

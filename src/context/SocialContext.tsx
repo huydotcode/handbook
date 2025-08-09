@@ -2,7 +2,6 @@
 import { API_ROUTES } from '@/config/api';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
-import ProfileService from '@/lib/services/profile.service';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
@@ -10,45 +9,25 @@ import { useSocket } from './SocketContext';
 
 const PAGE_SIZE = 10;
 
-export const useProfile = (userId: string) =>
-    useQuery<IProfile>({
-        queryKey: queryKey.user.profile(userId),
-        queryFn: async () => {
-            const data = await ProfileService.getByUserId(userId);
-            if (!data) {
-                throw new Error('Profile not found');
-            }
-            return data;
-        },
-        enabled: !!userId,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-    });
-
 export const useFriends = (userId: string | undefined) =>
-    useInfiniteQuery({
+    useQuery<IFriend[]>({
         queryKey: queryKey.user.friends(userId),
-        queryFn: async ({ pageParam = 1 }) => {
+        queryFn: async () => {
             if (!userId) return [];
 
             const res = await axiosInstance.get(API_ROUTES.USER.FRIENDS, {
                 params: {
                     user_id: userId,
-                    page: pageParam,
-                    page_size: PAGE_SIZE,
                 },
             });
 
-            return res.data;
-        },
-        initialPageParam: 1,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === 10 ? allPages.length + 1 : undefined;
-        },
-        select: (data) => {
-            return data.pages.flatMap((page) => page) as IUser[];
+            const friends = res.data;
+            return friends;
         },
         enabled: !!userId,
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useConversations = (userId: string | undefined) =>
@@ -64,6 +43,9 @@ export const useConversations = (userId: string | undefined) =>
             return conversations;
         },
         enabled: !!userId,
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
     });
 
 export const useConversation = (conversationId: string | undefined) => {
@@ -83,6 +65,9 @@ export const useConversation = (conversationId: string | undefined) => {
         },
         enabled: !!conversationId && !!session?.user.id,
         retry: false,
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
     });
 };
 

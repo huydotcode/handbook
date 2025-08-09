@@ -1,6 +1,6 @@
 'use client';
 import { FixedSidebar } from '@/components/layout';
-import { Icons } from '@/components/ui';
+import { Icons, Loading } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import {
     DropdownMenu,
@@ -20,6 +20,7 @@ import { Session } from 'next-auth';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
+import ConversationItemSkeleton from '../skeleton/ConversationItemSkeleton';
 
 interface Props {
     session: Session;
@@ -29,8 +30,11 @@ const FriendSection: React.FC<Props> = ({ session }) => {
     const path = usePathname();
     const router = useRouter();
 
-    const { data: conversations } = useConversations(session?.user.id);
-    const { data: friends } = useFriends(session?.user.id);
+    const { data: conversations, isLoading: isLoadingConversations } =
+        useConversations(session?.user.id);
+    const { data: friends, isLoading: isLoadingFriends } = useFriends(
+        session?.user.id
+    );
 
     const privateConversations =
         conversations?.filter(
@@ -65,6 +69,14 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                     </div>
 
                     <div className="flex flex-col">
+                        {isLoadingFriends && (
+                            <div className="flex flex-col gap-1">
+                                <ConversationItemSkeleton />
+                                <ConversationItemSkeleton />
+                                <ConversationItemSkeleton />
+                            </div>
+                        )}
+
                         {friends &&
                             friends.map((friend, index) => {
                                 const conversation = privateConversations.find(
@@ -193,6 +205,14 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                     </div>
 
                     <div className="flex flex-col">
+                        {isLoadingConversations && (
+                            <div className="flex flex-col gap-1">
+                                <ConversationItemSkeleton />
+                                <ConversationItemSkeleton />
+                                <ConversationItemSkeleton />
+                            </div>
+                        )}
+
                         {groupConversations.map((conversation) => {
                             return (
                                 <TooltipProvider key={conversation._id}>

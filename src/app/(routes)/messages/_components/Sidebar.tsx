@@ -15,6 +15,8 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import ConversationItem from './ConversationItem';
 import SearchConversation from './SearchConversation';
+import toast from 'react-hot-toast';
+import ConversationItemSkeleton from '@/components/skeleton/ConversationItemSkeleton';
 
 interface Props {}
 
@@ -49,39 +51,66 @@ const Sidebar: React.FC<Props> = ({}) => {
     const isMessagesPage = pathName === '/messages';
 
     const filteredConversations = initConversations?.filter((conversation) => {
-        if (filter.query) {
-            return conversation.title
-                .toLowerCase()
-                .includes(filter.query.toLowerCase());
-        }
-        if (filter.type === 'all') return true;
-        if (filter.type === 'unread') {
-            return (
-                conversation.lastMessage?.readBy &&
-                !conversation.lastMessage.readBy.some(
-                    (read) => read.user._id === session?.user.id
-                ) &&
-                conversation.lastMessage.sender._id !== session?.user.id
-            );
-        }
-        if (filter.type === 'read') {
-            return (
-                conversation.lastMessage?.sender?._id === session?.user.id ||
-                conversation.lastMessage?.readBy?.some(
-                    (read) => read.user._id === session?.user.id
-                )
-            );
-        }
-        if (filter.type === 'archived') {
-            return false;
-        }
-        if (filter.type === 'deleted') {
-            return conversation.isDeletedBy.some(
-                (userId) => userId === session?.user.id
-            );
-        }
-        return true;
+        const matchesQuery = !filter.query
+            ? true
+            : conversation.title
+                  .toLowerCase()
+                  .includes(filter.query.toLowerCase()) ||
+              conversation.participants.some((participant) =>
+                  participant.name
+                      .toLowerCase()
+                      .includes(filter.query.toLowerCase())
+              );
+
+        const matchesType = (() => {
+            switch (filter.type) {
+                case ConversationType.ALL:
+                    return !conversation.isDeletedBy.some(
+                        (userId) => userId === session?.user.id
+                    );
+                case ConversationType.UNREAD:
+                    return (
+                        conversation.lastMessage?.readBy &&
+                        !conversation.lastMessage.readBy.some(
+                            (read) => read.user._id === session?.user.id
+                        ) &&
+                        conversation.lastMessage.sender._id !== session?.user.id
+                    );
+                case ConversationType.READ:
+                    return (
+                        conversation.lastMessage?.sender?._id ===
+                            session?.user.id ||
+                        conversation.lastMessage?.readBy?.some(
+                            (read) => read.user._id === session?.user.id
+                        )
+                    );
+                case ConversationType.ARCHIVED:
+                    return false;
+                case ConversationType.DELETED:
+                    return conversation.isDeletedBy.some(
+                        (userId) => userId === session?.user.id
+                    );
+                default:
+                    return true;
+            }
+        })();
+
+        return matchesQuery && matchesType;
     });
+
+    const onChangeSelectFilter = (value: string) => {
+        setFilter((prev) => ({
+            ...prev,
+            type: value.split('-')[1] as
+                | 'all'
+                | 'unread'
+                | 'read'
+                | 'archived'
+                | 'deleted',
+            sortBy: value.split('-')[0].replace('sort-', ''),
+            sortOrder: value.includes('desc') ? 'desc' : 'asc',
+        }));
+    };
 
     return (
         <>
@@ -99,25 +128,7 @@ const Sidebar: React.FC<Props> = ({}) => {
                     <SearchConversation setFilter={setFilter} />
 
                     <div className="flex items-center justify-end">
-                        <Select
-                            onValueChange={(value) => {
-                                setFilter((prev) => ({
-                                    ...prev,
-                                    type: value.split('-')[1] as
-                                        | 'all'
-                                        | 'unread'
-                                        | 'read'
-                                        | 'archived'
-                                        | 'deleted',
-                                    sortBy: value
-                                        .split('-')[0]
-                                        .replace('sort-', ''),
-                                    sortOrder: value.includes('desc')
-                                        ? 'desc'
-                                        : 'asc',
-                                }));
-                            }}
-                        >
+                        <Select onValueChange={onChangeSelectFilter}>
                             <SelectTrigger className="mt-2 h-8 w-fit max-w-[150px] bg-secondary-2 text-xs dark:bg-dark-secondary-2">
                                 <div className="flex items-center pr-2">
                                     <Icons.Filter className="h-4 w-4" />
@@ -164,7 +175,13 @@ const Sidebar: React.FC<Props> = ({}) => {
                     </div>
                 </div>
 
-                {isLoading && <Loading text="Đang tải cuộc trò chuyện..." />}
+                {isLoading && (
+                    <div className="mx-4 flex flex-col gap-1">
+                        <ConversationItemSkeleton />
+                        <ConversationItemSkeleton />
+                        <ConversationItemSkeleton />
+                    </div>
+                )}
 
                 <div className="flex flex-col gap-1 overflow-y-auto pb-10">
                     {!isLoading &&

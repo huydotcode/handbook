@@ -2,7 +2,6 @@
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { useSocket } from '@/context';
-import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import queryKey from '@/lib/queryKey';
 import PostService from '@/lib/services/post.service';
 import { cn } from '@/lib/utils';
@@ -11,8 +10,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import toast from 'react-hot-toast';
-import { usePostContext } from '../Post';
 import { InfinityPostData } from '../InfinityPostComponent';
+import { usePostContext } from '../Post';
 
 interface Props {
     post: IPost;
@@ -65,8 +64,8 @@ const ReactionPost: React.FC<Props> = ({ post }) => {
 
                 await PostService.sendReaction(post._id);
 
-                if (!isReacted) {
-                    toast.success('Đã yêu thích bài viết!');
+                // Kiểm tra nếu người dùng không phải là tác giả bài viết và tương tác bài viết
+                if (!isReacted && session.user.id !== post.author._id) {
                     socketEmitor.likePost({
                         postId: post._id,
                         authorId: post.author._id,
