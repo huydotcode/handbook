@@ -1,6 +1,7 @@
 {
   "name": "handbook-monorepo",
   "private": true,
+  "packageManager": "pnpm@9.12.0",
   "scripts": {
     "dev:client": "pnpm --filter client dev",
     "dev:server": "pnpm --filter server dev",
@@ -9,6 +10,5 @@
   },
   "devDependencies": {
     "typescript": "^5.0.0"
-  },
-  "packageManager": "pnpm@9.12.0"
+  }
 }
