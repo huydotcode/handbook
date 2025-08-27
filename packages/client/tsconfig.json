@@ -19,8 +19,10 @@
             }
         ],
         "paths": {
-            "@/*": ["./src/*"]
-        }
+      "@/*": ["./src/*"],
+      "@handbook/shared": ["../shared/src"]
+    },
+    "forceConsistentCasingInFileNames": true,
     },
     "include": [
         "next-env.d.ts",
@@ -30,5 +32,6 @@
         "**/*.js",
         "**/*.jsx"
     ],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules"],
+    "extends": "../../tsconfig.base.json",
 }
