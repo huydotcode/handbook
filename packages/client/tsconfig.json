@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "baseUrl": "./",
         "target": "es6",
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
@@ -19,10 +20,10 @@
             }
         ],
         "paths": {
-      "@/*": ["./src/*"],
-      "@handbook/shared": ["../shared/src"]
-    },
-    "forceConsistentCasingInFileNames": true,
+            "@/*": ["./src/*"],
+            "@handbook/shared": ["../shared/src"]
+        },
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
         "next-env.d.ts",
@@ -33,5 +34,5 @@
         "**/*.jsx"
     ],
     "exclude": ["node_modules"],
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../tsconfig.base.json"
 }
