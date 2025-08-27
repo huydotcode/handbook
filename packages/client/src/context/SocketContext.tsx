@@ -261,7 +261,16 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socketIO.disconnect();
             setSocket(null);
         };
-    }, [session?.user, pathname]);
+    }, [
+        session?.user,
+        pathname,
+        queryClientAddMessage,
+        socketEmitor,
+        queryClientDeleteMessage,
+        queryClientAddPinnedMessage,
+        queryClientRemovePinnedMessage,
+        queryClientReadMessage,
+    ]);
 
     const values: SocketContextType = {
         socket,

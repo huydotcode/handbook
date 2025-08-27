@@ -3,7 +3,7 @@ import Message from '@/app/(routes)/messages/_components/Message';
 import { Icons, Loading } from '@/components/ui';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import SideHeader from './SideHeader';
 import { Button } from '@/components/ui/Button';
@@ -31,7 +31,7 @@ const SearchMessage: React.FC<Props> = ({
     const [searchMessages, setSearchMessages] = useState<IMessage[]>([]);
     const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
 
-    const searchMessage = async () => {
+    const searchMessage = useCallback(async () => {
         try {
             setIsSearching(true);
 
@@ -55,7 +55,7 @@ const SearchMessage: React.FC<Props> = ({
         } finally {
             setIsSearching(false);
         }
-    };
+    }, [search, conversationId]);
 
     const { breakpoint } = useBreakpoint();
 
@@ -69,7 +69,7 @@ const SearchMessage: React.FC<Props> = ({
         }, 1000);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [search, searchMessage]);
 
     return (
         <>

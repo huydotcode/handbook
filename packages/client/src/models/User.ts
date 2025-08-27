@@ -6,7 +6,7 @@ import {
     modelNames,
     models,
 } from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { UserRole } from '@/enums/UserRole';
 
 interface IUserModel {
