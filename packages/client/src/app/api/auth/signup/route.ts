@@ -1,7 +1,7 @@
 import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 
@@ -39,29 +39,29 @@ export async function POST(req: Request, segmentData: { params: Params }) {
             );
         }
 
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hashPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(saltRounds);
+        // const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await new User({
-            name: name,
-            email: email,
-            username: username,
-            password: hashPassword,
-            avatar: image || '/assets/img/user-profile.jpg',
-        });
+        // const newUser = await new User({
+        //     name: name,
+        //     email: email,
+        //     username: username,
+        //     password: hashPassword,
+        //     avatar: image || '/assets/img/user-profile.jpg',
+        // });
 
-        const newProfile = await new Profile({
-            user: newUser._id,
-            coverPhoto: '/assets/img/cover-page.jpg',
-            bio: '',
-            work: '',
-            education: '',
-            location: '',
-            dateOfBirth: new Date(),
-        });
+        // const newProfile = await new Profile({
+        //     user: newUser._id,
+        //     coverPhoto: '/assets/img/cover-page.jpg',
+        //     bio: '',
+        //     work: '',
+        //     education: '',
+        //     location: '',
+        //     dateOfBirth: new Date(),
+        // });
 
-        await newProfile.save();
-        await newUser.save();
+        // await newProfile.save();
+        // await newUser.save();
 
         return new Response(
             JSON.stringify({ msg: 'Đăng ký thành công', success: true }),

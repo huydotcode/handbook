@@ -6,7 +6,7 @@ import {
     modelNames,
     models,
 } from 'mongoose';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 import { UserRole } from '@/enums/UserRole';
 
 interface IUserModel {
@@ -98,7 +98,7 @@ UserSchema.methods.comparePassword = async function (password: string) {
     if (user.password === undefined) {
         return false;
     }
-    return bcrypt.compare(password, user.password!);
+    // return bcrypt.compare(password, user.password!);
 };
 
 UserSchema.pre('save', async function (next) {
