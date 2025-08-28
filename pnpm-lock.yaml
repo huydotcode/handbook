@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/bcrypt':
+        specifier: ^5.0.0
+        version: 5.0.2
       '@types/jsonwebtoken':
         specifier: ^9.0.6
         version: 9.0.10

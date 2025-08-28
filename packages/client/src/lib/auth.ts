@@ -3,7 +3,7 @@ import connectToDB from '@/services/mongoose';
 import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
 import logger from '@/utils/logger';
 
-// import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
@@ -256,8 +256,8 @@ export const authOptions: NextAuthOptions = {
 };
 
 export const hashPassword = async (password: string) => {
-    // const salt = await bcrypt.genSalt(10);
-    // return await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
 };
 
 export const getAuthSession = () => getServerSession(authOptions);
