@@ -261,11 +261,10 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socketIO.disconnect();
             setSocket(null);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         session?.user,
-        pathname,
         queryClientAddMessage,
-        socketEmitor,
         queryClientDeleteMessage,
         queryClientAddPinnedMessage,
         queryClientRemovePinnedMessage,
