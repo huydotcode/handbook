@@ -91,7 +91,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 roomId: string;
                 message: IMessage;
             }) => {
-                toast.success('Gửi thành công');
                 socket?.emit(socketEvent.SEND_MESSAGE, { roomId, message });
             },
             receiveNotification: ({
