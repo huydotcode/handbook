@@ -2,7 +2,6 @@ import { Profile, User } from '@/models';
 import connectToDB from '@/services/mongoose';
 import logger from '@/utils/logger';
 import bcrypt from 'bcryptjs';
-import { NextRequest } from 'next/server';
 
 const saltRounds = 10;
 
