@@ -31,6 +31,10 @@ app.get('/', (req, res) => {
     res.send('Hello world');
 });
 
+console.log({
+    config,
+});
+
 mongoose
     .connect(config.mongodbUri)
     .then(() => {
