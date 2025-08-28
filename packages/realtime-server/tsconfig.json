@@ -1,15 +1,17 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist",
-    "paths": {
-      "@handbook/shared": ["../shared/src"]
-    }
-  },
-  "lib": ["es2015"]
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "noEmit": false,
+        "paths": {
+            "@handbook/shared": ["../shared/src"]
+        }
+    },
+    "include": ["src"],
+    "lib": ["es2015"]
 }
