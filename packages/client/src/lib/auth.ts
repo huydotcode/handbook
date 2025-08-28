@@ -3,7 +3,7 @@ import connectToDB from '@/services/mongoose';
 import generateUsernameFromEmail from '@/utils/generateUsernameFromEmail';
 import logger from '@/utils/logger';
 
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
