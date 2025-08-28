@@ -262,14 +262,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             setSocket(null);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        session?.user,
-        queryClientAddMessage,
-        queryClientDeleteMessage,
-        queryClientAddPinnedMessage,
-        queryClientRemovePinnedMessage,
-        queryClientReadMessage,
-    ]);
+    }, [session?.user]);
 
     const values: SocketContextType = {
         socket,
