@@ -1,16 +1,16 @@
 {
-  "name": "handbook-monorepo",
-  "private": true,
-  "packageManager": "pnpm@9.12.0",
-  "scripts": {
-    "dev:client": "pnpm --filter client dev",
-    "dev:server": "pnpm --filter server dev",
-    "dev:realtime": "pnpm --filter realtime-server dev",
-    "dev": "pnpm run /^dev:/"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/bcrypt": "^5.0.0"
-  }
+    "name": "handbook-monorepo",
+    "private": true,
+    "packageManager": "pnpm@9.12.0",
+    "scripts": {
+        "dev:client": "pnpm --filter client dev",
+        "dev:server": "pnpm --filter server dev",
+        "dev:realtime": "pnpm --filter realtime-server dev",
+        "dev": "pnpm run /^dev:/"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "@types/jsonwebtoken": "^9.0.6",
+        "@types/bcrypt": "^5.0.0"
+    }
 }
