@@ -91,6 +91,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 roomId: string;
                 message: IMessage;
             }) => {
+                toast.success('Gửi thành công');
                 socket?.emit(socketEvent.SEND_MESSAGE, { roomId, message });
             },
             receiveNotification: ({
@@ -156,7 +157,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
     // Khởi tạo socket và gắn các event listener
     useEffect(() => {
         if (!session?.user) return;
-        if (isConnected) return;
 
         const accessToken = localStorage.getItem('accessToken');
 
@@ -164,7 +164,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             withCredentials: true,
             transports: ['websocket', 'polling'],
             auth: { user: session.user, accessToken },
-            reconnection: true, // bật chế độ tự reconnect
         }) as any;
 
         setSocket(socketIO);
