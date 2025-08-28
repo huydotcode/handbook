@@ -5,7 +5,7 @@ let BASE_URL;
 if (process.env.NODE_ENV === 'development') {
     BASE_URL = 'http://localhost:8000/api/v1';
 } else {
-    BASE_URL = process.env.SERVER_API;
+    BASE_URL = process.env.NEXT_PUBLIC_SERVER_API;
 }
 
 const axiosInstance = axios.create({
