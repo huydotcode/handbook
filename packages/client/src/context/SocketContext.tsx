@@ -156,6 +156,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
     // Khởi tạo socket và gắn các event listener
     useEffect(() => {
         if (!session?.user) return;
+        if (isConnected) return;
 
         const accessToken = localStorage.getItem('accessToken');
 
