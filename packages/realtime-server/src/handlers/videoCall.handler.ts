@@ -35,16 +35,16 @@ export class VideoCallSocketHandler {
 
             // Check if initiator is already in a call
             if (videoCallService.isUserInCall(this.userId)) {
-                this.socket.emit('video-call-error', {
-                    error: 'You are already in a call',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Bạn đang trong cuộc gọi khác',
                 });
                 return;
             }
 
             // Check if target user is already in a call
             if (videoCallService.isUserInCall(targetUserId)) {
-                this.socket.emit('video-call-error', {
-                    error: 'User is already in a call',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Người dùng đang trong cuộc gọi khác',
                 });
                 return;
             }
@@ -60,8 +60,8 @@ export class VideoCallSocketHandler {
             // Get target user sockets
             const targetUserSockets = userService.getUserSockets(targetUserId);
             if (!targetUserSockets || targetUserSockets.size === 0) {
-                this.socket.emit('video-call-error', {
-                    error: 'User is not online',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Người dùng không trực tuyến',
                 });
                 videoCallService.endCall(session.callId);
                 return;
@@ -75,8 +75,8 @@ export class VideoCallSocketHandler {
                 '_id name avatar'
             );
             if (!initiatorUser) {
-                this.socket.emit('video-call-error', {
-                    error: 'Initiator user not found',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Người dùng không tìm thấy',
                 });
                 videoCallService.endCall(session.callId);
                 return;
@@ -97,7 +97,7 @@ export class VideoCallSocketHandler {
             });
 
             // Confirm call initiation to initiator
-            this.socket.emit('video-call-initiated', {
+            this.socket.emit(socketEvent.VIDEO_CALL_INITIATED, {
                 callId: session.callId,
                 status: 'ringing',
             });
@@ -107,8 +107,8 @@ export class VideoCallSocketHandler {
             );
         } catch (error) {
             console.error('Error handling initiate call:', error);
-            this.socket.emit('video-call-error', {
-                error: 'Failed to initiate call',
+            this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                error: 'Thực hiện cuộc gọi thất bại',
             });
         }
     }
@@ -132,8 +132,8 @@ export class VideoCallSocketHandler {
             const session = videoCallService.getCall(callId);
             console.log('Found session:', session);
             if (!session) {
-                this.socket.emit('video-call-error', {
-                    error: 'Call not found',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Không tìm thấy cuộc gọi',
                 });
                 return;
             }
@@ -150,8 +150,8 @@ export class VideoCallSocketHandler {
             const acceptedSession = videoCallService.acceptCall(callId);
             console.log('Accepted session:', acceptedSession);
             if (!acceptedSession) {
-                this.socket.emit('video-call-error', {
-                    error: 'Failed to accept call',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Thực hiện cuộc gọi thất bại',
                 });
                 return;
             }
@@ -190,8 +190,8 @@ export class VideoCallSocketHandler {
             log(`Call accepted: ${callId}`);
         } catch (error) {
             console.error('Error handling accept call:', error);
-            this.socket.emit('video-call-error', {
-                error: 'Failed to accept call',
+            this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                error: 'Thực hiện cuộc gọi thất bại',
             });
         }
     }
@@ -210,8 +210,8 @@ export class VideoCallSocketHandler {
 
             const session = videoCallService.rejectCall(callId);
             if (!session) {
-                this.socket.emit('video-call-error', {
-                    error: 'Call not found',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Không tìm thấy cuộc gọi',
                 });
                 return;
             }
@@ -329,28 +329,11 @@ export class VideoCallSocketHandler {
 
             if (!session) {
                 console.log('Call not found:', callId);
-                this.socket.emit('video-call-error', {
-                    error: 'Call not found',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Không tìm thấy cuộc gọi',
                 });
                 return;
             }
-
-            const isParticipant = session.participants.find(
-                (p) => p.userId === this.userId
-            );
-            // Skip participant check for offers - they're just forwarded
-            // if (!isParticipant) {
-            //     console.log(
-            //         'User not participant:',
-            //         this.userId,
-            //         'Participants:',
-            //         session.participants
-            //     );
-            //     this.socket.emit('video-call-error', {
-            //         error: 'Not authorized for this call',
-            //     });
-            //     return;
-            // }
 
             // Forward offer to target user
             const targetUserSockets = userService.getUserSockets(targetUserId);
@@ -394,8 +377,8 @@ export class VideoCallSocketHandler {
                 !session ||
                 !session.participants.find((p) => p.userId === this.userId)
             ) {
-                this.socket.emit('video-call-error', {
-                    error: 'Call not found or not authorized',
+                this.socket.emit(socketEvent.VIDEO_CALL_ERROR, {
+                    error: 'Không tìm thấy cuộc gọi hoặc không được phép',
                 });
                 return;
             }

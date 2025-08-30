@@ -95,7 +95,7 @@ class VideoCallSocketService {
         if (!this.socket) return;
 
         // Call initiated successfully
-        this.socket.on('video-call-initiated', (data) => {
+        this.socket.on(socketEvent.VIDEO_CALL_INITIATED, (data) => {
             console.log('Call initiated:', data);
             this.handlers.onCallInitiated?.(data);
         });
@@ -125,7 +125,7 @@ class VideoCallSocketService {
         });
 
         // Call error
-        this.socket.on('video-call-error', (data) => {
+        this.socket.on(socketEvent.VIDEO_CALL_ERROR, (data) => {
             console.error('Video call error:', data);
             this.handlers.onCallError?.(data);
         });
@@ -166,7 +166,7 @@ class VideoCallSocketService {
             console.error('Socket not initialized');
             return;
         }
-        
+
         console.log('Initiating call:', data);
         this.socket.emit(socketEvent.VIDEO_CALL_INITIATE, data);
     }
@@ -256,12 +256,12 @@ class VideoCallSocketService {
         if (!this.socket) return;
 
         // Remove all video call event listeners
-        this.socket.off('video-call-initiated');
+        this.socket.off(socketEvent.VIDEO_CALL_INITIATED);
         this.socket.off(socketEvent.VIDEO_CALL_INITIATE);
         this.socket.off(socketEvent.VIDEO_CALL_ACCEPT);
         this.socket.off(socketEvent.VIDEO_CALL_REJECT);
         this.socket.off(socketEvent.VIDEO_CALL_END);
-        this.socket.off('video-call-error');
+        this.socket.off(socketEvent.VIDEO_CALL_ERROR);
         this.socket.off(socketEvent.VIDEO_CALL_OFFER);
         this.socket.off(socketEvent.VIDEO_CALL_ANSWER);
         this.socket.off(socketEvent.VIDEO_CALL_ICE_CANDIDATE);
