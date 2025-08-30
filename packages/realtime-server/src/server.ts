@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import { authMiddleware } from './middlwares/auth.middleware';
-import { redisService } from './services';
+import { redisService, videoCallService } from './services';
 import { SocketManager } from './socket/socket.manager';
 import { config } from './config/config';
 
@@ -30,6 +30,11 @@ io.on('connection', async (socket) => {
 app.get('/', (req, res) => {
     res.send('Hello world');
 });
+
+// Periodic cleanup for video calls
+setInterval(() => {
+    videoCallService.cleanupExpiredCalls();
+}, 30000); // Run every 30 seconds
 
 console.log({
     config,
