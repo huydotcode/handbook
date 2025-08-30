@@ -24,6 +24,17 @@ export const socketEvent = {
     PIN_MESSAGE: 'pin-message',
     UN_PIN_MESSAGE: 'un-pin-message',
     GET_LAST_MESSAGE: 'get-last-message',
+
+    // VIDEO CALL
+    VIDEO_CALL_INITIATE: 'video-call-initiate',
+    VIDEO_CALL_ACCEPT: 'video-call-accept',
+    VIDEO_CALL_REJECT: 'video-call-reject',
+    VIDEO_CALL_END: 'video-call-end',
+    VIDEO_CALL_OFFER: 'video-call-offer',
+    VIDEO_CALL_ANSWER: 'video-call-answer',
+    VIDEO_CALL_ICE_CANDIDATE: 'video-call-ice-candidate',
+    VIDEO_CALL_PARTICIPANT_JOINED: 'video-call-participant-joined',
+    VIDEO_CALL_PARTICIPANT_LEFT: 'video-call-participant-left',
 } as const;
 
 export type SocketEventType = (typeof socketEvent)[keyof typeof socketEvent];

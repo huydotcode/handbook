@@ -54,17 +54,30 @@ import {
     IoMdLaptop,
     IoMdSchool,
 } from 'react-icons/io';
-import { IoChatbubbleEllipses, IoPersonAdd, IoTime } from 'react-icons/io5';
+import {
+    IoChatbubbleEllipses,
+    IoPersonAdd,
+    IoTime,
+    IoCall,
+    IoCallOutline,
+    IoCamera,
+} from 'react-icons/io5';
 import {
     MdEmojiEmotions,
     MdGroups,
     MdHorizontalRule,
+    MdMic,
+    MdMicOff,
     MdMoreVert,
     MdNotifications,
     MdNotificationsActive,
     MdOutlineKeyboardArrowRight,
     MdPublic,
     MdSort,
+    MdVideocam,
+    MdVideocamOff,
+    MdVolumeOff,
+    MdVolumeUp,
     MdWork,
 } from 'react-icons/md';
 import {
@@ -269,6 +282,17 @@ const Icons = {
             />
         );
     },
+    // Video call icons
+    VideoCall: (props: IconProps) => <MdVideocam {...props} />,
+    VideoCallOff: (props: IconProps) => <MdVideocamOff {...props} />,
+    Mic: (props: IconProps) => <MdMic {...props} />,
+    MicOff: (props: IconProps) => <MdMicOff {...props} />,
+    Phone: (props: IconProps) => <IoCallOutline {...props} />,
+    PhoneEnd: (props: IconProps) => <IoCall {...props} />,
+    Camera: (props: IconProps) => <IoCamera {...props} />,
+    CameraOff: (props: IconProps) => <MdVideocamOff {...props} />,
+    VolumeUp: (props: IconProps) => <MdVolumeUp {...props} />,
+    VolumeOff: (props: IconProps) => <MdVolumeOff {...props} />,
 };
 
 export const MenuBarEditorIcons = {

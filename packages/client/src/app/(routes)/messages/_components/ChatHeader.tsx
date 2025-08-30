@@ -7,6 +7,7 @@ import { timeConvert3 } from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
+import { useVideoCall } from '@/context/VideoCallContext';
 
 interface Props {
     openInfo: boolean;
@@ -26,6 +27,7 @@ const ChatHeader: React.FC<Props> = ({
     const { data: session } = useSession();
     const router = useRouter();
     const { breakpoint } = useBreakpoint();
+    const { startCall } = useVideoCall();
 
     const roomType = currentRoom.type;
     const isGroup = roomType === 'group';
@@ -126,6 +128,51 @@ const ChatHeader: React.FC<Props> = ({
                 </div>
 
                 <div className="flex items-center justify-end">
+                    {/* Call buttons - chỉ hiển thị cho private conversations */}
+                    {!isGroup && partner && (
+                        <>
+                            {/* Audio call button */}
+                            <Button
+                                className="rounded-xl p-2 text-green-600 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                                variant={'custom'}
+                                onClick={async () => {
+                                    await startCall(
+                                        {
+                                            _id: partner._id,
+                                            name: partner.name,
+                                            avatar: partner.avatar,
+                                        },
+                                        currentRoom._id,
+                                        false // Audio call
+                                    );
+                                }}
+                                title="Bắt đầu cuộc gọi thoại"
+                            >
+                                <Icons.Phone size={24} />
+                            </Button>
+
+                            {/* Video call button */}
+                            <Button
+                                className="rounded-xl p-2 text-primary-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                                variant={'custom'}
+                                onClick={async () => {
+                                    await startCall(
+                                        {
+                                            _id: partner._id,
+                                            name: partner.name,
+                                            avatar: partner.avatar,
+                                        },
+                                        currentRoom._id,
+                                        true // Video call
+                                    );
+                                }}
+                                title="Bắt đầu video call"
+                            >
+                                <Icons.VideoCall size={24} />
+                            </Button>
+                        </>
+                    )}
+
                     <Button
                         className={cn(
                             'rounded-xl p-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1',
