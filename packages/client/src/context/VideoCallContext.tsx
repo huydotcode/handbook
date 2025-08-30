@@ -11,6 +11,7 @@ import React, {
 import { videoCallSocketService } from '@/lib/services/videoCallSocket.service';
 import { webRTCService } from '@/lib/services/webrtc.service';
 import { useSocket } from '@/context/SocketContext';
+import toast from 'react-hot-toast';
 
 interface VideoCallUser {
     _id: string;
@@ -225,6 +226,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
 
             onCallError: (data) => {
                 console.error('Video call error:', data);
+                toast.error(`${data.error}`);
                 cleanup();
             },
 

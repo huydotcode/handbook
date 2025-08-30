@@ -1,10 +1,11 @@
 import { Socket } from 'socket.io';
-import { socketEvent } from '../constants/socketEvents';
+
 import Message from '../models/Message';
 import { chatService } from '../services/chat.service';
 import { MessageData } from '../types/socket';
 import { log } from '../utils/logger';
 import { SocketUtils } from '../utils/socket.utils';
+import { socketEvent } from '@handbook/shared/src/constants/socketEvents';
 
 export class MessageHandler {
     static handleJoinRoom(

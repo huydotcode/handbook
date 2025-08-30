@@ -22,6 +22,7 @@ const socketEvent = {
     LIKE_POST: 'like-post',
 
     // Video Call
+    VIDEO_CALL_INITIATED: 'video-call-initiated',
     VIDEO_CALL_INITIATE: 'video-call-initiate',
     VIDEO_CALL_ACCEPT: 'video-call-accept',
     VIDEO_CALL_REJECT: 'video-call-reject',
@@ -31,6 +32,7 @@ const socketEvent = {
     VIDEO_CALL_ICE_CANDIDATE: 'video-call-ice-candidate',
     VIDEO_CALL_PARTICIPANT_JOINED: 'video-call-participant-joined',
     VIDEO_CALL_PARTICIPANT_LEFT: 'video-call-participant-left',
+    VIDEO_CALL_ERROR: 'video-call-error',
 };
 
 export default socketEvent;
