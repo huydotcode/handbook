@@ -23,6 +23,9 @@ interface ICEServerConfig {
     credential?: string;
 }
 
+const TURN_USERNAME = process.env.TURN_USERNAME;
+const TURN_CREDENTIAL = process.env.TURN_CREDENTIAL;
+
 class WebRTCService {
     private peerConnection: RTCPeerConnection | null = null;
     private localStream: MediaStream | null = null;
@@ -45,19 +48,27 @@ class WebRTCService {
 
         // Metered TURN (free tier available)
         {
-            urls: 'turn:standard.relay.metered.ca:80',
-            username: 'your-username', // Replace with actual credentials
-            credential: 'your-password',
+            urls: 'stun:stun.relay.metered.ca:80',
         },
         {
-            urls: 'turn:standard.relay.metered.ca:80?transport=tcp',
-            username: 'your-username',
-            credential: 'your-password',
+            urls: 'turn:global.relay.metered.ca:80',
+            username: TURN_USERNAME,
+            credential: TURN_CREDENTIAL,
         },
         {
-            urls: 'turn:standard.relay.metered.ca:443',
-            username: 'your-username',
-            credential: 'your-password',
+            urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+            username: TURN_USERNAME,
+            credential: TURN_CREDENTIAL,
+        },
+        {
+            urls: 'turn:global.relay.metered.ca:443',
+            username: TURN_USERNAME,
+            credential: TURN_CREDENTIAL,
+        },
+        {
+            urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+            username: TURN_USERNAME,
+            credential: TURN_CREDENTIAL,
         },
     ];
 
