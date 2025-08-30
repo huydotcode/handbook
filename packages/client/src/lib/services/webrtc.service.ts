@@ -23,8 +23,8 @@ interface ICEServerConfig {
     credential?: string;
 }
 
-const TURN_USERNAME = process.env.TURN_USERNAME;
-const TURN_CREDENTIAL = process.env.TURN_CREDENTIAL;
+const TURN_USERNAME = process.env.NEXT_PUBLIC_TURN_USERNAME;
+const TURN_CREDENTIAL = process.env.NEXT_PUBLIC_TURN_CREDENTIAL;
 
 class WebRTCService {
     private peerConnection: RTCPeerConnection | null = null;
