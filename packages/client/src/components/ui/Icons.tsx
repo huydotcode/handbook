@@ -79,6 +79,8 @@ import {
     MdVolumeOff,
     MdVolumeUp,
     MdWork,
+    MdCall,
+    MdCallEnd,
 } from 'react-icons/md';
 import {
     RiAdminFill,
@@ -287,8 +289,8 @@ const Icons = {
     VideoCallOff: (props: IconProps) => <MdVideocamOff {...props} />,
     Mic: (props: IconProps) => <MdMic {...props} />,
     MicOff: (props: IconProps) => <MdMicOff {...props} />,
-    Phone: (props: IconProps) => <IoCallOutline {...props} />,
-    PhoneEnd: (props: IconProps) => <IoCall {...props} />,
+    Phone: (props: IconProps) => <MdCall {...props} />,
+    PhoneEnd: (props: IconProps) => <MdCallEnd {...props} />,
     Camera: (props: IconProps) => <IoCamera {...props} />,
     CameraOff: (props: IconProps) => <MdVideocamOff {...props} />,
     VolumeUp: (props: IconProps) => <MdVolumeUp {...props} />,
