@@ -106,6 +106,10 @@ class WebRTCService {
      * Initialize peer connection with improved configuration
      */
     private async initializePeerConnection() {
+        console.log('TURN CREDENTIALS: ', {
+            username: TURN_USERNAME,
+            credential: TURN_CREDENTIAL,
+        });
         if (this.peerConnection) {
             this.peerConnection.close();
         }
