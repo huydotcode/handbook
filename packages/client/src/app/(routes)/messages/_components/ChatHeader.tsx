@@ -133,7 +133,7 @@ const ChatHeader: React.FC<Props> = ({
                         <>
                             {/* Audio call button */}
                             <Button
-                                className="rounded-xl p-2 text-green-600 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
+                                className="rounded-xl p-2 text-primary-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
                                 variant={'custom'}
                                 onClick={async () => {
                                     await startCall(
@@ -148,7 +148,7 @@ const ChatHeader: React.FC<Props> = ({
                                 }}
                                 title="Bắt đầu cuộc gọi thoại"
                             >
-                                <Icons.Phone size={24} />
+                                <Icons.Phone size={22} />
                             </Button>
 
                             {/* Video call button */}
