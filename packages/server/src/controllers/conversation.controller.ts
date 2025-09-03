@@ -38,8 +38,8 @@ class ConversationController {
                     path: 'group',
                     populate: [
                         { path: 'avatar' },
-                        { path: 'members.user' },
-                        { path: 'creator' },
+                        { path: 'members.user', select: POPULATE_USER },
+                        { path: 'creator', select: POPULATE_USER },
                     ],
                 });
 
@@ -97,8 +97,8 @@ class ConversationController {
                     path: 'group',
                     populate: [
                         { path: 'avatar' },
-                        { path: 'members.user' },
-                        { path: 'creator' },
+                        { path: 'members.user', select: POPULATE_USER },
+                        { path: 'creator', select: POPULATE_USER },
                     ],
                 })) as IConversation;
 
