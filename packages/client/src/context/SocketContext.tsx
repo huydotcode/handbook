@@ -1,12 +1,20 @@
 'use client';
-
 import { Icons } from '@/components/ui';
+import { socketConfig } from '@/config/socket';
 import socketEvent from '@/constants/socketEvent.constant';
+import { useAudio } from '@/hooks';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import toast from 'react-hot-toast';
 import { Socket } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
@@ -51,11 +59,6 @@ export const SocketContext = createContext<SocketContextType>({
 
 export const useSocket = () => useContext(SocketContext);
 
-const SOCKET_API =
-    process.env.NODE_ENV === 'production'
-        ? 'https://handbook-server.onrender.com'
-        : 'http://localhost:5000';
-
 function SocketProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const {
@@ -66,124 +69,149 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         queryClientRemovePinnedMessage,
     } = useQueryInvalidation();
 
-    const pathname = usePathname();
+    const rawPathname = usePathname();
+    const [pathname, setPathname] = useState(rawPathname);
+    const { playing, toggle: toggleMessageSound } = useAudio({
+        type: 'message',
+    });
 
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // Tạo các phương thức emit cho socket
-    const socketEmitor = useMemo(
-        () => ({
-            joinRoom: ({
-                roomId,
-                userId,
-            }: {
-                roomId: string;
-                userId: string;
-            }) => {
-                socket?.emit(socketEvent.JOIN_ROOM, { roomId, userId });
-            },
-            sendMessage: ({
-                roomId,
-                message,
-            }: {
-                roomId: string;
-                message: IMessage;
-            }) => {
-                socket?.emit(socketEvent.SEND_MESSAGE, { roomId, message });
-            },
-            receiveNotification: ({
-                notification,
-            }: {
-                notification: INotification;
-            }) => {
-                socket?.emit(socketEvent.RECEIVE_NOTIFICATION, {
-                    notification,
-                });
-            },
-            deleteMessage: ({ message }: { message: IMessage }) => {
-                socket?.emit(socketEvent.DELETE_MESSAGE, { message });
-            },
-            sendRequestAddFriend: ({ request }: { request: INotification }) => {
-                socket?.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, { request });
-            },
-            readMessage: ({
-                roomId,
-                userId,
-            }: {
-                roomId: string;
-                userId: string;
-            }) => {
-                console.log('socketEmitor.readMessage', roomId, userId);
-                socket?.emit(socketEvent.READ_MESSAGE, { roomId, userId });
-            },
-            pinMessage: ({ message }: { message: IMessage }) => {
-                socket?.emit(socketEvent.PIN_MESSAGE, { message });
-            },
-            unpinMessage: ({ message }: { message: IMessage }) => {
-                socket?.emit(socketEvent.UN_PIN_MESSAGE, { message });
-            },
-            likePost: ({
-                postId,
-                authorId,
-            }: {
-                postId: string;
-                authorId: string;
-            }) => {
-                socket?.emit(socketEvent.LIKE_POST, { postId, authorId });
-            },
-            leaveRoom: ({
-                roomId,
-                userId,
-            }: {
-                roomId: string;
-                userId: string;
-            }) => {
-                socket?.emit(socketEvent.LEAVE_ROOM, { roomId, userId });
-            },
-            sendNotification: ({
-                notification,
-            }: {
-                notification: INotification;
-            }) => {
-                socket?.emit(socketEvent.SEND_NOTIFICATION, { notification });
-            },
-        }),
+    // --- Tách các hàm emit ra thành các hằng số riêng ---
+
+    const emitJoinRoom = useCallback(
+        (args: { roomId: string; userId: string }) => {
+            socket?.emit(socketEvent.JOIN_ROOM, args);
+        },
         [socket]
     );
 
-    // Khởi tạo socket và gắn các event listener
+    const emitSendMessage = useCallback(
+        (args: { roomId: string; message: IMessage }) => {
+            socket?.emit(socketEvent.SEND_MESSAGE, args);
+        },
+        [socket]
+    );
+
+    const emitReceiveNotification = useCallback(
+        (args: { notification: INotification }) => {
+            socket?.emit(socketEvent.RECEIVE_NOTIFICATION, args);
+        },
+        [socket]
+    );
+
+    const emitDeleteMessage = useCallback(
+        (args: { message: IMessage }) => {
+            socket?.emit(socketEvent.DELETE_MESSAGE, args);
+        },
+        [socket]
+    );
+
+    const emitSendRequestAddFriend = useCallback(
+        (args: { request: INotification }) => {
+            socket?.emit(socketEvent.SEND_REQUEST_ADD_FRIEND, args);
+        },
+        [socket]
+    );
+
+    const emitReadMessage = useCallback(
+        (args: { roomId: string; userId: string }) => {
+            socket?.emit(socketEvent.READ_MESSAGE, args);
+        },
+        [socket]
+    );
+
+    const emitPinMessage = useCallback(
+        (args: { message: IMessage }) => {
+            socket?.emit(socketEvent.PIN_MESSAGE, args);
+        },
+        [socket]
+    );
+
+    const emitUnpinMessage = useCallback(
+        (args: { message: IMessage }) => {
+            socket?.emit(socketEvent.UN_PIN_MESSAGE, args);
+        },
+        [socket]
+    );
+
+    const emitLikePost = useCallback(
+        (args: { postId: string; authorId: string }) => {
+            socket?.emit(socketEvent.LIKE_POST, args);
+        },
+        [socket]
+    );
+
+    const emitLeaveRoom = useCallback(
+        (args: { roomId: string; userId: string }) => {
+            socket?.emit(socketEvent.LEAVE_ROOM, args);
+        },
+        [socket]
+    );
+
+    const emitSendNotification = useCallback(
+        (args: { notification: INotification }) => {
+            socket?.emit(socketEvent.SEND_NOTIFICATION, args);
+        },
+        [socket]
+    );
+
+    // Tạo đối tượng socketEmitor bằng useMemo
+    const socketEmitor = useMemo(
+        () => ({
+            joinRoom: emitJoinRoom,
+            sendMessage: emitSendMessage,
+            receiveNotification: emitReceiveNotification,
+            deleteMessage: emitDeleteMessage,
+            sendRequestAddFriend: emitSendRequestAddFriend,
+            readMessage: emitReadMessage,
+            pinMessage: emitPinMessage,
+            unpinMessage: emitUnpinMessage,
+            likePost: emitLikePost,
+            leaveRoom: emitLeaveRoom,
+            sendNotification: emitSendNotification,
+        }),
+        [
+            emitJoinRoom,
+            emitSendMessage,
+            emitReceiveNotification,
+            emitDeleteMessage,
+            emitSendRequestAddFriend,
+            emitReadMessage,
+            emitPinMessage,
+            emitUnpinMessage,
+            emitLikePost,
+            emitLeaveRoom,
+            emitSendNotification,
+        ]
+    );
+
     useEffect(() => {
-        if (!session?.user) return;
+        if (rawPathname) {
+            setPathname(rawPathname);
+        }
+    }, [rawPathname]);
 
-        const accessToken = localStorage.getItem('accessToken');
+    const onConnect = () => {
+        setIsConnected(true);
+    };
 
-        const socketIO = ClientIO(SOCKET_API, {
-            withCredentials: true,
-            transports: ['websocket', 'polling'],
-            auth: { user: session.user, accessToken },
-        }) as any;
+    const onDisconnect = () => {
+        setIsConnected(false);
+    };
 
-        setSocket(socketIO);
-        setIsLoading(false);
+    const onConnectError = (err: any) => {
+        setIsConnected(false);
+        console.error('Socket connection error:', err);
+    };
 
-        socketIO.on('connect', () => {
-            setIsConnected(true);
-        });
-
-        socketIO.on('disconnect', () => {
-            setIsConnected(false);
-        });
-
-        socketIO.on('connect_error', (err: any) => {
-            setIsConnected(false);
-            console.error('Socket connection error:', err);
-        });
-
-        socketIO.on(socketEvent.RECEIVE_MESSAGE, async (message: IMessage) => {
+    const onReceiveMessage = useCallback(
+        (message: IMessage) => {
             // Bỏ qua tin nhắn do chính user gửi đi
-            if (session.user.id === message.sender._id) return;
+            if (!session?.user || session.user.id === message.sender._id)
+                return;
 
             if (pathname.includes(`/messages/${message.conversation._id}`)) {
                 queryClientAddMessage(message);
@@ -194,6 +222,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 });
             } else {
                 queryClientAddMessage(message);
+
+                // Phát âm thanh thông báo khi nhận được tin nhắn mới
+                toggleMessageSound();
 
                 toast(
                     <Link
@@ -216,44 +247,82 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                     }
                 );
             }
-        });
+        },
+        [
+            session,
+            pathname,
+            queryClientAddMessage,
+            socketEmitor,
+            toggleMessageSound,
+        ]
+    );
 
-        socketIO.on(socketEvent.DELETE_MESSAGE, async (message: IMessage) => {
+    const onDeleteMessage = useCallback(
+        (message: IMessage) => {
             if (
+                !session?.user ||
                 session.user.id !== message.sender._id ||
                 pathname.includes(`/messages/${message.conversation._id}`)
             ) {
                 queryClientDeleteMessage(message);
             }
-        });
+        },
+        [session, pathname, queryClientDeleteMessage]
+    );
 
-        socketIO.on(socketEvent.PIN_MESSAGE, async (message: IMessage) => {
+    const onPinMessage = useCallback(
+        (message: IMessage) => {
             if (
+                !session?.user ||
                 session.user.id !== message.sender._id ||
                 pathname.includes(`/messages/${message.conversation._id}`)
             ) {
                 queryClientAddPinnedMessage(message);
             }
-        });
+        },
+        [session, pathname, queryClientAddPinnedMessage]
+    );
 
-        socketIO.on(socketEvent.UN_PIN_MESSAGE, async (message: IMessage) => {
+    const onUnpinMessage = useCallback(
+        (message: IMessage) => {
             if (
+                !session?.user ||
                 session.user.id !== message.sender._id ||
                 pathname.includes(`/messages/${message.conversation._id}`)
             ) {
                 queryClientRemovePinnedMessage(message);
             }
-        });
+        },
+        [session, pathname, queryClientRemovePinnedMessage]
+    );
 
-        socketIO.on(
-            socketEvent.READ_MESSAGE,
-            async ({ roomId, userId }: { roomId: string; userId: string }) => {
-                console.log('Đã đọc tin nhắn trong phòng:', roomId);
-                if (pathname.includes(`/messages/${roomId}`)) {
-                    queryClientReadMessage(roomId, userId);
-                }
+    const onReadMessage = useCallback(
+        ({ roomId, userId }: { roomId: string; userId: string }) => {
+            if (pathname.includes(`/messages/${roomId}`)) {
+                queryClientReadMessage(roomId, userId);
             }
-        );
+        },
+        [pathname, queryClientReadMessage]
+    );
+
+    // Khởi tạo socket
+    useEffect(() => {
+        if (!session?.user.id) return;
+
+        const accessToken = localStorage.getItem('accessToken');
+
+        const socketIO = ClientIO(socketConfig.url, {
+            withCredentials: true,
+            transports: ['websocket', 'polling'],
+            auth: { user: session.user, accessToken },
+        }) as any;
+
+        setSocket(socketIO);
+        setIsLoading(false);
+
+        socketIO.on('connect', onConnect);
+        socketIO.on('disconnect', onDisconnect);
+        socketIO.on('connect_error', onConnectError);
 
         // Cleanup khi component unmount hoặc session thay đổi
         return () => {
@@ -261,7 +330,33 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             setSocket(null);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session?.user]);
+    }, [session?.user.id]); // Thay đổi ở đây
+
+    // Gắn và gỡ các event listener khi socket hoặc các hàm callback thay đổi
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on(socketEvent.RECEIVE_MESSAGE, onReceiveMessage);
+        socket.on(socketEvent.DELETE_MESSAGE, onDeleteMessage);
+        socket.on(socketEvent.PIN_MESSAGE, onPinMessage);
+        socket.on(socketEvent.UN_PIN_MESSAGE, onUnpinMessage);
+        socket.on(socketEvent.READ_MESSAGE, onReadMessage);
+
+        return () => {
+            socket.off(socketEvent.RECEIVE_MESSAGE, onReceiveMessage);
+            socket.off(socketEvent.DELETE_MESSAGE, onDeleteMessage);
+            socket.off(socketEvent.PIN_MESSAGE, onPinMessage);
+            socket.off(socketEvent.UN_PIN_MESSAGE, onUnpinMessage);
+            socket.off(socketEvent.READ_MESSAGE, onReadMessage);
+        };
+    }, [
+        socket,
+        onReceiveMessage,
+        onDeleteMessage,
+        onPinMessage,
+        onUnpinMessage,
+        onReadMessage,
+    ]);
 
     const values: SocketContextType = {
         socket,
@@ -269,8 +364,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         isConnected,
     };
-
-    if (!session) return <>{children}</>;
 
     return (
         <SocketContext.Provider value={values}>
