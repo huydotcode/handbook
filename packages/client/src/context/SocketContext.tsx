@@ -311,6 +311,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
 
         const accessToken = localStorage.getItem('accessToken');
 
+        console.log(socketConfig.url);
+
         const socketIO = ClientIO(socketConfig.url, {
             withCredentials: true,
             transports: ['websocket', 'polling'],
