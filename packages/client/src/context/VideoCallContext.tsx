@@ -1,16 +1,16 @@
 'use client';
-import React, {
-    createContext,
-    useContext,
-    useState,
-    ReactNode,
-    useEffect,
-    useRef,
-    useCallback,
-} from 'react';
+import { useSocket } from '@/context/SocketContext';
 import { videoCallSocketService } from '@/lib/services/videoCallSocket.service';
 import { webRTCService } from '@/lib/services/webrtc.service';
-import { useSocket } from '@/context/SocketContext';
+import React, {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import toast from 'react-hot-toast';
 
 interface VideoCallUser {
@@ -84,6 +84,21 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
 
     const currentUserIdRef = useRef<string | null>(null);
 
+    // --- Xóa bỏ tích hợp âm thanh ---
+
+    // Cleanup function
+    const cleanup = useCallback(() => {
+        webRTCService.cleanup();
+        setCurrentCall(null);
+        setIsCallActive(false);
+        setCallState({
+            isConnecting: false,
+            isConnected: false,
+            connectionState: null,
+            isLoadingMedia: false,
+        });
+    }, []); // Xóa dependency
+
     // Initiate WebRTC connection (for call initiator)
     const initiateWebRTCConnection = useCallback(async () => {
         try {
@@ -147,20 +162,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             setCallState((prev) => ({ ...prev, isLoadingMedia: false }));
             cleanup();
         }
-    }, [currentCall]); // cleanup is stable
-
-    // Cleanup function
-    const cleanup = useCallback(() => {
-        webRTCService.cleanup();
-        setCurrentCall(null);
-        setIsCallActive(false);
-        setCallState({
-            isConnecting: false,
-            isConnected: false,
-            connectionState: null,
-            isLoadingMedia: false,
-        });
-    }, []);
+    }, [cleanup, currentCall]); // cleanup is stable
 
     // Setup socket event handlers
     const setupSocketEventHandlers = useCallback(() => {
@@ -177,6 +179,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
 
             onIncomingCall: (data) => {
                 console.log('Incoming call received:', data);
+                // Xóa bỏ việc phát âm thanh
                 setCurrentCall({
                     participant: data.initiator,
                     isIncoming: true,
@@ -189,6 +192,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
 
             onCallAccepted: async (data) => {
                 console.log('Call accepted:', data);
+                // Xóa bỏ việc dừng âm thanh
                 setCallState((prev) => ({ ...prev, isConnecting: true }));
 
                 // If we are the initiator, start WebRTC signaling
@@ -342,7 +346,13 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
                 cleanup();
             },
         });
-    }, [currentCall, initiateWebRTCConnection]); // cleanup is stable
+    }, [
+        currentCall,
+        // Xóa dependencies âm thanh
+        initiateWebRTCConnection,
+        cleanup,
+        isCallActive,
+    ]);
 
     // Initialize services when socket is available
     useEffect(() => {
@@ -386,7 +396,11 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
         } catch (error) {
             console.error('Error getting caller media:', error);
             setCallState((prev) => ({ ...prev, isLoadingMedia: false }));
+            // Xóa bỏ việc dừng âm thanh
+            return; // Dừng hàm nếu có lỗi
         }
+
+        // Xóa bỏ việc phát âm thanh
 
         // Send call initiation to server
         videoCallSocketService.initiateCall({
@@ -397,6 +411,8 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
     };
 
     const acceptCall = async () => {
+        // Xóa bỏ việc dừng âm thanh
+
         if (!currentCall?.callId) {
             console.error('No call to accept');
             return;

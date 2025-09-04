@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
 import { SidebarCollapseContext } from './SidebarContext';
+import { soundManager } from '@/lib/soundManager';
 
 const PAGE_SIZE = 10;
 
@@ -186,6 +187,15 @@ function AppProvider({ children }: { children: React.ReactNode }) {
 
         localStorage.setItem('accessToken', session?.user.accessToken);
     }, [session, session?.user]);
+
+    // Preload các âm thanh
+    useEffect(() => {
+        soundManager.preload(
+            'message',
+            '/assets/sounds/message-notification.mp3'
+        );
+        soundManager.preload('phone-ring', '/assets/sounds/phone-ring.mp3');
+    }, []);
 
     return (
         <SidebarCollapseContext.Provider

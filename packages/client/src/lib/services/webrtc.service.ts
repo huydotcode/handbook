@@ -830,81 +830,35 @@ class WebRTCService {
     /**
      * Enhanced cleanup with proper resource management
      */
-    cleanup(): void {
-        console.log('Cleaning up WebRTC resources...');
+    cleanup() {
+        console.log('WebRTCService: Cleaning up...');
 
-        // Clear timeouts
-        this.clearConnectionTimeout();
-
-        // Stop local stream tracks
+        // 1. Dừng các track của local stream để tắt camera/mic
         if (this.localStream) {
-            console.log('Stopping local stream tracks...');
             this.localStream.getTracks().forEach((track) => {
-                console.log(
-                    `Stopping local track: ${track.kind} - ${track.label} - readyState: ${track.readyState}`
-                );
+                console.log(`Stopping track: ${track.kind}`);
                 track.stop();
             });
-            this.localStream = null;
+            console.log('All local stream tracks stopped.');
         }
 
-        // Stop remote stream tracks (if any)
-        if (this.remoteStream) {
-            console.log('Stopping remote stream tracks...');
-            this.remoteStream.getTracks().forEach((track) => {
-                console.log(
-                    `Stopping remote track: ${track.kind} - ${track.label} - readyState: ${track.readyState}`
-                );
-                track.stop();
-            });
-            this.remoteStream = null;
-        }
-
-        // Close peer connection
+        // 2. Đóng kết nối peer-to-peer
         if (this.peerConnection) {
-            console.log('Closing peer connection...');
+            // Gỡ bỏ các event listener để tránh memory leak
+            this.peerConnection.onicecandidate = null;
+            this.peerConnection.ontrack = null;
+            this.peerConnection.onconnectionstatechange = null;
+            this.peerConnection.onnegotiationneeded = null;
+
             this.peerConnection.close();
-            this.peerConnection = null;
+            console.log('Peer connection closed.');
         }
 
-        // Clear queued candidates
-        this.iceCandidatesQueue = [];
-
-        // Reset state
-        this.isInitiator = false;
-        this.isConnectionEstablished = false;
-        this.retryAttempts = 0;
-
-        console.log('WebRTC cleanup completed');
-    }
-
-    /**
-     * Force reconnection (useful for network changes)
-     */
-    async forceReconnect(): Promise<void> {
-        console.log('Forcing reconnection...');
-
-        const wasInitiator = this.isInitiator;
-        const currentLocalStream = this.localStream;
-
-        // Cleanup current connection
-        this.cleanup();
-
-        // Wait a bit for cleanup
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Reinitialize
-        await this.initializePeerConnection();
-
-        if (currentLocalStream) {
-            await this.addLocalStream(currentLocalStream);
-        }
-
-        // If we were the initiator, create new offer
-        if (wasInitiator) {
-            const offer = await this.createOffer();
-            this.handlers.onRenegotiationNeeded?.(offer);
-        }
+        // 3. Reset lại các biến nội bộ
+        this.peerConnection = null;
+        this.localStream = null;
+        this.remoteStream = null;
+        console.log('WebRTCService state has been reset.');
     }
 }
 

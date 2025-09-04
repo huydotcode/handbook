@@ -2,7 +2,8 @@
 import { Icons } from '@/components/ui';
 import { socketConfig } from '@/config/socket';
 import socketEvent from '@/constants/socketEvent.constant';
-import { useAudio } from '@/hooks';
+import { soundTypes } from '@/constants/soundType';
+import { useSound } from '@/hooks';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -71,9 +72,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
 
     const rawPathname = usePathname();
     const [pathname, setPathname] = useState(rawPathname);
-    const { playing, toggle: toggleMessageSound } = useAudio({
-        type: 'message',
-    });
+
+    const { play: playMessageSound } = useSound(soundTypes.MESSAGE);
 
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -224,7 +224,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
                 queryClientAddMessage(message);
 
                 // Phát âm thanh thông báo khi nhận được tin nhắn mới
-                toggleMessageSound();
+                playMessageSound();
 
                 toast(
                     <Link
@@ -249,11 +249,11 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             }
         },
         [
-            session,
+            session?.user,
             pathname,
             queryClientAddMessage,
             socketEmitor,
-            toggleMessageSound,
+            playMessageSound,
         ]
     );
 
