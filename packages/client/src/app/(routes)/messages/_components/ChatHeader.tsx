@@ -152,7 +152,7 @@ const ChatHeader: React.FC<Props> = ({
                             </Button>
 
                             {/* Video call button */}
-                            <Button
+                            {/* <Button
                                 className="rounded-xl p-2 text-primary-2 hover:bg-primary-1 dark:hover:bg-dark-primary-1"
                                 variant={'custom'}
                                 onClick={async () => {
@@ -169,7 +169,7 @@ const ChatHeader: React.FC<Props> = ({
                                 title="Bắt đầu video call"
                             >
                                 <Icons.VideoCall size={24} />
-                            </Button>
+                            </Button> */}
                         </>
                     )}
 

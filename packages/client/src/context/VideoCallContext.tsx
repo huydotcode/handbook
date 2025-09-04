@@ -68,6 +68,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
 }) => {
     const { socket } = useSocket();
     const [isCallActive, setIsCallActive] = useState(false);
+
     const [currentCall, setCurrentCall] = useState<{
         participant: VideoCallUser;
         isIncoming: boolean;
@@ -75,16 +76,13 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
         isVideoCall: boolean;
         callId?: string;
     } | null>(null);
+
     const [callState, setCallState] = useState({
         isConnecting: false,
         isConnected: false,
         connectionState: null as RTCPeerConnectionState | null,
         isLoadingMedia: false,
     });
-
-    const currentUserIdRef = useRef<string | null>(null);
-
-    // --- Xóa bỏ tích hợp âm thanh ---
 
     // Cleanup function
     const cleanup = useCallback(() => {
@@ -102,9 +100,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
     // Initiate WebRTC connection (for call initiator)
     const initiateWebRTCConnection = useCallback(async () => {
         try {
-            console.log('=== INITIATING WEBRTC (CALLER) ===');
-            console.log('Current call:', currentCall);
-
             // Check if caller already has local stream (e.g., from enabling camera before accept)
             let stream = webRTCService.getLocalStream();
 
@@ -117,46 +112,29 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
                     ? { video: true, audio: true }
                     : { video: false, audio: true };
 
-                console.log(
-                    'Getting user media with constraints:',
-                    constraints
-                );
                 stream = await webRTCService.getUserMedia(constraints);
-                console.log('Got user media for caller:', stream);
 
                 webRTCService.addLocalStream(stream);
-                console.log('Added local stream to peer connection');
 
                 // Clear loading media state
                 setCallState((prev) => ({ ...prev, isLoadingMedia: false }));
             } else {
-                console.log(
-                    'Caller already has local stream, reusing existing stream'
-                );
                 // Ensure existing stream is added to peer connection
                 webRTCService.addLocalStream(stream);
-                console.log(
-                    'Re-added existing local stream to ensure all tracks are in peer connection'
-                );
             }
 
             // Create and send offer
-            console.log('Creating WebRTC offer...');
             const offer = await webRTCService.createOffer();
-            console.log('Created offer:', offer);
 
             if (currentCall?.callId && currentCall.participant._id) {
-                console.log('Sending offer via socket...');
                 videoCallSocketService.sendOffer({
                     callId: currentCall.callId,
                     targetUserId: currentCall.participant._id,
                     offer,
                 });
-                console.log('Offer sent successfully');
 
                 // Keep connecting state - will be cleared by WebRTC events when actually connected
             }
-            console.log('=== WEBRTC INITIATION COMPLETE ===');
         } catch (error) {
             console.error('Error initiating WebRTC connection:', error);
             setCallState((prev) => ({ ...prev, isLoadingMedia: false }));
@@ -168,7 +146,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
     const setupSocketEventHandlers = useCallback(() => {
         videoCallSocketService.setEventHandlers({
             onCallInitiated: (data) => {
-                console.log('Call initiated successfully:', data);
                 if (currentCall && !currentCall.isIncoming) {
                     setCurrentCall((prev) =>
                         prev ? { ...prev, callId: data.callId } : null
@@ -178,7 +155,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onIncomingCall: (data) => {
-                console.log('Incoming call received:', data);
                 // Xóa bỏ việc phát âm thanh
                 setCurrentCall({
                     participant: data.initiator,
@@ -191,7 +167,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onCallAccepted: async (data) => {
-                console.log('Call accepted:', data);
                 // Xóa bỏ việc dừng âm thanh
                 setCallState((prev) => ({ ...prev, isConnecting: true }));
 
@@ -216,15 +191,10 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onCallRejected: (data) => {
-                console.log('Call rejected:', data);
                 cleanup();
             },
 
             onCallEnded: (data) => {
-                console.log('=== VIDEO CALL ENDED EVENT RECEIVED ===');
-                console.log('Call ended data:', data);
-                console.log('Current call:', currentCall);
-                console.log('Is call active:', isCallActive);
                 cleanup();
             },
 
@@ -235,20 +205,15 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onWebRTCOffer: async (data) => {
-                console.log('=== RECEIVED WEBRTC OFFER (RECEIVER) ===');
-                console.log('Offer data:', data);
                 try {
                     const answer = await webRTCService.handleOffer(data.offer);
-                    console.log('Created answer:', answer);
 
                     if (currentCall?.callId) {
-                        console.log('Sending answer via socket...');
                         videoCallSocketService.sendAnswer({
                             callId: currentCall.callId,
                             targetUserId: data.fromUserId,
                             answer,
                         });
-                        console.log('Answer sent successfully');
                     }
                 } catch (error) {
                     console.error('Error handling WebRTC offer:', error);
@@ -256,11 +221,8 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onWebRTCAnswer: async (data) => {
-                console.log('=== RECEIVED WEBRTC ANSWER (CALLER) ===');
-                console.log('Answer data:', data);
                 try {
                     await webRTCService.handleAnswer(data.answer);
-                    console.log('Successfully handled WebRTC answer');
                 } catch (error) {
                     console.error('Error handling WebRTC answer:', error);
                 }
@@ -278,13 +240,11 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
         // Setup WebRTC event handlers
         webRTCService.setEventHandlers({
             onLocalStream: (stream) => {
-                console.log('WebRTC: Local stream received:', stream);
                 // Trigger re-render by updating state
                 setCallState((prev) => ({ ...prev }));
             },
 
             onRemoteStream: (stream) => {
-                console.log('WebRTC: Remote stream received:', stream);
                 // When we get remote stream, connection is essentially established
                 setCallState((prev) => ({
                     ...prev,
@@ -294,8 +254,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             },
 
             onConnectionStateChange: (state) => {
-                console.log('WebRTC connection state changed:', state);
-
                 const updates: any = {
                     connectionState: state,
                 };
@@ -304,13 +262,9 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
                 if (state === 'connected') {
                     updates.isConnected = true;
                     updates.isConnecting = false;
-                    console.log('WebRTC connected - clearing connecting state');
                 } else if (state === 'failed' || state === 'disconnected') {
                     updates.isConnected = false;
                     updates.isConnecting = false;
-                    console.log(
-                        'WebRTC failed/disconnected - clearing connecting state'
-                    );
                 }
                 // For other states (new, connecting), don't change isConnecting
 
@@ -346,13 +300,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
                 cleanup();
             },
         });
-    }, [
-        currentCall,
-        // Xóa dependencies âm thanh
-        initiateWebRTCConnection,
-        cleanup,
-        isCallActive,
-    ]);
+    }, [currentCall, initiateWebRTCConnection, cleanup]);
 
     // Initialize services when socket is available
     useEffect(() => {
@@ -371,8 +319,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
         conversationId: string,
         isVideoCall: boolean = true
     ) => {
-        console.log('Starting call with:', participant);
-
         setCurrentCall({
             participant,
             isIncoming: false,
@@ -419,11 +365,6 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
         }
 
         try {
-            console.log('=== ACCEPTING CALL ===');
-            console.log('Call ID:', currentCall.callId);
-            console.log('Is video call:', currentCall.isVideoCall);
-            console.log('Current call object:', currentCall);
-
             // Set loading state
             setCallState((prev) => ({ ...prev, isLoadingMedia: true }));
 
@@ -432,12 +373,9 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
                 ? { video: true, audio: true }
                 : { video: false, audio: true };
 
-            console.log('Requesting media with constraints:', constraints);
             const stream = await webRTCService.getUserMedia(constraints);
-            console.log('Got media stream:', stream);
 
             webRTCService.addLocalStream(stream);
-            console.log('Added local stream to peer connection');
 
             // Clear loading state after successful media access
             setCallState((prev) => ({
@@ -447,11 +385,7 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             }));
 
             // Accept the call via socket
-            console.log('Sending accept call to server...');
             videoCallSocketService.acceptCall(currentCall.callId);
-
-            console.log('Updated call state to connecting');
-            console.log('=== ACCEPT CALL COMPLETE ===');
         } catch (error) {
             console.error('Error accepting call:', error);
             setCallState((prev) => ({ ...prev, isLoadingMedia: false }));
@@ -465,14 +399,12 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
             return;
         }
 
-        console.log('Rejecting call:', currentCall.callId);
         videoCallSocketService.rejectCall(currentCall.callId);
         cleanup();
     };
 
     const endCall = () => {
         if (currentCall?.callId) {
-            console.log('Ending call:', currentCall.callId);
             videoCallSocketService.endCall(currentCall.callId);
         }
         cleanup();
@@ -485,6 +417,12 @@ export const VideoCallProvider: React.FC<VideoCallProviderProps> = ({
     const getRemoteStream = () => {
         return webRTCService.getRemoteStream();
     };
+
+    useEffect(() => {
+        console.log({
+            currentCall,
+        });
+    }, [currentCall]);
 
     return (
         <VideoCallContext.Provider

@@ -827,10 +827,8 @@ class WebRTCService {
         );
     }
 
-    /**
-     * Enhanced cleanup with proper resource management
-     */
-    cleanup() {
+    // THÊM HOẶC SỬA LẠI PHƯƠNG THỨC NÀY
+    public cleanup() {
         console.log('WebRTCService: Cleaning up...');
 
         // 1. Dừng các track của local stream để tắt camera/mic
