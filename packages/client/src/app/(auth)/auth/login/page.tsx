@@ -11,8 +11,6 @@ import {
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
 import { checkAuth } from '@/lib/actions/user.action';
-import { loginValidation } from '@/lib/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
