@@ -77,6 +77,111 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                             </div>
                         )}
 
+                        {privateConversations &&
+                            privateConversations.map((conversation) => {
+                                const friend = conversation.participants.find(
+                                    (p) => p._id !== session?.user.id
+                                );
+                                if (!friend) return null;
+
+                                return (
+                                    <TooltipProvider key={conversation._id}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild={true}
+                                                    >
+                                                        <Button
+                                                            variant={'custom'}
+                                                            className="flex h-12 w-full cursor-pointer items-center justify-between p-2 text-sm shadow-sm hover:bg-hover-1 dark:hover:bg-dark-hover-1 lg:justify-center"
+                                                        >
+                                                            <div className="flex items-center lg:h-8 lg:w-8">
+                                                                <Image
+                                                                    className="rounded-full"
+                                                                    src={
+                                                                        friend.avatar ||
+                                                                        ''
+                                                                    }
+                                                                    alt={
+                                                                        friend.name ||
+                                                                        ''
+                                                                    }
+                                                                    width={32}
+                                                                    height={32}
+                                                                />
+
+                                                                <span className="ml-2 text-xs lg:hidden">
+                                                                    {
+                                                                        friend.name
+                                                                    }
+                                                                </span>
+                                                            </div>
+
+                                                            <span className="lg:hidden">
+                                                                {friend.isOnline && (
+                                                                    <Icons.Circle className="text-sm text-primary-2" />
+                                                                )}
+                                                            </span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+
+                                                    <DropdownMenuContent
+                                                        align={'start'}
+                                                    >
+                                                        <DropdownMenuItem
+                                                            className={'p-0'}
+                                                        >
+                                                            <Button
+                                                                className={
+                                                                    'w-full min-w-[250px] justify-start'
+                                                                }
+                                                                variant={
+                                                                    'ghost'
+                                                                }
+                                                                size={'md'}
+                                                                href={`/profile/${friend._id}`}
+                                                            >
+                                                                <Icons.Users />
+                                                                Trang cá nhân
+                                                            </Button>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className={'p-0'}
+                                                        >
+                                                            <Button
+                                                                className={
+                                                                    'w-full justify-start'
+                                                                }
+                                                                variant={
+                                                                    'ghost'
+                                                                }
+                                                                size={'md'}
+                                                                onClick={() => {
+                                                                    if (
+                                                                        conversation
+                                                                    ) {
+                                                                        router.push(
+                                                                            `/messages/${conversation._id}`
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Icons.Message />
+                                                                Nhắn tin
+                                                            </Button>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <span>{friend.name}</span>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                );
+                            })}
+                        {/* 
                         {friends &&
                             friends.map((friend, index) => {
                                 const conversation = privateConversations.find(
@@ -188,7 +293,7 @@ const FriendSection: React.FC<Props> = ({ session }) => {
                                         </Tooltip>
                                     </TooltipProvider>
                                 );
-                            })}
+                            })} */}
                     </div>
 
                     <div className="mt-2 flex items-center justify-between px-2">

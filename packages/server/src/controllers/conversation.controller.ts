@@ -18,7 +18,10 @@ class ConversationController {
                     $elemMatch: { $eq: user_id },
                 },
             })
-                .populate('participants', POPULATE_USER + ' lastAccessed')
+                .populate(
+                    'participants',
+                    POPULATE_USER + ' lastAccessed isOnline'
+                )
                 .populate('creator', POPULATE_USER)
                 .populate({
                     path: 'lastMessage',
@@ -77,7 +80,10 @@ class ConversationController {
             const conversation = (await Conversation.findOne({
                 _id: conversation_id,
             })
-                .populate('participants', POPULATE_USER + ' lastAccessed')
+                .populate(
+                    'participants',
+                    POPULATE_USER + ' lastAccessed isOnline'
+                )
                 .populate('creator', POPULATE_USER)
                 .populate({
                     path: 'lastMessage',
