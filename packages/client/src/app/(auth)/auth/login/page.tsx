@@ -30,7 +30,6 @@ const LoginPage = () => {
             email: '',
             password: '',
         },
-        resolver: zodResolver(loginValidation),
     });
     const {
         handleSubmit,
