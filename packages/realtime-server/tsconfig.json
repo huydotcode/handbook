@@ -9,12 +9,9 @@
         "target": "es6",
         "moduleResolution": "node",
         "sourceMap": true,
-        "noEmit": false,
-        "paths": {
-            "@handbook/shared": ["../shared/src"],
-            "@handbook/shared/*": ["../shared/src/*"]
-        }
+        "noEmit": false
     },
+    "references": [{ "path": "../shared" }],
     "include": ["src"],
     "exclude": ["node_modules", "dist"],
     "types": ["node", "jest"],
