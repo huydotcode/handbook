@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import socketEvent from '@/constants/socketEvent.constant';
+import { socketEvent } from '@handbook/shared';
 
 export interface VideoCallUser {
     _id: string;

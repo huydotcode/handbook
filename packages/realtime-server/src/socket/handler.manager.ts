@@ -1,8 +1,8 @@
+import { socketEvent } from '@handbook/shared';
 import { Socket } from 'socket.io';
-import { socketEvent } from '../constants/socketEvents';
 import {
-    NotificationHandler,
     MessageHandler,
+    NotificationHandler,
     PostHandler,
     VideoCallSocketHandler,
 } from '../handlers';

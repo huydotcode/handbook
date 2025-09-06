@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
 
     return (
         <>
-            <aside className="fixed left-0 top-[56px] z-50 flex h-screen w-[300px] flex-col border-r bg-secondary-1 p-2 dark:bg-dark-secondary-1 xl:w-[80px]">
+            <aside className="fixed left-0 top-[56px] flex h-screen w-[300px] flex-col border-r bg-secondary-1 p-2 dark:bg-dark-secondary-1 xl:w-[80px]">
                 <div className="flex w-full items-center justify-center border-b p-4 xl:hidden">
                     <h1>Xin chào, {session?.user.name || 'Admin'}</h1>
                 </div>

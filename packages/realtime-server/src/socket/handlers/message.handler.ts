@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { socketEvent } from '../../constants/socketEvents';
+import { socketEvent } from '@handbook/shared';
 import { MessageData } from '../../types/socket';
 import { chatService } from '../../services/chat.service';
 import { SocketUtils } from '../../utils/socket.utils';

@@ -1,4 +1,4 @@
-import { socketEvent } from '../constants/socketEvents';
+import { socketEvent } from '@handbook/shared';
 import User from '../models/User';
 import { UserSockets } from '../types/socket';
 

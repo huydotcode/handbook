@@ -1,7 +1,7 @@
 'use client';
 import { Icons } from '@/components/ui';
 import { socketConfig } from '@/config/socket';
-import socketEvent from '@/constants/socketEvent.constant';
+import { socketEvent } from '@handbook/shared';
 import { soundTypes } from '@/constants/soundType';
 import { useSound } from '@/hooks';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';

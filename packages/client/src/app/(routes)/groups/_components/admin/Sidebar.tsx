@@ -2,12 +2,12 @@
 import SidebarCollapse from '@/components/layout/SidebarCollapse';
 import { Avatar, Icons, Modal } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import socketEvent from '@/constants/socketEvent.constant';
 import { useSocket } from '@/context';
 import { GroupUserRole } from '@/enums/GroupRole';
 import useBreakPoint from '@/hooks/useBreakpoint';
 import ConversationService from '@/lib/services/conversation.service';
 import { timeConvert } from '@/utils/timeConvert';
+import { socketEvent } from '@handbook/shared';
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useMemo, useState } from 'react';

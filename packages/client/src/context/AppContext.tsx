@@ -1,17 +1,17 @@
 'use client';
 import { API_ROUTES } from '@/config/api';
 import { notificationType } from '@/constants/notificationType';
-import socketEvent from '@/constants/socketEvent.constant';
 import { useQueryInvalidation } from '@/hooks/useQueryInvalidation';
 import axiosInstance from '@/lib/axios';
 import queryKey from '@/lib/queryKey';
+import { soundManager } from '@/lib/soundManager';
+import { socketEvent } from '@handbook/shared';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSocket } from '.';
 import { SidebarCollapseContext } from './SidebarContext';
-import { soundManager } from '@/lib/soundManager';
 
 const PAGE_SIZE = 10;
 
