@@ -120,6 +120,7 @@ const SignUpPage = () => {
                             <form
                                 className={'flex w-full flex-col gap-2'}
                                 onSubmit={handleSubmit(signUp)}
+                                method="POST"
                             >
                                 <FormField
                                     control={form.control}

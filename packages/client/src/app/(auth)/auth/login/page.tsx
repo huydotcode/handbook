@@ -123,6 +123,7 @@ const LoginPage = () => {
                         <div className="space-y-6">
                             <Form {...form}>
                                 <form
+                                    method="POST"
                                     onSubmit={handleSubmit(loginWithCrenditals)}
                                     className="space-y-5"
                                 >
