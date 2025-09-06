@@ -309,9 +309,6 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         toast(`${user.name} đã trực tuyến`, {
             id: 'friend-online-' + user._id,
             icon: <Icons.Circle className="text-primary-2" />,
-            style: {
-                fontSize: '12px',
-            },
         });
     }, []);
 
