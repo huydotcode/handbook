@@ -111,59 +111,6 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
-// Tạo một dialog chào mừng quay trở lại sau 30 ngày
-const WelcomeBackDialog = () => {
-    const [open, setOpen] = useState<boolean>(false);
-    const { data: session } = useSession();
-
-    useEffect(() => {
-        const lastAccess = localStorage.getItem('lastAccess');
-        const currentDate = new Date();
-        const lastAccessDate = new Date(lastAccess || '');
-        const diffTime = Math.abs(
-            currentDate.getTime() - lastAccessDate.getTime()
-        );
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7)); // 1000 * 60 * 60 * 24
-        if (diffDays >= 30) {
-            setOpen(true);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!session?.user?.id) return;
-
-        const lastAccess = localStorage.getItem('lastAccess');
-        if (lastAccess) {
-            localStorage.removeItem('lastAccess');
-        }
-
-        localStorage.setItem('lastAccess', new Date().toDateString());
-    }, [session?.user.id]);
-
-    return (
-        <Dialog
-            open={open}
-            onOpenChange={(open) => {
-                setOpen(open);
-            }}
-        >
-            <DialogContent className={'rounded-xl'}>
-                <DialogHeader>
-                    <DialogTitle>
-                        Chào mừng {session?.user.name} trở lại!{' '}
-                    </DialogTitle>
-                    <DialogDescription>
-                        Chúng tôi rất vui khi bạn quay lại với chúng tôi.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <Button variant="secondary">Đóng</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-};
-
 export {
     Dialog,
     DialogClose,
@@ -175,5 +122,4 @@ export {
     DialogPortal,
     DialogTitle,
     DialogTrigger,
-    WelcomeBackDialog,
 };

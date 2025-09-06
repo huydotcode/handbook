@@ -1,6 +1,5 @@
 import { Navbar } from '@/components/layout';
 import ChatWithGemini from '@/components/layout/ChatWithGemini';
-import { WelcomeBackDialog } from '@/components/ui/dialog';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -18,7 +17,6 @@ const HomeLayout: React.FC<Props> = async ({ children }) => {
             <Navbar />
 
             <main className={'bg-primary-1 dark:bg-dark-primary-1'}>
-                <WelcomeBackDialog />
                 {children}
             </main>
 
