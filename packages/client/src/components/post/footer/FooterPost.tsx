@@ -1,11 +1,12 @@
 'use client';
 import { Icons } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 import React, { useState } from 'react';
+import { PostParams } from '../InfinityPostComponent';
 import CommentSection from './CommentSection';
 import ReactionPost from './ReactionPost';
-import SavePost from './SavePost';
 import SharePost from './SharePost';
-import { PostParams } from '../InfinityPostComponent';
 
 interface Props {
     post: IPost;
@@ -16,6 +17,8 @@ const FooterPost: React.FC<Props> = ({ post, params }) => {
     const [commentCount, setCommentCount] = useState<number>(
         post.commentsCount || 0
     );
+    const [showCommentSection, setShowCommentSection] =
+        useState<boolean>(false);
 
     return (
         <>
@@ -28,19 +31,54 @@ const FooterPost: React.FC<Props> = ({ post, params }) => {
 
                     <div className="flex items-center">
                         <Icons.Comment className="text-xl" />
-                        <span className="text-md ml-1">{commentCount}</span>
+                        <span className="text-md ml-1">
+                            {commentCount < 0 ? 0 : commentCount}
+                        </span>
                     </div>
                 </div>
 
-                <div className="mt-1 grid grid-cols-3 border-y py-1 dark:border-dark-secondary-2">
+                <div
+                    className={cn(
+                        'mt-1 grid grid-cols-3 border-y py-1 dark:border-dark-secondary-2',
+                        {
+                            'border-b-0 border-t': !showCommentSection,
+                        }
+                    )}
+                >
                     <ReactionPost post={post} />
 
-                    <SharePost post={post} />
+                    <Button
+                        className="like-container mr-2 flex flex-1 items-center md:p-1"
+                        variant={'ghost'}
+                        onClick={() => setShowCommentSection(true)}
+                    >
+                        <div className="con-like">
+                            <input
+                                className="like"
+                                type="checkbox"
+                                title="like"
+                                onChange={() => {}}
+                            />
+                            <div className="checkmark flex">
+                                {/* <Icons.Heart /> */}
+                                <Icons.Comment />
+                            </div>
+                        </div>
 
-                    <SavePost post={post} />
+                        <span className="ml-1 mr-2 min-w-[10px] text-sm sm:hidden">
+                            Bình luận
+                        </span>
+                    </Button>
+
+                    <SharePost post={post} />
                 </div>
 
-                <CommentSection post={post} setCommentCount={setCommentCount} />
+                {showCommentSection && (
+                    <CommentSection
+                        post={post}
+                        setCommentCount={setCommentCount}
+                    />
+                )}
             </div>
         </>
     );

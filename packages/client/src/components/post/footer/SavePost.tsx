@@ -88,23 +88,20 @@ const SavePost: React.FC<Props> = ({ post }) => {
 
     return (
         <Button
-            onClick={() => mutate()}
-            className={cn('flex flex-1 items-center gap-2 p-1', {
+            className={cn('w-full justify-start rounded-sm shadow-none', {
                 'text-yellow-300 hover:text-yellow-200': isSaved && !isPending,
             })}
-            disabled={isPending}
             variant={'ghost'}
+            onClick={() => mutate()}
         >
-            <Icons.Bookmark />
-            <span className="text-sm sm:hidden">
-                {isPending && isSaved
-                    ? 'Đang hủy lưu...'
-                    : isPending && !isSaved
-                      ? 'Đang lưu...'
-                      : isSaved
-                        ? 'Đã lưu'
-                        : 'Lưu'}
-            </span>
+            <Icons.Bookmark className="mr-2" />{' '}
+            {isPending && isSaved
+                ? 'Đang hủy lưu...'
+                : isPending && !isSaved
+                  ? 'Đang lưu...'
+                  : isSaved
+                    ? 'Đã lưu'
+                    : 'Lưu'}
         </Button>
     );
 };

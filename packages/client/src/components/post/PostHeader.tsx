@@ -4,7 +4,6 @@ import postAudience from '@/constants/postAudience.constant';
 import { timeConvert3 } from '@/utils/timeConvert';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 import { ActionPost } from '.';
 import { Avatar } from '../ui';
@@ -20,11 +19,8 @@ interface Props {
 }
 
 const PostHeader = ({ post }: Props) => {
-    const { data: session } = useSession();
     const isGroupPost = useMemo(() => post?.type === 'group', [post]);
-    const path = usePathname();
-    const isManageGroupPostActive =
-        path === `/groups/${post.group?._id}/manage/posts`;
+
     const IconType = postAudience.find(
         (item) => item.value === post.option
     )?.icon;
@@ -126,16 +122,7 @@ const PostHeader = ({ post }: Props) => {
                 </div>
             </div>
 
-            {/* Right section: Action buttons */}
-            {!isManageGroupPostActive &&
-                session?.user &&
-                session.user.id === post.author._id && (
-                    <ActionPost post={post} />
-                )}
-
-            {isManageGroupPostActive && (
-                <ActionPost post={post} isManage={isManageGroupPostActive} />
-            )}
+            <ActionPost post={post} />
         </div>
     );
 };

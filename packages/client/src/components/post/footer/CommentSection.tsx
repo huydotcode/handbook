@@ -213,6 +213,12 @@ const CommentSection: React.FC<Props> = ({ post, setCommentCount }) => {
 
             {isPending && <SkeletonComment />}
 
+            {!isLoadingComments && !isPending && comments.length === 0 && (
+                <div className="text-center text-xs text-secondary-1">
+                    Không có bình luận
+                </div>
+            )}
+
             {!isLoadingComments &&
                 comments &&
                 comments.map((cmt) => (
