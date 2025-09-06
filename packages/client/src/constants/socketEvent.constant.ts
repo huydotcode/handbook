@@ -3,6 +3,9 @@ const socketEvent = {
     SEND_REQUEST_ADD_FRIEND: 'send-request-add-friend',
     ACCEPT_FRIEND: 'accept-friend',
 
+    // FRIEND
+    FRIEND_ONLINE: 'friend-online',
+
     // NOTIFICATION
     SEND_NOTIFICATION: 'send-notification',
     RECEIVE_NOTIFICATION: 'receive-notification',

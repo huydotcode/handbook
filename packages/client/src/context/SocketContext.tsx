@@ -305,6 +305,16 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         [pathname, queryClientReadMessage]
     );
 
+    const onFriendOnline = useCallback((user: IFriend) => {
+        toast(`${user.name} đã trực tuyến`, {
+            id: 'friend-online-' + user._id,
+            icon: <Icons.Circle className="text-primary-2" />,
+            style: {
+                fontSize: '12px',
+            },
+        });
+    }, []);
+
     // Khởi tạo socket
     useEffect(() => {
         if (!session?.user.id) return;
@@ -343,6 +353,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         socket.on(socketEvent.PIN_MESSAGE, onPinMessage);
         socket.on(socketEvent.UN_PIN_MESSAGE, onUnpinMessage);
         socket.on(socketEvent.READ_MESSAGE, onReadMessage);
+        socket.on(socketEvent.FRIEND_ONLINE, onFriendOnline);
 
         return () => {
             socket.off(socketEvent.RECEIVE_MESSAGE, onReceiveMessage);
@@ -350,6 +361,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
             socket.off(socketEvent.PIN_MESSAGE, onPinMessage);
             socket.off(socketEvent.UN_PIN_MESSAGE, onUnpinMessage);
             socket.off(socketEvent.READ_MESSAGE, onReadMessage);
+            socket.off(socketEvent.FRIEND_ONLINE, onFriendOnline);
         };
     }, [
         socket,
@@ -358,6 +370,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
         onPinMessage,
         onUnpinMessage,
         onReadMessage,
+        onFriendOnline,
     ]);
 
     const values: SocketContextType = {
