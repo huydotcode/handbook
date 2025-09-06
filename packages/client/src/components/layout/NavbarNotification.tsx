@@ -21,6 +21,10 @@ const NavbarNotification = () => {
     const { data: notifications, isLoading } = useNotifications(
         session?.user?.id
     );
+    const unreadCount = notifications
+        ? notifications.filter((n) => !n.isRead).length
+        : 0;
+
     const { invalidateNotifications } = useQueryInvalidation();
     const [open, setOpen] = useState(false);
 
@@ -32,10 +36,6 @@ const NavbarNotification = () => {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
         }
     };
-
-    if (isLoading || !notifications) {
-        return <SkeletonAvatar />;
-    }
 
     return (
         <>
@@ -56,17 +56,19 @@ const NavbarNotification = () => {
                             <Icons.Notification className="h-7 w-7" />
                         )}
 
-                        <Badge
-                            className="absolute bottom-0 right-0 px-1 py-0 text-xs font-light"
-                            variant={'secondary'}
-                        >
-                            {notifications.filter((n) => !n.isRead).length}
-                        </Badge>
+                        {unreadCount > 0 && (
+                            <Badge
+                                className="absolute bottom-0 right-0 px-1 py-0 text-xs font-light"
+                                variant={'secondary'}
+                            >
+                                {unreadCount > 99 ? '99+' : unreadCount}
+                            </Badge>
+                        )}
                     </Button>
                 </PopoverTrigger>
 
                 <PopoverContent asChild>
-                    <div className="max-h-[50vh] min-h-[300px] w-[300px] overflow-x-hidden overflow-y-scroll px-4 py-2 dark:bg-dark-secondary-1">
+                    <div className="max-h-[50vh] min-h-[300px] w-[300px] overflow-x-hidden overflow-y-scroll px-4 py-2">
                         <div className="flex items-center justify-between">
                             <h1 className="text font-bold dark:text-dark-primary-1">
                                 Thông báo
@@ -83,20 +85,23 @@ const NavbarNotification = () => {
                             </Button>
                         </div>
 
-                        {notifications.map((notification) => {
-                            return (
-                                <NotificationItem
-                                    key={notification._id}
-                                    data={notification}
-                                />
-                            );
-                        })}
+                        {notifications &&
+                            notifications.map((notification) => {
+                                return (
+                                    <NotificationItem
+                                        key={notification._id}
+                                        data={notification}
+                                    />
+                                );
+                            })}
 
-                        {notifications.length == 0 && (
-                            <div className="flex h-[200px] w-full items-center justify-center dark:text-dark-primary-1">
-                                <p>Không có thông báo nào</p>
-                            </div>
-                        )}
+                        {notifications &&
+                            notifications.length == 0 &&
+                            !isLoading && (
+                                <div className="flex h-[200px] w-full items-center justify-center dark:text-dark-primary-1">
+                                    <p>Không có thông báo nào</p>
+                                </div>
+                            )}
                     </div>
                 </PopoverContent>
             </Popover>
