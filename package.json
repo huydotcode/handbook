@@ -7,11 +7,15 @@
     "dev:server": "pnpm --filter server dev",
     "dev:realtime": "pnpm --filter realtime-server dev",
     "dev": "pnpm run /^dev:/",
-    "build": "pnpm run build -r"
+    "build": "pnpm -r run build"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/jest": "^29.5.13",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/bcrypt": "^5.0.0"
+    "@types/node": "24.3.1",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "typescript": "^5.9.2"
   }
 }

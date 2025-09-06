@@ -9,12 +9,12 @@
         "target": "es6",
         "moduleResolution": "node",
         "sourceMap": true,
-        "noEmit": false
+        "noEmit": false,
+        "types": ["node", "jest"]
     },
     "references": [{ "path": "../shared" }],
     "include": ["src"],
     "exclude": ["node_modules", "dist"],
-    "types": ["node", "jest"],
     "ts-node": {
         "files": true
     },

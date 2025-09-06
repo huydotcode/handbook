@@ -3,6 +3,9 @@
     "compilerOptions": {
         "module": "commonjs",
         "outDir": "dist",
+        "rootDir": "src",
+        "sourceMap": true,
+        "types": ["node", "jest"],
         "paths": {
             "@handbook/shared": ["../shared/src"]
         }
