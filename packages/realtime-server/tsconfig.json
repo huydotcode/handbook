@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
+        "baseUrl": ".",
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
@@ -9,9 +10,21 @@
         "outDir": "dist",
         "noEmit": false,
         "paths": {
-            "@handbook/shared": ["../shared/src"]
+            "@handbook/shared": ["../shared/src"],
+            "@handbook/shared/*": ["../shared/src/*"]
         }
     },
     "include": ["src"],
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "exclude": ["node_modules", "dist"],
+    "ts-node": {
+        "files": true
+    },
+    "compileOnSave": true,
+    "typeAcquisition": {
+        "enable": true
+    },
+    "types": ["node", "jest"],
+    "allowJs": true,
+    "checkJs": false
 }
