@@ -11,6 +11,7 @@ import {
     BsTextParagraph,
 } from 'react-icons/bs';
 import { CgClose, CgProfile } from 'react-icons/cg';
+import { CiSettings } from 'react-icons/ci';
 import {
     FaArrowLeft,
     FaBirthdayCake,
@@ -55,14 +56,14 @@ import {
     IoMdSchool,
 } from 'react-icons/io';
 import {
+    IoCamera,
     IoChatbubbleEllipses,
     IoPersonAdd,
     IoTime,
-    IoCall,
-    IoCallOutline,
-    IoCamera,
 } from 'react-icons/io5';
 import {
+    MdCall,
+    MdCallEnd,
     MdEmojiEmotions,
     MdGroups,
     MdHorizontalRule,
@@ -79,8 +80,6 @@ import {
     MdVolumeOff,
     MdVolumeUp,
     MdWork,
-    MdCall,
-    MdCallEnd,
 } from 'react-icons/md';
 import {
     RiAdminFill,
@@ -90,9 +89,9 @@ import {
 } from 'react-icons/ri';
 import { TbBlockquote, TbClearFormatting } from 'react-icons/tb';
 import { TiTick } from 'react-icons/ti';
-import { VscClearAll } from 'react-icons/vsc';
+import { VscClearAll, VscColorMode } from 'react-icons/vsc';
 
-interface IconProps extends React.SVGAttributes<SVGElement> {
+export interface IconProps extends React.SVGAttributes<SVGElement> {
     children?: React.ReactNode;
     size?: string | number;
     color?: string;
@@ -295,23 +294,29 @@ const Icons = {
     CameraOff: (props: IconProps) => <MdVideocamOff {...props} />,
     VolumeUp: (props: IconProps) => <MdVolumeUp {...props} />,
     VolumeOff: (props: IconProps) => <MdVolumeOff {...props} />,
+    Theme: (props: IconProps) => {
+        return <VscColorMode {...props} />;
+    },
+    Setting: (props: IconProps) => {
+        return <CiSettings {...props} />;
+    },
 };
 
 export const MenuBarEditorIcons = {
-    Bold: (props: IconProps) => <FaBold />,
-    Italic: (props: IconProps) => <FaItalic />,
-    Strike: (props: IconProps) => <ImStrikethrough />,
-    CodeBlock: (props: IconProps) => <FaRegFileCode />,
-    ClearMark: (props: IconProps) => <TbClearFormatting />,
-    ClearNode: (props: IconProps) => <VscClearAll />,
-    Paragraph: (props: IconProps) => <BsTextParagraph />,
-    BulletList: (props: IconProps) => <FaListUl />,
-    Code: (props: IconProps) => <FaCode />,
-    Blockquote: (props: IconProps) => <TbBlockquote />,
-    HorizontalRule: (props: IconProps) => <MdHorizontalRule />,
-    HardBreak: (props: IconProps) => <BsFillFileBreakFill />,
-    Undo: (props: IconProps) => <GrUndo />,
-    Redo: (props: IconProps) => <GrRedo />,
+    Bold: (props: IconProps) => <FaBold {...props} />,
+    Italic: (props: IconProps) => <FaItalic {...props} />,
+    Strike: (props: IconProps) => <ImStrikethrough {...props} />,
+    CodeBlock: (props: IconProps) => <FaRegFileCode {...props} />,
+    ClearMark: (props: IconProps) => <TbClearFormatting {...props} />,
+    ClearNode: (props: IconProps) => <VscClearAll {...props} />,
+    Paragraph: (props: IconProps) => <BsTextParagraph {...props} />,
+    BulletList: (props: IconProps) => <FaListUl {...props} />,
+    Code: (props: IconProps) => <FaCode {...props} />,
+    Blockquote: (props: IconProps) => <TbBlockquote {...props} />,
+    HorizontalRule: (props: IconProps) => <MdHorizontalRule {...props} />,
+    HardBreak: (props: IconProps) => <BsFillFileBreakFill {...props} />,
+    Undo: (props: IconProps) => <GrUndo {...props} />,
+    Redo: (props: IconProps) => <GrRedo {...props} />,
 };
 
 export const IconsArray = [

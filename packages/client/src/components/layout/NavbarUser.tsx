@@ -6,138 +6,186 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/Popover';
+import {
+    INavbarUserMenu,
+    navbarUserMenu,
+} from '@/constants/navbar-user-menu.constant';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import Icons from '../ui/Icons';
 
 const NavbarUser = () => {
     const { data: session, status } = useSession();
-    const [history, setHistory] = useState([{ data: [] as any }]);
-    const currentHistory = history[history.length - 1] as any;
+
+    const [menuStack, setMenuStack] = useState<INavbarUserMenu[][]>([
+        navbarUserMenu,
+    ]);
 
     const user = session?.user as ISessionUser;
 
+    const currentMenu = menuStack[menuStack.length - 1];
+    const currentTitle =
+        menuStack.length > 1
+            ? (menuStack[menuStack.length - 2].find(
+                  (item) => item.children === currentMenu
+              )?.title as string)
+            : 'Menu';
+    const isRootMenu = menuStack.length === 1;
+
     const handleLogout = async () => {
-        await signOut();
+        await signOut({ callbackUrl: '/' });
     };
 
-    const handleClose = () => {
-        setHistory([{ data: [] }]);
+    const handleBack = () => {
+        // Để quay lại, chỉ cần xóa phần tử cuối cùng của stack
+        setMenuStack((prev) => prev.slice(0, prev.length - 1));
     };
 
-    if (status == 'loading' || !session?.user) {
+    const handleClosePopover = () => {
+        // Reset stack về trạng thái ban đầu khi popover đóng
+        setTimeout(() => setMenuStack([navbarUserMenu]), 150);
+    };
+
+    if (status === 'loading' || !session?.user) {
         return <SkeletonAvatar />;
     }
 
     return (
-        <>
-            <Popover>
-                <PopoverTrigger className={'ml-2 flex items-center'}>
-                    <Image
-                        className="cursor-pointer rounded-full"
-                        width={40}
-                        height={40}
-                        src={(session?.user && session?.user.image) || ''}
-                        alt="Your profile picture"
-                        referrerPolicy="no-referrer"
-                    />
-                </PopoverTrigger>
-                <PopoverContent className="w-[300px]">
-                    <div className="relative flex flex-col">
-                        <div className="flex w-full items-center">
-                            {currentHistory == history[0] ? (
-                                <Link
-                                    className="flex w-full items-center rounded-xl p-2 shadow-md hover:bg-hover-2 dark:text-dark-primary-1 dark:hover:bg-dark-hover-1"
-                                    href={`/profile/${user.id}`}
+        <Popover onOpenChange={(isOpen) => !isOpen && handleClosePopover()}>
+            <PopoverTrigger className={'ml-2 flex items-center'}>
+                <Image
+                    className="cursor-pointer rounded-full"
+                    width={40}
+                    height={40}
+                    src={user.image || ''}
+                    alt="Your profile picture"
+                    referrerPolicy="no-referrer"
+                />
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-2">
+                <div className="relative flex flex-col">
+                    <div className="flex w-full items-center pb-2">
+                        {!isRootMenu && (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="mr-2 h-8 w-8 rounded-full"
+                                    onClick={handleBack}
                                 >
-                                    <div className="h-9 w-9 object-cover">
-                                        <Image
-                                            className="rounded-full"
-                                            width={40}
-                                            height={40}
-                                            src={user?.image || ''}
-                                            alt={user?.name || ''}
-                                        />
-                                    </div>
-                                    <span className="ml-2">{user?.name}</span>
-                                </Link>
-                            ) : (
-                                <>
-                                    <Button
-                                        className="mr-2 p-3"
-                                        onClick={() =>
-                                            setHistory((prev) =>
-                                                prev.slice(0, prev.length - 1)
-                                            )
-                                        }
-                                    >
-                                        <Icons.ArrowLeft className="text-base" />
-                                    </Button>
-                                    <span>{currentHistory.title}</span>
-                                </>
-                            )}
-                        </div>
+                                    <Icons.ArrowLeft className="text-lg" />
+                                </Button>
+                                <span className="text-xl font-bold">
+                                    {currentTitle}
+                                </span>
+                            </>
+                        )}
+                    </div>
 
-                        <ul className=" pt-3">
-                            {currentHistory.data.map((item: any) => {
-                                const handleClick = () => {
-                                    if (item.action) {
-                                        item.action();
-                                    }
-                                    if (item.children) {
-                                        setHistory(
-                                            (prev: SetStateAction<any>) => [
-                                                ...prev,
-                                                item.children,
-                                            ]
-                                        );
-                                    }
+                    <ul className="flex flex-col">
+                        {isRootMenu && (
+                            <Link
+                                className="flex w-full items-center rounded-xl p-2 shadow-md hover:bg-hover-2 dark:text-dark-primary-1 dark:hover:bg-dark-hover-1"
+                                href={`/profile/${user.id}`}
+                            >
+                                <div className="h-9 w-9 object-cover">
+                                    <Image
+                                        className="rounded-full"
+                                        width={40}
+                                        height={40}
+                                        src={user?.image || ''}
+                                        alt={user?.name || ''}
+                                    />
+                                </div>
+                                <span className="ml-2">{user?.name}</span>
+                            </Link>
+                        )}
 
-                                    if (!item.children) {
-                                        handleClose();
-                                    }
-                                };
+                        {currentMenu.map((item) => {
+                            const handleClick = () => {
+                                if (item.action) {
+                                    item.action();
+                                }
+                                if (item.children) {
+                                    setMenuStack((prev) => [
+                                        ...prev,
+                                        item.children as INavbarUserMenu[],
+                                    ]);
+                                }
+                            };
 
+                            if (item.render) {
                                 return (
+                                    <li key={item.title}>
+                                        <Button
+                                            variant="ghost"
+                                            className="h-13 relative flex w-full cursor-pointer items-center justify-between rounded-lg p-2 text-left"
+                                            onClick={handleClick}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                {item.icon && (
+                                                    <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-hover-2 text-xl dark:bg-dark-hover-1">
+                                                        {item.icon()}
+                                                    </span>
+                                                )}
+                                                <span className="text-sm font-medium">
+                                                    {item.title}
+                                                </span>
+                                            </div>
+                                            <span className="flex h-9 items-center text-sm font-medium">
+                                                {item.render()}
+                                            </span>
+                                        </Button>
+                                    </li>
+                                );
+                            }
+
+                            return (
+                                <li key={item.title}>
                                     <Button
-                                        className="relative flex h-[52px] w-full cursor-pointer items-center rounded-xl px-2 hover:bg-hover-2"
-                                        key={item.title}
+                                        variant="ghost"
+                                        className="relative flex h-auto w-full cursor-pointer items-center justify-start rounded-lg p-2 text-left"
                                         onClick={handleClick}
+                                        href={item.href}
                                     >
                                         {item.icon && (
-                                            <span className="mr-2 flex h-9 w-9 items-center justify-center rounded-full text-2xl">
+                                            <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-hover-2 text-xl dark:bg-dark-hover-1">
                                                 {item.icon()}
                                             </span>
                                         )}
-
-                                        {item.title && (
-                                            <h5 className="ml-2 text-base font-semibold">
-                                                {item.title}
-                                            </h5>
-                                        )}
-
+                                        <span className="text-sm font-medium">
+                                            {item.title}
+                                        </span>
                                         {item.children && (
-                                            <Icons.ArrowRight className="absolute right-2 text-2xl" />
+                                            <Icons.ArrowRight className="absolute right-2 text-xl text-gray-500" />
                                         )}
                                     </Button>
-                                );
-                            })}
+                                </li>
+                            );
+                        })}
 
-                            <Button
-                                className="w-full"
-                                variant={'secondary'}
-                                onClick={handleLogout}
-                            >
-                                <Icons.LogOut className="mr-2 text-xl" />
-                                Đăng xuất
-                            </Button>
-                        </ul>
-                    </div>
-                </PopoverContent>
-            </Popover>
-        </>
+                        {isRootMenu && (
+                            <li className="mt-2 border-t pt-2">
+                                <Button
+                                    variant="ghost"
+                                    className="h-auto w-full justify-start p-2"
+                                    onClick={handleLogout}
+                                >
+                                    <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-hover-2 text-xl dark:bg-dark-hover-1">
+                                        <Icons.LogOut />
+                                    </span>
+                                    <span className="text-sm font-medium">
+                                        Đăng xuất
+                                    </span>
+                                </Button>
+                            </li>
+                        )}
+                    </ul>
+                </div>
+            </PopoverContent>
+        </Popover>
     );
 };
 

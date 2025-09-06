@@ -202,9 +202,6 @@ const Navbar = () => {
                     </ul>
                 )}
                 <div className="flex h-full w-1/4 items-center justify-end md:w-1/2">
-                    <div className="relative mr-4 flex items-center">
-                        <DarkmodeButton />
-                    </div>
                     <div className="mr-2 flex h-full items-center justify-center">
                         <NavbarNotification />
                     </div>
