@@ -123,6 +123,10 @@ const EditItem: React.FC<Props> = ({ data: item }) => {
     return (
         <>
             <div className={'flex items-center justify-end gap-2 p-2'}>
+                <Button variant={'secondary'} href={`/market/item/${item._id}`}>
+                    <Icons.Eye />
+                </Button>
+
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button variant={'secondary'}>

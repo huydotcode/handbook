@@ -4,6 +4,7 @@ import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import SidebarCollapse from '@/components/layout/SidebarCollapse';
 
 const sidebarItems = [
     {
@@ -29,11 +30,11 @@ const Sidebar = () => {
     const filter = searchParams.get('filter');
 
     return (
-        <aside className="no-scrollbar fixed left-0 top-2 z-10 h-[calc(100vh-64px)] w-[360px] max-w-[360px] overflow-scroll border-r-2 bg-white p-2 dark:border-none dark:bg-dark-secondary-1 lg:max-w-[80px]">
-            <div className="px-x py-1 lg:px-1">
-                <h1 className="text-2xl font-bold lg:hidden">News Feed</h1>
+        <SidebarCollapse>
+            <div className="px-x w-full py-1">
+                <h1 className="text-2xl font-bold">News Feed</h1>
 
-                <div className="flex flex-col gap-1">
+                <div className="flex w-full flex-col gap-1">
                     {sidebarItems.map((item) => {
                         const Icon = () => {
                             return item.icon;
@@ -49,7 +50,7 @@ const Sidebar = () => {
                                 key={item.name}
                                 variant="ghost"
                                 className={cn(
-                                    'w-full justify-start rounded-xl py-6 text-base font-normal lg:justify-center lg:p-0 lg:text-xl',
+                                    'w-full justify-start rounded-xl py-6 text-base font-normal',
                                     {
                                         'bg-primary-1 text-primary-2 dark:bg-dark-primary-1':
                                             isActive,
@@ -61,7 +62,7 @@ const Sidebar = () => {
                                     <span className="text-xl">
                                         <Icon />
                                     </span>
-                                    <span className="ml-2 text-sm lg:hidden">
+                                    <span className="ml-2 text-sm">
                                         {item.name}
                                     </span>
                                 </div>
@@ -70,7 +71,7 @@ const Sidebar = () => {
                     })}
                 </div>
             </div>
-        </aside>
+        </SidebarCollapse>
     );
 };
 

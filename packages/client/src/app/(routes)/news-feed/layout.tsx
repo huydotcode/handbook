@@ -14,16 +14,12 @@ export async function generateMetadata() {
 
 const NewsFeedLayout: React.FC<Props> = async ({ children }) => {
     return (
-        <FixedLayout fullScreen>
+        <div className="relative top-[56px] min-h-[calc(100vh-56px)] max-w-screen md:w-screen">
             <Sidebar />
-            <div
-                className={
-                    'h-[calc(100vh-64px] fixed bottom-0 left-[360px] top-2 w-[calc(100vw-360px)] overflow-y-scroll lg:left-[90px] lg:top-2 lg:h-[calc(100vh-64px)] lg:w-[calc(100vw-90px)] lg:overflow-y-scroll'
-                }
-            >
+            <div className="ml-[300px] mt-2 w-[calc(100vw-300px)] lg:ml-0 lg:w-full">
                 {children}
             </div>
-        </FixedLayout>
+        </div>
     );
 };
 

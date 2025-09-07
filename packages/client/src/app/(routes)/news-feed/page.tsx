@@ -14,11 +14,7 @@ const FeedsPage = () => {
               : 'new-feed';
 
     return (
-        <div
-            className={
-                'mx-auto w-[600px] max-w-screen md:max-w-[calc(100vw-100px)]'
-            }
-        >
+        <div className={'mx-auto w-[600px] max-w-screen md:w-full'}>
             <InfinityPostComponent showCreatePost={false} type={type} />
         </div>
     );

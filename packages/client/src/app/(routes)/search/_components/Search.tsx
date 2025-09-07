@@ -9,10 +9,10 @@ import queryKey from '@/lib/queryKey';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import SearchGroupItem from './SearchGroupItem';
 import SearchUserItem from './SearchUserItem';
-import { useInView } from 'react-intersection-observer';
 
 interface SearchData {
     users: IUser[];
@@ -106,6 +106,36 @@ const Search = () => {
                     <Loading className="text-2xl" />
                 </div>
             )}
+
+            {!isLoading &&
+                type === 'all' &&
+                data?.users?.length === 0 &&
+                data?.posts?.length === 0 &&
+                data?.groups?.length === 0 && (
+                    <p className="dark:text-dark-gray-500 mt-4 text-center text-sm text-gray-500">
+                        Không tìm thấy kết quả phù hợp
+                    </p>
+                )}
+
+            {!isLoading && type === 'users' && data?.users?.length === 0 && (
+                <p className="dark:text-dark-gray-500 mt-4 text-center text-sm text-gray-500">
+                    Không tìm thấy người dùng phù hợp
+                </p>
+            )}
+
+            {!isLoading && type === 'groups' && data?.groups?.length === 0 && (
+                <p className="dark:text-dark-gray-500 mt-4 text-center text-sm text-gray-500">
+                    Không tìm thấy nhóm phù hợp
+                </p>
+            )}
+
+            {!isLoading &&
+                type === 'posts' &&
+                (!posts || posts.length === 0) && (
+                    <p className="dark:text-dark-gray-500 mt-4 text-center text-sm text-gray-500">
+                        Không tìm thấy bài viết phù hợp
+                    </p>
+                )}
 
             {!isLoading && (
                 <>

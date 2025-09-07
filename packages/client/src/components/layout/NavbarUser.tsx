@@ -167,7 +167,7 @@ const NavbarUser = () => {
                         })}
 
                         {isRootMenu && (
-                            <li className="mt-2 border-t pt-2">
+                            <li className="mt-2 border-t pt-2 dark:border-t-dark-secondary-2">
                                 <Button
                                     variant="ghost"
                                     className="h-auto w-full justify-start p-2"

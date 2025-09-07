@@ -25,19 +25,17 @@ export default async function ItemPage({ params }: Props) {
                 'flex h-full w-full rounded-xl bg-secondary-1 px-4 py-2 dark:bg-dark-secondary-1'
             }
         >
-            <div
-                className={
-                    'flex h-[calc(100vh-80px)] w-full justify-between xl:block xl:h-full'
-                }
-            >
+            <div className={'flex w-full justify-between 2xl:flex-col'}>
+                {/* Left */}
                 <div
                     className={
-                        'max-h-screen min-w-[700px] max-w-[50vw] rounded-xl border p-2 dark:border-none xl:h-[50vh] xl:max-w-screen'
+                        'h-[calc(100vh-80px)] w-full max-w-[50vw] rounded-xl border p-2 dark:border-none 2xl:h-[300px] 2xl:max-w-full'
                     }
                 >
                     <SwiperImagesItem images={item.images} />
                 </div>
 
+                {/* Right */}
                 <div
                     className={
                         'ml-4 h-full flex-1 overflow-scroll xl:ml-0 xl:mt-2'

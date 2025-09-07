@@ -18,7 +18,12 @@ const ListItem: React.FC<Props> = ({
     isManage = false,
 }) => {
     return (
-        <div className={cn('flex flex-wrap gap-2', className)}>
+        <div
+            className={cn(
+                'grid grid-cols-4 gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1',
+                className
+            )}
+        >
             {data.map((item: IItem) => (
                 <Item
                     data={item}
