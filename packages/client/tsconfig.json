@@ -24,7 +24,7 @@
             "@handbook/shared": ["../shared/src"]
         },
         "forceConsistentCasingInFileNames": true,
-        "types": ["react", "react-dom", "node", "jest"]
+        "types": ["react", "react-dom", "node"]
     },
     "include": [
         "next-env.d.ts",
