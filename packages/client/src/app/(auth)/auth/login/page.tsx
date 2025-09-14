@@ -48,10 +48,7 @@ const LoginPage = () => {
 
             if (result?.ok) {
                 toast.success('Đăng nhập thành công!');
-                // Delay nhỏ để UX mượt mà hơn
-                setTimeout(() => {
-                    router.push('/');
-                }, 500);
+                router.push('/');
             } else {
                 toast.error('Đăng nhập thất bại');
             }
@@ -113,10 +110,7 @@ const LoginPage = () => {
             if (res?.ok) {
                 toast.success('Đăng nhập thành công!');
                 reset();
-                // Delay nhỏ để UX mượt mà hơn
-                setTimeout(() => {
-                    router.push('/');
-                }, 500);
+                router.push('/');
             }
         } catch (error: any) {
             toast.error('Đã có lỗi xảy ra khi đăng nhập', {

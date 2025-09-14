@@ -1,14 +1,6 @@
 'use client';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpValidation } from '@/lib/validation';
-import toast from 'react-hot-toast';
-import logger from '@/utils/logger';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import {
     Form,
     FormControl,
@@ -19,6 +11,14 @@ import {
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
 import { API_ROUTES } from '@/config/api';
+import { signUpValidation } from '@/lib/validation';
+import logger from '@/utils/logger';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 type FormSignupData = {
     email: string;
@@ -56,10 +56,7 @@ const SignUpPage = () => {
 
             if (result?.ok) {
                 toast.success('Đăng nhập thành công!');
-                // Delay nhỏ để UX mượt mà hơn
-                setTimeout(() => {
-                    router.push('/');
-                }, 500);
+                router.push('/');
             } else {
                 toast.error('Đăng nhập thất bại');
             }
@@ -96,11 +93,7 @@ const SignUpPage = () => {
                 toast.success('Đăng ký thành công', {
                     id: 'sign-up-success',
                 });
-
-                // Delay nhỏ để UX mượt mà hơn
-                setTimeout(() => {
-                    router.push('/auth/login');
-                }, 500);
+                router.push('/auth/login');
             } else {
                 toast.error(result.msg, {
                     id: 'sign-up-fail',
