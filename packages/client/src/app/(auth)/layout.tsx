@@ -65,7 +65,9 @@ interface Props {
 
 const AuthLayout: React.FC<Props> = async ({ children }) => {
     const session = await getAuthSession();
-    if (session) redirect('/');
+
+    // Middleware sẽ xử lý redirect, không cần redirect ở đây nữa
+    // if (session) redirect('/');
 
     return (
         <div className="from-blue-50 dark:via-blue-900 relative min-h-screen overflow-hidden bg-gradient-to-br via-cyan-50 to-teal-100 dark:from-slate-900 dark:to-teal-900">
@@ -96,7 +98,7 @@ const AuthLayout: React.FC<Props> = async ({ children }) => {
                         </p>
                     </div>
 
-                    <div className="animate-fade-in-delay-3 w-full">
+                    <div className="animate-fade-in-delay-3 min-h-[500px] w-full">
                         {children}
                     </div>
                 </div>

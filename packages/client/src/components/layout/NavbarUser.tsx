@@ -14,10 +14,14 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Icons from '../ui/Icons';
+import { useRouter } from 'next/navigation';
 
 const NavbarUser = () => {
     const { data: session, status } = useSession();
+    const router = useRouter();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const [menuStack, setMenuStack] = useState<INavbarUserMenu[][]>([
         navbarUserMenu,
@@ -35,7 +39,24 @@ const NavbarUser = () => {
     const isRootMenu = menuStack.length === 1;
 
     const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' });
+        try {
+            setIsLoggingOut(true);
+            toast.loading('Đang đăng xuất...', { id: 'logout' });
+
+            await signOut({
+                callbackUrl: '/auth/login',
+                redirect: false,
+            });
+
+            toast.success('Đăng xuất thành công!', { id: 'logout' });
+
+            setTimeout(() => {
+                router.push('/auth/login');
+            }, 500);
+        } catch (error) {
+            toast.error('Có lỗi xảy ra khi đăng xuất', { id: 'logout' });
+            setIsLoggingOut(false);
+        }
     };
 
     const handleBack = () => {
@@ -172,12 +193,19 @@ const NavbarUser = () => {
                                     variant="ghost"
                                     className="h-auto w-full justify-start p-2"
                                     onClick={handleLogout}
+                                    disabled={isLoggingOut}
                                 >
                                     <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-hover-2 text-xl dark:bg-dark-hover-1">
-                                        <Icons.LogOut />
+                                        {isLoggingOut ? (
+                                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
+                                        ) : (
+                                            <Icons.LogOut />
+                                        )}
                                     </span>
                                     <span className="text-sm font-medium">
-                                        Đăng xuất
+                                        {isLoggingOut
+                                            ? 'Đang đăng xuất...'
+                                            : 'Đăng xuất'}
                                     </span>
                                 </Button>
                             </li>

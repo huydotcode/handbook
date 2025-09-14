@@ -72,3 +72,4 @@ server.env
 .Trashes
 ehthumbs.db
 Thumbs.db
+production.env

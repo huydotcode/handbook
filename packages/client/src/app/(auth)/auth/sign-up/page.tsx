@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import logger from '@/utils/logger';
 import { Icons } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import {
@@ -29,6 +29,7 @@ type FormSignupData = {
 };
 
 const SignUpPage = () => {
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const form = useForm<FormSignupData>({
         resolver: zodResolver(signUpValidation),
         defaultValues: {
@@ -47,9 +48,25 @@ const SignUpPage = () => {
 
     const loginWithGoogle = async () => {
         try {
-            await signIn('google');
+            setIsGoogleLoading(true);
+            const result = await signIn('google', {
+                callbackUrl: '/',
+                redirect: false,
+            });
+
+            if (result?.ok) {
+                toast.success('Đăng nhập thành công!');
+                // Delay nhỏ để UX mượt mà hơn
+                setTimeout(() => {
+                    router.push('/');
+                }, 500);
+            } else {
+                toast.error('Đăng nhập thất bại');
+            }
         } catch (error) {
             toast.error('Đăng nhập thất bại');
+        } finally {
+            setIsGoogleLoading(false);
         }
     };
 
@@ -80,7 +97,10 @@ const SignUpPage = () => {
                     id: 'sign-up-success',
                 });
 
-                router.push('/auth/login');
+                // Delay nhỏ để UX mượt mà hơn
+                setTimeout(() => {
+                    router.push('/auth/login');
+                }, 500);
             } else {
                 toast.error(result.msg, {
                     id: 'sign-up-fail',
@@ -110,7 +130,7 @@ const SignUpPage = () => {
                     {/* Header with gradient text */}
                     <div className="mb-8 text-center">
                         <h2 className="mb-2 text-3xl font-bold">
-                            <span className="text-cyan-600">Đăng nhập</span>
+                            <span className="text-cyan-600">Đăng ký</span>
                         </h2>
                         <div className="from-blue-500 mx-auto h-1 w-16 rounded-full bg-gradient-to-r to-cyan-500"></div>
                     </div>
@@ -241,9 +261,21 @@ const SignUpPage = () => {
                         className="w-full"
                         size={'lg'}
                         onClick={loginWithGoogle}
+                        disabled={isGoogleLoading || isSubmitting}
                     >
-                        <Icons.Google className="mr-2" />
-                        <h5 className="text-base">Đăng nhập với Google</h5>
+                        {isGoogleLoading ? (
+                            <>
+                                <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-slate-400 border-t-transparent"></div>
+                                <h5 className="text-base">Đang đăng nhập...</h5>
+                            </>
+                        ) : (
+                            <>
+                                <Icons.Google className="mr-2" />
+                                <h5 className="text-base">
+                                    Đăng nhập với Google
+                                </h5>
+                            </>
+                        )}
                     </Button>
 
                     {/* Sign up link */}
